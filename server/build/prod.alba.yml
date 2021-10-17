@@ -1,0 +1,37 @@
+# Sample file with default values.
+
+#Covers:
+#    # Where to store covers files to be served
+#    Directory: ./covers
+#    # Preferred source for media cover image ("file" => image from mp3 file or "folder" => image file from folder)
+#    PreferredSource: folder
+
+# Logging system.
+#Log:
+#    Enabled: false
+#    File: app.log
+#    Path: ./
+
+# Webserver configuration.
+#Server:
+#    Port: 8888
+#    # If you want to serve the app via https, enable this. You will need to manually install certificates
+#    # for the domain you serve the app from on your machine.
+#    Https:
+#        Enabled: false
+#        # Path to ssl certificate.
+#        CertFile: ""
+#        # Path to ssl file.
+#        KeyFile: ""
+
+# Client app settings.
+#ClientSettings:
+#    # Disable library configuration (Scan / Erase / Covers sources, ...) from the client side. Useful if you share
+#    # the app to strangers on the internet.
+#    DisableLibraryConfiguration: false
+
+
+# Library configuration.
+Library:
+    # Absolute path to your music collection.
+    Path: /path/to/your/library

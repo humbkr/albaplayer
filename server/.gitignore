@@ -1,0 +1,22 @@
+# Generated files
+alba.db
+app.log
+/build/linux
+/build/macos
+/build/windows
+/build/albaplayer-*
+/build/version.txt
+/alba-player
+pkged.go
+
+# Config files
+/alba.yml
+
+# Dev tests
+/tmp
+
+# Frontend app
+/web/*
+
+# Dependencies
+vendor

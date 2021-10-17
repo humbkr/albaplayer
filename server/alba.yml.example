@@ -1,0 +1,35 @@
+Covers:
+#    # Where to store covers files to be served
+    Directory: ./tmp/covers
+#    # Preferred source for media cover image ("file" => image from mp3 file or "folder" => image file from folder)
+#    PreferredSource: folder
+
+# Logging system.
+#Log:
+#    Enabled: true
+#    File: app.log
+#    Path: ./
+
+# Webserver configuration.
+#Server:
+#    Port: 8888
+#    Https:
+#        Enabled: false
+#        # Path to ssl certificate.
+#        CertFile: ""
+#        # Path to ssl file.
+#        KeyFile: ""
+
+DevMode:
+    Enabled: true
+
+# Library configuration.
+Library:
+    # Absolute path to your music collection.
+    Path: ./tmp/alba
+
+# Client app settings.
+ClientSettings:
+    # Disable library configuration (Scan / Erase / Covers sources, ...) from the client side. Useful if you share
+    # the app to strangers on the internet.
+    DisableLibraryConfiguration: false

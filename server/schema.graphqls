@@ -1,0 +1,44 @@
+schema {
+    query: Query
+}
+
+type Query {
+    album(id: ID!): Album
+    albums: [Album]
+    artist(id: ID!): Artist
+    artists: [Artist]
+    track(id: ID!): Track
+    tracks: [Track]
+    settings: [Settings]
+}
+
+type Artist {
+    id: ID!
+    name: String!
+    albums: [Album]
+}
+
+type Album {
+    id: ID!
+    title: String!
+    artist: Artist
+    tracks: [Track]
+}
+
+type Track {
+    id: ID!
+    title: String!
+    artist: Artist
+    album: Album
+    disc: String
+    number: Integer
+    duration: Integer
+    cover: String
+    path: String!
+}
+
+type Settings {
+    libraryPath: String
+    coversPreferredSource: String
+    disableLibrarySettings: Boolean
+}

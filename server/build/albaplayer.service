@@ -1,0 +1,50 @@
+## Example file to run the albaplayer executable as a service in the background of your server with systemd.
+##
+## Instructions:
+## - change the values depending on your server configuration in this file
+## - copy this file to /lib/systemd/system/
+## - set the right permission on the file (chmod 755 /lib/systemd/system/albaplayer.service)
+##
+## Now, you should be able to enable the service, start it, then monitor the logs by tailing the systemd journal:
+##
+## $ systemctl enable albaplayer.service
+## $ systemctl start albaplayer
+## $ journalctl -f -u albaplayer
+##
+## More info:
+## https://fabianlee.org/2017/05/21/golang-running-a-go-binary-as-a-systemd-service-on-ubuntu-16-04/
+##
+
+[Unit]
+Description=Alba Player service
+# Alsolute path to the albaplayer executable
+ConditionPathExists=/path/to/albaplayer/executable
+After=network.target
+
+[Service]
+Type=simple
+# User and group with which to run the executable (if you have https enabled the user must have access to the ssl files)
+User=www-data
+Group=www-data
+LimitNOFILE=1024
+
+Restart=on-failure
+RestartSec=10
+startLimitIntervalSec=60
+
+# Alsolute path to the directory containing the albaplayer executable
+WorkingDirectory=/path/to/folder/containing/albaplayer/executable
+# Command to run when starting the service (do not forget the " serve" at the end)
+ExecStart=/path/to/albaplayer/executable serve
+
+# make sure log directory exists and owned by syslog
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/albaplayer
+ExecStartPre=/bin/chown syslog:adm /var/log/albaplayer
+ExecStartPre=/bin/chmod 755 /var/log/albaplayer
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=albaplayer
+
+[Install]
+WantedBy=multi-user.target

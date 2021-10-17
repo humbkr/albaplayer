@@ -1,0 +1,8 @@
+.git
+.idea
+/server/test
+/server/tmp
+/server/app.log
+/server/pkged.go
+/server/build
+!/server/build/prod.alba.yml
