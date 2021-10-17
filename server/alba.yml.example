@@ -21,12 +21,12 @@ Covers:
 #        KeyFile: ""
 
 DevMode:
-    Enabled: true
+    Enabled: false
 
 # Library configuration.
 Library:
     # Absolute path to your music collection.
-    Path: ./tmp/alba
+    Path: ./tmp/music_lib
 
 # Client app settings.
 ClientSettings:

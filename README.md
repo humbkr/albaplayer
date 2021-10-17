@@ -42,3 +42,59 @@ command line.
 - Golang for the server
 - GraphQL
 - SQLite
+
+### Quick start
+#### Prerequisites
+You need to have
+- [node](https://nodejs.org/)
+- [yarn 1](https://classic.yarnpkg.com/)
+- [Go](https://golang.org/)
+
+Installed and set up on your machine.
+
+#### Setup project
+
+```shell
+## Install git hooks utilities
+yarn install
+
+## Setup client
+cd client
+
+# Setup environment variables
+cp .env .env.development
+# (here Change .env.development values)
+
+# Install dependencies
+yarn install
+
+## Setup server
+cd ../server
+
+# Configure the server options
+cp alba.yml.example alba.yml
+# (here Change alba.yml)
+
+# Install dependencies
+go dep ensure
+```
+
+#### Start server
+```shell
+cd server
+fresh
+```
+
+#### Start client
+```shell
+cd client
+yarn start
+```
+
+#### Notes
+
+If you only want to work on the client you can set  
+```dotenv
+REACT_APP_BACKEND_URL=https://demo.albaplayer.com
+```
+in /client/.env.development instead of having to run the server locally
