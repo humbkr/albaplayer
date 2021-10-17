@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import ActionButton from 'common/components/ActionButton'
 import { queueClear } from 'modules/player/redux'
 import { contextMenu } from 'react-contexify'
-import { RootState } from '../../../store/types'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import QueueActionsMoreContextMenu from './QueueActionsMoreContextMenu'
 

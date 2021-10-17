@@ -13,7 +13,6 @@ import {
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import AlbumContextMenu from './AlbumContextMenu'
-import { RootState } from '../../../store/types'
 
 interface Props {
   switchPaneHandler: (e: React.KeyboardEvent) => void

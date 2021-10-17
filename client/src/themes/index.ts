@@ -1,7 +1,6 @@
 import themeDefault from './default'
 import themeDark from './dark'
 import themeDarkOrange from './darkOrange'
-import { AppTheme } from './types'
 
 interface ThemeDefinition {
   name: string

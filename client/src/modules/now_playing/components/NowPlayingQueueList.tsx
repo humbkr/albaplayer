@@ -7,7 +7,6 @@ import {
 } from 'react-sortable-hoc'
 import 'react-virtualized/styles.css'
 import NowPlayingQueueItem from 'modules/now_playing/components/NowPlayingQueueItem'
-import QueueItemDisplay from '../types/QueueItemDisplay'
 
 // Make Queue item sortable.
 const SortableItem = SortableElement(

@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { api } from 'api'
-import { AppThunk } from 'store/types'
 
 export interface LibraryStateType {
   isFetching: boolean

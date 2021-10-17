@@ -5,7 +5,6 @@ import { SortableContainer, SortableElement } from 'react-sortable-hoc'
 import arrayMove from 'array-move'
 import ListItem from 'modules/playlist/components/ListItem'
 import PlaylistItemComponent from 'modules/playlist/components/PlaylistItem'
-import { AppTheme } from 'themes/types'
 
 interface SortableElementProps {
   item: PlaylistItem

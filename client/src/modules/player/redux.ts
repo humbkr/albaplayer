@@ -1,11 +1,10 @@
 import { api } from 'api'
 import { immutableSortTracks } from 'common/utils/utils'
-import { AppThunk } from 'store/types'
 import { LibraryStateType } from '../library/redux'
 import { PlaylistsStateType } from '../playlist/redux'
 import playerSlice from './player.redux'
 import queueSlice from './queue.redux'
-import { PlayerPlaybackMode } from './types'
+import { PlayerPlaybackMode } from './utils'
 
 export default { player: playerSlice.reducer, queue: queueSlice.reducer }
 export const {

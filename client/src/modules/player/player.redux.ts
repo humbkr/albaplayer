@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { setCycleNumPos } from './utils'
-import { PlayerPlaybackMode } from './types'
+import { setCycleNumPos, PlayerPlaybackMode } from './utils'
 
 export interface PlayerStateType {
   // Controls and audio state.

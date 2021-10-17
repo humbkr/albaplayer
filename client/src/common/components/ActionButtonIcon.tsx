@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import styled, { withTheme } from 'styled-components'
 import Icon from 'common/components/Icon'
-import { AppTheme } from 'themes/types'
 
 const ActionButtonIcon: FunctionComponent<{
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void

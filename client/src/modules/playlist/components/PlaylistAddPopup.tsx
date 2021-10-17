@@ -7,7 +7,6 @@ import {
 import dayjs from 'dayjs'
 import { getRandomInt } from 'common/utils/utils'
 import ActionButton from 'common/components/ActionButton'
-import { AppTheme } from 'themes/types'
 
 // http://reactcommunity.org/react-modal/accessibility/
 Modal.setAppElement('#root')

@@ -31,9 +31,7 @@ import {
   playPlaylistAfterCurrent,
 } from '../redux'
 import { playlistsInitialState, PlaylistsStateType } from '../../playlist/redux'
-
-import { PlayerPlaybackMode } from '../types'
-import { setCycleNumPos } from '../utils'
+import { setCycleNumPos, PlayerPlaybackMode } from '../utils'
 import { playerInitialState } from '../player.redux'
 import { queueInitialState } from '../queue.redux'
 

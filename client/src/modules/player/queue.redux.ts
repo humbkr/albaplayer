@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { immutableRemove } from '../../common/utils/utils'
-import { QueueItem } from './types'
 
 export interface QueueStateType {
   items: QueueItem[]

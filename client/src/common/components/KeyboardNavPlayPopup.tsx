@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
 import styled, { withTheme } from 'styled-components'
 import Modal from 'react-modal'
-import { AppTheme } from '../../themes/types'
 
 // http://reactcommunity.org/react-modal/accessibility/
 Modal.setAppElement('#root')

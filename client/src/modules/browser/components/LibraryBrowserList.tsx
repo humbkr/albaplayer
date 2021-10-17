@@ -2,7 +2,6 @@ import React, { ComponentType, FunctionComponent, Ref } from 'react'
 import styled, { withTheme } from 'styled-components'
 import { ArrowKeyStepper, AutoSizer, List } from 'react-virtualized'
 import LibraryBrowserListItem from './LibraryBrowserListItem'
-import { AppTheme } from '../../../themes/types'
 
 interface ItemDisplayProps {
   item: any

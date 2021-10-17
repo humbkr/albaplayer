@@ -13,7 +13,6 @@ import {
   playlistsSelector,
   addAlbum as addAlbumToPlaylist,
 } from 'modules/playlist/redux'
-import { RootState } from 'store/types'
 
 const ConditionalItem: React.FC<any> = ({ children, ...props }) => {
   if (!props.propsFromTrigger.displayAllActions) {

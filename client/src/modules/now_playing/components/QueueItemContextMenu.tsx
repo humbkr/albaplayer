@@ -14,7 +14,6 @@ import {
   playlistsSelector,
   addTrack as addTrackToPlaylist,
 } from 'modules/playlist/redux'
-import { RootState } from 'store/types'
 import { useHistory } from 'react-router'
 import { search, setSearchFilter } from '../../browser/redux'
 

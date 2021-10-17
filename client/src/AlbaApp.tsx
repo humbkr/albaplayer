@@ -10,8 +10,6 @@ import MaterialIconsWoff from './common/assets/fonts/MaterialIcons-Regular.woff'
 import MaterialIconsTtf from './common/assets/fonts/MaterialIcons-Regular.ttf'
 import MaterialIconsSvg from './common/assets/fonts/MaterialIcons-Regular.svg'
 import getTheme from './themes'
-import { RootState } from './store/types'
-import { AppTheme } from './themes/types'
 
 function AlbaApp() {
   const currentThemeName = useSelector(

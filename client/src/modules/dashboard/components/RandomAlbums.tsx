@@ -4,7 +4,6 @@ import AlbumTeaser from 'modules/dashboard/components/AlbumTeaser'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
-import { RootState } from '../../../store/types'
 import { getRandomAlbums } from '../redux'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 

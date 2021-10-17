@@ -2,14 +2,10 @@ import React, { FunctionComponent } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled, { withTheme } from 'styled-components'
 import { queueReplace, queueSetCurrent } from 'modules/player/redux'
-import { RootState } from 'store/types'
-import { AppTheme } from 'themes/types'
-import { QueueItem } from 'modules/player/types'
 import NowPlayingQueueHeader from './NowPlayingQueueHeader'
 import NowPlayingQueueList from './NowPlayingQueueList'
 import NowPlayingQueueActions from './NowPlayingQueueActions'
 import QueueItemContextMenu from './QueueItemContextMenu'
-import QueueItemDisplay from '../types/QueueItemDisplay'
 
 const NowPlayingQueue: FunctionComponent<{ theme: AppTheme }> = ({ theme }) => {
   const { items, current } = useSelector((state: RootState) => state.queue)

@@ -1,6 +1,6 @@
 import playerSlice, { playerInitialState } from '../player.redux'
 import { libraryInitialState, LibraryStateType } from '../../library/redux'
-import { PlayerPlaybackMode } from '../types'
+import { PlayerPlaybackMode } from '../utils'
 
 const {
   playerTogglePlayPause,

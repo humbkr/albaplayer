@@ -10,8 +10,6 @@ import {
   playPlaylistAfterCurrent,
 } from 'modules/player/redux'
 import { addPlaylist as addPlaylistToPlaylist } from 'modules/playlist/redux'
-// eslint-disable-next-line import/no-cycle
-import { RootState } from 'store/types'
 import { EditPlaylistContext } from '../scenes/Playlists'
 
 const PlaylistContextMenu = () => {

@@ -13,7 +13,6 @@ import {
   playlistsSelector,
   addTrack as addTrackToPlaylist,
 } from 'modules/playlist/redux'
-import { RootState } from 'store/types'
 import { search, setSearchFilter } from '../redux'
 
 const TrackContextMenu = () => {

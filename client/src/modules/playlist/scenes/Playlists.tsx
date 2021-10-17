@@ -12,7 +12,6 @@ import {
   PlaylistPane,
   playlistUpdateInfo,
 } from '../redux'
-import { RootState } from '../../../store/types'
 import PlaylistsCarePane from '../components/PlaylistCarePane'
 
 // Playlist edition must be accessible to the children of this component.

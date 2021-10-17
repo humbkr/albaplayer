@@ -8,8 +8,6 @@ import {
   queueRemoveTrack,
   setItemFromQueue,
 } from 'modules/player/redux'
-import { RootState } from 'store/types'
-import QueueItemDisplay from '../types/QueueItemDisplay'
 
 const NowPlayingQueueItem: FunctionComponent<{
   item: QueueItemDisplay

@@ -7,7 +7,6 @@ import NowPlaying from 'modules/now_playing/scenes/NowPlaying'
 import LoadingScreen from 'common/components/LoadingScreen'
 import Settings from 'modules/settings/scenes/Settings'
 import Playlists from 'modules/playlist/scenes/Playlists'
-import { RootState } from 'store/types'
 import Dashboard from '../../modules/dashboard/scenes/Dashboard'
 
 const MainPanel = () => {

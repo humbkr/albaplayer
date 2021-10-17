@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { PlayerPlaybackMode } from 'modules/player/types'
 import * as Buttons from './buttons'
 import VolumeContainer from './VolumeContainer'
+import { PlayerPlaybackMode } from '../utils'
 
 const Controls = ({
   playing,

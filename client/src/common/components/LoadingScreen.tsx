@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import Loading from 'common/components/Loading'
-import { RootState } from 'store/types'
 
 const LoadingScreen = () => {
   const isFetching = useSelector((state: RootState) => state.library.isFetching)

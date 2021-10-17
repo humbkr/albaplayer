@@ -12,7 +12,6 @@ import {
 // eslint-disable-next-line import/no-cycle
 import PlaylistContextMenu from 'modules/playlist/components/PlaylistContextMenu'
 import ListItem from 'modules/playlist/components/ListItem'
-import { RootState } from 'store/types'
 
 interface Props {
   switchPaneHandler: (e: React.KeyboardEvent) => void

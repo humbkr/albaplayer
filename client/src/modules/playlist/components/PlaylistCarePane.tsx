@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../../store/types'
 import Icon from '../../../common/components/Icon'
 import ActionButton from '../../../common/components/ActionButton'
 import PlaylistCareList from './PlaylistCareList'

@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { DebounceInput } from 'react-debounce-input'
 import { search, setSearchFilter } from 'modules/browser/redux'
-import { RootState } from 'store/types'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 
 const LibraryBrowserSearchBar: React.FC<{

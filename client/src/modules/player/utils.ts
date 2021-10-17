@@ -1,3 +1,9 @@
+export enum PlayerPlaybackMode {
+  PLAYER_REPEAT_NO_REPEAT,
+  PLAYER_REPEAT_LOOP_ALL,
+  PLAYER_REPEAT_LOOP_ONE,
+}
+
 /**
  * Computes the next / previous position in an list of consecutive integers
  * when looping.
@@ -11,7 +17,6 @@
  *   The length of the list of integers.
  *
  */
-// eslint-disable-next-line import/prefer-default-export
 export const setCycleNumPos = (
   currentValue: number,
   change: number,

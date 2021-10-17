@@ -1,8 +1,6 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { getRandomInt, immutableNestedSort } from 'common/utils/utils'
 import dayjs from 'dayjs'
-import { AppThunk, RootState } from '../../store/types'
-import { QueueItem } from '../player/types'
 
 export enum PlaylistPane {
   Detail,

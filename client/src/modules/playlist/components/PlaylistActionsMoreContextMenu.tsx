@@ -12,7 +12,6 @@ import {
   playlistChangePane,
   PlaylistPane,
 } from 'modules/playlist/redux'
-import { RootState } from 'store/types'
 // eslint-disable-next-line import/no-cycle
 import { EditPlaylistContext } from '../scenes/Playlists'
 import { playPlaylistAfterCurrent } from '../../player/redux'

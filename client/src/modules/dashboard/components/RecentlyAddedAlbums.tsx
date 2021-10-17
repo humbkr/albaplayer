@@ -4,7 +4,6 @@ import AlbumTeaserHorizontal from 'modules/dashboard/components/AlbumTeaserHoriz
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { immutableNestedSort } from 'common/utils/utils'
-import { RootState } from '../../../store/types'
 import { LibraryStateType } from '../../library/redux'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 

@@ -1,5 +1,3 @@
-import { RootState } from './types'
-
 const rootMigrations = {
   0: (state: RootState) => {
     // Playlist items are now { track: Track, position: number }

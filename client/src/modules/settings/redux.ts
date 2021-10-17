@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { api, apolloClient } from 'api'
 import { initLibrary } from 'modules/library/redux'
-// eslint-disable-next-line import/named
-import { AppThunk } from 'store/types'
 
 interface Settings {
   libraryPath: string

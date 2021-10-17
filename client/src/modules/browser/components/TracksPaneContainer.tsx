@@ -13,7 +13,6 @@ import {
   libraryBrowserSortTracks,
   libraryBrowserSelectTrack,
 } from '../redux'
-import { RootState } from '../../../store/types'
 
 interface Props {
   switchPaneHandler: (e: React.KeyboardEvent) => void

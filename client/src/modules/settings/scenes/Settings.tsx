@@ -11,7 +11,6 @@ import {
   eraseLibrary,
   setTheme,
 } from 'modules/settings/redux'
-import { RootState } from 'store/types'
 import SelectList from 'modules/settings/components/SelectList'
 import info from '../../../../package.json'
 

@@ -13,7 +13,6 @@ import {
   playlistsSelector,
   addAlbum as addAlbumToPlaylist,
 } from 'modules/playlist/redux'
-import { RootState } from 'store/types'
 import { search, setSearchFilter } from '../redux'
 
 const AlbumContextMenu = () => {

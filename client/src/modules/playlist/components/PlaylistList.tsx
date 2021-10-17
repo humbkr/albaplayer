@@ -2,7 +2,6 @@ import React, { Ref } from 'react'
 import styled, { withTheme } from 'styled-components'
 import { ArrowKeyStepper, AutoSizer, List } from 'react-virtualized'
 import ListItem from 'modules/playlist/components/ListItem'
-import { AppTheme } from 'themes/types'
 import PlaylistTeaser from './PlaylistTeaser'
 
 interface Props {

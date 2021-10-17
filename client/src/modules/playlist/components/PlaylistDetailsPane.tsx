@@ -16,7 +16,6 @@ import {
   playlistSelectTrack,
   playlistUpdateItems,
 } from 'modules/playlist/redux'
-import { RootState } from 'store/types'
 import PlaylistTrackList from './PlaylistTrackList'
 import PlaylistTrackContextMenu from './PlaylistTrackContextMenu'
 import PlaylistActionsMoreContextMenu from './PlaylistActionsMoreContextMenu'

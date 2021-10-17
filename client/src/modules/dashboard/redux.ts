@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AppThunk } from '../../store/types'
 
 export interface DashboardStateType {
   randomAlbumsNumber: number
