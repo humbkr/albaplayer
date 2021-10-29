@@ -103,7 +103,7 @@ function Settings() {
         />
       </Paragraph>
       <VersionNumber data-testid="settings-version">
-        {`Version: ${librarySettings.version} (UI version: ${info.version})`}
+        {`Version: ${info.version}`}
       </VersionNumber>
     </SettingsScreenWrapper>
   )

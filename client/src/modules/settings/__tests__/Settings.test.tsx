@@ -65,7 +65,7 @@ describe('Settings scene', () => {
     expect(queryByTestId('settings-theme')).not.toBeNull()
     expect(queryByTestId('settings-version')).not.toBeNull()
 
-    const regex = new RegExp(`Version: \\w+ \\(UI version: ${info.version}\\)`)
+    const regex = new RegExp(`Version: ${info.version}`)
     expect(getByText(regex))
   })
 
