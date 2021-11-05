@@ -2,6 +2,8 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
+import { createMemoryHistory } from 'history'
+import { Router } from 'react-router'
 import AlbumTeaser from '../components/AlbumTeaser'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import themeDefault from '../../../themes/default'
@@ -31,13 +33,22 @@ const album: Album = {
   },
 }
 
+// Required to mock useLocation, useHistory, and other react-router functionalities.
+const history = createMemoryHistory()
+
 describe('dashboard - AlbumTeaser', () => {
   it('should render correctly', () => {
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaser album={album} selected={false} setSelected={() => {}} />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaser
+              album={album}
+              selected={false}
+              setSelected={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 
@@ -51,9 +62,15 @@ describe('dashboard - AlbumTeaser', () => {
   it('should display an overlay if mouse is over', () => {
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaser album={album} selected={false} setSelected={() => {}} />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaser
+              album={album}
+              selected={false}
+              setSelected={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 
@@ -83,17 +100,19 @@ describe('dashboard - AlbumTeaser', () => {
 
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaser
-            album={album}
-            selected={false}
-            setSelected={setSelected}
-          />
-          <AlbumMoreActionsContextMenu
-            menuId="random-album-more-actions-context-menu"
-            onHidden={() => {}}
-          />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaser
+              album={album}
+              selected={false}
+              setSelected={setSelected}
+            />
+            <AlbumMoreActionsContextMenu
+              menuId="random-album-more-actions-context-menu"
+              onHidden={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 
@@ -107,17 +126,19 @@ describe('dashboard - AlbumTeaser', () => {
 
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaser
-            album={album}
-            selected={false}
-            setSelected={setSelected}
-          />
-          <AlbumMoreActionsContextMenu
-            menuId="random-album-more-actions-context-menu"
-            onHidden={() => {}}
-          />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaser
+              album={album}
+              selected={false}
+              setSelected={setSelected}
+            />
+            <AlbumMoreActionsContextMenu
+              menuId="random-album-more-actions-context-menu"
+              onHidden={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 
@@ -130,9 +151,15 @@ describe('dashboard - AlbumTeaser', () => {
   it('should play the album if user clicks on the play button', () => {
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaser album={album} selected={false} setSelected={() => {}} />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaser
+              album={album}
+              selected={false}
+              setSelected={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 
@@ -146,13 +173,15 @@ describe('dashboard - AlbumTeaser', () => {
 
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaser
-            album={customAlbum}
-            selected={false}
-            setSelected={() => {}}
-          />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaser
+              album={customAlbum}
+              selected={false}
+              setSelected={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 

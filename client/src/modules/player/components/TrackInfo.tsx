@@ -2,11 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import Ripple from 'common/components/Ripple'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
-import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router'
 import Cover from '../../../common/components/Cover'
-import { search, setSearchFilter } from '../../browser/redux'
-import SearchLink from '../../../common/components/SearchLink'
+import SearchLink from '../../browser/components/SearchLink'
 
 const TrackInfo: React.FC<{
   track: Track
@@ -15,17 +12,6 @@ const TrackInfo: React.FC<{
   const trackTitle = track?.title || 'Unknown title'
   const trackArtist = track?.artist?.name || 'Unknown artist'
   const trackCover = track?.cover || undefined
-
-  const dispatch = useDispatch()
-  const history = useHistory()
-
-  const handleArtistSearch = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation()
-
-    dispatch(setSearchFilter('artist'))
-    dispatch(search(trackArtist))
-    history.push('/library')
-  }
 
   return (
     <Ripple>
@@ -36,10 +22,7 @@ const TrackInfo: React.FC<{
           <OverlayText>
             <TrackTitle>{trackTitle}</TrackTitle>
             <ArtistName>
-              by{' '}
-              <SearchLink onClick={handleArtistSearch}>
-                {trackArtist}
-              </SearchLink>
+              by <SearchLink type="artist" searchString={trackArtist} />
             </ArtistName>
           </OverlayText>
         )}

@@ -5,6 +5,7 @@ import { contextMenu } from 'react-contexify'
 import { playAlbum } from '../../player/redux'
 import ActionButtonCircle from '../../../common/components/ActionButtonCircle'
 import Cover from '../../../common/components/Cover'
+import SearchLink from '../../browser/components/SearchLink'
 
 const AlbumTeaser: React.FC<{
   album: Album
@@ -68,7 +69,12 @@ const AlbumTeaser: React.FC<{
       </CoverWrapper>
       <Info>
         <Title>{album.title}</Title>
-        <Artist>{album.artist?.name || 'Unknown artist'}</Artist>
+        <Artist>
+          <SearchLink
+            type="artist"
+            searchString={album.artist?.name || 'Unknown artist'}
+          />
+        </Artist>
       </Info>
     </Wrapper>
   )
