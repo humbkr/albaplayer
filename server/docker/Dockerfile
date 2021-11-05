@@ -1,6 +1,5 @@
 FROM dockercore/golang-cross:latest
 
-
 RUN apt-get update
 
 # Vim
