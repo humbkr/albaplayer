@@ -1,4 +1,7 @@
 const themeDefault = {
+  // Type of theme.
+  isDark: false,
+
   // Used for all list items.
   itemHeight: '50px',
 
@@ -48,6 +51,7 @@ const themeDefault = {
     background: '#2a2a2a',
     textPrimaryColor: '#d9d9d9',
     textPrimaryColorHover: '#333333',
+    separatorColor: '#3f4248',
   },
 
   player: {

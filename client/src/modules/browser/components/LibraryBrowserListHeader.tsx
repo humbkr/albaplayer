@@ -31,8 +31,9 @@ const LibraryBrowserListHeaderWrapper = styled.div`
   padding: 0 15px;
 `
 const ContentWrapper = styled.div`
-  display: table;
-  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   height: 100%;
 
   > h2 {
