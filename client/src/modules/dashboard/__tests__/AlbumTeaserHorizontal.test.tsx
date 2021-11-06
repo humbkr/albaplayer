@@ -2,6 +2,8 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
+import { Router } from 'react-router'
+import { createMemoryHistory } from 'history'
 import AlbumTeaserHorizontal from '../components/AlbumTeaserHorizontal'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import themeDefault from '../../../themes/default'
@@ -31,17 +33,22 @@ const album: Album = {
   },
 }
 
+// Required to mock useLocation, useHistory, and other react-router functionalities.
+const history = createMemoryHistory()
+
 describe('dashboard - AlbumTeaserHorizontal', () => {
   it('should render correctly', () => {
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaserHorizontal
-            album={album}
-            selected={false}
-            setSelected={() => {}}
-          />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaserHorizontal
+              album={album}
+              selected={false}
+              setSelected={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 
@@ -56,13 +63,15 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
   it('should display an overlay if mouse is over', () => {
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaserHorizontal
-            album={album}
-            selected={false}
-            setSelected={() => {}}
-          />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaserHorizontal
+              album={album}
+              selected={false}
+              setSelected={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 
@@ -92,17 +101,19 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
 
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaserHorizontal
-            album={album}
-            selected={false}
-            setSelected={setSelected}
-          />
-          <AlbumMoreActionsContextMenu
-            menuId="recent-album-more-actions-context-menu"
-            onHidden={() => {}}
-          />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaserHorizontal
+              album={album}
+              selected={false}
+              setSelected={setSelected}
+            />
+            <AlbumMoreActionsContextMenu
+              menuId="recent-album-more-actions-context-menu"
+              onHidden={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 
@@ -116,17 +127,19 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
 
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaserHorizontal
-            album={album}
-            selected={false}
-            setSelected={setSelected}
-          />
-          <AlbumMoreActionsContextMenu
-            menuId="recent-album-more-actions-context-menu"
-            onHidden={() => {}}
-          />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaserHorizontal
+              album={album}
+              selected={false}
+              setSelected={setSelected}
+            />
+            <AlbumMoreActionsContextMenu
+              menuId="recent-album-more-actions-context-menu"
+              onHidden={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 
@@ -139,13 +152,15 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
   it('should play the album if user clicks on the play button', () => {
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaserHorizontal
-            album={album}
-            selected={false}
-            setSelected={() => {}}
-          />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaserHorizontal
+              album={album}
+              selected={false}
+              setSelected={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 
@@ -159,13 +174,15 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
 
     render(
       <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <AlbumTeaserHorizontal
-            album={customAlbum}
-            selected={false}
-            setSelected={() => {}}
-          />
-        </ThemeProvider>
+        <Router history={history}>
+          <ThemeProvider theme={themeDefault}>
+            <AlbumTeaserHorizontal
+              album={customAlbum}
+              selected={false}
+              setSelected={() => {}}
+            />
+          </ThemeProvider>
+        </Router>
       </ReduxProvider>
     )
 

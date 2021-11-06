@@ -6,6 +6,7 @@ import { contextMenu } from 'react-contexify'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import { playAlbum } from '../../player/redux'
 import Cover from '../../../common/components/Cover'
+import SearchLink from '../../browser/components/SearchLink'
 
 const AlbumTeaserHorizontal: React.FC<{
   album: Album
@@ -60,7 +61,12 @@ const AlbumTeaserHorizontal: React.FC<{
         <Left>
           <MainInfo>
             <Title>{album.title}</Title>
-            <Artist>{album.artist?.name || 'Unknown artist'}</Artist>
+            <Artist>
+              <SearchLink
+                type="artist"
+                searchString={album.artist?.name || 'Unknown artist'}
+              />
+            </Artist>
           </MainInfo>
           <DateAdded>
             Added on: {dayjs.unix(album.dateAdded).format('DD/MM/YYYY')}
@@ -110,6 +116,10 @@ const ActionOverlay = styled.div<{ visible: boolean }>`
 `
 const ActionButton = styled(ActionButtonIcon)`
   color: #fff;
+
+  i {
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  }
 
   :hover {
     color: ${(props) => props.theme.buttons.colorHover};

@@ -96,12 +96,13 @@ const FilterButtonWrapper = styled.div<{
   justify-content: center;
   align-items: center;
   width: ${(props) => props.theme.itemHeight};
-  background-color: ${(props) => (props.active ? props.theme.highlightFocus : 'transparent')};
-  border-right: 1px solid ${(props) => props.theme.separatorColor};
+  background-color: ${(props) => (props.active ? props.theme.highlightFocus : props.theme.sidebar.background)};
+  border-right: 1px solid ${(props) => props.theme.sidebar.separatorColor};
 `
 const ActionButtonIconStyled = styled(ActionButtonIcon)`
   width: 100%;
   height: 100%;
+  color: ${(props) => props.theme.sidebar.textPrimaryColor};
 
   &:focus {
     border: 1px solid ${(props) => props.theme.highlightFocus};
@@ -111,7 +112,7 @@ const SearchBarInputWrapper = styled.div`
   flex-grow: 1;
   vertical-align: middle;
   padding: 8px;
-  background-color: ${(props) => props.theme.highlight};
+  background-color: ${(props) => props.theme.sidebar.background};
 
   :focus-within {
     background-color: ${(props) => props.theme.highlightFocus};

@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import styled from 'styled-components'
-import selectArrow from 'common/assets/images/select_arrow.png'
+import selectArrowLight from '../../../common/assets/images/select-arrow-light.svg'
+import selectArrowDark from '../../../common/assets/images/select-arrow-dark.svg'
 
 interface Option {
   value: string
@@ -46,9 +47,10 @@ const Select = styled.select<any>`
   border-radius: 2px;
   padding: 6px ${(props) => props.theme.buttons.sidePadding};
   min-width: 250px;
-  background: url(${selectArrow}) no-repeat right
-    ${(props) => props.theme.buttons.sidePadding} center;
-  background-size: 12px;
+  background-image: url(${(props) => (props.theme.isDark ? selectArrowLight : selectArrowDark)});
+  background-repeat: no-repeat, repeat;
+  background-position: right 1rem top 52%, 0 0;
+  background-size: 0.65em auto, 100%;
 
   :hover {
     cursor: pointer;

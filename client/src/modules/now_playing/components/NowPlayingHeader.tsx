@@ -1,13 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
 import { formatDuration } from 'common/utils/utils'
 import ActionButtonCircle from 'common/components/ActionButtonCircle'
 import { constants } from 'api'
-import { useHistory } from 'react-router'
-import SearchLink from 'common/components/SearchLink'
-import { search, setSearchFilter } from '../../browser/redux'
+import SearchLink from 'modules/browser/components/SearchLink'
 
 const SEARCH_ENGINE_URL = 'https://www.google.fr/search?q='
 
@@ -45,9 +43,6 @@ const NowPlayingHeader: React.FC<{
 }> = ({ pinned = false }) => {
   const track = useSelector((state: RootState) => state.player.track)
 
-  const dispatch = useDispatch()
-  const history = useHistory()
-
   const handleWebSearch = (what: WebSearchType) => {
     if (track) {
       const songTitle = track?.title ?? ''
@@ -59,18 +54,6 @@ const NowPlayingHeader: React.FC<{
 
       window.open(`${SEARCH_ENGINE_URL}${searchQuery}`, '_blank')
     }
-  }
-
-  const handleArtistSearch = () => {
-    dispatch(setSearchFilter('artist'))
-    dispatch(search(track.artist?.name))
-    history.push('/library')
-  }
-
-  const handleAlbumSearch = () => {
-    dispatch(setSearchFilter('album'))
-    dispatch(search(track.album?.title))
-    history.push('/library')
   }
 
   const trackInfo = getTrackInfoForDisplay(track)
@@ -109,16 +92,12 @@ const NowPlayingHeader: React.FC<{
                 <Title pinned={pinned}>{trackInfo?.title}</Title>
                 <Artist pinned={pinned}>
                   by{' '}
-                  <SearchLink onClick={handleArtistSearch}>
-                    {trackInfo?.artist}
-                  </SearchLink>
+                  <SearchLink type="artist" searchString={trackInfo?.artist} />
                 </Artist>
               </div>
               <SongInfoPart2 pinned={pinned}>
                 <Album>
-                  <SearchLink onClick={handleAlbumSearch}>
-                    {trackInfo?.album}
-                  </SearchLink>
+                  <SearchLink type="album" searchString={trackInfo?.album} />
                 </Album>
                 <Position>{trackAlbumInfo}</Position>
               </SongInfoPart2>
