@@ -80,9 +80,15 @@ go mod download
 ```
 
 #### Start server
+You will have to install [Air](https://github.com/cosmtrek/air) to have hot reloading enabled.
+```shell
+curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+```
+
+Then
 ```shell
 cd server
-fresh
+air
 ```
 
 #### Start client
