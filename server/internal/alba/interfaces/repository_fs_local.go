@@ -17,8 +17,8 @@ import (
 
 	"github.com/dhowden/tag"
 	"github.com/go-gorp/gorp"
-	"github.com/humbkr/albaplayer-server/internal/alba/business"
-	"github.com/humbkr/albaplayer-server/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/alba/business"
+	"github.com/humbkr/albaplayer/internal/alba/domain"
 	"github.com/spf13/viper"
 )
 

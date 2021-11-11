@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 
 	gqlHandler "github.com/graphql-go/handler"
-	"github.com/humbkr/albaplayer-server/internal/alba"
-	"github.com/humbkr/albaplayer-server/internal/alba/interfaces"
+	"github.com/humbkr/albaplayer/internal/alba"
+	"github.com/humbkr/albaplayer/internal/alba/interfaces"
 	"github.com/markbates/pkger"
 	"github.com/mnmtanish/go-graphiql"
 	"github.com/rs/cors"

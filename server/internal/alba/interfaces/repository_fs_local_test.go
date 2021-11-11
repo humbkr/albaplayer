@@ -1,11 +1,11 @@
 package interfaces
 
 import (
-	"github.com/humbkr/albaplayer-server/internal/alba/business"
+	"github.com/humbkr/albaplayer/internal/alba/business"
 	"github.com/stretchr/testify/suite"
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"github.com/humbkr/albaplayer-server/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/alba/domain"
 	"github.com/spf13/viper"
 	"os"
 	"log"

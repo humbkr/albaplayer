@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"github.com/humbkr/albaplayer-server/internal/alba/business"
+	"github.com/humbkr/albaplayer/internal/alba/business"
 	"errors"
 )
 

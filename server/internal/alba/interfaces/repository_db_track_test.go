@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/stretchr/testify/assert"
 	"log"
-	"github.com/humbkr/albaplayer-server/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/alba/domain"
 )
 
 type TrackRepoTestSuite struct {

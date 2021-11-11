@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/humbkr/albaplayer-server/internal/alba/business"
+	"github.com/humbkr/albaplayer/internal/alba/business"
 	"github.com/spf13/viper"
 )
 

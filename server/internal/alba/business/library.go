@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/humbkr/albaplayer-server/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/alba/domain"
 	"github.com/spf13/viper"
 )
 
