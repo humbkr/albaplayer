@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/humbkr/albaplayer-server/internal/alba"
+	"github.com/humbkr/albaplayer/internal/alba"
 	"github.com/spf13/cobra"
 )
 

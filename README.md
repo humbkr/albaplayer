@@ -76,7 +76,7 @@ cp alba.yml.example alba.yml
 # (here Change alba.yml)
 
 # Install dependencies
-go dep ensure
+go mod download
 ```
 
 #### Start server

@@ -1,6 +1,6 @@
-module github.com/humbkr/albaplayer-server
+module github.com/humbkr/albaplayer
 
-go 1.12
+go 1.16
 
 require (
 	github.com/dhowden/tag v0.0.0-20181104225729-a9f04c2798ca
@@ -11,7 +11,6 @@ require (
 	github.com/markbates/pkger v0.17.1
 	github.com/mattn/go-sqlite3 v1.12.0
 	github.com/mnmtanish/go-graphiql v0.0.0-20160921055525-cef5a61bd62b
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/natefinch/lumberjack v0.0.0-20170531160350-a96e63847dc3
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect

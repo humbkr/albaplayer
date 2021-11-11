@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"testing"
-	"github.com/humbkr/albaplayer-server/internal/alba/business"
+	"github.com/humbkr/albaplayer/internal/alba/business"
 	"github.com/stretchr/testify/suite"
 	"github.com/stretchr/testify/assert"
 	"log"

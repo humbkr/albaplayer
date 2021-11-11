@@ -9,10 +9,10 @@ import (
 	"strconv"
 
 	"github.com/graphql-go/graphql"
-	"github.com/humbkr/albaplayer-server/internal/alba/version"
+	"github.com/humbkr/albaplayer/internal/alba/version"
 
-	"github.com/humbkr/albaplayer-server/internal/alba/business"
-	"github.com/humbkr/albaplayer-server/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/alba/business"
+	"github.com/humbkr/albaplayer/internal/alba/domain"
 )
 
 type graphQLInteractor struct {
