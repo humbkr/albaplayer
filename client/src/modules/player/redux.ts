@@ -254,6 +254,16 @@ export const setNextTrack = (endOfTrack: boolean): AppThunk => (
   return api.getFullTrackInfo(nextTrackId).then((response) => {
     dispatch(playerSetTrack(response.data.track))
     dispatch(queueSetCurrent(newQueuePosition))
+
+    if (
+      state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL
+      || state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ONE
+    ) {
+      // Need this to reset the audio player.
+      dispatch(playerSetProgress(0))
+      dispatch(playerTogglePlayPause(false))
+      dispatch(playerTogglePlayPause(true))
+    }
   })
 }
 

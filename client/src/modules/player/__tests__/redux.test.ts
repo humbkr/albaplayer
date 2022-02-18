@@ -890,7 +890,13 @@ describe('player (redux)', () => {
         })
       )
 
-      const expected = [playerSetTrack(response.data.track), queueSetCurrent(1)]
+      const expected = [
+        playerSetTrack(response.data.track),
+        queueSetCurrent(1),
+        playerSetProgress(0),
+        playerTogglePlayPause(false),
+        playerTogglePlayPause(true),
+      ]
 
       store
         .dispatch(
@@ -1039,7 +1045,13 @@ describe('player (redux)', () => {
         })
       )
 
-      const expected = [playerSetTrack(response.data.track), queueSetCurrent(0)]
+      const expected = [
+        playerSetTrack(response.data.track),
+        queueSetCurrent(1),
+        playerSetProgress(0),
+        playerTogglePlayPause(false),
+        playerTogglePlayPause(true),
+      ]
 
       // @ts-ignore
       store.dispatch(setNextTrack(false)).then(() => {
