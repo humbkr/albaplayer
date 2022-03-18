@@ -11,7 +11,7 @@ import {
   playlistCreatePlaylist,
   PlaylistPane,
   playlistUpdateInfo,
-} from '../redux'
+} from '../store'
 import PlaylistsCarePane from '../components/PlaylistCarePane'
 
 // Playlist edition must be accessible to the children of this component.

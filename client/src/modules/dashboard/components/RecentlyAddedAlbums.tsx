@@ -4,7 +4,7 @@ import AlbumTeaserHorizontal from 'modules/dashboard/components/AlbumTeaserHoriz
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { immutableNestedSort } from 'common/utils/utils'
-import { LibraryStateType } from '../../library/redux'
+import { LibraryStateType } from '../../library/store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
 export const getRecentlyAddedAlbums = (

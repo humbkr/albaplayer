@@ -2,7 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Menu as ContextMenu, Item, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
-import { playlistsSelector, addCurrentQueue } from 'modules/playlist/redux'
+import { playlistsSelector, addCurrentQueue } from 'modules/playlist/store'
 
 const QueueActionsMoreContextMenu: React.FC = () => {
   const playlists = useSelector((state: RootState) => playlistsSelector(state))

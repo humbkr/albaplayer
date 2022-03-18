@@ -280,13 +280,13 @@ export const selectArtist = ({
 
   const hydratedAlbums = filteredAlbums.map((album) => ({
     ...album,
-    artist: library.artists[album.artistId],
+    artist: library.artists[album.artistId as string],
   }))
 
   const hydratedTracks = filteredTracks.map((track) => ({
     ...track,
-    artist: library.artists[track.artistId],
-    album: library.albums[track.albumId],
+    artist: library.artists[track.artistId as string],
+    album: library.albums[track.albumId as string],
   }))
 
   dispatch(
@@ -367,8 +367,8 @@ export const selectAlbum = ({
 
   const hydratedTracks = filteredTracks.map((track) => ({
     ...track,
-    artist: library.artists[track.artistId],
-    album: library.albums[track.albumId],
+    artist: library.artists[track.artistId as string],
+    album: library.albums[track.albumId as string],
   }))
 
   dispatch(
@@ -529,13 +529,13 @@ export const searchFilter = (searchTerm: string): AppThunk => (
   // Hydrate elements.
   const hydratedAlbums = filteredAlbums.map((album) => ({
     ...album,
-    artist: state.library.artists[album.artistId],
+    artist: state.library.artists[album.artistId as string],
   }))
 
   const hydratedTracks = filteredTracks.map((track) => ({
     ...track,
-    artist: state.library.artists[track.artistId],
-    album: state.library.albums[track.albumId],
+    artist: state.library.artists[track.artistId as string],
+    album: state.library.albums[track.albumId as string],
   }))
 
   dispatch(

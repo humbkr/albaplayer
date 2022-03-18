@@ -8,11 +8,11 @@ import {
   addArtist,
   playArtist,
   playArtistAfterCurrent,
-} from 'modules/player/redux'
+} from 'modules/player/store'
 import {
   playlistsSelector,
   addArtist as addArtistToPlaylist,
-} from 'modules/playlist/redux'
+} from 'modules/playlist/store'
 
 const ArtistContextMenu = () => {
   const playlists = useSelector((state) => playlistsSelector(state))

@@ -11,10 +11,10 @@ import {
   addPlaylist as addPlaylistToPlaylist,
   playlistChangePane,
   PlaylistPane,
-} from 'modules/playlist/redux'
+} from 'modules/playlist/store'
 // eslint-disable-next-line import/no-cycle
 import { EditPlaylistContext } from '../scenes/Playlists'
-import { playPlaylistAfterCurrent } from '../../player/redux'
+import { playPlaylistAfterCurrent } from '../../player/store'
 
 interface MenuItemEventHandlerPlaylist extends MenuItemEventHandler {
   props: {

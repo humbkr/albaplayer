@@ -24,8 +24,8 @@ import browserSlice, {
   libraryBrowserInit,
   search,
   setSearchFilter,
-} from '../redux'
-import { libraryInitialState, LibraryStateType } from '../../library/redux'
+} from '../store'
+import { libraryInitialState, LibraryStateType } from '../../library/store'
 
 export const mockLibraryState: LibraryStateType = {
   ...libraryInitialState,

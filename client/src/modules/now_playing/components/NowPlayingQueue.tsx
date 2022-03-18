@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled, { withTheme } from 'styled-components'
-import { queueReplace, queueSetCurrent } from 'modules/player/redux'
+import { queueReplace, queueSetCurrent } from 'modules/player/store'
 import NowPlayingQueueHeader from './NowPlayingQueueHeader'
 import NowPlayingQueueList from './NowPlayingQueueList'
 import NowPlayingQueueActions from './NowPlayingQueueActions'

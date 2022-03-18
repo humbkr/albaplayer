@@ -1,7 +1,7 @@
 import {
   libraryInitialState,
   LibraryStateType,
-} from '../../modules/library/redux'
+} from '../../modules/library/store'
 import { immutableSortTracks } from '../utils/utils'
 
 const mockLibraryState: LibraryStateType = {

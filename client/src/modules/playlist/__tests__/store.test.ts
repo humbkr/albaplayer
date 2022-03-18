@@ -17,9 +17,9 @@ import playlistsSlice, {
   addArtist,
   addPlaylist,
   playlistsSelector,
-} from '../redux'
+} from '../store'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { libraryInitialState, LibraryStateType } from '../../library/redux'
+import { libraryInitialState, LibraryStateType } from '../../library/store'
 
 jest.mock('api')
 const mockStore = configureMockStore([thunk])

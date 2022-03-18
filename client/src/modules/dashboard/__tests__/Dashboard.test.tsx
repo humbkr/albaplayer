@@ -6,9 +6,9 @@ import { ThemeProvider } from 'styled-components'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import themeDefault from '../../../themes/default'
 import Dashboard from '../scenes/Dashboard'
-import { dashboardInitialState } from '../redux'
-import { libraryInitialState } from '../../library/redux'
-import { playlistsInitialState } from '../../playlist/redux'
+import { dashboardInitialState } from '../store'
+import { libraryInitialState } from '../../library/store'
+import { playlistsInitialState } from '../../playlist/store'
 
 const store = makeMockStore({
   library: libraryInitialState,

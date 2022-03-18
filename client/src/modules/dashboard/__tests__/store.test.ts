@@ -2,7 +2,7 @@ import dashboardSlice, {
   dashboardInitialState,
   getRandomAlbums,
   setRandomAlbums,
-} from '../redux'
+} from '../store'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 
 const mockLibrary = {

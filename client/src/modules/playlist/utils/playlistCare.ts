@@ -1,4 +1,4 @@
-import { LibraryStateType } from '../../library/redux'
+import { LibraryStateType } from '../../library/store'
 
 /**
  * Given a track, tries to find the most similar tracks in the library based on track title, album

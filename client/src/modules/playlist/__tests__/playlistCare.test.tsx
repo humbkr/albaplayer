@@ -1,4 +1,4 @@
-import { libraryInitialState, LibraryStateType } from '../../library/redux'
+import { libraryInitialState, LibraryStateType } from '../../library/store'
 import { findSimilarTracks } from '../utils/playlistCare'
 
 const mockLibraryState: LibraryStateType = {

@@ -6,7 +6,7 @@ import { ThemeProvider } from 'styled-components'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import themeDefault from '../../../themes/default'
 import RandomAlbums from '../components/RandomAlbums'
-import { dashboardInitialState } from '../redux'
+import { dashboardInitialState } from '../store'
 
 const mockLibrary = {
   artists: {

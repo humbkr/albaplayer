@@ -8,14 +8,14 @@ import {
   addTrack,
   playTrack,
   playTrackAfterCurrent,
-} from 'modules/player/redux'
+} from 'modules/player/store'
 import {
   playlistsSelector,
   playlistRemoveTrack,
   addTrack as addTrackToPlaylist,
-} from 'modules/playlist/redux'
+} from 'modules/playlist/store'
 import { useHistory } from 'react-router'
-import { search, setSearchFilter } from '../../browser/redux'
+import { search, setSearchFilter } from '../../browser/store'
 
 const PlaylistTrackContextMenu = () => {
   const playlists = useSelector((state: RootState) => playlistsSelector(state))

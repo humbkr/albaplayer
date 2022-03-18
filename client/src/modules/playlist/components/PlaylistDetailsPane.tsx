@@ -9,13 +9,13 @@ import {
   playTrack,
   playPlaylist,
   addPlaylist,
-} from 'modules/player/redux'
+} from 'modules/player/store'
 import ListItem from 'modules/playlist/components/ListItem'
 import {
   playlistRemoveTrack,
   playlistSelectTrack,
   playlistUpdateItems,
-} from 'modules/playlist/redux'
+} from 'modules/playlist/store'
 import PlaylistTrackList from './PlaylistTrackList'
 import PlaylistTrackContextMenu from './PlaylistTrackContextMenu'
 import PlaylistActionsMoreContextMenu from './PlaylistActionsMoreContextMenu'

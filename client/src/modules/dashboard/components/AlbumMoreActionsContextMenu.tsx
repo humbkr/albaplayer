@@ -8,11 +8,11 @@ import {
   addAlbum,
   playAlbum,
   playAlbumAfterCurrent,
-} from 'modules/player/redux'
+} from 'modules/player/store'
 import {
   playlistsSelector,
   addAlbum as addAlbumToPlaylist,
-} from 'modules/playlist/redux'
+} from 'modules/playlist/store'
 
 const ConditionalItem: React.FC<any> = ({ children, ...props }) => {
   if (!props.propsFromTrigger.displayAllActions) {

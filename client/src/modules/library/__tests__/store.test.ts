@@ -6,12 +6,9 @@ import librarySlice, {
   LibraryStateType,
   initLibrary,
   fetchLibrary,
-  initStart,
-  initFailure,
-  initSuccess,
   setLastScan,
   shouldFetchLibrary,
-} from '../redux'
+} from '../store'
 import { api } from '../../../api'
 
 jest.mock('api')
@@ -122,113 +119,122 @@ const mockLibraryState: LibraryStateType = {
 }
 
 describe('library (redux)', () => {
-  describe('reducer', () => {
+  describe('reducers', () => {
     it('should handle librarySlice initial state', () => {
       // @ts-ignore
       expect(librarySlice(undefined, {})).toEqual(libraryInitialState)
     })
-  })
 
-  it('should handle initStart action', () => {
-    const testState: LibraryStateType = {
-      ...libraryInitialState,
-    }
+    it('should handle setLastScan action', () => {
+      const mockState: LibraryStateType = { ...libraryInitialState }
 
-    expect(
-      librarySlice(testState, {
-        type: initStart.type,
+      expect(
+        librarySlice(mockState, {
+          type: setLastScan.type,
+          payload: '20200417143543',
+        })
+      ).toEqual({
+        ...mockState,
+        lastScan: '20200417143543',
       })
-    ).toEqual({
-      ...testState,
-      isFetching: true,
     })
   })
 
-  it('should handle initSuccess action', () => {
-    const testState: LibraryStateType = {
-      ...libraryInitialState,
-    }
+  describe('extra reducers', () => {
+    describe('fetchLibrary', () => {
+      it('updates state correctly for the pending action', () => {
+        const mockState: LibraryStateType = { ...libraryInitialState }
 
-    const expectedAlbums: { [id: string]: Album } = {}
-    Object.values(mockLibraryState.albums)
-      .map((item) => ({
-        ...item,
-        artistName: item.artistId
-          ? mockLibraryState.artists[item.artistId].name
-          : '',
-      }))
-      .forEach((item) => {
-        expectedAlbums[item.id] = item
+        expect(
+          librarySlice(mockState, {
+            type: fetchLibrary.pending.type,
+            payload: null,
+          })
+        ).toEqual({
+          ...mockState,
+          isFetching: true,
+        })
       })
 
-    expect(
-      librarySlice(testState, {
-        type: initSuccess.type,
-        payload: {
-          artists: Object.values(mockLibraryState.artists),
-          albums: Object.values(mockLibraryState.albums),
-          tracks: Object.values(mockLibraryState.tracks),
-        },
+      it('updates state correctly for the fulfilled action', () => {
+        const mockState: LibraryStateType = { ...libraryInitialState }
+
+        const expectedAlbums: { [id: string]: Album } = {}
+        // Need to add artist name to albums.
+        Object.values(mockLibraryState.albums)
+          .map((item) => ({
+            ...item,
+            artistName: item.artistId
+              ? mockLibraryState.artists[item.artistId].name
+              : '',
+          }))
+          .forEach((item) => {
+            expectedAlbums[item.id] = item
+          })
+
+        expect(
+          librarySlice(mockState, {
+            type: fetchLibrary.fulfilled.type,
+            payload: {
+              artists: Object.values(mockLibraryState.artists),
+              albums: Object.values(mockLibraryState.albums),
+              tracks: Object.values(mockLibraryState.tracks),
+            },
+          })
+        ).toEqual({
+          ...mockState,
+          isFetching: false,
+          isInitialized: true,
+          artists: mockLibraryState.artists,
+          albums: expectedAlbums,
+          tracks: mockLibraryState.tracks,
+        })
       })
-    ).toEqual({
-      ...testState,
-      isFetching: false,
-      isInitialized: true,
-      artists: mockLibraryState.artists,
-      // Need to add artist name.
-      albums: expectedAlbums,
-      tracks: mockLibraryState.tracks,
-    })
-  })
 
-  it('should handle initFailure action', () => {
-    const testState: LibraryStateType = {
-      ...libraryInitialState,
-      isFetching: true,
-      isInitialized: true,
-    }
+      it('updates state correctly for the rejected action', () => {
+        const mockState: LibraryStateType = {
+          ...libraryInitialState,
+          isFetching: true,
+          isInitialized: true,
+        }
 
-    expect(
-      librarySlice(testState, {
-        type: initFailure.type,
+        expect(
+          librarySlice(mockState, {
+            type: fetchLibrary.rejected.type,
+            payload: null,
+          })
+        ).toEqual({
+          ...mockState,
+          isFetching: false,
+          isInitialized: false,
+          initHasFailed: true,
+        })
       })
-    ).toEqual({
-      ...testState,
-      isFetching: false,
-      isInitialized: false,
-      initHasFailed: true,
-    })
-  })
-
-  it('should handle setLastScan action', () => {
-    const testState: LibraryStateType = {
-      ...libraryInitialState,
-    }
-
-    expect(
-      librarySlice(testState, {
-        type: setLastScan.type,
-        payload: '20200417143543',
-      })
-    ).toEqual({
-      ...testState,
-      lastScan: '20200417143543',
     })
   })
 
   describe('initLibrary thunk', () => {
     it('should bypass shouldFetchLibrary() when force parameter is set', async () => {
+      api.getLibrary = jest
+        .fn()
+        .mockReturnValueOnce(new Promise((resolve) => resolve({ data: {} })))
+
       const store = makeMockStore({
         library: {
           ...libraryInitialState,
           isFetching: true,
         },
       })
-      const dispatch = jest.fn()
 
       // @ts-ignore
-      await initLibrary(true)(dispatch, store.getState)
-      expect(dispatch).toHaveBeenCalled()
+      await store.dispatch(initLibrary(true))
+
+      const actual = store.getActions()
+
+      expect(actual[0].type).toEqual(initLibrary.pending.type)
+      expect(actual[1].type).toEqual(fetchLibrary.pending.type)
+      expect(actual[2].type).toEqual(fetchLibrary.fulfilled.type)
+      expect(actual[3].type).toEqual(initLibrary.fulfilled.type)
     })
 
     it('should do nothing when shouldFetchLibrary() returns false and force is not set', async () => {
@@ -238,16 +244,27 @@ describe('library (redux)', () => {
           isFetching: true,
         },
       })
-      const dispatch = jest.fn()
 
       // @ts-ignore
-      await initLibrary()(dispatch, store.getState)
-      expect(dispatch).not.toHaveBeenCalled()
+      await store.dispatch(initLibrary())
+
+      const actual = store.getActions()
+
+      // Check that fetch thunk is not called.
+      expect(actual.length).toBe(2)
+      expect(actual[0].type).toEqual(initLibrary.pending.type)
+      expect(actual[1].type).toEqual(initLibrary.fulfilled.type)
     })
   })
 
   describe('fetchLibrary thunk', () => {
-    it('should dispatch correct actions when api call is successful', () => {
+    it('should dispatch correct actions when api call is successful', async () => {
+      api.getLibrary = jest.fn().mockImplementationOnce(
+        () => new Promise((resolve) => {
+          resolve(response)
+        })
+      )
+
       const store = makeMockStore()
 
       const response = {
@@ -261,41 +278,34 @@ describe('library (redux)', () => {
         },
       }
 
-      api.getLibrary = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
-      )
-
-      const expected = [
-        initStart(),
-        initSuccess(response.data),
-        setLastScan(response.data.variable.value),
-      ]
-
       // @ts-ignore
-      store.dispatch(fetchLibrary()).then(() => {
-        const actual = store.getActions()
-        expect(actual).toEqual(expected)
-      })
+      await store.dispatch(fetchLibrary())
+
+      const actual = store.getActions()
+
+      expect(actual.length).toBe(3)
+      expect(actual[0].type).toEqual(fetchLibrary.pending.type)
+      expect(actual[1].type).toEqual(setLastScan.type)
+      expect(actual[2].type).toEqual(fetchLibrary.fulfilled.type)
     })
 
-    it('should dispatch correct actions when api call is unsuccessful', () => {
-      const store = makeMockStore()
-
+    it('should dispatch correct actions when api call is unsuccessful', async () => {
       api.getLibrary = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve, reject) => {
+        () => new Promise((_, reject) => {
           reject()
         })
       )
 
-      const expected = [initStart(), initFailure()]
+      const store = makeMockStore()
 
       // @ts-ignore
-      store.dispatch(fetchLibrary()).then(() => {
-        const actual = store.getActions()
-        expect(actual).toEqual(expected)
-      })
+      await store.dispatch(fetchLibrary())
+
+      const actual = store.getActions()
+
+      expect(actual.length).toBe(2)
+      expect(actual[0].type).toEqual(fetchLibrary.pending.type)
+      expect(actual[1].type).toEqual(fetchLibrary.rejected.type)
     })
   })
 

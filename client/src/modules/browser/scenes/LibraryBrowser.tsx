@@ -5,7 +5,7 @@ import TracksPaneContainer from 'modules/browser/components/TracksPaneContainer'
 import ArtistsPaneContainer from 'modules/browser/components/ArtistsPaneContainer'
 import AlbumsPaneContainer from 'modules/browser/components/AlbumsPaneContainer'
 import LibraryBrowserSearchBar from 'modules/browser/components/LibraryBrowserSearchBar'
-import { libraryBrowserInit } from 'modules/browser/redux'
+import { libraryBrowserInit } from 'modules/browser/store'
 
 /**
  * Library browser screen.
