@@ -9,7 +9,7 @@ import {
   playerToggleRepeat,
   playerSetVolume,
   playerSetProgress,
-} from 'modules/player/redux'
+} from '../store'
 import { constants as APIConstants } from '../../../api'
 
 const Audio = (Player) => {
