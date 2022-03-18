@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import libraryReducer from '../modules/library/redux'
-import libraryBrowserReducer from '../modules/browser/redux'
-import playerReducer from '../modules/player/redux'
-import playlistReducer from '../modules/playlist/redux'
-import settingsReducer from '../modules/settings/redux'
-import dashboardReducer from '../modules/dashboard/redux'
+import libraryReducer from '../modules/library/store'
+import libraryBrowserReducer from '../modules/browser/store'
+import playerReducer from '../modules/player/store'
+import playlistReducer from '../modules/playlist/store'
+import settingsReducer from '../modules/settings/store'
+import dashboardReducer from '../modules/dashboard/store'
 
 const settingsPersistConfig = {
   key: 'settings',

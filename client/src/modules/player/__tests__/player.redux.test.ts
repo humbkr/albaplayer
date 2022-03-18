@@ -1,5 +1,5 @@
 import playerSlice, { playerInitialState } from '../player.redux'
-import { libraryInitialState, LibraryStateType } from '../../library/redux'
+import { libraryInitialState, LibraryStateType } from '../../library/store'
 import { PlayerPlaybackMode } from '../utils'
 
 const {

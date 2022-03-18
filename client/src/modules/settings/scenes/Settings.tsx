@@ -10,7 +10,7 @@ import {
   updateLibrary,
   eraseLibrary,
   setTheme,
-} from 'modules/settings/redux'
+} from 'modules/settings/store'
 import SelectList from 'modules/settings/components/SelectList'
 import info from '../../../../package.json'
 

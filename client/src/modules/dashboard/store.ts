@@ -39,7 +39,7 @@ export const getRandomAlbums = (): AppThunk => (dispatch, getState) => {
     const randomIndex = getRandomInt(0, albums.length)
     if (!alreadyPicked.includes(randomIndex)) {
       const album = { ...albums[randomIndex] }
-      album.artist = library.artists[album.artistId]
+      album.artist = library.artists[album.artistId as string]
 
       randomAlbums.push(album)
       alreadyPicked.push(randomIndex)

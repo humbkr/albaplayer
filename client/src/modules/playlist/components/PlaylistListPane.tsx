@@ -2,13 +2,13 @@ import React, { FunctionComponent, Ref, useState } from 'react'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
-import { addTrack, playTrack } from 'modules/player/redux'
+import { addTrack, playTrack } from 'modules/player/store'
 import PlaylistsListHeader from 'modules/playlist/components/PlaylistListHeader'
 import PlaylistList from 'modules/playlist/components/PlaylistList'
 import {
   playlistsSelector,
   playlistSelectPlaylist,
-} from 'modules/playlist/redux'
+} from 'modules/playlist/store'
 // eslint-disable-next-line import/no-cycle
 import PlaylistContextMenu from 'modules/playlist/components/PlaylistContextMenu'
 import ListItem from 'modules/playlist/components/ListItem'

@@ -5,9 +5,9 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import themeDefault from '../../../themes/default'
-import { dashboardInitialState } from '../redux'
+import { dashboardInitialState } from '../store'
 import RecentlyAddedAlbums from '../components/RecentlyAddedAlbums'
-import { libraryInitialState } from '../../library/redux'
+import { libraryInitialState } from '../../library/store'
 
 const mockLibrary = {
   artists: {

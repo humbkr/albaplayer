@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router'
-import { search, setSearchFilter } from '../redux'
+import { search, setSearchFilter } from '../store'
 
 function useSearch() {
   const dispatch = useDispatch()

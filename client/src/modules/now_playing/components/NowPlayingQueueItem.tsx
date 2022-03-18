@@ -7,7 +7,7 @@ import {
   playerTogglePlayPause,
   queueRemoveTrack,
   setItemFromQueue,
-} from 'modules/player/redux'
+} from 'modules/player/store'
 
 const NowPlayingQueueItem: FunctionComponent<{
   item: QueueItemDisplay

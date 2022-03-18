@@ -2,7 +2,7 @@ import React, { forwardRef, Ref } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { DebounceInput } from 'react-debounce-input'
-import { search, setSearchFilter } from 'modules/browser/redux'
+import { search, setSearchFilter } from 'modules/browser/store'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 
 const LibraryBrowserSearchBar: React.FC<{

@@ -259,8 +259,8 @@ export const addAlbum = ({
   // Hydrate tracks with album and artist info.
   const augmentedTracks = filteredTracks.map((track) => ({
     ...track,
-    artist: library.artists[track.artistId],
-    album: library.albums[track.albumId],
+    artist: library.artists[track.artistId as string],
+    album: library.albums[track.albumId as string],
   }))
 
   if (playlistId) {
@@ -291,8 +291,8 @@ export const addArtist = ({
   // Hydrate tracks with album and artist info.
   const augmentedTracks = filteredTracks.map((track) => ({
     ...track,
-    artist: library.artists[track.artistId],
-    album: library.albums[track.albumId],
+    artist: library.artists[track.artistId as string],
+    album: library.albums[track.albumId as string],
   }))
 
   if (playlistId) {

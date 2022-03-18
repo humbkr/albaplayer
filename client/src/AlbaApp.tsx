@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import Sidebar from 'common/components/Sidebar'
 import MainPanel from 'common/components/MainPanel'
-import { initLibrary } from './modules/library/redux'
+import { initLibrary } from './modules/library/store'
 import MaterialIconsWoff2 from './common/assets/fonts/MaterialIcons-Regular.woff2'
 import MaterialIconsWoff from './common/assets/fonts/MaterialIcons-Regular.woff'
 import MaterialIconsTtf from './common/assets/fonts/MaterialIcons-Regular.ttf'
@@ -20,7 +20,7 @@ function AlbaApp() {
   const theme = getTheme(currentThemeName)
 
   useEffect(() => {
-    dispatch(initLibrary())
+    dispatch(initLibrary(false))
   }, [dispatch])
 
   return (

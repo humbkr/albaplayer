@@ -8,8 +8,8 @@ import {
   addPlaylist,
   playPlaylist,
   playPlaylistAfterCurrent,
-} from 'modules/player/redux'
-import { addPlaylist as addPlaylistToPlaylist } from 'modules/playlist/redux'
+} from 'modules/player/store'
+import { addPlaylist as addPlaylistToPlaylist } from 'modules/playlist/store'
 import { EditPlaylistContext } from '../scenes/Playlists'
 
 const PlaylistContextMenu = () => {

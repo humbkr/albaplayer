@@ -2,14 +2,14 @@ import React, { FunctionComponent, Ref, useState } from 'react'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
-import { addAlbum, playAlbum } from 'modules/player/redux'
+import { addAlbum, playAlbum } from 'modules/player/store'
 import LibraryBrowserList from 'modules/browser/components/LibraryBrowserList'
 import AlbumTeaser from 'modules/browser/components/AlbumTeaser'
 import {
   getAlbumsList,
   libraryBrowserSortAlbums,
   selectAlbum,
-} from 'modules/browser/redux'
+} from 'modules/browser/store'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import AlbumContextMenu from './AlbumContextMenu'

@@ -9,13 +9,13 @@ import {
   setItemFromQueue,
   playerTogglePlayPause,
   queueRemoveTrack,
-} from 'modules/player/redux'
+} from 'modules/player/store'
 import {
   playlistsSelector,
   addTrack as addTrackToPlaylist,
-} from 'modules/playlist/redux'
+} from 'modules/playlist/store'
 import { useHistory } from 'react-router'
-import { search, setSearchFilter } from '../../browser/redux'
+import { search, setSearchFilter } from '../../browser/store'
 
 interface MenuItemEventHandlerTrack extends MenuItemEventHandler {
   props: {

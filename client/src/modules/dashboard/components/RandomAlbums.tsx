@@ -4,7 +4,7 @@ import AlbumTeaser from 'modules/dashboard/components/AlbumTeaser'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
-import { getRandomAlbums } from '../redux'
+import { getRandomAlbums } from '../store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
 const RandomAlbums: React.FC = () => {

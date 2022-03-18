@@ -8,12 +8,12 @@ import {
   addTrack,
   playTrack,
   playTrackAfterCurrent,
-} from 'modules/player/redux'
+} from 'modules/player/store'
 import {
   playlistsSelector,
   addTrack as addTrackToPlaylist,
-} from 'modules/playlist/redux'
-import { search, setSearchFilter } from '../redux'
+} from 'modules/playlist/store'
+import { search, setSearchFilter } from '../store'
 
 const TrackContextMenu = () => {
   const playlists = useSelector((state: RootState) => playlistsSelector(state))

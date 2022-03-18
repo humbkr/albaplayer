@@ -2,7 +2,7 @@ import React, { FunctionComponent, Ref, useState } from 'react'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
-import { addTrack, playTrack } from 'modules/player/redux'
+import { addTrack, playTrack } from 'modules/player/store'
 import LibraryBrowserList from './LibraryBrowserList'
 import TrackTeaser from './TrackTeaser'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
@@ -12,7 +12,7 @@ import {
   getTracksList,
   libraryBrowserSortTracks,
   libraryBrowserSelectTrack,
-} from '../redux'
+} from '../store'
 
 interface Props {
   switchPaneHandler: (e: React.KeyboardEvent) => void

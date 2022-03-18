@@ -6,7 +6,7 @@ import themeDefault from 'themes/default'
 import userEvent from '@testing-library/user-event'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import LibraryBrowserSearchBar from '../components/LibraryBrowserSearchBar'
-import { browserInitialState } from '../redux'
+import { browserInitialState } from '../store'
 
 describe('LibraryBrowserSearchBar', () => {
   beforeEach(() => jest.clearAllMocks())

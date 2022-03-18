@@ -8,12 +8,12 @@ import {
   addAlbum,
   playAlbum,
   playAlbumAfterCurrent,
-} from 'modules/player/redux'
+} from 'modules/player/store'
 import {
   playlistsSelector,
   addAlbum as addAlbumToPlaylist,
-} from 'modules/playlist/redux'
-import { search, setSearchFilter } from '../redux'
+} from 'modules/playlist/store'
+import { search, setSearchFilter } from '../store'
 
 const AlbumContextMenu = () => {
   const playlists = useSelector((state: RootState) => playlistsSelector(state))

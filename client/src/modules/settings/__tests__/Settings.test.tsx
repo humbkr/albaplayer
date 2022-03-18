@@ -8,7 +8,7 @@ import configureMockStore from 'redux-mock-store'
 import themeDefault from 'themes/default'
 import Settings from '../scenes/Settings'
 import info from '../../../../package.json'
-import { initialState } from '../redux'
+import { initialState } from '../store'
 
 const mockStore = configureMockStore([thunk])
 const makeMockStore = (customState: any = {}) => mockStore({
