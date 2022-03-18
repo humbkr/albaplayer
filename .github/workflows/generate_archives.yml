@@ -90,7 +90,7 @@ jobs:
       - name: Upload archives to server
         env:
           SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
-        uses: mdallasanta/ssh-scp-deploy@1.1.0
+        uses: mdallasanta/ssh-scp-deploy@v1.1.0
         with:
           local: './dist'
           remote: ${{ secrets.REMOTE_UPLOAD_PATH }}${{ env.SOURCE_TAG }}
