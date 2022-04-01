@@ -45,7 +45,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  deploy_demo:
+  deploy_rc:
     runs-on: ubuntu-latest
     needs: build_and_push_image
     steps:
