@@ -3,7 +3,7 @@ name: Generate archives
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   generate_archives:
@@ -23,7 +23,7 @@ jobs:
       - name: Generate build files
         uses: thatisuday/go-cross-build@v1
         with:
-          platforms: 'linux/amd64, darwin/amd64, windows/amd64'
+          platforms: 'linux/amd64, darwin/amd64, darwin/arm64, windows/amd64'
           package: 'server'
           name: 'albaplayer'
           compress: 'false'
@@ -90,7 +90,7 @@ jobs:
       - name: Upload archives to server
         env:
           SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
-        uses: mdallasanta/ssh-scp-deploy@1.1.0
+        uses: mdallasanta/ssh-scp-deploy@v1.1.0
         with:
           local: './dist'
           remote: ${{ secrets.REMOTE_UPLOAD_PATH }}${{ env.SOURCE_TAG }}
