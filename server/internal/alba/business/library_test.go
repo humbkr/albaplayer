@@ -1,10 +1,10 @@
 package business
 
 import (
-	"testing"
-	"github.com/stretchr/testify/suite"
-	"github.com/stretchr/testify/assert"
 	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"testing"
 )
 
 type ArtistInteractorTestSuite struct {
@@ -26,14 +26,18 @@ func (suite *ArtistInteractorTestSuite) SetupSuite() {
 
 func (suite *ArtistInteractorTestSuite) TestGetArtist() {
 	// Test artist retrieval.
-	artist, err := suite.Library.GetArtist(1)
+	artist, err := suite.Library.GetArtist(1, false)
 	assert.Nil(suite.T(), err)
 	assert.NotEmpty(suite.T(), artist.Id)
+	assert.Empty(suite.T(), artist.Albums)
+
+	// Test hydrated artist retrieval
+	artist, err = suite.Library.GetArtist(1, true)
 	// Make sure artist has been hydrated.
 	assert.NotEmpty(suite.T(), artist.Albums)
 
-	// Test to get a non existing artist.
-	artist, err = suite.Library.GetArtist(99)
+	// Test to get a non-existing artist.
+	artist, err = suite.Library.GetArtist(99, false)
 	assert.NotNil(suite.T(), err)
 }
 
@@ -125,13 +129,17 @@ func (suite *AlbumInteractorTestSuite) SetupSuite() {
 
 func (suite *AlbumInteractorTestSuite) TestGetAlbum() {
 	// Test album retrieval.
-	album, err := suite.Library.GetAlbum(1)
+	album, err := suite.Library.GetAlbum(1, false)
 	assert.Nil(suite.T(), err)
 	assert.NotEmpty(suite.T(), album.Id)
+	assert.Empty(suite.T(), album.Tracks)
+
+	// Test hydrated album retrieval.
+	album, err = suite.Library.GetAlbum(1, true)
 	assert.NotEmpty(suite.T(), album.Tracks)
 
 	// Test to get a non existing album.
-	album, err = suite.Library.GetAlbum(99)
+	album, err = suite.Library.GetAlbum(99, false)
 	assert.NotNil(suite.T(), err)
 }
 

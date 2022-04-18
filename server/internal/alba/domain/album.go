@@ -7,7 +7,5 @@ type Album struct {
 	ArtistId  int    `db:"artist_id"`
 	CoverId   int    `db:"cover_id"`
 	DateAdded int64  `db:"created_at"`
-	Tracks    Tracks `db:"-"`
+	Tracks    []Track `db:"-"`
 }
-
-type Albums []Album

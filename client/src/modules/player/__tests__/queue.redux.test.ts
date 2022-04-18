@@ -20,6 +20,7 @@ describe('queue reducer', () => {
       {
         id: '1',
         title: 'Track 1',
+        src: '/stream/1',
         number: 1,
         disc: '',
         duration: 123,
@@ -28,6 +29,7 @@ describe('queue reducer', () => {
       {
         id: '2',
         title: 'Track 2',
+        src: '/stream/2',
         number: 2,
         disc: '',
         duration: 124,
@@ -55,6 +57,7 @@ describe('queue reducer', () => {
           track: {
             id: '1',
             title: 'Track 1',
+            src: '/stream/1',
             number: 1,
             disc: '',
             duration: 123,
@@ -65,6 +68,7 @@ describe('queue reducer', () => {
           track: {
             id: '2',
             title: 'Track 2',
+            src: '/stream/2',
             number: 2,
             disc: '',
             duration: 124,
@@ -87,6 +91,7 @@ describe('queue reducer', () => {
           track: {
             id: '2',
             title: 'Track 2',
+            src: '/stream/2',
             number: 2,
             disc: '',
             duration: 124,
@@ -106,6 +111,7 @@ describe('queue reducer', () => {
           track: {
             id: '1',
             title: 'Track 1',
+            src: '/stream/1',
             number: 1,
             disc: '',
             duration: 123,
@@ -131,6 +137,7 @@ describe('queue reducer', () => {
           track: {
             id: '1',
             title: 'Track 1',
+            src: '/stream/1',
             number: 1,
             disc: '',
             duration: 123,
@@ -187,6 +194,7 @@ describe('queue reducer', () => {
           track: {
             id: '1',
             title: 'Track 1',
+            src: '/stream/1',
             number: 1,
             disc: '',
             duration: 123,
@@ -197,6 +205,7 @@ describe('queue reducer', () => {
           track: {
             id: '2',
             title: 'Track 2',
+            src: '/stream/2',
             number: 2,
             disc: '',
             duration: 124,
@@ -210,6 +219,7 @@ describe('queue reducer', () => {
       {
         id: '3',
         title: 'Track 3',
+        src: '/stream/3',
         number: 3,
         disc: '',
         duration: 123,
@@ -218,6 +228,7 @@ describe('queue reducer', () => {
       {
         id: '4',
         title: 'Track 4',
+        src: '/stream/4',
         number: 4,
         disc: '',
         duration: 124,

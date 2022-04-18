@@ -3,19 +3,19 @@ package interfaces
 import (
 	"database/sql"
 	"fmt"
+	"github.com/markbates/pkger"
+	migrate "github.com/rubenv/sql-migrate"
+	"github.com/spf13/viper"
 	"log"
+	"os"
 
 	"github.com/go-gorp/gorp"
 	"github.com/humbkr/albaplayer/internal/alba/business"
 	"github.com/humbkr/albaplayer/internal/alba/domain"
-	"github.com/markbates/pkger"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/rubenv/sql-migrate"
 )
 
-/**
-Interface to a datasource to abstract the underlying storage mecanism.
- */
+// Datasource is an interface to a datasource to abstract the underlying storage mechanism.
 type Datasource interface {
 	Exec(query string, args ...interface{}) (sql.Result, error)
 	SelectOne(holder interface{}, query string, args ...interface{}) error
@@ -26,9 +26,7 @@ type Datasource interface {
 	Delete(list ...interface{}) (int64, error)
 }
 
-/**
-Initialiase the application main datasource.
- */
+// InitAlbaDatasource initialises the application main datasource.
 func InitAlbaDatasource(dbDriver string, dbFile string) (ds Datasource, err error) {
 	connection, err := sql.Open(dbDriver, dbFile)
 	if err != nil {
@@ -46,12 +44,17 @@ func InitAlbaDatasource(dbDriver string, dbFile string) (ds Datasource, err erro
 
 	n, err := migrate.Exec(connection, "sqlite3", migrations, migrate.Up)
 	if err != nil {
-		return
+		fmt.Printf("WARNING: unable to apply migrations")
 	}
 	fmt.Printf("Applied %d migrations!\n", n)
 
 	// Construct a gorp DbMap.
 	dbmap := &gorp.DbMap{Db: connection, Dialect: gorp.SqliteDialect{}}
+
+	if viper.GetBool("DevMode.Enabled") {
+		// Log SQL queries
+		dbmap.TraceOn("[gorp]", log.New(os.Stdout, "GORP:", log.Lmicroseconds))
+	}
 
 	// Bind tables to objects.
 	dbmap.AddTableWithName(domain.Artist{}, "artists").SetKeys(true, "Id").AddIndex("ArtistNameIndex", "nil", []string{"name"})

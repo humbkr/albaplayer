@@ -41,11 +41,11 @@ const initLibrary = createAsyncThunk(
 const fetchLibrary = createAsyncThunk('library/fetch', async (_, thunkAPI) => {
   const response = await api.getLibrary()
 
-  if (response.data.variable) {
+  if (response?.data.variable?.value) {
     thunkAPI.dispatch(setLastScan(response.data.variable.value))
   }
 
-  return response.data
+  return response?.data
 })
 
 const librarySlice = createSlice({
@@ -60,54 +60,38 @@ const librarySlice = createSlice({
     builder.addCase(fetchLibrary.pending, (state) => {
       state.isFetching = true
     })
-    builder.addCase(
-      fetchLibrary.fulfilled,
-      (
-        state,
-        action: PayloadAction<{
-          artists: Artist[]
-          albums: Album[]
-          tracks: Track[]
-        }>
-      ) => {
-        const data = action.payload
+    builder.addCase(fetchLibrary.fulfilled, (state, action) => {
+      const data = action.payload
 
-        // Here we have to make up for the fact that we cannot request albums with artist names
-        // from the backend without severe performance penalty. We have to populate the information
-        // client-side from the artists list we got from the backend.
-        const hydratedAlbums: Album[] = data.albums.map((album) => {
-          const artists = data.artists.filter(
-            (artist) => album.artistId === artist.id
-          )
-          let artistName = ''
-          if (artists.length > 0) {
-            artistName = artists[0].name
-          }
+      // Transform the lists into objects.
+      const artists: { [id: string]: Artist } = {}
+      const albums: { [id: string]: Album } = {}
+      const tracks: { [id: string]: Track } = {}
 
-          return { ...album, artistName }
-        })
-
-        // Transform the lists into objects.
-        const artists: { [id: string]: Artist } = {}
-        const albums: { [id: string]: Album } = {}
-        const tracks: { [id: string]: Track } = {}
+      if (data?.artists) {
         data.artists.forEach((item) => {
           artists[item.id] = item
         })
-        hydratedAlbums.forEach((item) => {
+      }
+
+      if (data?.albums) {
+        data.albums.forEach((item) => {
           albums[item.id] = item
         })
+      }
+
+      if (data?.tracks) {
         data.tracks.forEach((item) => {
           tracks[item.id] = item
         })
-
-        state.isFetching = false
-        state.isInitialized = true
-        state.artists = artists
-        state.albums = albums
-        state.tracks = tracks
       }
-    )
+
+      state.isFetching = false
+      state.isInitialized = true
+      state.artists = artists
+      state.albums = albums
+      state.tracks = tracks
+    })
     builder.addCase(fetchLibrary.rejected, (state) => {
       state.isFetching = false
       state.isInitialized = false

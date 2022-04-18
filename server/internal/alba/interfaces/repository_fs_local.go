@@ -77,7 +77,7 @@ func (r LocalFilesystemRepository) ScanMediaFiles(path string) (processed int, a
 
 	// Get the artist id of "Various artists" (always created before we start scanning).
 	var variousArtistsId int
-	var entities domain.Artists
+	var entities []domain.Artist
 	_, transErr := dbTransaction.Select(&entities, "SELECT * FROM artists WHERE name = ?", business.LibraryDefaultCompilationArtist)
 	if transErr == nil {
 		if len(entities) > 0 {
@@ -244,8 +244,8 @@ func processArtist(dbTransaction *gorp.Transaction, metadata *mediaMetadata) (id
 	if metadata.Artist != "" {
 		artist := domain.Artist{}
 
-		// See if the artist exists and if so instanciate it with existing data.
-		var entities domain.Artists
+		// See if the artist exists and if so instantiate it with existing data.
+		var entities []domain.Artist
 		// TODO Bad! Persistance layer should be abstracted!
 		_, transErr := dbTransaction.Select(&entities, "SELECT * FROM artists WHERE name = ?", metadata.Artist)
 		if transErr == nil {
@@ -281,8 +281,8 @@ func processArtist(dbTransaction *gorp.Transaction, metadata *mediaMetadata) (id
 func processAlbum(dbTransaction *gorp.Transaction, metadata *mediaMetadata, artistId int, coverId int) (id int, err error) {
 	if metadata.Album != "" {
 		album := domain.Album{}
-		// See if the album exists and if so instanciate it with existing data.
-		var entities domain.Albums
+		// See if the album exists and if so instantiate it with existing data.
+		var entities []domain.Album
 		// TODO Bad! Persistance layer should be abstracted!
 		_, transErr := dbTransaction.Select(&entities, "SELECT * FROM albums WHERE title = ? AND artist_id = ?", metadata.Album, artistId)
 		if transErr == nil {
@@ -322,8 +322,8 @@ func processAlbum(dbTransaction *gorp.Transaction, metadata *mediaMetadata, arti
 func processTrack(dbTransaction *gorp.Transaction, metadata *mediaMetadata, artistId int, albumId int, coverId int) (id int, err error) {
 	track := domain.Track{}
 
-	// See if the track exists and if so instanciate it with existing data.
-	var entities domain.Tracks
+	// See if the track exists and if so instantiate it with existing data.
+	var entities []domain.Track
 	// TODO Bad! Persistance layer should be abstracted!
 	_, transErr := dbTransaction.Select(&entities, "SELECT * FROM tracks WHERE path = ?", metadata.Path)
 	if transErr == nil && len(entities) > 0 {

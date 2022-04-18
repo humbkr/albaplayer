@@ -17,6 +17,4 @@ func (lr LibraryDbRepository) Erase() {
 	lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'albums'")
 	lr.AppContext.DB.Exec("DELETE FROM artists")
 	lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'artists'")
-	lr.AppContext.DB.Exec("DELETE FROM variables")
-	lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'variables'")
 }

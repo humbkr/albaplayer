@@ -8,5 +8,3 @@ type Cover struct {
 	Ext string	 	`db:"-"`
 	Content []byte 	`db:"-"`
 }
-
-type Covers []Cover

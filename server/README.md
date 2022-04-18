@@ -22,6 +22,14 @@ This project mostly follows [https://github.com/golang-standards/project-layout]
 In terms of go packages structure, it follows the concepts of Clean Architecture: 
 [http://manuel.kiessling.net/2012/09/28/applying-the-clean-architecture-to-go-applications/](http://manuel.kiessling.net/2012/09/28/applying-the-clean-architecture-to-go-applications/)
 
+**GraphQL**
+This project uses gqlgen.
+
+To generate the new code after a schema update, run
+```shell
+go run github.com/99designs/gqlgen generate
+```
+
 #### Docker
 
 A docker image is provided for development purposes, if you don't want to install the dev stack on your machine.   

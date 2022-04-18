@@ -13,5 +13,3 @@ type Track struct {
 	Path      string `db:"path"` // Mandatory.
 	DateAdded int64  `db:"created_at"`
 }
-
-type Tracks []Track

@@ -34,6 +34,9 @@ const store = configureStore({
       // Ignore non serializable data for redux-persist actions.
       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
     },
+    // Note: if you want to use a huge library in development, uncomment the following lines.
+    // serializableCheck: false,
+    // immutableCheck: false,
   }),
   devTools: process.env.NODE_ENV !== 'production',
 })

@@ -2,17 +2,21 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/humbkr/albaplayer/internal/alba/business"
+	"github.com/humbkr/albaplayer/internal/alba/interfaces/graph"
+	"github.com/humbkr/albaplayer/internal/alba/interfaces/graph/generated"
+	"github.com/humbkr/albaplayer/internal/alba/version"
 	"io"
 	"log"
 	"mime"
 	"net/http"
 	"path/filepath"
 
-	gqlHandler "github.com/graphql-go/handler"
 	"github.com/humbkr/albaplayer/internal/alba"
 	"github.com/humbkr/albaplayer/internal/alba/interfaces"
 	"github.com/markbates/pkger"
-	"github.com/mnmtanish/go-graphiql"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -28,22 +32,30 @@ var serveCmd = &cobra.Command{
 	Long:  `Launch all services, create all endpoints, and serve UI web app.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		libraryInteractor := alba.InitApp()
+		settingsInteractor := business.ClientSettingsInteractor{}
 
-		// Initialize GraphQL stuff.
-		graphQLInteractor := interfaces.NewGraphQLInteractor(&libraryInteractor)
+		// Create the graphql handler
+		graphQLHandler := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{ Resolvers: &graph.Resolver{
+			Library:        &libraryInteractor,
+			ClientSettings: &settingsInteractor,
+			Version:        version.Version,
+		} }))
 
-		// Create a graphl-go HTTP handler with our previously defined schema
-		// and set it to return pretty JSON output.
-		graphQLHandler := gqlHandler.New(&gqlHandler.Config{
-			Schema: &graphQLInteractor.Schema,
-			Pretty: true,
-		})
+		// Create graphql data loaders for performance
+		dataLoaders := graph.NewDataLoaders(&libraryInteractor)
+
+		// Wrap the graphql handler with middleware to inject data loaders
+		dataloaderHandler := graph.Middleware(dataLoaders, graphQLHandler)
 
 		mux := http.NewServeMux()
 
-		// Serve a GraphQL endpoint at `/graphql`.
-		// Make the server handle cross-domain requests.
-		mux.Handle("/graphql", graphQLHandler)
+		// Serve the GraphQL endpoint at `/graphql`.
+		mux.Handle("/graphql", dataloaderHandler)
+
+		if viper.GetBool("DevMode.Enabled") {
+			// Serve graphiql.
+			mux.Handle("/graphiql", playground.Handler("GraphQL playground", "/graphql"))
+		}
 
 		// Serve media files streaming endpoint.
 		// Makes the server handle cross-domain requests.
@@ -86,12 +98,13 @@ var serveCmd = &cobra.Command{
 			fileServer.ServeHTTP(w, r)
 		})
 
-		if viper.GetBool("DevMode.Enabled") {
-			// Serve graphiql.
-			mux.HandleFunc("/graphiql", graphiql.ServeGraphiQL)
-		}
-
-		rootHandler := cors.Default().Handler(mux)
+		// Create the root handler with CORS to make the server handle cross-domain requests.
+		rootHandler := cors.New(cors.Options{
+			AllowCredentials: true,
+			// Enable Debugging for testing.
+			Debug: viper.GetBool("DevMode.Enabled"),
+			OptionsPassthrough: false,
+		}).Handler(mux)
 
 		// Launch the server.
 		if viper.GetBool("Server.Https.Enabled") {

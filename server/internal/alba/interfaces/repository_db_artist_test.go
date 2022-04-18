@@ -17,7 +17,7 @@ type ArtistRepoTestSuite struct {
 
 /**
 Go testing framework entry point.
- */
+*/
 func TestArtistRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(ArtistRepoTestSuite))
 }
@@ -43,15 +43,22 @@ func (suite *ArtistRepoTestSuite) SetupTest() {
 
 func (suite *ArtistRepoTestSuite) TestGet() {
 	// Test artist retrieval.
-	artist, err := suite.ArtistRepository.Get(2)
+	artist, err := suite.ArtistRepository.Get(2, false)
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), 2, artist.Id)
+	assert.Equal(suite.T(), "Tool", artist.Name)
+	assert.Empty(suite.T(), artist.Albums)
+
+	// Test hydrated artist retrieval.
+	artist, err = suite.ArtistRepository.Get(2, true)
 	assert.Nil(suite.T(), err)
 	assert.Equal(suite.T(), 2, artist.Id)
 	assert.Equal(suite.T(), "Tool", artist.Name)
 	assert.NotEmpty(suite.T(), artist.Albums)
 	assert.Len(suite.T(), artist.Albums, 1)
 
-	// Test to get a non existing artist.
-	artist, err = suite.ArtistRepository.Get(99)
+	// Test to get a non-existing artist.
+	artist, err = suite.ArtistRepository.Get(99, false)
 	assert.NotNil(suite.T(), err)
 }
 
@@ -104,7 +111,7 @@ func (suite *ArtistRepoTestSuite) TestSave() {
 	assert.Nil(suite.T(), err)
 	assert.NotEmpty(suite.T(), newArtist.Id)
 
-	insertedNewArtist, errInsert := suite.ArtistRepository.Get(newArtist.Id)
+	insertedNewArtist, errInsert := suite.ArtistRepository.Get(newArtist.Id, false)
 	assert.Nil(suite.T(), errInsert)
 	assert.Equal(suite.T(), newArtist.Id, insertedNewArtist.Id)
 	assert.Equal(suite.T(), "Insert new artist test", insertedNewArtist.Name)
@@ -116,29 +123,29 @@ func (suite *ArtistRepoTestSuite) TestSave() {
 	assert.Nil(suite.T(), errUpdate)
 	assert.NotEmpty(suite.T(), insertedNewArtist.Id)
 
-	updatedArtist, errGetMod := suite.ArtistRepository.Get(newArtist.Id)
+	updatedArtist, errGetMod := suite.ArtistRepository.Get(newArtist.Id, false)
 	assert.Nil(suite.T(), errGetMod)
 	assert.Equal(suite.T(), newArtist.Id, updatedArtist.Id)
 	assert.Equal(suite.T(), "Update artist test", updatedArtist.Name)
 	assert.Empty(suite.T(), updatedArtist.Albums)
 
-	// Test to insert a new artist with a prepopulated Id (= update a non existant artist).
+	// Test to insert a new artist with a pre-populated Id (= update a non-existent artist).
 	// Note: it seems gorp.Dbmap.Update() fails silently.
 	newArtistWithId := &domain.Artist{
-		Id: 55,
+		Id:   55,
 		Name: "New artist bogus id",
 	}
 
 	errBogusId := suite.ArtistRepository.Save(newArtistWithId)
 	assert.Nil(suite.T(), errBogusId)
- }
+}
 
 func (suite *ArtistRepoTestSuite) TestDelete() {
 	albumRepo := AlbumDbRepository{AppContext: suite.ArtistRepository.AppContext}
 	var artistId = 1
 
 	//Get artist to delete.
-	artist, err := suite.ArtistRepository.Get(artistId)
+	artist, err := suite.ArtistRepository.Get(artistId, false)
 	assert.Nil(suite.T(), err)
 
 	// Delete artist.
@@ -146,7 +153,7 @@ func (suite *ArtistRepoTestSuite) TestDelete() {
 	assert.Nil(suite.T(), err)
 
 	// Check artist has been removed from the database.
-	_, err = suite.ArtistRepository.Get(artistId)
+	_, err = suite.ArtistRepository.Get(artistId, false)
 	assert.NotNil(suite.T(), err)
 
 	// Check artist's albums have been removed too.
@@ -160,12 +167,12 @@ func (suite *ArtistRepoTestSuite) TestDelete() {
 	artistId = 2
 
 	// Get album to delete.
-	artistNoAlbums, err := suite.ArtistRepository.Get(artistId)
+	artistNoAlbums, err := suite.ArtistRepository.Get(artistId, true)
 	assert.Nil(suite.T(), err)
 	assert.NotEmpty(suite.T(), artistNoAlbums.Albums)
 
 	// Remove tracks from object.
-	artistNoAlbums.Albums = domain.Albums{}
+	artistNoAlbums.Albums = []domain.Album{}
 	assert.Empty(suite.T(), artistNoAlbums.Albums)
 
 	// Delete artist.
@@ -173,7 +180,7 @@ func (suite *ArtistRepoTestSuite) TestDelete() {
 	assert.Nil(suite.T(), err)
 
 	// Check album has been removed from the database.
-	_, err = suite.ArtistRepository.Get(artistId)
+	_, err = suite.ArtistRepository.Get(artistId, false)
 	assert.NotNil(suite.T(), err)
 
 	// Check album tracks have been removed too.

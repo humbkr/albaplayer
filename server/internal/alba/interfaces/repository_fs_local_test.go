@@ -2,13 +2,14 @@ package interfaces
 
 import (
 	"github.com/humbkr/albaplayer/internal/alba/business"
-	"github.com/stretchr/testify/suite"
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"github.com/humbkr/albaplayer/internal/alba/domain"
 	"github.com/spf13/viper"
-	"os"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"log"
+	"os"
+	"testing"
+	"time"
 )
 
 type LocalFSRepoTestSuite struct {
@@ -38,7 +39,7 @@ func (suite *LocalFSRepoTestSuite) SetupSuite() {
 		log.Fatal(err)
 	}
 
-	_, err = ds.Exec("INSERT INTO artists(id, name) VALUES(?, ?)", 1, business.LibraryDefaultCompilationArtist)
+	_, err = ds.Exec("INSERT INTO artists(id, name, created_at) VALUES(?, ?, ?)", 1, business.LibraryDefaultCompilationArtist, time.Now().Unix())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,7 +59,7 @@ func (suite *LocalFSRepoTestSuite) SetupTest() {}
 
 /*
 Blackbox tests.
- */
+*/
 
 func (suite *LocalFSRepoTestSuite) TestScanMediaFiles() {
 	// Test with non existing directory.
@@ -127,7 +128,6 @@ func (suite *LocalFSRepoTestSuite) TestScanMediaFiles() {
 	assert.Nil(suite.T(), errCompilationAlbumArtist)
 	assert.Equal(suite.T(), business.LibraryDefaultCompilationArtist, compilationAlbumArtist.Name)
 
-
 	// TODO test more, this is not exhaustive.
 }
 
@@ -147,13 +147,13 @@ func (suite *LocalFSRepoTestSuite) TestMediaFileExists() {
 
 /*
 Below are whitebox (internal) tests.
- */
+*/
 
 // TODO Cannot test these functions directly because gorp.Transaction is not abstracted.
-func (suite *LocalFSRepoTestSuite) TestProcessArtist() {}
-func (suite *LocalFSRepoTestSuite) TestProcessAlbum() {}
-func (suite *LocalFSRepoTestSuite) TestProcessTrack() {}
-func (suite *LocalFSRepoTestSuite) TestProcessCover() {}
+func (suite *LocalFSRepoTestSuite) TestProcessArtist()          {}
+func (suite *LocalFSRepoTestSuite) TestProcessAlbum()           {}
+func (suite *LocalFSRepoTestSuite) TestProcessTrack()           {}
+func (suite *LocalFSRepoTestSuite) TestProcessCover()           {}
 func (suite *LocalFSRepoTestSuite) TestWriteCoverFileInternal() {}
 
 func (suite *LocalFSRepoTestSuite) TestGetMetadataFromFile() {

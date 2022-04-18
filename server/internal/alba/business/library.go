@@ -28,30 +28,26 @@ type LibraryInteractor struct {
 	LibraryIsUpdating bool
 }
 
-// Gets an artist by id.
-//
+// GetArtist gets an artist by id.
 // If no artist found, returns an error.
-func (interactor *LibraryInteractor) GetArtist(artistId int) (domain.Artist, error) {
-	return interactor.ArtistRepository.Get(artistId)
+func (interactor *LibraryInteractor) GetArtist(artistId int, hydrate bool) (domain.Artist, error) {
+	return interactor.ArtistRepository.Get(artistId, hydrate)
 }
 
-// Gets an artist by name.
-//
+// GetArtistByName gets an artist by name.
 // If no artist found, returns an error.
 func (interactor *LibraryInteractor) GetArtistByName(artistName string) (domain.Artist, error) {
 	return interactor.ArtistRepository.GetByName(artistName)
 }
 
 
-// Gets all artists.
-//
+// GetAllArtists gets all artists.
 // If no artists found, returns an empty collection.
-func (interactor *LibraryInteractor) GetAllArtists(hydrate bool) (domain.Artists, error) {
+func (interactor *LibraryInteractor) GetAllArtists(hydrate bool) ([]domain.Artist, error) {
 	return interactor.ArtistRepository.GetAll(hydrate)
 }
 
-// Saves an artist.
-//
+// SaveArtist saves an artist.
 // Returns an error if the artist's name is empty.
 func (interactor *LibraryInteractor) SaveArtist(artist *domain.Artist) error {
 	if artist.Name == "" {
@@ -61,8 +57,7 @@ func (interactor *LibraryInteractor) SaveArtist(artist *domain.Artist) error {
 	return interactor.ArtistRepository.Save(artist)
 }
 
-// Deletes an artist.
-//
+// DeleteArtist deletes an artist.
 // Returns an error if no artistId provided.
 func (interactor *LibraryInteractor) DeleteArtist(artist *domain.Artist) error {
 	if artist.Id == 0 {
@@ -71,39 +66,35 @@ func (interactor *LibraryInteractor) DeleteArtist(artist *domain.Artist) error {
 	return interactor.ArtistRepository.Delete(artist)
 }
 
-// Checks if an artist exists or not.
+// ArtistExists checks if an artist exists or not.
 func (interactor *LibraryInteractor) ArtistExists(artistId int) bool {
 	return interactor.ArtistRepository.Exists(artistId)
 }
 
-// Gets an album from its id.
-//
+// GetAlbum gets an album from its id.
 // If no album found, returns an error.
-func (interactor *LibraryInteractor) GetAlbum(albumId int) (domain.Album, error) {
-	return interactor.AlbumRepository.Get(albumId)
+func (interactor *LibraryInteractor) GetAlbum(albumId int, hydrate bool) (domain.Album, error) {
+	return interactor.AlbumRepository.Get(albumId, hydrate)
 }
 
-// Gets all albums.
-//
+// GetAllAlbums gets all albums.
 // If no albums found, returns an empty collection.
-func (interactor *LibraryInteractor) GetAllAlbums(hydrate bool) (domain.Albums, error) {
+func (interactor *LibraryInteractor) GetAllAlbums(hydrate bool) ([]domain.Album, error) {
 	return interactor.AlbumRepository.GetAll(hydrate)
 }
 
-// Get all albums for a given artist.
-//
+// GetAlbumsForArtist get all albums for a given artist.
 // If hydrate == true, the albums tracks will be populated.
-// If the artist doesnt exists, return an error.
-func (interactor *LibraryInteractor) GetAlbumsForArtist(artistId int, hydrate bool) (domain.Albums, error) {
+// If the artist doesn't exist, return an error.
+func (interactor *LibraryInteractor) GetAlbumsForArtist(artistId int, hydrate bool) ([]domain.Album, error) {
 	if !interactor.ArtistExists(artistId) {
-		return domain.Albums{}, errors.New("cannot get albums: invalid artist ID")
+		return []domain.Album{}, errors.New("cannot get albums: invalid artist ID")
 	}
 	return interactor.AlbumRepository.GetAlbumsForArtist(artistId, hydrate)
 }
 
-// Saves an album.
-//
-// An album cannot be saved without a title or if the related artist, if any, doesn't exists.
+// SaveAlbum saves an album.
+// An album cannot be saved without a title or if the related artist, if any, doesn't exist.
 func (interactor *LibraryInteractor) SaveAlbum(album *domain.Album) error {
 	invalid := false
 	var message string
@@ -125,8 +116,7 @@ func (interactor *LibraryInteractor) SaveAlbum(album *domain.Album) error {
 	return interactor.AlbumRepository.Save(album)
 }
 
-// Deletes an album.
-//
+// DeleteAlbum deletes an album.
 // Returns an error if no albumId provided.
 func (interactor *LibraryInteractor) DeleteAlbum(album *domain.Album) error {
 	if album.Id == 0 {
@@ -136,39 +126,36 @@ func (interactor *LibraryInteractor) DeleteAlbum(album *domain.Album) error {
 	return interactor.AlbumRepository.Delete(album)
 }
 
-// Checks if an album exists or not.
+// AlbumExists checks if an album exists or not.
 func (interactor *LibraryInteractor) AlbumExists(albumId int) bool {
 	return interactor.AlbumRepository.Exists(albumId)
 }
 
-// Gets atrack from its id.
-//
+// GetTrack gets a track from its id.
 // If no track found, returns an error.
 func (interactor *LibraryInteractor) GetTrack(trackId int) (domain.Track, error) {
 	return interactor.TrackRepository.Get(trackId)
 }
 
-// Gets all tracks.
-//
+// GetAllTracks gets all tracks.
 // If no tracks found, returns an empty collection.
-func (interactor *LibraryInteractor) GetAllTracks() (domain.Tracks, error) {
+func (interactor *LibraryInteractor) GetAllTracks() ([]domain.Track, error) {
 	return interactor.TrackRepository.GetAll()
 }
 
-// Get all tracks for a given album.
+// GetTracksForAlbum gets all tracks for a given album.
 //
 // If the album doesn't exists, return an error
-func (interactor *LibraryInteractor) GetTracksForAlbum(albumId int) (domain.Tracks, error) {
+func (interactor *LibraryInteractor) GetTracksForAlbum(albumId int) ([]domain.Track, error) {
 	if !interactor.AlbumExists(albumId) {
-		return domain.Tracks{}, errors.New("cannot get tracks: invalid album ID")
+		return []domain.Track{}, errors.New("cannot get tracks: invalid album ID")
 	}
 
 	return interactor.TrackRepository.GetTracksForAlbum(albumId)
 }
 
-// Saves a track.
-//
-// A track cannot be saved without a title or if the related artist or album, if any, doesn't exists.
+// SaveTrack saves a track.
+// A track cannot be saved without a title or if the related artist or album, if any, doesn't exist.
 func (interactor *LibraryInteractor) SaveTrack(track *domain.Track) error {
 	invalid := false
 	var message string
@@ -181,13 +168,13 @@ func (interactor *LibraryInteractor) SaveTrack(track *domain.Track) error {
 		message = "cannot save track: empty path"
 	}
 	if track.ArtistId != 0 {
-		if _, err := interactor.GetArtist(track.ArtistId); err != nil {
+		if _, err := interactor.GetArtist(track.ArtistId, false); err != nil {
 			invalid = true
 			message = "cannot save track: invalid artist ID"
 		}
 	}
 	if track.AlbumId != 0 {
-		if _, err := interactor.GetAlbum(track.AlbumId); err != nil {
+		if _, err := interactor.GetAlbum(track.AlbumId, false); err != nil {
 			invalid = true
 			message = "cannot save track: invalid album ID"
 		}
@@ -200,8 +187,7 @@ func (interactor *LibraryInteractor) SaveTrack(track *domain.Track) error {
 	return interactor.TrackRepository.Save(track)
 }
 
-// Deletes a track.
-//
+// DeleteTrack deletes a track.
 // Returns an error if no trackId provided.
 func (interactor *LibraryInteractor) DeleteTrack(track *domain.Track) error {
 	if track.Id == 0 {
@@ -211,12 +197,12 @@ func (interactor *LibraryInteractor) DeleteTrack(track *domain.Track) error {
 	return interactor.TrackRepository.Delete(track)
 }
 
-// Checks if a track exists or not.
+// TrackExists checks if a track exists or not.
 func (interactor *LibraryInteractor) TrackExists(trackId int) bool {
 	return interactor.TrackRepository.Exists(trackId)
 }
 
-// Saves a cover.
+// SaveCover saves a cover.
 func (interactor *LibraryInteractor) SaveCover(cover *domain.Cover) error {
 	invalid := false
 	var message string
@@ -249,7 +235,7 @@ func (interactor *LibraryInteractor) SaveCover(cover *domain.Cover) error {
 	return err
 }
 
-// Deletes a cover.
+// DeleteCover deletes a cover.
 func (interactor *LibraryInteractor) DeleteCover(cover *domain.Cover) error {
 	if cover.Id == 0 {
 		return errors.New("cannot delete cover: id not provided")
@@ -265,19 +251,18 @@ func (interactor *LibraryInteractor) DeleteCover(cover *domain.Cover) error {
 	return err
 }
 
-// Checks if a cover exists or not.
+// CoverExists checks if a cover exists or not.
 func (interactor *LibraryInteractor) CoverExists(coverId int) bool {
 	return interactor.CoverRepository.Exists(coverId)
 }
 
-// Checks if a cover exists or not by hash.
-//
+// CoverHashExists checks if a cover exists or not by hash.
 // Returns cover.Id if exists, else 0.
 func (interactor *LibraryInteractor) CoverHashExists(hash string) int {
 	return interactor.CoverRepository.ExistsByHash(hash)
 }
 
-// Populates library.
+// UpdateLibrary populates and update the library.
 func (interactor *LibraryInteractor) UpdateLibrary() {
 	interactor.mutex.Lock()
 	interactor.LibraryIsUpdating = true
@@ -297,7 +282,7 @@ func (interactor *LibraryInteractor) UpdateLibrary() {
 	interactor.mutex.Unlock()
 }
 
-// Removes all data from library.
+// EraseLibrary removes all data from library.
 func (interactor *LibraryInteractor) EraseLibrary() {
 	interactor.mutex.Lock()
 	interactor.LibraryIsUpdating = true
@@ -309,12 +294,12 @@ func (interactor *LibraryInteractor) EraseLibrary() {
 	interactor.mutex.Unlock()
 }
 
-// Removes all dead files from library.
+// CleanUpLibrary removes all dead files from library.
 // Also removes unused albums and artists.
 func (interactor *LibraryInteractor) CleanUpLibrary() {
 	tracks, err := interactor.GetAllTracks()
 	if err == nil {
-		// Delete non existant tracks.
+		// Delete non-existent tracks.
 		for _, track := range tracks {
 			if !interactor.MediaFileRepository.MediaFileExists(track.Path) {
 				_ = interactor.DeleteTrack(&track)
@@ -329,7 +314,7 @@ func (interactor *LibraryInteractor) CleanUpLibrary() {
 	_ = interactor.ArtistRepository.CleanUp()
 }
 
-// Create a common artist for compilations.
+// CreateCompilationArtist creates a common artist for compilations.
 func (interactor *LibraryInteractor) CreateCompilationArtist() error {
 	_, err := interactor.GetArtistByName(LibraryDefaultCompilationArtist)
 	if err != nil {

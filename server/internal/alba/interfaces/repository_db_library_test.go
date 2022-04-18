@@ -1,11 +1,11 @@
 package interfaces
 
 import (
-	"testing"
-	"github.com/stretchr/testify/suite"
-	"github.com/stretchr/testify/assert"
-	"log"
 	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"log"
+	"testing"
 )
 
 type LibraryRepoTestSuite struct {
@@ -44,22 +44,22 @@ func (suite *LibraryRepoTestSuite) TestErase() {
 	suite.LibraryRepository.Erase()
 
 	// Test tables.
-	entitiesArtists := domain.Artists{}
+	var entitiesArtists []domain.Artist
 	_, err := suite.LibraryRepository.AppContext.DB.Select(&entitiesArtists, "SELECT * FROM artists")
 	assert.Nil(suite.T(), err)
 	assert.Empty(suite.T(), entitiesArtists)
 
-	entitiesAlbums := domain.Albums{}
+	var entitiesAlbums []domain.Album
 	_, err = suite.LibraryRepository.AppContext.DB.Select(&entitiesAlbums, "SELECT * FROM albums")
 	assert.Nil(suite.T(), err)
 	assert.Empty(suite.T(), entitiesAlbums)
 
-	entitiesTracks := domain.Tracks{}
+	var entitiesTracks []domain.Track
 	_, err = suite.LibraryRepository.AppContext.DB.Select(&entitiesTracks, "SELECT * FROM tracks")
 	assert.Nil(suite.T(), err)
 	assert.Empty(suite.T(), entitiesTracks)
 
-	entitiesCovers := domain.Covers{}
+	var entitiesCovers []domain.Cover
 	_, err = suite.LibraryRepository.AppContext.DB.Select(&entitiesCovers, "SELECT * FROM covers")
 	assert.Nil(suite.T(), err)
 	assert.Empty(suite.T(), entitiesCovers)

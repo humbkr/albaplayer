@@ -2,7 +2,7 @@ export declare global {
   type Artist = {
     id: string
     name: string
-    albums?: Array<Album>
+    albums?: Album[]
     dateAdded?: number
   }
 
@@ -13,27 +13,24 @@ export declare global {
     artistId?: string
     cover?: string
     artist?: Artist
-    tracks?: Array<Track>
-    // TODO: Is the following really necessary?
-    // Shorthand property for performance.
-    artistName?: string
+    tracks?: Track[]
     dateAdded: number
   }
 
   type Track = {
     id: string
     title: string
-    number: number
-    disc: string
+    src: string
     // In seconds.
-    duration: number
+    duration?: number
+    number?: number
+    disc?: string
     // Cover url.
-    cover: string
+    cover?: string
     artistId?: string
     albumId?: string
     artist?: Artist
     album?: Album
-    src?: string
     dateAdded?: number
   }
 }

@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/go-gorp/gorp"
 	"github.com/humbkr/albaplayer/internal/alba/business"
@@ -20,7 +21,7 @@ import (
 /*
 @file
 Common stuff for repositories tests.
- */
+*/
 
 const TestDataDir = "../../../testdata/"
 const TestDatasourceFile = "test.db"
@@ -33,7 +34,7 @@ const TestFSEmptyLibDir = TestDataDir + "empty_library"
 
 // Initialises the application test datasource.
 func createTestDatasource() (ds Datasource, err error) {
-	return InitAlbaDatasource("sqlite3", os.TempDir() + TestDatasourceFile)
+	return InitAlbaDatasource("sqlite3", os.TempDir()+TestDatasourceFile)
 }
 
 func clearTestDataSource(ds Datasource) error {
@@ -72,7 +73,7 @@ func closeTestDataSource(ds Datasource) error {
 func initTestDataSource(ds Datasource) (err error) {
 	if dbmap, ok := ds.(*gorp.DbMap); ok == true {
 		// Artists.
-		dbmap.Exec("INSERT INTO artists(id, name) VALUES(?, ?)", 1, business.LibraryDefaultCompilationArtist)
+		dbmap.Exec("INSERT INTO artists(id, name, created_at) VALUES(?, ?, ?)", 1, business.LibraryDefaultCompilationArtist, time.Now().Unix())
 
 		file, errOpen := os.OpenFile(TestArtistsFile, os.O_RDONLY, 0666)
 		if errOpen != nil {
@@ -90,7 +91,7 @@ func initTestDataSource(ds Datasource) (err error) {
 			}
 
 			// Insert the row in database.
-			dbmap.Exec("INSERT INTO artists(id, name) VALUES(?, ?)", record[0], record[1])
+			dbmap.Exec("INSERT INTO artists(id, name, created_at) VALUES(?, ?, ?)", record[0], record[1], time.Now().Unix())
 		}
 		file.Close()
 
@@ -112,12 +113,13 @@ func initTestDataSource(ds Datasource) (err error) {
 
 			// Insert the row in database.
 			dbmap.Exec(
-				"INSERT INTO albums(id, artist_id, title, year, cover_id) VALUES(?, ?, ?, ?, ?)",
+				"INSERT INTO albums(id, artist_id, title, year, cover_id, created_at) VALUES(?, ?, ?, ?, ?, ?)",
 				record[0],
 				record[1],
 				record[2],
 				record[3],
 				record[4],
+				time.Now().Unix(),
 			)
 		}
 		file.Close()
@@ -140,7 +142,7 @@ func initTestDataSource(ds Datasource) (err error) {
 
 			// Insert the row in database.
 			dbmap.Exec(
-				"INSERT INTO tracks(id, album_id, artist_id, cover_id, title, disc, number, duration, genre, path) VALUES(?, ?, ?, ?, ? ,? ,?, ?, ?, ?)",
+				"INSERT INTO tracks(id, album_id, artist_id, cover_id, title, disc, number, duration, genre, path, created_at) VALUES(?, ?, ?, ?, ? ,? ,?, ?, ?, ?, ?)",
 				record[0],
 				record[1],
 				record[2],
@@ -151,6 +153,7 @@ func initTestDataSource(ds Datasource) (err error) {
 				record[7],
 				record[8],
 				record[9],
+				time.Now().Unix(),
 			)
 		}
 		file.Close()
@@ -197,20 +200,24 @@ func createMockLibraryInteractor() (*business.LibraryInteractor) {
 
 /*
 Mock for artist repository.
- */
+*/
 
-type artistRepositoryMock struct{
+type artistRepositoryMock struct {
 	mock.Mock
 }
 
 // Not needed.
-func (m *artistRepositoryMock) Get(id int) (entity domain.Artist, err error) {return}
-func (m *artistRepositoryMock) GetAll(hydrate bool) (entities domain.Artists, err error) {return}
-func (m *artistRepositoryMock) Delete(entity *domain.Artist) (err error) {return}
-func (m artistRepositoryMock) Exists(id int) bool {return true}
-func (m artistRepositoryMock) CleanUp() error {return nil}
+func (m *artistRepositoryMock) Get(id int, hydrate bool) (entity domain.Artist, err error) { return }
+func (m *artistRepositoryMock) GetAll(hydrate bool) (entities []domain.Artist, err error)  { return }
+func (m *artistRepositoryMock) GetMultiple(ids []int, hydrate bool) (entities []domain.Artist, err error) {
+	return
+}
+func (m *artistRepositoryMock) Delete(entity *domain.Artist) (err error)                   { return }
+func (m *artistRepositoryMock) Exists(id int) bool                                         { return true }
+func (m *artistRepositoryMock) Count() (count int, err error)                              { return 42, nil }
+func (m *artistRepositoryMock) CleanUp() error                                             { return nil }
 
-// Returns a valid respones only for name "Artist #1".
+// Returns a valid response only for name "Artist #1".
 func (m *artistRepositoryMock) GetByName(name string) (entity domain.Artist, err error) {
 	if name == "Artist #1" {
 		entity.Id = 1
@@ -238,17 +245,23 @@ func (m *artistRepositoryMock) Save(entity *domain.Artist) (err error) {
 
 /* Mock for album repository. */
 
-type albumRepositoryMock struct{
+type albumRepositoryMock struct {
 	mock.Mock
 }
 
 // Not needed.
-func (m *albumRepositoryMock) Get(id int) (entity domain.Album, err error) {return}
-func (m *albumRepositoryMock) GetAll(hydrate bool) (entities domain.Albums, err error) {return}
-func (m *albumRepositoryMock) GetAlbumsForArtist(artistId int, hydrate bool) (entities domain.Albums, err error) {return}
-func (m *albumRepositoryMock) Delete(entity *domain.Album) (err error) {return}
-func (m albumRepositoryMock) Exists(id int) bool {return false}
-func (m albumRepositoryMock) CleanUp() error {return nil}
+func (m *albumRepositoryMock) Get(id int, hydrate bool) (entity domain.Album, err error) { return }
+func (m *albumRepositoryMock) GetAll(hydrate bool) (entities []domain.Album, err error)  { return }
+func (m *albumRepositoryMock) GetMultiple(ids []int, hydrate bool) (entities []domain.Album, err error) {
+	return
+}
+func (m *albumRepositoryMock) GetAlbumsForArtist(artistId int, hydrate bool) (entities []domain.Album, err error) {
+	return
+}
+func (m *albumRepositoryMock) Delete(entity *domain.Album) (err error)                   { return }
+func (m *albumRepositoryMock) Exists(id int) bool                                        { return false }
+func (m *albumRepositoryMock) Count() (count int, err error)                             { return 42, nil }
+func (m *albumRepositoryMock) CleanUp() error                                            { return nil }
 
 // Returns a valid response for name "Album #1" for artistId 1.
 // Returns a valid response for name "Album #2" for empty artistId.
@@ -284,19 +297,22 @@ func (m *albumRepositoryMock) Save(entity *domain.Album) (err error) {
 	return
 }
 
-
 /* Mock for track repository. */
 
-type trackRepositoryMock struct{
+type trackRepositoryMock struct {
 	mock.Mock
 }
 
 // Not needed.
-func (m *trackRepositoryMock) Get(id int) (entity domain.Track, err error) {return}
-func (m *trackRepositoryMock) GetAll() (entities domain.Tracks, err error) {return}
-func (m *trackRepositoryMock) GetTracksForAlbum(albumId int) (entities domain.Tracks, err error) {return}
-func (m *trackRepositoryMock) Delete(entity *domain.Track) (err error) {return}
-func (m trackRepositoryMock) Exists(id int) bool {return false}
+func (m *trackRepositoryMock) Get(id int) (entity domain.Track, err error)                { return }
+func (m *trackRepositoryMock) GetAll() (entities []domain.Track, err error)               { return }
+func (m *trackRepositoryMock) GetMultiple(ids []int) (entities []domain.Track, err error) { return }
+func (m *trackRepositoryMock) GetTracksForAlbum(albumId int) (entities []domain.Track, err error) {
+	return
+}
+func (m *trackRepositoryMock) Delete(entity *domain.Track) (err error)                    { return }
+func (m *trackRepositoryMock) Exists(id int) bool                                         { return false }
+func (m *trackRepositoryMock) Count() (count int, err error)                              { return 42, nil }
 
 // Returns a valid response for name "Track #1" for albumId 1 and artistId 1
 // Returns a valid response for name "Track #2" for albumId 1 and empty artistId.
@@ -341,44 +357,48 @@ func (m *trackRepositoryMock) Save(entity *domain.Track) (err error) {
 
 /*
 Mock for cover repository.
- */
+*/
 
-type coverRepositoryMock struct{
+type coverRepositoryMock struct {
 	mock.Mock
 }
 
 // Not needed.
-func (m *coverRepositoryMock) Get(id int) (entity domain.Cover, err error) {return}
-func (m *coverRepositoryMock) Save(entity *domain.Cover) (err error) {return}
-func (m *coverRepositoryMock) Delete(entity *domain.Cover) (err error) {return}
-func (m *coverRepositoryMock) Exists(id int) bool {return true}
-func (m *coverRepositoryMock) ExistsByHash(hash string) int {return 1}
+func (m *coverRepositoryMock) Get(id int) (entity domain.Cover, err error) { return }
+func (m *coverRepositoryMock) Save(entity *domain.Cover) (err error)       { return }
+func (m *coverRepositoryMock) Delete(entity *domain.Cover) (err error)     { return }
+func (m *coverRepositoryMock) Exists(id int) bool                          { return true }
+func (m *coverRepositoryMock) ExistsByHash(hash string) int                { return 1 }
 
 /*
 Mock for cover repository.
- */
+*/
 
-type mediaRepositoryMock struct{
+type mediaRepositoryMock struct {
 	mock.Mock
 }
 
 // Not needed.
-func (m *mediaRepositoryMock) ScanMediaFiles(path string) (int, int, error) {return 0, 0, nil}
-func (m *mediaRepositoryMock) MediaFileExists(filepath string) bool {return true}
-func (m *mediaRepositoryMock) WriteCoverFile(file *domain.Cover, directory string) error {return nil}
-func (m *mediaRepositoryMock) RemoveCoverFile(file *domain.Cover, directory string) error {return nil}
-func (m *mediaRepositoryMock) DeleteCovers() error {return nil}
+func (m *mediaRepositoryMock) ScanMediaFiles(path string) (int, int, error)               { return 0, 0, nil }
+func (m *mediaRepositoryMock) MediaFileExists(filepath string) bool                       { return true }
+func (m *mediaRepositoryMock) WriteCoverFile(file *domain.Cover, directory string) error  { return nil }
+func (m *mediaRepositoryMock) RemoveCoverFile(file *domain.Cover, directory string) error { return nil }
+func (m *mediaRepositoryMock) DeleteCovers() error                                        { return nil }
 
 /*
 Mock for internal variable repository.
 */
 
-type InternalVariableRepositoryMock struct{
+type InternalVariableRepositoryMock struct {
 	mock.Mock
 }
 
 // Not needed.
-func (m *InternalVariableRepositoryMock) Get(key string) (variable business.InternalVariable, err error) {return}
-func (m *InternalVariableRepositoryMock) Save(variable *business.InternalVariable) (err error) {return}
-func (m *InternalVariableRepositoryMock) Delete(variable *business.InternalVariable) (err error) {return}
-func (m *InternalVariableRepositoryMock) Exists(key string) bool {return true}
+func (m *InternalVariableRepositoryMock) Get(key string) (variable business.InternalVariable, err error) {
+	return
+}
+func (m *InternalVariableRepositoryMock) Save(variable *business.InternalVariable) (err error) { return }
+func (m *InternalVariableRepositoryMock) Delete(variable *business.InternalVariable) (err error) {
+	return
+}
+func (m *InternalVariableRepositoryMock) Exists(key string) bool                               { return true }

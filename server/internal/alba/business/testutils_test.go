@@ -1,16 +1,15 @@
 package business
 
 import (
+	"errors"
+	"fmt"
 	"github.com/humbkr/albaplayer/internal/alba/domain"
 	"github.com/stretchr/testify/mock"
-	"errors"
-	"strconv"
-	"fmt"
 	"math/rand"
+	"strconv"
 )
 
 /*
-@file
 Mock stuff for business tests.
  */
 
@@ -27,37 +26,36 @@ func createMockLibraryInteractor() (*LibraryInteractor) {
 	return interactor
 }
 
-/*
-Mock for library repository.
-*/
+
+// Mock for library repository.
 type LibraryRepositoryMock struct{
 	mock.Mock
 }
-func (m LibraryRepositoryMock) Erase() {}
+func (m *LibraryRepositoryMock) Erase() {}
 
-/*
-Mock for artist repository.
-*/
+// Mock for artist repository.
 type ArtistRepositoryMock struct{
 	mock.Mock
 }
 
 // Returns a valid response for any id inferior or equals to 10, else an error.
-func (m *ArtistRepositoryMock) Get(id int) (entity domain.Artist, err error) {
+func (m *ArtistRepositoryMock) Get(id int, hydrate bool) (entity domain.Artist, err error) {
 	if id <= 10 {
 		// Return a valid artist.
 		entity.Id = id
 		entity.Name = "Artist #" + strconv.Itoa(id)
 
-		for i := 1; i < 4; i++ {
-			album := domain.Album{
-				Id: i,
-				ArtistId: id,
-				Title: fmt.Sprintf("Album #%v for artist #%v", i, id),
-				Year: "2017",
-				// Tracks will be tested elsewhere.
+		if hydrate {
+			for i := 1; i < 4; i++ {
+				album := domain.Album{
+					Id: i,
+					ArtistId: id,
+					Title: fmt.Sprintf("Album #%v for artist #%v", i, id),
+					Year: "2017",
+					// Tracks will be tested elsewhere.
+				}
+				entity.Albums = append(entity.Albums, album)
 			}
-			entity.Albums = append(entity.Albums, album)
 		}
 
 		return
@@ -69,7 +67,7 @@ func (m *ArtistRepositoryMock) Get(id int) (entity domain.Artist, err error) {
 }
 
 // Returns 3 artists.
-func (m *ArtistRepositoryMock) GetAll(hydrate bool) (entities domain.Artists, err error) {
+func (m *ArtistRepositoryMock) GetAll(hydrate bool) (entities []domain.Artist, err error) {
 	for i := 1; i < 4; i++ {
 		artist := domain.Artist{
 			Id: i,
@@ -95,7 +93,46 @@ func (m *ArtistRepositoryMock) GetAll(hydrate bool) (entities domain.Artists, er
 	return
 }
 
-// Returns a valid respones only for name "Artist #1"
+// Only 3 entities available.
+func (m *ArtistRepositoryMock) GetMultiple(ids []int, hydrate bool) (entities []domain.Artist, err error) {
+	var availableEntities []domain.Artist
+
+	// Creates 3 entities
+	for i := 1; i <= 3; i++ {
+		artist := domain.Artist{
+			Id: i,
+			Name: "Artist #" + strconv.Itoa(i),
+		}
+
+		if hydrate {
+			for j := 1; j < 4; j++ {
+				album := domain.Album{
+					Id:       j,
+					ArtistId: i,
+					Title:    fmt.Sprintf("Album #%v for artist #%v", j, i),
+					Year:     "2017",
+					// Tracks will be tested in album repo.
+				}
+				artist.Albums = append(artist.Albums, album)
+			}
+		}
+
+		availableEntities = append(availableEntities, artist)
+	}
+
+	// Returns requested artists.
+	for _, id := range ids {
+		for idx := range availableEntities {
+			if availableEntities[idx].Id == id {
+				entities = append(entities, availableEntities[idx])
+			}
+		}
+	}
+
+	return
+}
+
+// Returns a valid response only for name "Artist #1"
 func (m *ArtistRepositoryMock) GetByName(name string) (entity domain.Artist, err error) {
 	if name == "Artist #1" {
 		entity.Id = 1
@@ -127,11 +164,16 @@ func (m *ArtistRepositoryMock) Delete(entity *domain.Artist) (err error) {
 }
 
 // Returns true if id == 1, else false.
-func (m ArtistRepositoryMock) Exists(id int) bool {
+func (m *ArtistRepositoryMock) Exists(id int) bool {
 	return id == 1
 }
 
-func (m ArtistRepositoryMock) CleanUp() error {return nil}
+// Returns a fixed number.
+func (m *ArtistRepositoryMock) Count() (count int, err error) {
+	return 42, nil
+}
+
+func (m *ArtistRepositoryMock) CleanUp() error {return nil}
 
 
 /* Mock for album repository. */
@@ -141,21 +183,23 @@ type AlbumRepositoryMock struct{
 }
 
 // Returns a valid response for any id inferior or equals to 10, else an error.
-func (m *AlbumRepositoryMock) Get(id int) (entity domain.Album, err error) {
+func (m *AlbumRepositoryMock) Get(id int, hydrate bool) (entity domain.Album, err error) {
 	if id <= 10 {
 		// Return a valid album.
 		entity.Id = id
 		entity.Title = "Album #" + strconv.Itoa(id)
 		entity.Year = "2017"
 
-		for i := 1; i < 4; i++ {
-			track := domain.Track{
-				Id: i,
-				AlbumId: id,
-				Title: fmt.Sprintf("Track #%v for album #%v", i, id),
-				Path: fmt.Sprintf("/music/Album %v/Track %v.mp3", id, i),
+		if hydrate {
+			for i := 1; i < 4; i++ {
+				track := domain.Track{
+					Id: i,
+					AlbumId: id,
+					Title: fmt.Sprintf("Track #%v for album #%v", i, id),
+					Path: fmt.Sprintf("/music/Album %v/Track %v.mp3", id, i),
+				}
+				entity.Tracks = append(entity.Tracks, track)
 			}
-			entity.Tracks = append(entity.Tracks, track)
 		}
 
 		return
@@ -167,7 +211,7 @@ func (m *AlbumRepositoryMock) Get(id int) (entity domain.Album, err error) {
 }
 
 // Returns 3 albums.
-func (m *AlbumRepositoryMock) GetAll(hydrate bool) (entities domain.Albums, err error) {
+func (m *AlbumRepositoryMock) GetAll(hydrate bool) (entities []domain.Album, err error) {
 	for i := 1; i < 4; i++ {
 		album := domain.Album{
 			Id:    i,
@@ -193,7 +237,46 @@ func (m *AlbumRepositoryMock) GetAll(hydrate bool) (entities domain.Albums, err 
 	return
 }
 
-// Returns a valid respones only for name "Album #1" for artistId 1.
+// Only 3 entities available.
+func (m *AlbumRepositoryMock) GetMultiple(ids []int, hydrate bool) (entities []domain.Album, err error) {
+	var availableEntities []domain.Album
+
+	// Creates 3 entities
+	for i := 1; i < 4; i++ {
+		album := domain.Album{
+			Id:    i,
+			Title: "Album #" + strconv.Itoa(i),
+			Year:  "2017",
+		}
+
+		if hydrate {
+			for j := 1; j < 4; j++ {
+				track := domain.Track{
+					Id: j,
+					AlbumId: i,
+					Title: fmt.Sprintf("Track #%v for album #%v", j, i),
+					Path: fmt.Sprintf("/music/Album %v/Track %v.mp3", i, j),
+				}
+				album.Tracks = append(album.Tracks, track)
+			}
+		}
+
+		availableEntities = append(availableEntities, album)
+	}
+
+	// Returns requested albums.
+	for _, id := range ids {
+		for idx := range availableEntities {
+			if availableEntities[idx].Id == id {
+				entities = append(entities, availableEntities[idx])
+			}
+		}
+	}
+
+	return
+}
+
+// Returns a valid response only for name "Album #1" for artistId 1.
 func (m *AlbumRepositoryMock) GetByName(name string, artistId int) (entity domain.Album, err error) {
 	if name == "Album #1" && artistId == 1 {
 		entity.Id = 1
@@ -209,7 +292,7 @@ func (m *AlbumRepositoryMock) GetByName(name string, artistId int) (entity domai
 }
 
 // Returns album for artistId 1, else no albums.
-func (m *AlbumRepositoryMock) GetAlbumsForArtist(artistId int, hydrate bool) (entities domain.Albums, err error) {
+func (m *AlbumRepositoryMock) GetAlbumsForArtist(artistId int, hydrate bool) (entities []domain.Album, err error) {
 	if artistId == 1 {
 		entities, _ = m.GetAll(hydrate)
 
@@ -245,11 +328,16 @@ func (m *AlbumRepositoryMock) Delete(entity *domain.Album) (err error) {
 }
 
 // Returns true if id == 1, else false.
-func (m AlbumRepositoryMock) Exists(id int) bool {
+func (m *AlbumRepositoryMock) Exists(id int) bool {
 	return id == 1
 }
 
-func (m AlbumRepositoryMock) CleanUp() error {return nil}
+// Returns a fixed number.
+func (m *AlbumRepositoryMock) Count() (count int, err error) {
+	return 42, nil
+}
+
+func (m *AlbumRepositoryMock) CleanUp() error {return nil}
 
 
 /* Mock for track repository. */
@@ -275,7 +363,7 @@ func (m *TrackRepositoryMock) Get(id int) (entity domain.Track, err error) {
 }
 
 // Returns 3 tracks.
-func (m *TrackRepositoryMock) GetAll() (entities domain.Tracks, err error) {
+func (m *TrackRepositoryMock) GetAll() (entities []domain.Track, err error) {
 	for i := 1; i < 4; i++ {
 		track := domain.Track{
 			Id: i,
@@ -291,7 +379,36 @@ func (m *TrackRepositoryMock) GetAll() (entities domain.Tracks, err error) {
 	return
 }
 
-// Returns a valid respones only for name "Track #1" for album 1 and artist 1
+// Only 3 entities available.
+func (m *TrackRepositoryMock) GetMultiple(ids []int) (entities []domain.Track, err error) {
+	var availableEntities []domain.Track
+
+	// Creates 3 entities
+	for i := 1; i < 4; i++ {
+		track := domain.Track{
+			Id: i,
+			Title: "Track #" + strconv.Itoa(i),
+			Path: fmt.Sprintf("/music/Track %v.mp3", i),
+			AlbumId: i,
+			ArtistId: i,
+		}
+
+		availableEntities = append(availableEntities, track)
+	}
+
+	// Returns requested tracks.
+	for _, id := range ids {
+		for idx := range availableEntities {
+			if availableEntities[idx].Id == id {
+				entities = append(entities, availableEntities[idx])
+			}
+		}
+	}
+
+	return
+}
+
+// Returns a valid response only for name "Track #1" for album 1 and artist 1
 func (m *TrackRepositoryMock) GetByName(name string, artistId int, albumId int) (entity domain.Track, err error) {
 	if name == "Track #1" && artistId == 1 && albumId == 1 {
 		entity.Id = 1
@@ -307,7 +424,7 @@ func (m *TrackRepositoryMock) GetByName(name string, artistId int, albumId int) 
 }
 
 // Returns album for albumId 1, else no albums.
-func (m *TrackRepositoryMock) GetTracksForAlbum(albumId int) (entities domain.Tracks, err error) {
+func (m *TrackRepositoryMock) GetTracksForAlbum(albumId int) (entities []domain.Track, err error) {
 	if albumId == 1 {
 		entities, _ = m.GetAll()
 
@@ -337,10 +454,14 @@ func (m *TrackRepositoryMock) Delete(entity *domain.Track) (err error) {
 }
 
 // Returns true if id == 1, else false.
-func (m TrackRepositoryMock) Exists(id int) bool {
+func (m *TrackRepositoryMock) Exists(id int) bool {
 	return id == 1
 }
 
+// Returns a fixed number.
+func (m *TrackRepositoryMock) Count() (count int, err error) {
+	return 42, nil
+}
 
 /*
 Mock for cover repository.

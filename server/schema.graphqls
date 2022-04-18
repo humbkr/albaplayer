@@ -1,5 +1,53 @@
-schema {
-    query: Query
+type Artist {
+    id: ID!
+    name: String!
+    albums: [Album]
+    dateAdded: String
+}
+
+type Album {
+    id: ID!
+    title: String!
+    year: String
+    artist: Artist
+    cover: String
+    tracks: [Track]
+    dateAdded: String
+}
+
+type Track {
+    id: ID!
+    title: String!
+    # Path on filesystem
+    src: String!
+    artist: Artist
+    album: Album
+    # Disc number
+    disc: String
+    # Position on disc
+    number: Int
+    # Duration in seconds
+    duration: Int
+    cover: String
+    dateAdded: String
+}
+
+type Variable {
+    key: String
+    value: String
+}
+
+type Settings {
+    libraryPath: String
+    coversPreferredSource: String
+    disableLibrarySettings: Boolean
+    version: String
+}
+
+type LibraryUpdateState {
+    tracksNumber: Int
+    albumsNumber: Int
+    artistsNumber: Int
 }
 
 type Query {
@@ -9,36 +57,7 @@ type Query {
     artists: [Artist]
     track(id: ID!): Track
     tracks: [Track]
-    settings: [Settings]
-}
-
-type Artist {
-    id: ID!
-    name: String!
-    albums: [Album]
-}
-
-type Album {
-    id: ID!
-    title: String!
-    artist: Artist
-    tracks: [Track]
-}
-
-type Track {
-    id: ID!
-    title: String!
-    artist: Artist
-    album: Album
-    disc: String
-    number: Integer
-    duration: Integer
-    cover: String
-    path: String!
-}
-
-type Settings {
-    libraryPath: String
-    coversPreferredSource: String
-    disableLibrarySettings: Boolean
+    settings: Settings
+    updateLibrary: LibraryUpdateState
+    eraseLibrary: LibraryUpdateState
 }

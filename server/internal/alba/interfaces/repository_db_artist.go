@@ -2,6 +2,8 @@ package interfaces
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/humbkr/albaplayer/internal/alba/business"
@@ -12,14 +14,15 @@ type ArtistDbRepository struct {
 	AppContext *AppContext
 }
 
-/*
-Fetches an artist from the database.
-*/
-func (ar ArtistDbRepository) Get(id int) (entity domain.Artist, err error) {
+// Get fetches an artist from the database.
+func (ar ArtistDbRepository) Get(id int, hydrate bool) (entity domain.Artist, err error) {
 	object, err := ar.AppContext.DB.Get(domain.Artist{}, id)
 	if err == nil && object != nil {
 		entity = *object.(*domain.Artist)
-		ar.populateAlbums(&entity, true)
+
+		if hydrate {
+			ar.populateAlbums(&entity, true)
+		}
 	} else {
 		err = errors.New("no artist found")
 	}
@@ -27,14 +30,11 @@ func (ar ArtistDbRepository) Get(id int) (entity domain.Artist, err error) {
 	return
 }
 
-/*
-Fetches all artists from the database.
-
-@param hydrate
-	If true populate albums tracks.
-*/
-func (ar ArtistDbRepository) GetAll(hydrate bool) (entities domain.Artists, err error) {
+// GetAll fetches all artists from the database.
+// Param hydrate: if true populate albums tracks.
+func (ar ArtistDbRepository) GetAll(hydrate bool) (entities []domain.Artist, err error) {
 	_, err = ar.AppContext.DB.Select(&entities, "SELECT * FROM artists")
+
 	if hydrate {
 		for i := range entities {
 			ar.populateAlbums(&entities[i], hydrate)
@@ -44,11 +44,29 @@ func (ar ArtistDbRepository) GetAll(hydrate bool) (entities domain.Artists, err 
 	return
 }
 
-/**
-Fetches an artist from database based on its name (case insensitive).
-*/
+// GetMultiple fetches multiple artists from the database.
+// Param hydrate: if true populate albums tracks.
+func (ar ArtistDbRepository) GetMultiple(ids []int, hydrate bool) (entities []domain.Artist, err error) {
+	fmt.Println("in GetMultiple: " + strconv.Itoa(len(ids)))
+
+	_, err = ar.AppContext.DB.Select(&entities, "SELECT * " +
+		"FROM artists " +
+		"WHERE id IN (" + IntArrayToString(ids, ",") + ")")
+
+	if hydrate {
+		for i := range entities {
+			ar.populateAlbums(&entities[i], hydrate)
+		}
+	}
+
+	fmt.Println("in GetMultiple end: " + strconv.Itoa(len(entities)))
+
+	return
+}
+
+// GetByName fetches an artist from database based on its name (case-insensitive).
 func (ar ArtistDbRepository) GetByName(name string) (entity domain.Artist, err error) {
-	var entities domain.Artists
+	var entities []domain.Artist
 	_, err = ar.AppContext.DB.Select(&entities, "SELECT * FROM artists WHERE name = ?", name)
 
 	if err == nil {
@@ -62,9 +80,7 @@ func (ar ArtistDbRepository) GetByName(name string) (entity domain.Artist, err e
 	return
 }
 
-/**
-Create or update an artist in the Database.
-*/
+// Save creates or updates an artist in the Database.
 func (ar ArtistDbRepository) Save(entity *domain.Artist) (err error) {
 	if entity.Id != 0 {
 		// Update.
@@ -78,9 +94,7 @@ func (ar ArtistDbRepository) Save(entity *domain.Artist) (err error) {
 	}
 }
 
-/**
-Delete an artist from the Database.
-*/
+// Delete deletes an artist from the Database.
 func (ar ArtistDbRepository) Delete(entity *domain.Artist) (err error) {
 	// Delete all albums.
 	if len(entity.Albums) == 0 {
@@ -97,22 +111,25 @@ func (ar ArtistDbRepository) Delete(entity *domain.Artist) (err error) {
 	return
 }
 
-// Check if an artist exists for a given id.
+// Exists check if an artist exists for a given id.
 func (ar ArtistDbRepository) Exists(id int) bool {
-	_, err := ar.Get(id)
+	_, err := ar.Get(id, false)
 	return err == nil
 }
 
-// Removes artists without tracks drom DB.
+// Count counts the number of entities in datasource.
+func (ar ArtistDbRepository) Count() (count int, err error) {
+	_, err = ar.AppContext.DB.Select(count, "SELECT count(*) FROM artists")
+	return
+}
+
+// CleanUp removes artists without tracks from DB.
 func (ar ArtistDbRepository) CleanUp() error {
 	_, err := ar.AppContext.DB.Exec("DELETE FROM artists WHERE NOT EXISTS (SELECT id FROM tracks WHERE tracks.artist_id = artists.id) AND artists.name != ?", business.LibraryDefaultCompilationArtist)
 	return err
 }
 
-
-/**
-Helper function to populate albums.
- */
+// populateAlbums is a helper function to populate albums.
 func (ar ArtistDbRepository) populateAlbums(artist *domain.Artist, hydrate bool) {
 	albumRepo := AlbumDbRepository{AppContext: ar.AppContext}
 	if albums, err := albumRepo.GetAlbumsForArtist(artist.Id, hydrate); err == nil {

@@ -74,7 +74,8 @@
     "eslint": "eslint src/",
     "prettier": "prettier --check './src/**/*.{js,jsx,ts,tsx}'",
     "lint": "prettier-eslint --write './src/**/*.{js,jsx,ts,tsx}'",
-    "lint-check": "prettier-eslint --list-different './src/**/*.{js,jsx,ts,tsx}'"
+    "lint:check": "prettier-eslint --list-different './src/**/*.{js,jsx,ts,tsx}'",
+    "lint:tsc": "tsc --noEmit"
   },
   "eslintConfig": {
     "extends": "react-app"

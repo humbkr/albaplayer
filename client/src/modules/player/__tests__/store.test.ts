@@ -97,6 +97,7 @@ const mockLibraryState: LibraryStateType = {
     1: {
       id: '1',
       title: 'Track 1',
+      src: '/stream/1',
       number: 1,
       disc: '',
       duration: 123,
@@ -107,6 +108,7 @@ const mockLibraryState: LibraryStateType = {
     2: {
       id: '2',
       title: 'I draw a map',
+      src: '/stream/2',
       number: 2,
       disc: '',
       duration: 124,
@@ -117,6 +119,7 @@ const mockLibraryState: LibraryStateType = {
     3: {
       id: '3',
       title: 'Track 3',
+      src: '/stream/3',
       number: 2,
       disc: '',
       duration: 124,
@@ -127,6 +130,7 @@ const mockLibraryState: LibraryStateType = {
     4: {
       id: '4',
       title: 'Track 4',
+      src: '/stream/4',
       number: 1,
       disc: '',
       duration: 124,
@@ -137,6 +141,7 @@ const mockLibraryState: LibraryStateType = {
     5: {
       id: '5',
       title: 'Track 5',
+      src: '/stream/5',
       number: 1,
       disc: '',
       duration: 164,
@@ -1494,6 +1499,7 @@ describe('player (redux)', () => {
                 track: {
                   id: '1',
                   title: 'Track 1',
+                  src: '/stream/1',
                   number: 1,
                   disc: '',
                   duration: 123,
@@ -1507,6 +1513,7 @@ describe('player (redux)', () => {
                 track: {
                   id: '2',
                   title: 'Track 2',
+                  src: '/stream/2',
                   number: 2,
                   disc: '',
                   duration: 124,

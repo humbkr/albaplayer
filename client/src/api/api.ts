@@ -1,7 +1,29 @@
 import gql from 'graphql-tag'
+import { ApolloQueryResult } from 'apollo-client/core/types'
 import apolloClient from './apollo'
+import {
+  convertAPIAlbumToAppAlbum,
+  convertAPIArtistToAppArtist,
+  convertAPITrackToAppTrack,
+} from './helpers'
 
-const getLibrary = () => {
+type ApiLibraryInitResult = {
+  artists?: ApiArtist[]
+  albums?: ApiAlbum[]
+  tracks?: ApiTrack[]
+  variable?: ApiVariable
+}
+
+type LibraryInitResponse = {
+  data: {
+    artists?: Artist[]
+    albums?: Album[]
+    tracks?: Track[]
+    variable?: Variable
+  }
+}
+
+const getLibrary = async (): Promise<LibraryInitResponse | null> => {
   // Query used to initialise the browser with all the data from the server.
   const libraryInit = gql`
     query libraryInit {
@@ -14,7 +36,9 @@ const getLibrary = () => {
         id
         title
         year
-        artistId
+        artist {
+          id
+        }
         cover
         dateAdded
       }
@@ -24,8 +48,12 @@ const getLibrary = () => {
         number
         disc
         duration
-        artistId
-        albumId
+        artist {
+          id
+        }
+        album {
+          id
+        }
         cover
         dateAdded
       }
@@ -35,7 +63,32 @@ const getLibrary = () => {
     }
   `
 
-  return apolloClient.query({ query: libraryInit })
+  const response: ApolloQueryResult<ApiLibraryInitResult> = await apolloClient.query(
+    { query: libraryInit }
+  )
+
+  if (response.data) {
+    // Convert API data to app models.
+    return {
+      data: {
+        artists: response.data.artists?.map(
+          (item) => convertAPIArtistToAppArtist(item) as Artist
+        ),
+        albums: response.data.albums?.map(
+          (item) => convertAPIAlbumToAppAlbum(item) as Album
+        ),
+        tracks: response.data.tracks?.map(
+          (item) => convertAPITrackToAppTrack(item) as Track
+        ),
+        variable: {
+          key: 'library_last_updated',
+          value: response.data.variable?.value || '',
+        },
+      },
+    }
+  }
+
+  return null
 }
 
 const getFullTrackInfo = (trackId: string) => {
@@ -69,29 +122,31 @@ const getFullTrackInfo = (trackId: string) => {
 }
 
 const scanLibrary = () => {
-  // TODO not sure we should use a query here, but apollo doesn't allow a mutation without parameter
-  const scanLibraryQuery = gql`
-    query scanLibraryQuery {
+  const scanLibraryMutation = gql`
+    mutation updateLibrary {
       updateLibrary {
         tracksNumber
+        albumsNumber
+        artistsNumber
       }
     }
   `
 
-  return apolloClient.query({ query: scanLibraryQuery })
+  return apolloClient.mutate({ mutation: scanLibraryMutation })
 }
 
 const emptyLibrary = () => {
-  // TODO not sure we should use a query here, but apollo doesn't allow a mutation without parameter
-  const emptyLibraryQuery = gql`
-    query emptyLibraryQuery {
+  const emptyLibraryMutation = gql`
+    mutation eraseLibrary {
       eraseLibrary {
         tracksNumber
+        albumsNumber
+        artistsNumber
       }
     }
   `
 
-  return apolloClient.query({ query: emptyLibraryQuery })
+  return apolloClient.mutate({ mutation: emptyLibraryMutation })
 }
 
 const getSettings = () => {
