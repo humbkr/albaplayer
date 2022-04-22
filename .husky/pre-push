@@ -3,3 +3,6 @@
 
 cd client
 yarn test --watchAll=false
+
+cd ../server
+go test ./...

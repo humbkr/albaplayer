@@ -37,32 +37,28 @@ var validCoverNames = []string{
 	"folder",
 }
 
-/**
-Stores media metadata retrieved from different sources.
-*/
+// Stores media metadata retrieved from different sources.
 type mediaMetadata struct {
-	Format  	string
-	Title   	string
-	Album   	string
-	Artist  	string
+	Format      string
+	Title       string
+	Album       string
+	Artist      string
 	AlbumArtist string
-	Genre   	string
-	Year    	string
-	Track   	int
-	Disc    	string // Format: <number>/<total>
-	Picture 	*tag.Picture
-	Duration 	int
-	Path 		string
+	Genre       string
+	Year        string
+	Track       int
+	Disc        string // Format: <number>/<total>
+	Picture     *tag.Picture
+	Duration    int
+	Path        string
 }
 
-// Implements business.MediaFileRepository.
-type LocalFilesystemRepository struct{
+// LocalFilesystemRepository implements business.MediaFileRepository.
+type LocalFilesystemRepository struct {
 	AppContext *AppContext
 }
 
-/*
-Scans a directory and import media files metadata and cover into the app.
- */
+// ScanMediaFiles scans a directory and import media files metadata and cover into the app.
 // TODO: compute return values.
 func (r LocalFilesystemRepository) ScanMediaFiles(path string) (processed int, added int, err error) {
 	log.Println("scan folder " + path)
@@ -91,7 +87,7 @@ func (r LocalFilesystemRepository) ScanMediaFiles(path string) (processed int, a
 	return
 }
 
-// Recursively browses a directory and import / update all the audio files in the database.
+// scanDirectory recursively browses a directory and import / update all the audio files in the database.
 func scanDirectory(path string, variousArtistsId int, dbTransaction *gorp.Transaction) (err error) {
 	if _, err = os.Stat(path); os.IsNotExist(err) {
 		return
@@ -215,30 +211,29 @@ func processMediaFiles(mediaFiles map[string][]mediaMetadata, cover string, vari
 	}
 }
 
-// Checks if a media file physically exists.
+// MediaFileExists checks if a media file physically exists.
 func (r LocalFilesystemRepository) MediaFileExists(filepath string) bool {
 	return fileExists(filepath)
 }
 
-// Writes a cover image.
+// WriteCoverFile writes a cover image.
 func (r LocalFilesystemRepository) WriteCoverFile(file *domain.Cover, directory string) error {
 	return writeCoverFile(file, directory)
 }
 
-// Deletes a cover image.
+// RemoveCoverFile deletes a cover image.
 func (r LocalFilesystemRepository) RemoveCoverFile(file *domain.Cover, directory string) error {
 	srcFileName := directory + string(os.PathSeparator) + file.Hash + file.Ext
 	return os.Remove(srcFileName)
 }
 
-// Deletes all covers
+// DeleteCovers deletes all covers
 func (r LocalFilesystemRepository) DeleteCovers() error {
 	return os.RemoveAll(viper.GetString("Covers.Directory"))
 }
 
-// Saves an artist info in the database.
-//
-// Returns a artist id.
+// processArtist saves an artist info in the database.
+// Returns an artist id.
 func processArtist(dbTransaction *gorp.Transaction, metadata *mediaMetadata) (id int, err error) {
 	// Process artist if any.
 	if metadata.Artist != "" {
@@ -275,9 +270,8 @@ func processArtist(dbTransaction *gorp.Transaction, metadata *mediaMetadata) (id
 	return 0, errors.New("no artist to process")
 }
 
-// Saves an album info in the database.
-//
-// Returns a album id.
+// processAlbum saves an album info in the database.
+// Returns an album id.
 func processAlbum(dbTransaction *gorp.Transaction, metadata *mediaMetadata, artistId int, coverId int) (id int, err error) {
 	if metadata.Album != "" {
 		album := domain.Album{}
@@ -316,8 +310,7 @@ func processAlbum(dbTransaction *gorp.Transaction, metadata *mediaMetadata, arti
 	return 0, errors.New("no album to process")
 }
 
-// Saves a track info in the database.
-//
+// processTrack saves a track info in the database.
 // Returns a track id.
 func processTrack(dbTransaction *gorp.Transaction, metadata *mediaMetadata, artistId int, albumId int, coverId int) (id int, err error) {
 	track := domain.Track{}
@@ -352,8 +345,7 @@ func processTrack(dbTransaction *gorp.Transaction, metadata *mediaMetadata, arti
 	return track.Id, err
 }
 
-// Saves a cover info in the database and filesystem.
-//
+// processCover saves a cover info in the database and filesystem.
 // Returns a cover id.
 func processCover(dbTransaction *gorp.Transaction, cover domain.Cover) (id int, err error) {
 	cover.Path = cover.Hash + cover.Ext
@@ -380,11 +372,8 @@ func processCover(dbTransaction *gorp.Transaction, cover domain.Cover) (id int, 
 	return
 }
 
-/**
-Gets media matadata from a file.
-
-Uses multiple libraries to get a maximum of info depending on the format.
-*/
+// getMetadataFromFile gets media metadata from a file.
+// Uses multiple libraries to get a maximum of info depending on the format.
 func getMetadataFromFile(filePath string) (info mediaMetadata, err error) {
 	file, err := os.OpenFile(filePath, os.O_RDONLY, 0666)
 	defer file.Close()
@@ -403,7 +392,6 @@ func getMetadataFromFile(filePath string) (info mediaMetadata, err error) {
 		if len(artist) == 0 {
 			artist = business.LibraryDefaultArtist
 		}
-
 
 		// Get all we can from the common tags.
 		info.Format = string(tags.FileType())
@@ -430,7 +418,7 @@ func getMetadataFromFile(filePath string) (info mediaMetadata, err error) {
 		_, f := path.Split(filePath)
 		extension := filepath.Ext(f)
 		filename := filepath.Base(f)
-		info.Title = filename[0 : len(filename) - len(extension)]
+		info.Title = filename[0 : len(filename)-len(extension)]
 	}
 
 	// Set the filepath.
@@ -439,8 +427,7 @@ func getMetadataFromFile(filePath string) (info mediaMetadata, err error) {
 	return
 }
 
-// Get media cover from file.
-//
+// getMediaCoverFromImageFile gets media cover from file.
 // Returns the info for the first image file that matches.
 func getMediaCoverFromImageFile(coverFilepath string) (cover domain.Cover, err error) {
 	if fileExists(coverFilepath) {
@@ -466,7 +453,7 @@ func getMediaCoverFromImageFile(coverFilepath string) (cover domain.Cover, err e
 func isValidCoverFile(filename string) bool {
 	for _, name := range validCoverNames {
 		for _, ext := range validCoverExtensions {
-			if matched, _ := filepath.Match(name + ext, strings.ToLower(filename)); matched {
+			if matched, _ := filepath.Match(name+ext, strings.ToLower(filename)); matched {
 				return true
 			}
 		}
@@ -475,8 +462,7 @@ func isValidCoverFile(filename string) bool {
 	return false
 }
 
-// Get media cover from media file metadata.
-//
+// getMediaCoverFromTrackMetadata gets media cover from media file metadata.
 // Returns cover info if found.
 func getMediaCoverFromTrackMetadata(trackMetadata mediaMetadata) (cover domain.Cover, err error) {
 	if trackMetadata.Picture != nil {

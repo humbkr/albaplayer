@@ -15,7 +15,7 @@ type ArtistInteractorTestSuite struct {
 
 /**
 Go testing framework entry point.
- */
+*/
 func TestArtistRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(ArtistInteractorTestSuite))
 }
@@ -111,7 +111,6 @@ func (suite *ArtistInteractorTestSuite) TestDeleteArtist() {
 	assert.NotNil(suite.T(), errNoId)
 }
 
-
 type AlbumInteractorTestSuite struct {
 	suite.Suite
 	// LibraryInteractor where is located what to test.
@@ -204,8 +203,8 @@ func (suite *AlbumInteractorTestSuite) TestSaveAlbum() {
 	// Test to save a new album.
 	newAlbum := &domain.Album{
 		ArtistId: 1,
-		Title: "Insert new album test",
-		Year: "2017",
+		Title:    "Insert new album test",
+		Year:     "2017",
 	}
 
 	err := suite.Library.SaveAlbum(newAlbum)
@@ -223,7 +222,7 @@ func (suite *AlbumInteractorTestSuite) TestSaveAlbum() {
 	// Test to insert an album without title.
 	newAlbumNoTitle := &domain.Album{
 		ArtistId: 2,
-		Year: "2017",
+		Year:     "2017",
 	}
 
 	errNoTitle := suite.Library.SaveAlbum(newAlbumNoTitle)
@@ -232,8 +231,8 @@ func (suite *AlbumInteractorTestSuite) TestSaveAlbum() {
 	// Test to insert an album with a non existant artist id.
 	newAlbumFakeArtistId := &domain.Album{
 		ArtistId: 77,
-		Title: "Test invalid artist id",
-		Year: "2017",
+		Title:    "Test invalid artist id",
+		Year:     "2017",
 	}
 
 	errInvalidArtist := suite.Library.SaveAlbum(newAlbumFakeArtistId)
@@ -262,7 +261,6 @@ func (suite *AlbumInteractorTestSuite) TestDeleteAlbum() {
 	assert.NotNil(suite.T(), errNoId)
 }
 
-
 type TrackInteractorTestSuite struct {
 	suite.Suite
 	// LibraryInteractor where is located what to test.
@@ -271,7 +269,7 @@ type TrackInteractorTestSuite struct {
 
 /**
 Go testing framework entry point.
- */
+*/
 func TestTrackRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(TrackInteractorTestSuite))
 }
@@ -325,13 +323,12 @@ func (suite *TrackInteractorTestSuite) TestSaveTrack() {
 	// Test to save a new track.
 	newTrack := &domain.Track{
 		Title: "Insert new track test",
-		Path: "/home/test/music/artist test/album test/05 - Insert new track test.mp3",
+		Path:  "/home/test/music/artist test/album test/05 - Insert new track test.mp3",
 	}
 
 	err := suite.Library.SaveTrack(newTrack)
 	assert.Nil(suite.T(), err)
 	assert.NotEmpty(suite.T(), newTrack.Id)
-
 
 	// Test to update the track with valid data.
 	newTrack.Title = "Update track test"
@@ -358,9 +355,9 @@ func (suite *TrackInteractorTestSuite) TestSaveTrack() {
 
 	// Test to insert a track with a non existant artist id.
 	newTrackInvalidArtist := &domain.Track{
-		ArtistId:765,
-		Title: "Test insert track invalid artist",
-		Path: "/home/test/music/artist test/album test/05 - Insert new track invalid artist.mp3",
+		ArtistId: 765,
+		Title:    "Test insert track invalid artist",
+		Path:     "/home/test/music/artist test/album test/05 - Insert new track invalid artist.mp3",
 	}
 
 	errInvalidArtist := suite.Library.SaveTrack(newTrackInvalidArtist)
@@ -368,9 +365,9 @@ func (suite *TrackInteractorTestSuite) TestSaveTrack() {
 
 	// Test to insert a track with a non existant album id.
 	newTrackInvalidAlbum := &domain.Track{
-		AlbumId:765,
-		Title: "Test insert track invalid artist",
-		Path: "/home/test/music/artist test/album test/05 - Insert new track invalid artist.mp3",
+		AlbumId: 765,
+		Title:   "Test insert track invalid artist",
+		Path:    "/home/test/music/artist test/album test/05 - Insert new track invalid artist.mp3",
 	}
 
 	errInvalidAlbum := suite.Library.SaveTrack(newTrackInvalidAlbum)
@@ -409,7 +406,6 @@ func (suite *TrackInteractorTestSuite) TestTrackExists() {
 	assert.False(suite.T(), exists)
 }
 
-
 type CoverInteractorTestSuite struct {
 	suite.Suite
 	// LibraryInteractor where is located what to test.
@@ -418,7 +414,7 @@ type CoverInteractorTestSuite struct {
 
 /*
 Go testing framework entry point.
- */
+*/
 func TestCoverRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(CoverInteractorTestSuite))
 }
@@ -506,7 +502,7 @@ type MediaFilesInteractorTestSuite struct {
 
 /*
 Go testing framework entry point.
- */
+*/
 func TestMediaFilesRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(MediaFilesInteractorTestSuite))
 }

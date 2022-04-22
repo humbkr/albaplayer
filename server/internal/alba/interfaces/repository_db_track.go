@@ -31,9 +31,9 @@ func (tr TrackDbRepository) GetAll() (entities []domain.Track, err error) {
 }
 
 func (tr TrackDbRepository) GetMultiple(ids []int) (entities []domain.Track, err error) {
-	_, err = tr.AppContext.DB.Select(&entities, "SELECT * " +
-		"FROM tracks " +
-	    "WHERE id IN (" + IntArrayToString(ids, ",") + ")")
+	_, err = tr.AppContext.DB.Select(&entities, "SELECT * "+
+		"FROM tracks "+
+		"WHERE id IN ("+IntArrayToString(ids, ",")+")")
 
 	return
 }
@@ -90,6 +90,12 @@ func (tr TrackDbRepository) Delete(entity *domain.Track) (err error) {
 
 // Count counts the number of entities in datasource.
 func (tr TrackDbRepository) Count() (count int, err error) {
-	_, err = tr.AppContext.DB.Select(count, "SELECT count(*) FROM tracks")
-	return
+	type Count struct {
+		Count int
+	}
+
+	rows, err := tr.AppContext.DB.Select(Count{}, "SELECT count(*) as Count FROM tracks")
+	countEntities := rows[0].(*Count)
+
+	return countEntities.Count, err
 }

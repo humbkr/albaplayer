@@ -186,7 +186,7 @@ func initTestDataSource(ds Datasource) (err error) {
 	return nil
 }
 
-func createMockLibraryInteractor() (*business.LibraryInteractor) {
+func createMockLibraryInteractor() *business.LibraryInteractor {
 	interactor := new(business.LibraryInteractor)
 	interactor.ArtistRepository = new(artistRepositoryMock)
 	interactor.AlbumRepository = new(albumRepositoryMock)
@@ -212,10 +212,10 @@ func (m *artistRepositoryMock) GetAll(hydrate bool) (entities []domain.Artist, e
 func (m *artistRepositoryMock) GetMultiple(ids []int, hydrate bool) (entities []domain.Artist, err error) {
 	return
 }
-func (m *artistRepositoryMock) Delete(entity *domain.Artist) (err error)                   { return }
-func (m *artistRepositoryMock) Exists(id int) bool                                         { return true }
-func (m *artistRepositoryMock) Count() (count int, err error)                              { return 42, nil }
-func (m *artistRepositoryMock) CleanUp() error                                             { return nil }
+func (m *artistRepositoryMock) Delete(entity *domain.Artist) (err error) { return }
+func (m *artistRepositoryMock) Exists(id int) bool                       { return true }
+func (m *artistRepositoryMock) Count() (count int, err error)            { return 42, nil }
+func (m *artistRepositoryMock) CleanUp() error                           { return nil }
 
 // Returns a valid response only for name "Artist #1".
 func (m *artistRepositoryMock) GetByName(name string) (entity domain.Artist, err error) {
@@ -258,10 +258,10 @@ func (m *albumRepositoryMock) GetMultiple(ids []int, hydrate bool) (entities []d
 func (m *albumRepositoryMock) GetAlbumsForArtist(artistId int, hydrate bool) (entities []domain.Album, err error) {
 	return
 }
-func (m *albumRepositoryMock) Delete(entity *domain.Album) (err error)                   { return }
-func (m *albumRepositoryMock) Exists(id int) bool                                        { return false }
-func (m *albumRepositoryMock) Count() (count int, err error)                             { return 42, nil }
-func (m *albumRepositoryMock) CleanUp() error                                            { return nil }
+func (m *albumRepositoryMock) Delete(entity *domain.Album) (err error) { return }
+func (m *albumRepositoryMock) Exists(id int) bool                      { return false }
+func (m *albumRepositoryMock) Count() (count int, err error)           { return 42, nil }
+func (m *albumRepositoryMock) CleanUp() error                          { return nil }
 
 // Returns a valid response for name "Album #1" for artistId 1.
 // Returns a valid response for name "Album #2" for empty artistId.
@@ -310,9 +310,9 @@ func (m *trackRepositoryMock) GetMultiple(ids []int) (entities []domain.Track, e
 func (m *trackRepositoryMock) GetTracksForAlbum(albumId int) (entities []domain.Track, err error) {
 	return
 }
-func (m *trackRepositoryMock) Delete(entity *domain.Track) (err error)                    { return }
-func (m *trackRepositoryMock) Exists(id int) bool                                         { return false }
-func (m *trackRepositoryMock) Count() (count int, err error)                              { return 42, nil }
+func (m *trackRepositoryMock) Delete(entity *domain.Track) (err error) { return }
+func (m *trackRepositoryMock) Exists(id int) bool                      { return false }
+func (m *trackRepositoryMock) Count() (count int, err error)           { return 42, nil }
 
 // Returns a valid response for name "Track #1" for albumId 1 and artistId 1
 // Returns a valid response for name "Track #2" for albumId 1 and empty artistId.
@@ -397,8 +397,10 @@ type InternalVariableRepositoryMock struct {
 func (m *InternalVariableRepositoryMock) Get(key string) (variable business.InternalVariable, err error) {
 	return
 }
-func (m *InternalVariableRepositoryMock) Save(variable *business.InternalVariable) (err error) { return }
+func (m *InternalVariableRepositoryMock) Save(variable *business.InternalVariable) (err error) {
+	return
+}
 func (m *InternalVariableRepositoryMock) Delete(variable *business.InternalVariable) (err error) {
 	return
 }
-func (m *InternalVariableRepositoryMock) Exists(key string) bool                               { return true }
+func (m *InternalVariableRepositoryMock) Exists(key string) bool { return true }

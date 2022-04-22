@@ -1,11 +1,11 @@
 package interfaces
 
 import (
-	"testing"
 	"github.com/humbkr/albaplayer/internal/alba/business"
-	"github.com/stretchr/testify/suite"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"log"
+	"testing"
 )
 
 type InternalVariableRepoTestSuite struct {
@@ -15,7 +15,7 @@ type InternalVariableRepoTestSuite struct {
 
 /**
 Go testing framework entry point.
- */
+*/
 func TestInternalVariableRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(InternalVariableRepoTestSuite))
 }
@@ -54,7 +54,7 @@ func (suite *InternalVariableRepoTestSuite) TestGet() {
 func (suite *InternalVariableRepoTestSuite) TestSave() {
 	// Test to save a new variable.
 	newVariable := &business.InternalVariable{
-		Key: "var_key_new",
+		Key:   "var_key_new",
 		Value: "var_value_new",
 	}
 
@@ -77,12 +77,12 @@ func (suite *InternalVariableRepoTestSuite) TestSave() {
 
 	// Test to set a variable without a key.
 	newVariableNoKey := business.InternalVariable{
-		Key: "",
+		Key:   "",
 		Value: "var_value_new",
 	}
 	errNoKey := suite.InternalVariableRepository.Save(&newVariableNoKey)
 	assert.NotNil(suite.T(), errNoKey)
- }
+}
 
 func (suite *InternalVariableRepoTestSuite) TestDelete() {
 	var varKey = "var_key"

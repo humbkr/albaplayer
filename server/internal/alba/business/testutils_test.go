@@ -11,9 +11,9 @@ import (
 
 /*
 Mock stuff for business tests.
- */
+*/
 
-func createMockLibraryInteractor() (*LibraryInteractor) {
+func createMockLibraryInteractor() *LibraryInteractor {
 	interactor := new(LibraryInteractor)
 	interactor.ArtistRepository = new(ArtistRepositoryMock)
 	interactor.AlbumRepository = new(AlbumRepositoryMock)
@@ -26,15 +26,15 @@ func createMockLibraryInteractor() (*LibraryInteractor) {
 	return interactor
 }
 
-
 // Mock for library repository.
-type LibraryRepositoryMock struct{
+type LibraryRepositoryMock struct {
 	mock.Mock
 }
+
 func (m *LibraryRepositoryMock) Erase() {}
 
 // Mock for artist repository.
-type ArtistRepositoryMock struct{
+type ArtistRepositoryMock struct {
 	mock.Mock
 }
 
@@ -48,10 +48,10 @@ func (m *ArtistRepositoryMock) Get(id int, hydrate bool) (entity domain.Artist, 
 		if hydrate {
 			for i := 1; i < 4; i++ {
 				album := domain.Album{
-					Id: i,
+					Id:       i,
 					ArtistId: id,
-					Title: fmt.Sprintf("Album #%v for artist #%v", i, id),
-					Year: "2017",
+					Title:    fmt.Sprintf("Album #%v for artist #%v", i, id),
+					Year:     "2017",
 					// Tracks will be tested elsewhere.
 				}
 				entity.Albums = append(entity.Albums, album)
@@ -70,7 +70,7 @@ func (m *ArtistRepositoryMock) Get(id int, hydrate bool) (entity domain.Artist, 
 func (m *ArtistRepositoryMock) GetAll(hydrate bool) (entities []domain.Artist, err error) {
 	for i := 1; i < 4; i++ {
 		artist := domain.Artist{
-			Id: i,
+			Id:   i,
 			Name: "Artist #" + strconv.Itoa(i),
 		}
 
@@ -100,7 +100,7 @@ func (m *ArtistRepositoryMock) GetMultiple(ids []int, hydrate bool) (entities []
 	// Creates 3 entities
 	for i := 1; i <= 3; i++ {
 		artist := domain.Artist{
-			Id: i,
+			Id:   i,
 			Name: "Artist #" + strconv.Itoa(i),
 		}
 
@@ -173,12 +173,11 @@ func (m *ArtistRepositoryMock) Count() (count int, err error) {
 	return 42, nil
 }
 
-func (m *ArtistRepositoryMock) CleanUp() error {return nil}
-
+func (m *ArtistRepositoryMock) CleanUp() error { return nil }
 
 /* Mock for album repository. */
 
-type AlbumRepositoryMock struct{
+type AlbumRepositoryMock struct {
 	mock.Mock
 }
 
@@ -193,10 +192,10 @@ func (m *AlbumRepositoryMock) Get(id int, hydrate bool) (entity domain.Album, er
 		if hydrate {
 			for i := 1; i < 4; i++ {
 				track := domain.Track{
-					Id: i,
+					Id:      i,
 					AlbumId: id,
-					Title: fmt.Sprintf("Track #%v for album #%v", i, id),
-					Path: fmt.Sprintf("/music/Album %v/Track %v.mp3", id, i),
+					Title:   fmt.Sprintf("Track #%v for album #%v", i, id),
+					Path:    fmt.Sprintf("/music/Album %v/Track %v.mp3", id, i),
 				}
 				entity.Tracks = append(entity.Tracks, track)
 			}
@@ -222,10 +221,10 @@ func (m *AlbumRepositoryMock) GetAll(hydrate bool) (entities []domain.Album, err
 		if hydrate {
 			for j := 1; j < 4; j++ {
 				track := domain.Track{
-					Id: j,
+					Id:      j,
 					AlbumId: i,
-					Title: fmt.Sprintf("Track #%v for album #%v", j, i),
-					Path: fmt.Sprintf("/music/Album %v/Track %v.mp3", i, j),
+					Title:   fmt.Sprintf("Track #%v for album #%v", j, i),
+					Path:    fmt.Sprintf("/music/Album %v/Track %v.mp3", i, j),
 				}
 				album.Tracks = append(album.Tracks, track)
 			}
@@ -252,10 +251,10 @@ func (m *AlbumRepositoryMock) GetMultiple(ids []int, hydrate bool) (entities []d
 		if hydrate {
 			for j := 1; j < 4; j++ {
 				track := domain.Track{
-					Id: j,
+					Id:      j,
 					AlbumId: i,
-					Title: fmt.Sprintf("Track #%v for album #%v", j, i),
-					Path: fmt.Sprintf("/music/Album %v/Track %v.mp3", i, j),
+					Title:   fmt.Sprintf("Track #%v for album #%v", j, i),
+					Path:    fmt.Sprintf("/music/Album %v/Track %v.mp3", i, j),
 				}
 				album.Tracks = append(album.Tracks, track)
 			}
@@ -337,12 +336,11 @@ func (m *AlbumRepositoryMock) Count() (count int, err error) {
 	return 42, nil
 }
 
-func (m *AlbumRepositoryMock) CleanUp() error {return nil}
-
+func (m *AlbumRepositoryMock) CleanUp() error { return nil }
 
 /* Mock for track repository. */
 
-type TrackRepositoryMock struct{
+type TrackRepositoryMock struct {
 	mock.Mock
 }
 
@@ -366,10 +364,10 @@ func (m *TrackRepositoryMock) Get(id int) (entity domain.Track, err error) {
 func (m *TrackRepositoryMock) GetAll() (entities []domain.Track, err error) {
 	for i := 1; i < 4; i++ {
 		track := domain.Track{
-			Id: i,
-			Title: "Track #" + strconv.Itoa(i),
-			Path: fmt.Sprintf("/music/Track %v.mp3", i),
-			AlbumId: i,
+			Id:       i,
+			Title:    "Track #" + strconv.Itoa(i),
+			Path:     fmt.Sprintf("/music/Track %v.mp3", i),
+			AlbumId:  i,
 			ArtistId: i,
 		}
 
@@ -386,10 +384,10 @@ func (m *TrackRepositoryMock) GetMultiple(ids []int) (entities []domain.Track, e
 	// Creates 3 entities
 	for i := 1; i < 4; i++ {
 		track := domain.Track{
-			Id: i,
-			Title: "Track #" + strconv.Itoa(i),
-			Path: fmt.Sprintf("/music/Track %v.mp3", i),
-			AlbumId: i,
+			Id:       i,
+			Title:    "Track #" + strconv.Itoa(i),
+			Path:     fmt.Sprintf("/music/Track %v.mp3", i),
+			AlbumId:  i,
 			ArtistId: i,
 		}
 
@@ -466,7 +464,7 @@ func (m *TrackRepositoryMock) Count() (count int, err error) {
 /*
 Mock for cover repository.
 */
-type CoverRepositoryMock struct{
+type CoverRepositoryMock struct {
 	mock.Mock
 }
 
@@ -497,7 +495,6 @@ func (m *CoverRepositoryMock) Save(entity *domain.Cover) (err error) {
 	return
 }
 
-
 // Never fails.
 func (m *CoverRepositoryMock) Delete(entity *domain.Cover) (err error) {
 	return
@@ -520,13 +517,17 @@ func (m *CoverRepositoryMock) ExistsByHash(hash string) int {
 /*
 Mock for media file repository.
 */
-type MediaFileRepositoryMock struct{
+type MediaFileRepositoryMock struct {
 	mock.Mock
 }
 
 func (m *MediaFileRepositoryMock) ScanMediaFiles(path string) (int, int, error) { return 0, 0, nil }
-func (m *MediaFileRepositoryMock) WriteCoverFile(file *domain.Cover, directory string) error { return nil }
-func (m *MediaFileRepositoryMock) RemoveCoverFile(file *domain.Cover, directory string) error { return nil }
+func (m *MediaFileRepositoryMock) WriteCoverFile(file *domain.Cover, directory string) error {
+	return nil
+}
+func (m *MediaFileRepositoryMock) RemoveCoverFile(file *domain.Cover, directory string) error {
+	return nil
+}
 func (m *MediaFileRepositoryMock) DeleteCovers() error { return nil }
 
 // Returns false except for paths of the 2 first tracks returned by trackRepoMock getAll().
@@ -544,12 +545,14 @@ func (m *MediaFileRepositoryMock) MediaFileExists(filepath string) bool {
 Mock for internal variable repository.
 */
 
-type InternalVariableRepositoryMock struct{
+type InternalVariableRepositoryMock struct {
 	mock.Mock
 }
 
 // Not needed.
-func (m *InternalVariableRepositoryMock) Get(key string) (variable InternalVariable, err error) {return}
-func (m *InternalVariableRepositoryMock) Save(variable *InternalVariable) (err error) {return}
-func (m *InternalVariableRepositoryMock) Delete(variable *InternalVariable) (err error) {return}
-func (m *InternalVariableRepositoryMock) Exists(key string) bool {return true}
+func (m *InternalVariableRepositoryMock) Get(key string) (variable InternalVariable, err error) {
+	return
+}
+func (m *InternalVariableRepositoryMock) Save(variable *InternalVariable) (err error)   { return }
+func (m *InternalVariableRepositoryMock) Delete(variable *InternalVariable) (err error) { return }
+func (m *InternalVariableRepositoryMock) Exists(key string) bool                        { return true }

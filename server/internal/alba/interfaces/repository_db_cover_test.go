@@ -1,11 +1,11 @@
 package interfaces
 
 import (
-	"testing"
-	"github.com/stretchr/testify/suite"
-	"github.com/stretchr/testify/assert"
-	"log"
 	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"log"
+	"testing"
 )
 
 type CoverRepoTestSuite struct {
@@ -15,7 +15,7 @@ type CoverRepoTestSuite struct {
 
 /**
 Go testing framework entry point.
- */
+*/
 func TestCoverRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(CoverRepoTestSuite))
 }
@@ -85,14 +85,14 @@ func (suite *CoverRepoTestSuite) TestSave() {
 	// Test to insert a new cover with a prepopulated Id (= update a non existant cover).
 	// Note: it seems gorp.Dbmap.Update() fails silently.
 	newCoverWithId := &domain.Cover{
-		Id: 55,
+		Id:   55,
 		Path: "/fake/path/to/33affd1fe3b0f3624550b36963b76f33.jpg",
 		Hash: "33affd1fe3b0f3624550b36963b76f33",
 	}
 
 	errBogusId := suite.CoverRepository.Save(newCoverWithId)
 	assert.Nil(suite.T(), errBogusId)
- }
+}
 
 func (suite *CoverRepoTestSuite) TestDelete() {
 	var coverId = 1

@@ -57,6 +57,7 @@ func (ar AlbumDbRepository) GetAll(hydrate bool) (entities []domain.Album, err e
 			// Deduplicate stuff.
 			var current domain.Album
 			for _, r := range results {
+				// Build track from row.
 				track := domain.Track{
 					Id:        r.Id,
 					Title:     r.Title,
@@ -71,17 +72,14 @@ func (ar AlbumDbRepository) GetAll(hydrate bool) (entities []domain.Album, err e
 					DateAdded: r.DateAdded,
 				}
 
-				if current.Id == 0 {
-					current = domain.Album{
-						Id:        r.AlbumId,
-						Title:     r.AlbumTitle,
-						Year:      r.AlbumYear,
-						ArtistId:  r.AlbumArtistId,
-						DateAdded: r.AlbumCreatedAt,
+				// For first row or row about a new album.
+				if current.Id == 0 || r.AlbumId != current.Id {
+					// If row is about another album, save previous album.
+					if current.Id != 0 {
+						entities = append(entities, current)
 					}
-				} else if r.Id != current.Id {
-					entities = append(entities, current)
-					// Then change the current album
+
+					// Populate the album info.
 					current = domain.Album{
 						Id:        r.AlbumId,
 						Title:     r.AlbumTitle,
@@ -90,8 +88,13 @@ func (ar AlbumDbRepository) GetAll(hydrate bool) (entities []domain.Album, err e
 						DateAdded: r.AlbumCreatedAt,
 					}
 				}
+
+				// Add track to current album.
 				current.Tracks = append(current.Tracks, track)
 			}
+
+			// Add last current album to the list.
+			entities = append(entities, current)
 		}
 	}
 
@@ -124,13 +127,14 @@ func (ar AlbumDbRepository) GetMultiple(ids []int, hydrate bool) (entities []dom
 		query := "SELECT alb.Id AlbumId, alb.Title AlbumTitle, alb.Year AlbumYear, alb.artist_id AlbumArtistId, alb.created_at AlbumCreatedAt, trk.* " +
 			"FROM albums alb, tracks trk " +
 			"WHERE alb.id = trk.album_id " +
-			"AND alb.id IN [" + IntArrayToString(ids, ",") + "]"
+			"AND alb.id IN (" + IntArrayToString(ids, ",") + ")"
 
 		_, err = ar.AppContext.DB.Select(&results, query)
 		if err == nil {
 			// Deduplicate stuff.
 			var current domain.Album
 			for _, r := range results {
+				// Build track from row.
 				track := domain.Track{
 					Id:        r.Id,
 					Title:     r.Title,
@@ -145,17 +149,14 @@ func (ar AlbumDbRepository) GetMultiple(ids []int, hydrate bool) (entities []dom
 					DateAdded: r.DateAdded,
 				}
 
-				if current.Id == 0 {
-					current = domain.Album{
-						Id:        r.AlbumId,
-						Title:     r.AlbumTitle,
-						Year:      r.AlbumYear,
-						ArtistId:  r.AlbumArtistId,
-						DateAdded: r.AlbumCreatedAt,
+				// For first row or row about a new album.
+				if current.Id == 0 || r.AlbumId != current.Id {
+					// If row is about another album, save previous album.
+					if current.Id != 0 {
+						entities = append(entities, current)
 					}
-				} else if r.Id != current.Id {
-					entities = append(entities, current)
-					// Then change the current album
+
+					// Populate the album info.
 					current = domain.Album{
 						Id:        r.AlbumId,
 						Title:     r.AlbumTitle,
@@ -164,8 +165,13 @@ func (ar AlbumDbRepository) GetMultiple(ids []int, hydrate bool) (entities []dom
 						DateAdded: r.AlbumCreatedAt,
 					}
 				}
+
+				// Add track to current album.
 				current.Tracks = append(current.Tracks, track)
 			}
+
+			// Add last current album to the list.
+			entities = append(entities, current)
 		}
 	}
 
@@ -238,8 +244,14 @@ func (ar AlbumDbRepository) Exists(id int) bool {
 
 // Count counts the number of entities in datasource.
 func (ar AlbumDbRepository) Count() (count int, err error) {
-	_, err = ar.AppContext.DB.Select(count, "SELECT count(*) FROM albums")
-	return
+	type Count struct {
+		Count int
+	}
+
+	rows, err := ar.AppContext.DB.Select(Count{}, "SELECT count(*) as Count FROM albums")
+	countEntities := rows[0].(*Count)
+
+	return countEntities.Count, err
 }
 
 // CleanUp removes artists without tracks from DB.

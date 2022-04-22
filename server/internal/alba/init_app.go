@@ -57,7 +57,7 @@ func InitApp() business.LibraryInteractor {
 	}
 	appContext.DB = datasource
 
-	// Instanciate all we need to work on the media library.
+	// Instantiate all we need to work on the media library.
 	libraryInteractor := business.LibraryInteractor{}
 	libraryInteractor.ArtistRepository = interfaces.ArtistDbRepository{AppContext: &appContext}
 	libraryInteractor.AlbumRepository = interfaces.AlbumDbRepository{AppContext: &appContext}

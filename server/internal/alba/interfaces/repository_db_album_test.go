@@ -67,6 +67,7 @@ func (suite *AlbumRepoTestSuite) TestGetAll() {
 	albums, err := suite.AlbumRepository.GetAll(false)
 	assert.Nil(suite.T(), err)
 	assert.NotEmpty(suite.T(), albums)
+	assert.Equal(suite.T(), 2, len(albums))
 	for _, album := range albums {
 		assert.NotEmpty(suite.T(), album.Id)
 		assert.NotEmpty(suite.T(), album.Title)
@@ -77,6 +78,31 @@ func (suite *AlbumRepoTestSuite) TestGetAll() {
 	albums, err = suite.AlbumRepository.GetAll(true)
 	assert.Nil(suite.T(), err)
 	assert.NotEmpty(suite.T(), albums)
+	assert.Equal(suite.T(), 2, len(albums))
+	for _, album := range albums {
+		assert.NotEmpty(suite.T(), album.Id)
+		assert.NotEmpty(suite.T(), album.Title)
+		assert.NotEmpty(suite.T(), album.Tracks)
+	}
+}
+
+func (suite *AlbumRepoTestSuite) TestGetMultiple() {
+	// Test to get albums without tracks.
+	albums, err := suite.AlbumRepository.GetMultiple([]int{1, 2}, false)
+	assert.Nil(suite.T(), err)
+	assert.NotEmpty(suite.T(), albums)
+	assert.Equal(suite.T(), 2, len(albums))
+	for _, album := range albums {
+		assert.NotEmpty(suite.T(), album.Id)
+		assert.NotEmpty(suite.T(), album.Title)
+		assert.Empty(suite.T(), album.Tracks)
+	}
+
+	// Test to get albums with tracks.
+	albums, err = suite.AlbumRepository.GetMultiple([]int{1}, true)
+	assert.Nil(suite.T(), err)
+	assert.NotEmpty(suite.T(), albums)
+	assert.Equal(suite.T(), 1, len(albums))
 	for _, album := range albums {
 		assert.NotEmpty(suite.T(), album.Id)
 		assert.NotEmpty(suite.T(), album.Title)
@@ -256,4 +282,10 @@ func (suite *AlbumRepoTestSuite) TestCleanUp() {
 
 	errGet = suite.AlbumRepository.AppContext.DB.SelectOne(&nonExistentAlbum, "SELECT * FROM albums WHERE title = ?", album.Title)
 	assert.NotNil(suite.T(), errGet)
+}
+
+func (suite *AlbumRepoTestSuite) TestCount() {
+	count, err := suite.AlbumRepository.Count()
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), 2, count)
 }

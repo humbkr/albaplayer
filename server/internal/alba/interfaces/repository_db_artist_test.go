@@ -67,6 +67,8 @@ func (suite *ArtistRepoTestSuite) TestGetAll() {
 	artists, err := suite.ArtistRepository.GetAll(false)
 	assert.Nil(suite.T(), err)
 	assert.NotEmpty(suite.T(), artists)
+	// Note: artist "various" is added automatically in DB.
+	assert.Equal(suite.T(), 3, len(artists))
 	for _, artist := range artists {
 		assert.NotEmpty(suite.T(), artist.Id)
 		assert.NotEmpty(suite.T(), artist.Name)
@@ -77,6 +79,35 @@ func (suite *ArtistRepoTestSuite) TestGetAll() {
 	artists, err = suite.ArtistRepository.GetAll(true)
 	assert.Nil(suite.T(), err)
 	assert.NotEmpty(suite.T(), artists)
+	// Note: artist "various" is added automatically in DB
+	assert.Equal(suite.T(), 3, len(artists))
+	for _, artist := range artists {
+		assert.NotEmpty(suite.T(), artist.Id)
+		assert.NotEmpty(suite.T(), artist.Name)
+
+		if artist.Name != business.LibraryDefaultCompilationArtist {
+			assert.NotEmpty(suite.T(), artist.Albums)
+		}
+	}
+}
+
+func (suite *ArtistRepoTestSuite) TestGetMultiple() {
+	// Test to get artist without albums.
+	artists, err := suite.ArtistRepository.GetMultiple([]int{1, 3}, false)
+	assert.Nil(suite.T(), err)
+	assert.NotEmpty(suite.T(), artists)
+	assert.Equal(suite.T(), 2, len(artists))
+	for _, artist := range artists {
+		assert.NotEmpty(suite.T(), artist.Id)
+		assert.NotEmpty(suite.T(), artist.Name)
+		assert.Empty(suite.T(), artist.Albums)
+	}
+
+	// Test to get artist with albums.
+	artists, err = suite.ArtistRepository.GetMultiple([]int{1, 2, 3}, true)
+	assert.Nil(suite.T(), err)
+	assert.NotEmpty(suite.T(), artists)
+	assert.Equal(suite.T(), 3, len(artists))
 	for _, artist := range artists {
 		assert.NotEmpty(suite.T(), artist.Id)
 		assert.NotEmpty(suite.T(), artist.Name)
@@ -228,4 +259,10 @@ func (suite *ArtistRepoTestSuite) TestCleanUp() {
 	variousArtists = domain.Artist{}
 	errGetVarious = suite.ArtistRepository.AppContext.DB.SelectOne(&variousArtists, "SELECT * FROM artists WHERE name = ?", business.LibraryDefaultCompilationArtist)
 	assert.Nil(suite.T(), errGetVarious)
+}
+
+func (suite *ArtistRepoTestSuite) TestCount() {
+	count, err := suite.ArtistRepository.Count()
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), 3, count)
 }

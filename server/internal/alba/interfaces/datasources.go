@@ -44,9 +44,9 @@ func InitAlbaDatasource(dbDriver string, dbFile string) (ds Datasource, err erro
 
 	n, err := migrate.Exec(connection, "sqlite3", migrations, migrate.Up)
 	if err != nil {
-		fmt.Printf("WARNING: unable to apply migrations")
+		fmt.Println("WARNING: unable to apply migrations")
 	}
-	fmt.Printf("Applied %d migrations!\n", n)
+	fmt.Printf("Applied %d migrations\n", n)
 
 	// Construct a gorp DbMap.
 	dbmap := &gorp.DbMap{Db: connection, Dialect: gorp.SqliteDialect{}}

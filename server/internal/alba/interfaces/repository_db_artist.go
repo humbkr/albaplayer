@@ -2,8 +2,6 @@ package interfaces
 
 import (
 	"errors"
-	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/humbkr/albaplayer/internal/alba/business"
@@ -47,19 +45,15 @@ func (ar ArtistDbRepository) GetAll(hydrate bool) (entities []domain.Artist, err
 // GetMultiple fetches multiple artists from the database.
 // Param hydrate: if true populate albums tracks.
 func (ar ArtistDbRepository) GetMultiple(ids []int, hydrate bool) (entities []domain.Artist, err error) {
-	fmt.Println("in GetMultiple: " + strconv.Itoa(len(ids)))
-
-	_, err = ar.AppContext.DB.Select(&entities, "SELECT * " +
-		"FROM artists " +
-		"WHERE id IN (" + IntArrayToString(ids, ",") + ")")
+	_, err = ar.AppContext.DB.Select(&entities, "SELECT * "+
+		"FROM artists "+
+		"WHERE id IN ("+IntArrayToString(ids, ",")+")")
 
 	if hydrate {
 		for i := range entities {
 			ar.populateAlbums(&entities[i], hydrate)
 		}
 	}
-
-	fmt.Println("in GetMultiple end: " + strconv.Itoa(len(entities)))
 
 	return
 }
@@ -119,8 +113,14 @@ func (ar ArtistDbRepository) Exists(id int) bool {
 
 // Count counts the number of entities in datasource.
 func (ar ArtistDbRepository) Count() (count int, err error) {
-	_, err = ar.AppContext.DB.Select(count, "SELECT count(*) FROM artists")
-	return
+	type Count struct {
+		Count int
+	}
+
+	rows, err := ar.AppContext.DB.Select(Count{}, "SELECT count(*) as Count FROM artists")
+	countEntities := rows[0].(*Count)
+
+	return countEntities.Count, err
 }
 
 // CleanUp removes artists without tracks from DB.

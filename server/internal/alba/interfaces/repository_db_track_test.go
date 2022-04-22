@@ -1,11 +1,11 @@
 package interfaces
 
 import (
-	"testing"
-	"github.com/stretchr/testify/suite"
-	"github.com/stretchr/testify/assert"
-	"log"
 	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"log"
+	"testing"
 )
 
 type TrackRepoTestSuite struct {
@@ -15,7 +15,7 @@ type TrackRepoTestSuite struct {
 
 /**
 Go testing framework entry point.
- */
+*/
 func TestTrackRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(TrackRepoTestSuite))
 }
@@ -56,7 +56,7 @@ func (suite *TrackRepoTestSuite) TestGet() {
 
 	// TODO Test double disc albums.
 
-	// Test to get a non existing track.
+	// Test to get a non-existing track.
 	track, err = suite.TrackRepository.Get(99)
 	assert.NotNil(suite.T(), err)
 }
@@ -65,6 +65,19 @@ func (suite *TrackRepoTestSuite) TestGetAll() {
 	tracks, err := suite.TrackRepository.GetAll()
 	assert.Nil(suite.T(), err)
 	assert.NotEmpty(suite.T(), tracks)
+	assert.Equal(suite.T(), 16, len(tracks))
+	for _, track := range tracks {
+		assert.NotEmpty(suite.T(), track.Id)
+		assert.NotEmpty(suite.T(), track.Title)
+		assert.NotEmpty(suite.T(), track.Path)
+	}
+}
+
+func (suite *TrackRepoTestSuite) TestGetMultiple() {
+	tracks, err := suite.TrackRepository.GetMultiple([]int{4, 5, 10})
+	assert.Nil(suite.T(), err)
+	assert.NotEmpty(suite.T(), tracks)
+	assert.Equal(suite.T(), 3, len(tracks))
 	for _, track := range tracks {
 		assert.NotEmpty(suite.T(), track.Id)
 		assert.NotEmpty(suite.T(), track.Title)
@@ -116,14 +129,14 @@ func (suite *TrackRepoTestSuite) TestGetTracksForAlbum() {
 func (suite *TrackRepoTestSuite) TestSave() {
 	// Test to save a new track.
 	newTrack := &domain.Track{
-		AlbumId: 2,
+		AlbumId:  2,
 		ArtistId: 2,
-		Title: "Insert new track test",
-		Disc: "1/2",
-		Number: 5,
+		Title:    "Insert new track test",
+		Disc:     "1/2",
+		Number:   5,
 		Duration: 321,
-		Genre: "Grunge",
-		Path: "/home/test/music/artist test/album test/05 - Insert new track test.mp3",
+		Genre:    "Grunge",
+		Path:     "/home/test/music/artist test/album test/05 - Insert new track test.mp3",
 	}
 
 	err := suite.TrackRepository.Save(newTrack)
@@ -139,7 +152,7 @@ func (suite *TrackRepoTestSuite) TestSave() {
 	assert.Equal(suite.T(), "1/2", insertednewTrack.Disc)
 	assert.Equal(suite.T(), 5, insertednewTrack.Number)
 	assert.Equal(suite.T(), 321, insertednewTrack.Duration)
-	assert.Equal(suite.T(),  "Grunge", insertednewTrack.Genre)
+	assert.Equal(suite.T(), "Grunge", insertednewTrack.Genre)
 	assert.Equal(suite.T(), "/home/test/music/artist test/album test/05 - Insert new track test.mp3", insertednewTrack.Path)
 
 	// Test to update the track with valid data.
@@ -164,15 +177,15 @@ func (suite *TrackRepoTestSuite) TestSave() {
 	assert.Equal(suite.T(), "2/2", updatedTrack.Disc)
 	assert.Equal(suite.T(), 6, updatedTrack.Number)
 	assert.Equal(suite.T(), 123, updatedTrack.Duration)
-	assert.Equal(suite.T(),  "Thrash Metal", updatedTrack.Genre)
+	assert.Equal(suite.T(), "Thrash Metal", updatedTrack.Genre)
 	assert.Equal(suite.T(), "/home/test/music/artist test/album test/05 - Update track test.mp3", updatedTrack.Path)
 
 	// Test to insert a new track with a prepopulated trackId (= update a non existant track).
 	// Note: it seems gorp.Dbmap.Update() fails silently.
 	newTrackWithId := &domain.Track{
-		Id: 88,
+		Id:    88,
 		Title: "New track bogus id",
-		Path: "/new bogus id.mp3",
+		Path:  "/new bogus id.mp3",
 	}
 
 	errBogusId := suite.TrackRepository.Save(newTrackWithId)
@@ -203,4 +216,10 @@ func (suite *TrackRepoTestSuite) TestExists() {
 	// Test with non existing data.
 	exists = suite.TrackRepository.Exists(543)
 	assert.False(suite.T(), exists)
+}
+
+func (suite *TrackRepoTestSuite) TestCount() {
+	count, err := suite.TrackRepository.Count()
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), 16, count)
 }
