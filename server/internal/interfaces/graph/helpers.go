@@ -1,9 +1,9 @@
 package graph
 
 import (
-	"github.com/humbkr/albaplayer/internal/alba/business"
-	"github.com/humbkr/albaplayer/internal/alba/domain"
-	"github.com/humbkr/albaplayer/internal/alba/interfaces/graph/model"
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/domain"
+	"github.com/humbkr/albaplayer/internal/interfaces/graph/model"
 )
 
 func convertArtist(artist domain.Artist) model.Artist {

@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"errors"
-	"github.com/humbkr/albaplayer/internal/alba/business"
+	"github.com/humbkr/albaplayer/internal/business"
 )
 
 type InternalVariableDbRepository struct {

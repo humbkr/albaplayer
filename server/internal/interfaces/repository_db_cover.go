@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"errors"
-	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/domain"
 )
 
 type CoverDbRepository struct {

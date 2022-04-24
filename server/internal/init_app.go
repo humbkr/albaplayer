@@ -1,11 +1,11 @@
-package alba
+package internal
 
 import (
 	"fmt"
 	"log"
 
-	"github.com/humbkr/albaplayer/internal/alba/business"
-	"github.com/humbkr/albaplayer/internal/alba/interfaces"
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/interfaces"
 	"github.com/natefinch/lumberjack"
 	"github.com/spf13/viper"
 )

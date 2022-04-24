@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/humbkr/albaplayer/internal/alba/interfaces/graph/generated"
-	"github.com/humbkr/albaplayer/internal/alba/interfaces/graph/model"
+	"github.com/humbkr/albaplayer/internal/interfaces/graph/generated"
+	"github.com/humbkr/albaplayer/internal/interfaces/graph/model"
 )
 
 func (r *albumResolver) Artist(ctx context.Context, obj *model.Album) (*model.Artist, error) {

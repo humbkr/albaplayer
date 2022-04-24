@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/humbkr/albaplayer/internal/alba/business"
-	"github.com/humbkr/albaplayer/internal/alba/interfaces/graph"
-	"github.com/humbkr/albaplayer/internal/alba/interfaces/graph/generated"
-	"github.com/humbkr/albaplayer/internal/alba/version"
+	"github.com/humbkr/albaplayer/internal"
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/interfaces/graph"
+	"github.com/humbkr/albaplayer/internal/interfaces/graph/generated"
+	"github.com/humbkr/albaplayer/internal/version"
 	"io"
 	"log"
 	"mime"
 	"net/http"
 	"path/filepath"
 
-	"github.com/humbkr/albaplayer/internal/alba"
-	"github.com/humbkr/albaplayer/internal/alba/interfaces"
+	"github.com/humbkr/albaplayer/internal/interfaces"
 	"github.com/markbates/pkger"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
@@ -31,15 +31,15 @@ var serveCmd = &cobra.Command{
 	Short: "Serve app on the specified port",
 	Long:  `Launch all services, create all endpoints, and serve UI web app.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		libraryInteractor := alba.InitApp()
+		libraryInteractor := internal.InitApp()
 		settingsInteractor := business.ClientSettingsInteractor{}
 
 		// Create the graphql handler
-		graphQLHandler := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{ Resolvers: &graph.Resolver{
+		graphQLHandler := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
 			Library:        &libraryInteractor,
 			ClientSettings: &settingsInteractor,
 			Version:        version.Version,
-		} }))
+		}}))
 
 		// Create graphql data loaders for performance
 		dataLoaders := graph.NewDataLoaders(&libraryInteractor)
@@ -102,7 +102,7 @@ var serveCmd = &cobra.Command{
 		rootHandler := cors.New(cors.Options{
 			AllowCredentials: true,
 			// Enable Debugging for testing.
-			Debug: viper.GetBool("DevMode.Enabled"),
+			Debug:              viper.GetBool("DevMode.Enabled"),
 			OptionsPassthrough: false,
 		}).Handler(mux)
 
@@ -110,7 +110,7 @@ var serveCmd = &cobra.Command{
 		if viper.GetBool("Server.Https.Enabled") {
 			fmt.Printf("Server is up on port %s (https)\n", viper.GetString("Server.Port"))
 			errServ := http.ListenAndServeTLS(
-				":" + viper.GetString("Server.Port"),
+				":"+viper.GetString("Server.Port"),
 				viper.GetString("Server.Https.CertFile"),
 				viper.GetString("Server.Https.KeyFile"),
 				rootHandler)
@@ -120,7 +120,7 @@ var serveCmd = &cobra.Command{
 			}
 		} else {
 			fmt.Printf("Server is up on port %s (http)\n", viper.GetString("Server.Port"))
-			if err := http.ListenAndServe(":" + viper.GetString("Server.Port"), rootHandler); err != nil {
+			if err := http.ListenAndServe(":"+viper.GetString("Server.Port"), rootHandler); err != nil {
 				log.Fatal(err)
 			}
 		}

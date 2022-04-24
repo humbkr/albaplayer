@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/humbkr/albaplayer/internal/alba/business"
-	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/domain"
 )
 
 type ArtistDbRepository struct {

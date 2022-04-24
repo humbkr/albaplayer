@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/graph-gophers/dataloader"
-	"github.com/humbkr/albaplayer/internal/alba/business"
-	"github.com/humbkr/albaplayer/internal/alba/interfaces/graph/model"
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/interfaces/graph/model"
 	"net/http"
 	"strconv"
 )
@@ -24,16 +24,16 @@ type LibraryReader struct {
 // Loaders wrap data loaders to inject via middleware
 type Loaders struct {
 	ArtistLoader *dataloader.Loader
-	AlbumLoader *dataloader.Loader
+	AlbumLoader  *dataloader.Loader
 }
 
 // NewDataLoaders instantiates data loaders for the middleware
 func NewDataLoaders(libInteractor *business.LibraryInteractor) *Loaders {
 	// define the data loader
-	libraryReader := &LibraryReader{ libraryInteractor: libInteractor }
+	libraryReader := &LibraryReader{libraryInteractor: libInteractor}
 	loaders := &Loaders{
 		ArtistLoader: dataloader.NewBatchedLoader(libraryReader.GetArtists),
-		AlbumLoader: dataloader.NewBatchedLoader(libraryReader.GetAlbums),
+		AlbumLoader:  dataloader.NewBatchedLoader(libraryReader.GetAlbums),
 	}
 
 	return loaders
@@ -82,13 +82,13 @@ func (u *LibraryReader) GetArtists(ctx context.Context, keys dataloader.Keys) []
 		keyAsInt, _ := strconv.Atoi(entityKey.String())
 		entity, ok := entitiesById[keyAsInt]
 		if ok {
-			results[index] = &dataloader.Result{ Data: entity, Error: nil }
+			results[index] = &dataloader.Result{Data: entity, Error: nil}
 		} else {
 			err := fmt.Errorf("no artist")
 			if entityKey.String() != "0" {
 				err = fmt.Errorf("artist not found %s", entityKey.String())
 			}
-			results[index] = &dataloader.Result{ Data: nil, Error: err }
+			results[index] = &dataloader.Result{Data: nil, Error: err}
 		}
 	}
 
@@ -136,13 +136,13 @@ func (u *LibraryReader) GetAlbums(ctx context.Context, keys dataloader.Keys) []*
 		keyAsInt, _ := strconv.Atoi(entityKey.String())
 		entity, ok := entitiesById[keyAsInt]
 		if ok {
-			results[index] = &dataloader.Result{ Data: entity, Error: nil }
+			results[index] = &dataloader.Result{Data: entity, Error: nil}
 		} else {
 			err := fmt.Errorf("no album")
 			if entityKey.String() != "0" {
 				err = fmt.Errorf("album not found %s", entityKey.String())
 			}
-			results[index] = &dataloader.Result{ Data: nil, Error: err }
+			results[index] = &dataloader.Result{Data: nil, Error: err}
 		}
 	}
 

@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"github.com/humbkr/albaplayer/internal/alba/business"
-	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/domain"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -92,7 +92,7 @@ func (suite *LocalFSRepoTestSuite) TestScanMediaFiles() {
 	// TODO Cannot test duration with the test file.
 	assert.Equal(suite.T(), 0, track.Duration)
 	assert.Equal(suite.T(), "Genre #3", track.Genre)
-	assert.Equal(suite.T(), "../../../testdata/mp3/artist 2/Artist 2 - Album 1 - Track 1.mp3", track.Path)
+	assert.Equal(suite.T(), "../../testdata/mp3/artist 2/Artist 2 - Album 1 - Track 1.mp3", track.Path)
 
 	// Test the album of the track.
 	var album = domain.Album{}
@@ -112,7 +112,7 @@ func (suite *LocalFSRepoTestSuite) TestScanMediaFiles() {
 	var compilationTrack = domain.Track{}
 	errCompilationTrack := suite.LocalFSRepository.AppContext.DB.SelectOne(
 		&compilationTrack,
-		"SELECT * FROM tracks WHERE path = ?", "../../../testdata/mp3/compilation/Artist 1 - Compilation - Track 1.mp3")
+		"SELECT * FROM tracks WHERE path = ?", "../../testdata/mp3/compilation/Artist 1 - Compilation - Track 1.mp3")
 	assert.Nil(suite.T(), errCompilationTrack)
 
 	var compilationAlbum = domain.Album{}

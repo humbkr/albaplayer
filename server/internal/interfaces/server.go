@@ -5,10 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/humbkr/albaplayer/internal/alba/business"
+	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/spf13/viper"
 )
-
 
 type mediaStreamHandler struct {
 	Interactor *business.LibraryInteractor

@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"log"

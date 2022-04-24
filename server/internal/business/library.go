@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/domain"
 	"github.com/spf13/viper"
 )
 
@@ -16,16 +16,16 @@ const LibraryDefaultAlbum = "Unknown album"
 const LibraryDefaultCompilationArtist = "Various artists"
 
 type LibraryInteractor struct {
-	ArtistRepository  ArtistRepository
-	AlbumRepository AlbumRepository
-	TrackRepository TrackRepository
-	CoverRepository CoverRepository
+	ArtistRepository ArtistRepository
+	AlbumRepository  AlbumRepository
+	TrackRepository  TrackRepository
+	CoverRepository  CoverRepository
 	// TODO Check if the library repo should be an interface here.
-	LibraryRepository LibraryRepository
-	MediaFileRepository MediaFileRepository
+	LibraryRepository          LibraryRepository
+	MediaFileRepository        MediaFileRepository
 	InternalVariableRepository InternalVariableRepository
-	mutex sync.Mutex
-	LibraryIsUpdating bool
+	mutex                      sync.Mutex
+	LibraryIsUpdating          bool
 }
 
 // GetArtist gets an artist by id.
@@ -39,7 +39,6 @@ func (interactor *LibraryInteractor) GetArtist(artistId int, hydrate bool) (doma
 func (interactor *LibraryInteractor) GetArtistByName(artistName string) (domain.Artist, error) {
 	return interactor.ArtistRepository.GetByName(artistName)
 }
-
 
 // GetAllArtists gets all artists.
 // If no artists found, returns an empty collection.
@@ -273,7 +272,7 @@ func (interactor *LibraryInteractor) UpdateLibrary() {
 
 	// Log the last time a scan occurred.
 	var lastUpdated = InternalVariable{
-		Key: "library_last_updated",
+		Key:   "library_last_updated",
 		Value: time.Now().Format("20060102150405"),
 	}
 	_ = interactor.InternalVariableRepository.Save(&lastUpdated)

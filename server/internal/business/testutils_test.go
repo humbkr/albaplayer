@@ -3,7 +3,7 @@ package business
 import (
 	"errors"
 	"fmt"
-	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/domain"
 	"github.com/stretchr/testify/mock"
 	"math/rand"
 	"strconv"

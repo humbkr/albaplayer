@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/domain"
 )
 
 type TrackDbRepository struct {

@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"log"
@@ -15,7 +15,7 @@ type LibraryRepoTestSuite struct {
 
 /**
 Go testing framework entry point.
- */
+*/
 func TestLibraryRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(LibraryRepoTestSuite))
 }
@@ -67,7 +67,7 @@ func (suite *LibraryRepoTestSuite) TestErase() {
 	// Test sequences.
 	type sequence struct {
 		name string
-		seq int
+		seq  int
 	}
 
 	var sequences []sequence

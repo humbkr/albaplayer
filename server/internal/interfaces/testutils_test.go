@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/go-gorp/gorp"
-	"github.com/humbkr/albaplayer/internal/alba/business"
-	"github.com/humbkr/albaplayer/internal/alba/domain"
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/domain"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/mock"
 )
@@ -23,7 +23,7 @@ import (
 Common stuff for repositories tests.
 */
 
-const TestDataDir = "../../../testdata/"
+const TestDataDir = "../../testdata/"
 const TestDatasourceFile = "test.db"
 const TestArtistsFile = TestDataDir + "artists.csv"
 const TestAlbumsFile = TestDataDir + "albums.csv"
