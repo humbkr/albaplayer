@@ -36,7 +36,10 @@ func (suite *CoverRepoTestSuite) TearDownSuite() {
 }
 
 func (suite *CoverRepoTestSuite) SetupTest() {
-	resetTestDataSource(suite.CoverRepository.AppContext.DB)
+	err := resetTestDataSource(suite.CoverRepository.AppContext.DB)
+	if err != nil {
+		return
+	}
 }
 
 func (suite *CoverRepoTestSuite) TestGet() {
@@ -115,7 +118,7 @@ func (suite *CoverRepoTestSuite) TestExists() {
 	exists := suite.CoverRepository.Exists(1)
 	assert.True(suite.T(), exists)
 
-	// Test with non existing data.
+	// Test with non-existing data.
 	exists = suite.CoverRepository.Exists(543)
 	assert.False(suite.T(), exists)
 }
@@ -125,7 +128,7 @@ func (suite *CoverRepoTestSuite) TestExistsByHash() {
 	coverId := suite.CoverRepository.ExistsByHash("88affd1fe3b0f3624550b36963b76f65")
 	assert.Equal(suite.T(), 1, coverId)
 
-	// Test with non existing data.
+	// Test with non-existing data.
 	coverId = suite.CoverRepository.ExistsByHash("00000d1fe3b0f3624550b36963b76f65")
 	assert.Equal(suite.T(), 0, coverId)
 }

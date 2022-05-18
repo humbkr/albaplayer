@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"database/sql"
 	"errors"
 	"time"
 
@@ -11,17 +12,23 @@ type AlbumDbRepository struct {
 	AppContext *AppContext
 }
 
+const selectAlbumQuery = "SELECT id, title, year, artist_id, cover_id, created_at FROM albums"
+const updateAlbumQuery = "UPDATE albums SET title = ?, year = ?, artist_id = ?, cover_id = ? WHERE id = ?"
+const insertAlbumQuery = "INSERT INTO albums(title, year, artist_id, cover_id, created_at) VALUES(?, ?, ?, ?, ?)"
+
 // Get fetches an album from the database.
 func (ar AlbumDbRepository) Get(id int, hydrate bool) (entity domain.Album, err error) {
-	object, err := ar.AppContext.DB.Get(domain.Album{}, id)
+	query := selectAlbumQuery + " WHERE id = ?"
+	rows, err := ar.AppContext.DB.Query(query, id)
+	entities, err := processAlbumRows(rows, err)
+	if err != nil || len(entities) == 0 {
+		return entity, errors.New("no album found")
+	}
 
-	if err == nil && object != nil {
-		entity = *object.(*domain.Album)
-		if hydrate {
-			ar.populateTracks(&entity)
-		}
-	} else {
-		err = errors.New("no album found")
+	entity = entities[0]
+
+	if hydrate {
+		ar.populateTracks(&entity)
 	}
 
 	return
@@ -30,174 +37,62 @@ func (ar AlbumDbRepository) Get(id int, hydrate bool) (entity domain.Album, err 
 // GetAll fetches all albums from the database.
 // Param hydrate: if true populate albums' tracks. WARNING: huge performance impact.
 func (ar AlbumDbRepository) GetAll(hydrate bool) (entities []domain.Album, err error) {
+	var query string
 	if !hydrate {
-		query := "SELECT id, title, year, artist_id, cover_id, created_at FROM albums"
-		_, err = ar.AppContext.DB.Select(&entities, query)
+		rows, err := ar.AppContext.DB.Query(selectAlbumQuery)
+		return processAlbumRows(rows, err)
 
 	} else {
-		type gorpResult struct {
-			AlbumId        int
-			AlbumTitle     string
-			AlbumYear      string
-			AlbumArtistId  int
-			AlbumCreatedAt int64
-			domain.Track
-			// Cannot select domain.album.ArtistId or domain.track.AlbumId because of a Gorp error...
-			// So we have to join on trk.album_id, but then Gorp cannot do the mapping with gorpResult, so we have
-			// to add this property in the struct. TODO get rid of gorp.
-			Album_id int
-		}
-		var results []gorpResult
-
-		query := "SELECT alb.Id AlbumId, alb.Title AlbumTitle, alb.Year AlbumYear, alb.artist_id AlbumArtistId, alb.created_at AlbumCreatedAt, trk.* " +
-			"FROM albums alb, tracks trk WHERE alb.id = trk.album_id"
-
-		_, err = ar.AppContext.DB.Select(&results, query)
-		if err == nil {
-			// Deduplicate stuff.
-			var current domain.Album
-			for _, r := range results {
-				// Build track from row.
-				track := domain.Track{
-					Id:        r.Id,
-					Title:     r.Title,
-					AlbumId:   r.AlbumId,
-					ArtistId:  r.ArtistId,
-					CoverId:   r.CoverId,
-					Disc:      r.Disc,
-					Number:    r.Number,
-					Duration:  r.Duration,
-					Genre:     r.Genre,
-					Path:      r.Path,
-					DateAdded: r.DateAdded,
-				}
-
-				// For first row or row about a new album.
-				if current.Id == 0 || r.AlbumId != current.Id {
-					// If row is about another album, save previous album.
-					if current.Id != 0 {
-						entities = append(entities, current)
-					}
-
-					// Populate the album info.
-					current = domain.Album{
-						Id:        r.AlbumId,
-						Title:     r.AlbumTitle,
-						Year:      r.AlbumYear,
-						ArtistId:  r.AlbumArtistId,
-						DateAdded: r.AlbumCreatedAt,
-					}
-				}
-
-				// Add track to current album.
-				current.Tracks = append(current.Tracks, track)
-			}
-
-			// Add last current album to the list.
-			entities = append(entities, current)
-		}
+		query = "SELECT alb.id as AlbumId, alb.title as AlbumTitle, alb.year as AlbumYear, alb.artist_id as AlbumArtistId, alb.cover_id as AlbumCoverId, alb.created_at as AlbumCreatedAt, " +
+			"trk.id as TrackId, trk.title as TrackTitle, trk.album_id as TrackAlbumId, trk.artist_id as TrackArtistId, trk.cover_id as TrackCoverId, trk.disc as TrackDisc, trk.number as TrackNumber, trk.duration as TrackDuration, trk.genre as TrackGenre, trk.path as TrackPath " +
+			"FROM albums alb, tracks trk " +
+			"WHERE alb.id = trk.album_id"
+		rows, err := ar.AppContext.DB.Query(query)
+		return processAlbumRowsHydrated(rows, err)
 	}
-
-	return
 }
 
 // GetMultiple fetches multiple albums from the database.
 func (ar AlbumDbRepository) GetMultiple(ids []int, hydrate bool) (entities []domain.Album, err error) {
 	if !hydrate {
-		query := "SELECT id, title, year, artist_id, cover_id, created_at " +
-			"FROM albums " +
-			"WHERE id IN (" + IntArrayToString(ids, ",") + ")"
-		_, err = ar.AppContext.DB.Select(&entities, query)
+		query := selectAlbumQuery + " WHERE id IN (" + IntArrayToString(ids, ",") + ")"
+		rows, err := ar.AppContext.DB.Query(query)
+		return processAlbumRows(rows, err)
 
 	} else {
-		type gorpResult struct {
-			AlbumId        int
-			AlbumTitle     string
-			AlbumYear      string
-			AlbumArtistId  int
-			AlbumCreatedAt int64
-			domain.Track
-			// Cannot select domain.album.ArtistId or domain.track.AlbumId because of a Gorp error...
-			// So we have to join on trk.album_id, but then Gorp cannot do the mapping with gorpResult, so we have
-			// to add this property in the struct. TODO get rid of gorp.
-			Album_id int
-		}
-		var results []gorpResult
-
-		query := "SELECT alb.Id AlbumId, alb.Title AlbumTitle, alb.Year AlbumYear, alb.artist_id AlbumArtistId, alb.created_at AlbumCreatedAt, trk.* " +
+		query := "SELECT alb.Id AlbumId, alb.Title AlbumTitle, alb.Year AlbumYear, alb.artist_id AlbumArtistId, alb.cover_id as AlbumCoverId, alb.created_at AlbumCreatedAt, " +
+			"trk.id as TrackId, trk.title as TrackTitle, trk.album_id as TrackAlbumId, trk.artist_id as TrackArtistId, trk.cover_id as TrackCoverId, trk.disc as TrackDisc, trk.number as TrackNumber, trk.duration as TrackDuration, trk.genre as TrackGenre, trk.path as TrackPath " +
 			"FROM albums alb, tracks trk " +
 			"WHERE alb.id = trk.album_id " +
-			"AND alb.id IN (" + IntArrayToString(ids, ",") + ")"
-
-		_, err = ar.AppContext.DB.Select(&results, query)
-		if err == nil {
-			// Deduplicate stuff.
-			var current domain.Album
-			for _, r := range results {
-				// Build track from row.
-				track := domain.Track{
-					Id:        r.Id,
-					Title:     r.Title,
-					AlbumId:   r.AlbumId,
-					ArtistId:  r.ArtistId,
-					CoverId:   r.CoverId,
-					Disc:      r.Disc,
-					Number:    r.Number,
-					Duration:  r.Duration,
-					Genre:     r.Genre,
-					Path:      r.Path,
-					DateAdded: r.DateAdded,
-				}
-
-				// For first row or row about a new album.
-				if current.Id == 0 || r.AlbumId != current.Id {
-					// If row is about another album, save previous album.
-					if current.Id != 0 {
-						entities = append(entities, current)
-					}
-
-					// Populate the album info.
-					current = domain.Album{
-						Id:        r.AlbumId,
-						Title:     r.AlbumTitle,
-						Year:      r.AlbumYear,
-						ArtistId:  r.AlbumArtistId,
-						DateAdded: r.AlbumCreatedAt,
-					}
-				}
-
-				// Add track to current album.
-				current.Tracks = append(current.Tracks, track)
-			}
-
-			// Add last current album to the list.
-			entities = append(entities, current)
-		}
+			"AND alb.id IN (?)"
+		rows, err := ar.AppContext.DB.Query(query, IntArrayToString(ids, ","))
+		return processAlbumRowsHydrated(rows, err)
 	}
-
-	return
 }
 
 // GetByName fetches an album from database from its name.
 func (ar AlbumDbRepository) GetByName(name string, artistId int) (entity domain.Album, err error) {
-	var entities []domain.Album
-	_, err = ar.AppContext.DB.Select(&entities, "SELECT * FROM albums WHERE title = ? AND artist_id = ?", name, artistId)
-
-	if err == nil {
-		if len(entities) > 0 {
-			entity = entities[0]
-		} else {
-			err = errors.New("no result found")
-		}
+	query := selectAlbumQuery + " WHERE title = ? AND artist_id = ?"
+	rows, err := ar.AppContext.DB.Query(query, name, artistId)
+	entities, err := processAlbumRows(rows, err)
+	if err != nil || len(entities) == 0 {
+		return entity, errors.New("no album found")
 	}
+
+	entity = entities[0]
 
 	return
 }
 
 // GetAlbumsForArtist fetches albums having the specified artistId from database ordered by year.
 func (ar AlbumDbRepository) GetAlbumsForArtist(artistId int, hydrate bool) (entities []domain.Album, err error) {
-	_, err = ar.AppContext.DB.Select(&entities, "SELECT * FROM albums WHERE artist_id = ? ORDER BY year", artistId)
-	if err == nil && hydrate {
+	rows, err := ar.AppContext.DB.Query(selectAlbumQuery+" WHERE artist_id = ? ORDER BY year", artistId)
+	entities, err = processAlbumRows(rows, err)
+	if err != nil {
+		return
+	}
+
+	if hydrate {
 		for i := range entities {
 			ar.populateTracks(&entities[i])
 		}
@@ -208,16 +103,39 @@ func (ar AlbumDbRepository) GetAlbumsForArtist(artistId int, hydrate bool) (enti
 
 // Save creates or updates an album in the Database.
 func (ar AlbumDbRepository) Save(entity *domain.Album) (err error) {
+	var stmt *sql.Stmt
+
 	if entity.Id != 0 {
 		// Update.
-		_, err = ar.AppContext.DB.Update(entity)
-		return
+		stmt, err = ar.AppContext.DB.Prepare(updateAlbumQuery)
+		if err != nil {
+			return
+		}
+
+		_, err = stmt.Exec(entity.Title, entity.Year, entity.ArtistId, entity.CoverId, entity.Id)
 	} else {
 		// Insert new entity.
 		entity.DateAdded = time.Now().Unix()
-		err = ar.AppContext.DB.Insert(entity)
-		return
+		stmt, err = ar.AppContext.DB.Prepare(insertAlbumQuery)
+		if err != nil {
+			return
+		}
+
+		res, err := stmt.Exec(entity.Title, entity.Year, entity.ArtistId, entity.CoverId, entity.DateAdded)
+		if err != nil {
+			return err
+		}
+
+		// Get generated entity id.
+		lastId, err := res.LastInsertId()
+		if err != nil {
+			return err
+		}
+
+		entity.Id = int(lastId)
 	}
+
+	return
 }
 
 // Delete deletes an album from the Database.
@@ -228,11 +146,14 @@ func (ar AlbumDbRepository) Delete(entity *domain.Album) (err error) {
 	}
 	tracksRepo := TrackDbRepository{AppContext: ar.AppContext}
 	for i := range entity.Tracks {
-		tracksRepo.Delete(&entity.Tracks[i])
+		err := tracksRepo.Delete(&entity.Tracks[i])
+		if err != nil {
+			return err
+		}
 	}
 
 	// Then delete album.
-	_, err = ar.AppContext.DB.Delete(entity)
+	_, err = ar.AppContext.DB.Exec("DELETE FROM albums WHERE id = ?", entity.Id)
 	return
 }
 
@@ -244,14 +165,8 @@ func (ar AlbumDbRepository) Exists(id int) bool {
 
 // Count counts the number of entities in datasource.
 func (ar AlbumDbRepository) Count() (count int, err error) {
-	type Count struct {
-		Count int
-	}
-
-	rows, err := ar.AppContext.DB.Select(Count{}, "SELECT count(*) as Count FROM albums")
-	countEntities := rows[0].(*Count)
-
-	return countEntities.Count, err
+	err = ar.AppContext.DB.QueryRow("SELECT COUNT(*) FROM albums").Scan(&count)
+	return
 }
 
 // CleanUp removes artists without tracks from DB.
@@ -266,4 +181,135 @@ func (ar AlbumDbRepository) populateTracks(album *domain.Album) {
 	if tracks, err := tracksRepo.GetTracksForAlbum(album.Id); err == nil {
 		album.Tracks = tracks
 	}
+}
+
+// Transactional functions
+
+// getAlbumByNameTransaction fetches an album from the database using a transaction.
+func getAlbumByNameTransaction(dbTransaction *sql.Tx, name string) (entity domain.Album, err error) {
+	query := selectAlbumQuery + " WHERE title = ?"
+	rows, err := dbTransaction.Query(query, name)
+	entities, err := processAlbumRows(rows, err)
+	if err != nil || len(entities) == 0 {
+		return entity, errors.New("no album found")
+	}
+
+	entity = entities[0]
+
+	return
+}
+
+// saveAlbumTransaction creates or updates an album in the Database using a transaction.
+func saveAlbumTransaction(dbTransaction *sql.Tx, entity *domain.Album) (err error) {
+	var stmt *sql.Stmt
+
+	if entity.Id != 0 {
+		// Update.
+		stmt, err = dbTransaction.Prepare(updateAlbumQuery)
+		if err != nil {
+			return
+		}
+
+		_, err = stmt.Exec(entity.Title, entity.Year, entity.ArtistId, entity.CoverId, entity.Id)
+	} else {
+		// Insert new entity.
+		entity.DateAdded = time.Now().Unix()
+		stmt, err = dbTransaction.Prepare(insertAlbumQuery)
+		if err != nil {
+			return
+		}
+
+		res, err := stmt.Exec(entity.Title, entity.Year, entity.ArtistId, entity.CoverId, entity.DateAdded)
+		if err != nil {
+			return err
+		}
+
+		// Get generated entity id.
+		lastId, err := res.LastInsertId()
+		if err != nil {
+			return err
+		}
+
+		entity.Id = int(lastId)
+	}
+
+	return
+}
+
+// Utilities.
+
+func processAlbumRows(rows *sql.Rows, error error) (entities []domain.Album, err error) {
+	if error != nil {
+		return entities, error
+	}
+
+	for rows.Next() {
+		var album domain.Album
+
+		err = rows.Scan(
+			&album.Id,
+			&album.Title,
+			&album.Year,
+			&album.ArtistId,
+			&album.CoverId,
+			&album.DateAdded,
+		)
+		if err != nil {
+			return
+		}
+
+		entities = append(entities, album)
+	}
+
+	return
+}
+
+func processAlbumRowsHydrated(rows *sql.Rows, error error) (entities []domain.Album, err error) {
+	if error != nil {
+		return entities, error
+	}
+
+	var currentAlbum domain.Album
+	for rows.Next() {
+		var album domain.Album
+		var track domain.Track
+
+		err = rows.Scan(
+			&album.Id,
+			&album.Title,
+			&album.Year,
+			&album.ArtistId,
+			&album.CoverId,
+			&album.DateAdded,
+			&track.Id,
+			&track.Title,
+			&track.AlbumId,
+			&track.ArtistId,
+			&track.CoverId,
+			&track.Disc,
+			&track.Number,
+			&track.Duration,
+			&track.Genre,
+			&track.Path,
+		)
+		if err != nil {
+			return
+		}
+
+		if currentAlbum.Id == 0 {
+			// If first album, set current album.
+			currentAlbum = album
+		} else if currentAlbum.Id != album.Id {
+			// If new album, add current album to the final results and change current album.
+			entities = append(entities, currentAlbum)
+			currentAlbum = album
+		}
+
+		currentAlbum.Tracks = append(currentAlbum.Tracks, track)
+	}
+
+	// Add last processed album.
+	entities = append(entities, currentAlbum)
+
+	return
 }

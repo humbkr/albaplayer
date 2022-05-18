@@ -10,36 +10,49 @@ type InternalVariableDbRepository struct {
 }
 
 // Get fetches a variable from the database.
-func (ivr InternalVariableDbRepository) Get(key string) (variable business.InternalVariable, err error) {
-	object, err := ivr.AppContext.DB.Get(business.InternalVariable{}, key)
-	if err == nil && object != nil {
-		variable = *object.(*business.InternalVariable)
-	} else {
-		err = errors.New("no variable found for this key")
-	}
+func (ivr InternalVariableDbRepository) Get(key string) (entity business.InternalVariable, err error) {
+	err = ivr.AppContext.DB.
+		QueryRow("SELECT key, value FROM variables WHERE key = ?", key).
+		Scan(&entity.Key, &entity.Value)
 
 	return
 }
 
 // Save creates or update a variable in the Database.
-func (ivr InternalVariableDbRepository) Save(variable *business.InternalVariable) (err error) {
-	if variable.Key == "" {
+func (ivr InternalVariableDbRepository) Save(entity *business.InternalVariable) (err error) {
+	if entity.Key == "" {
 		err = errors.New("cannot insert a variable with no key")
-		return
-	} else if ivr.Exists(variable.Key) {
+	} else if ivr.Exists(entity.Key) {
 		// Update entity.
-		_, err = ivr.AppContext.DB.Update(variable)
-		return
+		stmt, err := ivr.AppContext.DB.Prepare("UPDATE variables SET value = ? WHERE key = ?")
+		if err != nil {
+			return err
+		}
+
+		_, err = stmt.Exec(entity.Value, entity.Key)
+		if err != nil {
+			return err
+		}
 	} else {
 		// Insert new entity.
-		err = ivr.AppContext.DB.Insert(variable)
-		return
+		stmt, err := ivr.AppContext.DB.Prepare("INSERT INTO variables(key, value) " +
+			"VALUES(?, ?)")
+		if err != nil {
+			return err
+		}
+
+		_, err = stmt.Exec(entity.Key, entity.Value)
+		if err != nil {
+			return err
+		}
 	}
+
+	return
 }
 
 // Delete deletes a variable from the Database.
-func (ivr InternalVariableDbRepository) Delete(variable *business.InternalVariable) (err error) {
-	_, err = ivr.AppContext.DB.Delete(variable)
+func (ivr InternalVariableDbRepository) Delete(entity *business.InternalVariable) (err error) {
+	_, err = ivr.AppContext.DB.Exec("DELETE FROM variables WHERE key = ?", entity.Key)
 
 	return
 }

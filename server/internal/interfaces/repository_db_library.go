@@ -4,17 +4,17 @@ type LibraryDbRepository struct {
 	AppContext *AppContext
 }
 
-/*
-Erase all collection data.
-*/
-func (lr LibraryDbRepository) Erase() {
+// Erase erases all library data.
+func (lr LibraryDbRepository) Erase() error {
 	// We have to delete the tables content AND reset the sequences for ID columns.
-	lr.AppContext.DB.Exec("DELETE FROM covers")
-	lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'covers'")
-	lr.AppContext.DB.Exec("DELETE FROM tracks")
-	lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'tracks'")
-	lr.AppContext.DB.Exec("DELETE FROM albums")
-	lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'albums'")
-	lr.AppContext.DB.Exec("DELETE FROM artists")
-	lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'artists'")
+	_, err := lr.AppContext.DB.Exec("DELETE FROM covers")
+	_, err = lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'covers'")
+	_, err = lr.AppContext.DB.Exec("DELETE FROM tracks")
+	_, err = lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'tracks'")
+	_, err = lr.AppContext.DB.Exec("DELETE FROM albums")
+	_, err = lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'albums'")
+	_, err = lr.AppContext.DB.Exec("DELETE FROM artists")
+	_, err = lr.AppContext.DB.Exec("DELETE FROM sqlite_sequence WHERE name = 'artists'")
+
+	return err
 }

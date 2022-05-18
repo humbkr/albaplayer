@@ -1,7 +1,6 @@
 package interfaces
 
 import (
-	"github.com/humbkr/albaplayer/internal/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"log"
@@ -13,9 +12,7 @@ type LibraryRepoTestSuite struct {
 	LibraryRepository LibraryDbRepository
 }
 
-/**
-Go testing framework entry point.
-*/
+// Go testing framework entry point.
 func TestLibraryRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(LibraryRepoTestSuite))
 }
@@ -36,42 +33,46 @@ func (suite *LibraryRepoTestSuite) TearDownSuite() {
 }
 
 func (suite *LibraryRepoTestSuite) SetupTest() {
-	resetTestDataSource(suite.LibraryRepository.AppContext.DB)
+	err := resetTestDataSource(suite.LibraryRepository.AppContext.DB)
+	if err != nil {
+		return
+	}
 }
 
 func (suite *LibraryRepoTestSuite) TestErase() {
 	// Erase library then try to get stuff.
-	suite.LibraryRepository.Erase()
+	err := suite.LibraryRepository.Erase()
+	assert.Nil(suite.T(), err)
 
 	// Test tables.
-	var entitiesArtists []domain.Artist
-	_, err := suite.LibraryRepository.AppContext.DB.Select(&entitiesArtists, "SELECT * FROM artists")
+	_, err = suite.LibraryRepository.AppContext.DB.Query("SELECT * FROM artists")
 	assert.Nil(suite.T(), err)
-	assert.Empty(suite.T(), entitiesArtists)
 
-	var entitiesAlbums []domain.Album
-	_, err = suite.LibraryRepository.AppContext.DB.Select(&entitiesAlbums, "SELECT * FROM albums")
+	_, err = suite.LibraryRepository.AppContext.DB.Query("SELECT * FROM albums")
 	assert.Nil(suite.T(), err)
-	assert.Empty(suite.T(), entitiesAlbums)
 
-	var entitiesTracks []domain.Track
-	_, err = suite.LibraryRepository.AppContext.DB.Select(&entitiesTracks, "SELECT * FROM tracks")
+	_, err = suite.LibraryRepository.AppContext.DB.Query("SELECT * FROM tracks")
 	assert.Nil(suite.T(), err)
-	assert.Empty(suite.T(), entitiesTracks)
 
-	var entitiesCovers []domain.Cover
-	_, err = suite.LibraryRepository.AppContext.DB.Select(&entitiesCovers, "SELECT * FROM covers")
+	_, err = suite.LibraryRepository.AppContext.DB.Query("SELECT * FROM covers")
 	assert.Nil(suite.T(), err)
-	assert.Empty(suite.T(), entitiesCovers)
 
 	// Test sequences.
-	type sequence struct {
+	type Sequence struct {
 		name string
 		seq  int
 	}
 
-	var sequences []sequence
-	_, err = suite.LibraryRepository.AppContext.DB.Select(&sequences, "SELECT * FROM sqlite_sequence")
+	var sequences []Sequence
+	rows, err := suite.LibraryRepository.AppContext.DB.Query("SELECT * FROM sqlite_sequence")
+	assert.Nil(suite.T(), err)
+
+	for rows.Next() {
+		var sequence Sequence
+
+		err := rows.Scan(&sequence.name, &sequence.seq)
+		assert.Nil(suite.T(), err)
+	}
 
 	for _, val := range sequences {
 		assert.Equal(suite.T(), 0, val.seq)

@@ -1,27 +1,25 @@
 package interfaces
 
 import (
+	"database/sql"
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/domain"
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/stretchr/testify/mock"
 	"io"
 	"log"
 	"math/rand"
 	"os"
 	"strconv"
 	"time"
-
-	"github.com/go-gorp/gorp"
-	"github.com/humbkr/albaplayer/internal/business"
-	"github.com/humbkr/albaplayer/internal/domain"
-	_ "github.com/mattn/go-sqlite3"
-	"github.com/stretchr/testify/mock"
 )
 
 /*
-@file
-Common stuff for repositories tests.
-*/
+ * Common stuff for repositories tests.
+ */
 
 const TestDataDir = "../../testdata/"
 const TestDatasourceFile = "test.db"
@@ -33,174 +31,159 @@ const TestFSLibDir = TestDataDir + "mp3"
 const TestFSEmptyLibDir = TestDataDir + "empty_library"
 
 // Initialises the application test datasource.
-func createTestDatasource() (ds Datasource, err error) {
+func createTestDatasource() (ds *sql.DB, err error) {
+	log.Println("Create test db: " + os.TempDir() + TestDatasourceFile)
 	return InitAlbaDatasource("sqlite3", os.TempDir()+TestDatasourceFile)
 }
 
-func clearTestDataSource(ds Datasource) error {
-	if dbmap, ok := ds.(*gorp.DbMap); ok == true {
-		dbmap.Exec("DELETE FROM covers")
-		dbmap.Exec("DELETE FROM sqlite_sequence WHERE name = 'covers'")
-		dbmap.Exec("DELETE FROM tracks")
-		dbmap.Exec("DELETE FROM sqlite_sequence WHERE name = 'tracks'")
-		dbmap.Exec("DELETE FROM albums")
-		dbmap.Exec("DELETE FROM sqlite_sequence WHERE name = 'albums'")
-		dbmap.Exec("DELETE FROM artists")
-		dbmap.Exec("DELETE FROM sqlite_sequence WHERE name = 'artists'")
-		dbmap.Exec("DELETE FROM variables")
-		dbmap.Exec("DELETE FROM sqlite_sequence WHERE name = 'variables'")
-	}
+func clearTestDataSource(ds *sql.DB) error {
+	_, err := ds.Exec("DELETE FROM covers")
+	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'covers'")
+	_, err = ds.Exec("DELETE FROM tracks")
+	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'tracks'")
+	_, err = ds.Exec("DELETE FROM albums")
+	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'albums'")
+	_, err = ds.Exec("DELETE FROM artists")
+	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'artists'")
+	_, err = ds.Exec("DELETE FROM variables")
+	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'variables'")
 
-	return nil
+	return err
 }
-func resetTestDataSource(ds Datasource) error {
+func resetTestDataSource(ds *sql.DB) error {
 	err := clearTestDataSource(ds)
 	err = initTestDataSource(ds)
 
 	return err
 }
 
-func closeTestDataSource(ds Datasource) error {
-	if dbmap, ok := ds.(*gorp.DbMap); ok == true {
-		dbmap.Db.Close()
-
-		return os.Remove(os.TempDir() + TestDatasourceFile)
+func closeTestDataSource(ds *sql.DB) error {
+	err := ds.Close()
+	if err != nil {
+		return err
 	}
-	return nil
+
+	return os.Remove(os.TempDir() + TestDatasourceFile)
 }
 
 // Populate the database with test data from csv.
-func initTestDataSource(ds Datasource) (err error) {
-	if dbmap, ok := ds.(*gorp.DbMap); ok == true {
-		// Artists.
-		dbmap.Exec("INSERT INTO artists(id, name, created_at) VALUES(?, ?, ?)", 1, business.LibraryDefaultCompilationArtist, time.Now().Unix())
+func initTestDataSource(ds *sql.DB) (err error) {
+	// Artists.
+	ds.Exec("INSERT INTO artists(id, name, created_at) VALUES(?, ?, ?)", 1, business.LibraryDefaultCompilationArtist, time.Now().Unix())
 
-		file, errOpen := os.OpenFile(TestArtistsFile, os.O_RDONLY, 0666)
-		if errOpen != nil {
-			fmt.Println(errOpen)
-		}
-
-		r := csv.NewReader(file)
-		for {
-			record, err := r.Read()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			// Insert the row in database.
-			dbmap.Exec("INSERT INTO artists(id, name, created_at) VALUES(?, ?, ?)", record[0], record[1], time.Now().Unix())
-		}
-		file.Close()
-
-		// Albums.
-		file, errOpen = os.OpenFile(TestAlbumsFile, os.O_RDONLY, 0666)
-		if errOpen != nil {
-			fmt.Println(errOpen)
-		}
-
-		r = csv.NewReader(file)
-		for {
-			record, err := r.Read()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			// Insert the row in database.
-			dbmap.Exec(
-				"INSERT INTO albums(id, artist_id, title, year, cover_id, created_at) VALUES(?, ?, ?, ?, ?, ?)",
-				record[0],
-				record[1],
-				record[2],
-				record[3],
-				record[4],
-				time.Now().Unix(),
-			)
-		}
-		file.Close()
-
-		// Tracks.
-		file, errOpen = os.OpenFile(TestTracksFile, os.O_RDONLY, 0666)
-		if errOpen != nil {
-			fmt.Println(errOpen)
-		}
-
-		r = csv.NewReader(file)
-		for {
-			record, err := r.Read()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			// Insert the row in database.
-			dbmap.Exec(
-				"INSERT INTO tracks(id, album_id, artist_id, cover_id, title, disc, number, duration, genre, path, created_at) VALUES(?, ?, ?, ?, ? ,? ,?, ?, ?, ?, ?)",
-				record[0],
-				record[1],
-				record[2],
-				record[3],
-				record[4],
-				record[5],
-				record[6],
-				record[7],
-				record[8],
-				record[9],
-				time.Now().Unix(),
-			)
-		}
-		file.Close()
-
-		// Covers.
-		file, errOpen = os.OpenFile(TestCoversFile, os.O_RDONLY, 0666)
-		if errOpen != nil {
-			fmt.Println(errOpen)
-		}
-
-		r = csv.NewReader(file)
-		for {
-			record, err := r.Read()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			// Insert the row in database.
-			dbmap.Exec("INSERT INTO covers(id, path, hash) VALUES(?, ?, ?)", record[0], record[1], record[2])
-		}
-		file.Close()
-
-		// Variables
-		dbmap.Exec("INSERT INTO variables(key, value) VALUES('var_key', 'var_value')")
+	file, errOpen := os.OpenFile(TestArtistsFile, os.O_RDONLY, 0666)
+	if errOpen != nil {
+		fmt.Println(errOpen)
 	}
+
+	r := csv.NewReader(file)
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Insert the row in database.
+		ds.Exec("INSERT INTO artists(id, name, created_at) VALUES(?, ?, ?)", record[0], record[1], time.Now().Unix())
+	}
+	file.Close()
+
+	// Albums.
+	file, errOpen = os.OpenFile(TestAlbumsFile, os.O_RDONLY, 0666)
+	if errOpen != nil {
+		fmt.Println(errOpen)
+	}
+
+	r = csv.NewReader(file)
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Insert the row in database.
+		ds.Exec(
+			"INSERT INTO albums(id, artist_id, title, year, cover_id, created_at) VALUES(?, ?, ?, ?, ?, ?)",
+			record[0],
+			record[1],
+			record[2],
+			record[3],
+			record[4],
+			time.Now().Unix(),
+		)
+	}
+	file.Close()
+
+	// Tracks.
+	file, errOpen = os.OpenFile(TestTracksFile, os.O_RDONLY, 0666)
+	if errOpen != nil {
+		fmt.Println(errOpen)
+	}
+
+	r = csv.NewReader(file)
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Insert the row in database.
+		ds.Exec(
+			"INSERT INTO tracks(id, album_id, artist_id, cover_id, title, disc, number, duration, genre, path, created_at) VALUES(?, ?, ?, ?, ? ,? ,?, ?, ?, ?, ?)",
+			record[0],
+			record[1],
+			record[2],
+			record[3],
+			record[4],
+			record[5],
+			record[6],
+			record[7],
+			record[8],
+			record[9],
+			time.Now().Unix(),
+		)
+	}
+	file.Close()
+
+	// Covers.
+	file, errOpen = os.OpenFile(TestCoversFile, os.O_RDONLY, 0666)
+	if errOpen != nil {
+		fmt.Println(errOpen)
+	}
+
+	r = csv.NewReader(file)
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Insert the row in database.
+		ds.Exec("INSERT INTO covers(id, path, hash) VALUES(?, ?, ?)", record[0], record[1], record[2])
+	}
+	file.Close()
+
+	// Variables
+	ds.Exec("INSERT INTO variables(key, value) VALUES('var_key', 'var_value')")
 
 	return nil
 }
 
-func createMockLibraryInteractor() *business.LibraryInteractor {
-	interactor := new(business.LibraryInteractor)
-	interactor.ArtistRepository = new(artistRepositoryMock)
-	interactor.AlbumRepository = new(albumRepositoryMock)
-	interactor.TrackRepository = new(trackRepositoryMock)
-	interactor.CoverRepository = new(coverRepositoryMock)
-	interactor.MediaFileRepository = new(mediaRepositoryMock)
-	interactor.InternalVariableRepository = new(InternalVariableRepositoryMock)
-
-	return interactor
-}
-
 /*
-Mock for artist repository.
-*/
+ * Mock for artist repository.
+ */
 
 type artistRepositoryMock struct {
 	mock.Mock

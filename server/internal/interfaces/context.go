@@ -1,5 +1,7 @@
 package interfaces
 
+import "database/sql"
+
 type AppContext struct {
-	DB Datasource
+	DB *sql.DB
 }

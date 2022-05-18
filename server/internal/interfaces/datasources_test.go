@@ -4,7 +4,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-gorp/gorp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -27,10 +26,8 @@ func (suite *DatasourcesTestSuite) TestInitAlbaDatasource() {
 	assert.Nil(suite.T(), err)
 	assert.NotNil(suite.T(), ds)
 
-	// Close datasource and remove test file.
-	if dbmap, ok := ds.(*gorp.DbMap); ok == true {
-		_ = dbmap.Db.Close()
-	}
+	errClose := ds.Close()
+	assert.Nil(suite.T(), errClose)
 
 	// Test with an invalid path.
 	// Test creating the datasource.
@@ -38,10 +35,8 @@ func (suite *DatasourcesTestSuite) TestInitAlbaDatasource() {
 	assert.NotNil(suite.T(), err)
 	assert.Nil(suite.T(), ds)
 
-	// Close datasource and remove test file.
-	if dbmap, ok := ds.(*gorp.DbMap); ok == true {
-		_ = dbmap.Db.Close()
-	}
+	// No need to close.
+	// ds.Close()
 
 	// Test with an invalid driver.
 	// Test creating the datasource.
@@ -49,8 +44,6 @@ func (suite *DatasourcesTestSuite) TestInitAlbaDatasource() {
 	assert.NotNil(suite.T(), err)
 	assert.Nil(suite.T(), ds)
 
-	// Close datasource and remove test file.
-	if dbmap, ok := ds.(*gorp.DbMap); ok == true {
-		_ = dbmap.Db.Close()
-	}
+	// No need to close.
+	// ds.Close()
 }

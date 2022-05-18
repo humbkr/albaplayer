@@ -13,9 +13,7 @@ type TrackRepoTestSuite struct {
 	TrackRepository TrackDbRepository
 }
 
-/**
-Go testing framework entry point.
-*/
+// Go testing framework entry point.
 func TestTrackRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(TrackRepoTestSuite))
 }
@@ -36,7 +34,10 @@ func (suite *TrackRepoTestSuite) TearDownSuite() {
 }
 
 func (suite *TrackRepoTestSuite) SetupTest() {
-	resetTestDataSource(suite.TrackRepository.AppContext.DB)
+	err := resetTestDataSource(suite.TrackRepository.AppContext.DB)
+	if err != nil {
+		return
+	}
 }
 
 func (suite *TrackRepoTestSuite) TestGet() {
@@ -180,8 +181,7 @@ func (suite *TrackRepoTestSuite) TestSave() {
 	assert.Equal(suite.T(), "Thrash Metal", updatedTrack.Genre)
 	assert.Equal(suite.T(), "/home/test/music/artist test/album test/05 - Update track test.mp3", updatedTrack.Path)
 
-	// Test to insert a new track with a prepopulated trackId (= update a non existant track).
-	// Note: it seems gorp.Dbmap.Update() fails silently.
+	// Test to insert a new track with a pre-populated trackId (= update a non-existent track).
 	newTrackWithId := &domain.Track{
 		Id:    88,
 		Title: "New track bogus id",
@@ -213,7 +213,7 @@ func (suite *TrackRepoTestSuite) TestExists() {
 	exists := suite.TrackRepository.Exists(1)
 	assert.True(suite.T(), exists)
 
-	// Test with non existing data.
+	// Test with non-existing data.
 	exists = suite.TrackRepository.Exists(543)
 	assert.False(suite.T(), exists)
 }

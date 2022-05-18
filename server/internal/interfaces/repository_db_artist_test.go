@@ -38,7 +38,10 @@ func (suite *ArtistRepoTestSuite) TearDownSuite() {
 }
 
 func (suite *ArtistRepoTestSuite) SetupTest() {
-	resetTestDataSource(suite.ArtistRepository.AppContext.DB)
+	err := resetTestDataSource(suite.ArtistRepository.AppContext.DB)
+	if err != nil {
+		return
+	}
 }
 
 func (suite *ArtistRepoTestSuite) TestGet() {
@@ -227,7 +230,7 @@ func (suite *ArtistRepoTestSuite) TestExists() {
 	exists := suite.ArtistRepository.Exists(1)
 	assert.True(suite.T(), exists)
 
-	// Test with non existing data.
+	// Test with non-existing data.
 	exists = suite.ArtistRepository.Exists(543)
 	assert.False(suite.T(), exists)
 }
@@ -239,25 +242,23 @@ func (suite *ArtistRepoTestSuite) TestCleanUp() {
 	err := suite.ArtistRepository.Save(&artist)
 	assert.Nil(suite.T(), err)
 
-	artistWithoutTracks := domain.Artist{}
-	errGet := suite.ArtistRepository.AppContext.DB.SelectOne(&artistWithoutTracks, "SELECT * FROM artists WHERE name = ?", artist.Name)
+	// Check artist has been created.
+	_, errGet := suite.ArtistRepository.GetByName(artist.Name)
 	assert.Nil(suite.T(), errGet)
 
-	variousArtists := domain.Artist{}
-	errGetVarious := suite.ArtistRepository.AppContext.DB.SelectOne(&variousArtists, "SELECT * FROM artists WHERE name = ?", business.LibraryDefaultCompilationArtist)
+	// Check various artists exists.
+	_, errGetVarious := suite.ArtistRepository.GetByName(business.LibraryDefaultCompilationArtist)
 	assert.Nil(suite.T(), errGetVarious)
 
 	errCleanUp := suite.ArtistRepository.CleanUp()
 	assert.Nil(suite.T(), errCleanUp)
 
 	// Check orphan artist has been deleted.
-	nonExistantArtist := domain.Artist{}
-	errGetNonExistant := suite.ArtistRepository.AppContext.DB.SelectOne(&nonExistantArtist, "SELECT * FROM artists WHERE name = ?", artist.Name)
-	assert.NotNil(suite.T(), errGetNonExistant)
+	_, errGetNonExistent := suite.ArtistRepository.GetByName(artist.Name)
+	assert.NotNil(suite.T(), errGetNonExistent)
 
 	// Check Various artists has not been deleted
-	variousArtists = domain.Artist{}
-	errGetVarious = suite.ArtistRepository.AppContext.DB.SelectOne(&variousArtists, "SELECT * FROM artists WHERE name = ?", business.LibraryDefaultCompilationArtist)
+	_, errGetVarious = suite.ArtistRepository.GetByName(business.LibraryDefaultCompilationArtist)
 	assert.Nil(suite.T(), errGetVarious)
 }
 

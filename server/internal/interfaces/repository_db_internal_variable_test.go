@@ -14,8 +14,8 @@ type InternalVariableRepoTestSuite struct {
 }
 
 /**
-Go testing framework entry point.
-*/
+ * Go testing framework entry point.
+ */
 func TestInternalVariableRepoTestSuite(t *testing.T) {
 	suite.Run(t, new(InternalVariableRepoTestSuite))
 }

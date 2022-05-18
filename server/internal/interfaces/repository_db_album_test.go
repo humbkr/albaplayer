@@ -34,7 +34,10 @@ func (suite *AlbumRepoTestSuite) TearDownSuite() {
 }
 
 func (suite *AlbumRepoTestSuite) SetupTest() {
-	resetTestDataSource(suite.AlbumRepository.AppContext.DB)
+	err := resetTestDataSource(suite.AlbumRepository.AppContext.DB)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (suite *AlbumRepoTestSuite) TestGet() {
@@ -268,19 +271,19 @@ func (suite *AlbumRepoTestSuite) TestExists() {
 
 func (suite *AlbumRepoTestSuite) TestCleanUp() {
 	album := domain.Album{
-		Title: "Album without tracks",
+		Title:    "Album without tracks",
+		ArtistId: 1,
 	}
 	err := suite.AlbumRepository.Save(&album)
 	assert.Nil(suite.T(), err)
 
-	nonExistentAlbum := domain.Album{}
-	errGet := suite.AlbumRepository.AppContext.DB.SelectOne(&nonExistentAlbum, "SELECT * FROM albums WHERE title = ?", album.Title)
+	_, errGet := suite.AlbumRepository.GetByName(album.Title, 1)
 	assert.Nil(suite.T(), errGet)
 
 	errCleanUp := suite.AlbumRepository.CleanUp()
 	assert.Nil(suite.T(), errCleanUp)
 
-	errGet = suite.AlbumRepository.AppContext.DB.SelectOne(&nonExistentAlbum, "SELECT * FROM albums WHERE title = ?", album.Title)
+	_, errGet = suite.AlbumRepository.GetByName(album.Title, 1)
 	assert.NotNil(suite.T(), errGet)
 }
 

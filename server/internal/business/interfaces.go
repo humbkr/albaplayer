@@ -143,7 +143,7 @@ type InternalVariableRepository interface {
 }
 
 type LibraryRepository interface {
-	Erase()
+	Erase() error
 }
 
 // MediaFileRepository is an interface describing the storage mechanism for media.

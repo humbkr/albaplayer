@@ -15,6 +15,10 @@ import (
 type LocalFSRepoTestSuite struct {
 	suite.Suite
 	LocalFSRepository LocalFilesystemRepository
+	ArtistRepository  ArtistDbRepository
+	AlbumRepository   AlbumDbRepository
+	TrackRepository   TrackDbRepository
+	CoverRepository   CoverDbRepository
 }
 
 // Go testing framework entry point.
@@ -46,6 +50,10 @@ func (suite *LocalFSRepoTestSuite) SetupSuite() {
 
 	appContext := AppContext{DB: ds}
 	suite.LocalFSRepository = LocalFilesystemRepository{AppContext: &appContext}
+	suite.ArtistRepository = ArtistDbRepository{AppContext: &appContext}
+	suite.AlbumRepository = AlbumDbRepository{AppContext: &appContext}
+	suite.TrackRepository = TrackDbRepository{AppContext: &appContext}
+	suite.CoverRepository = CoverDbRepository{AppContext: &appContext}
 }
 
 func (suite *LocalFSRepoTestSuite) TearDownSuite() {
@@ -58,11 +66,11 @@ func (suite *LocalFSRepoTestSuite) TearDownSuite() {
 func (suite *LocalFSRepoTestSuite) SetupTest() {}
 
 /*
-Blackbox tests.
-*/
+ * Blackbox tests.
+ */
 
 func (suite *LocalFSRepoTestSuite) TestScanMediaFiles() {
-	// Test with non existing directory.
+	// Test with non-existing directory.
 	_, _, err := suite.LocalFSRepository.ScanMediaFiles("/what/ever")
 	assert.NotNil(suite.T(), err)
 
@@ -77,13 +85,17 @@ func (suite *LocalFSRepoTestSuite) TestScanMediaFiles() {
 	assert.Equal(suite.T(), 0, added)
 
 	// Test that info has been inserted in database.
-	var defaultCompilationArtist = domain.Artist{}
-	errGetDefaultCompilationArtist := suite.LocalFSRepository.AppContext.DB.SelectOne(&defaultCompilationArtist, "SELECT * FROM artists WHERE name = ?", business.LibraryDefaultCompilationArtist)
+	_, errGetDefaultCompilationArtist := suite.ArtistRepository.GetByName(business.LibraryDefaultCompilationArtist)
 	assert.Nil(suite.T(), errGetDefaultCompilationArtist)
 
 	// Test track.
-	var track = domain.Track{}
-	errGet := suite.LocalFSRepository.AppContext.DB.SelectOne(&track, "SELECT * FROM tracks WHERE title = ?", "Artist #2 - Album #1 - Track #1")
+	var track domain.Track
+	errGet := suite.TrackRepository.AppContext.DB.
+		QueryRow(
+			"SELECT id, title, album_id, artist_id, cover_id, disc, number, duration, genre, path, created_at FROM tracks WHERE title = ?",
+			"Artist #2 - Album #1 - Track #1",
+		).
+		Scan(&track.Id, &track.Title, &track.AlbumId, &track.ArtistId, &track.CoverId, &track.Disc, &track.Number, &track.Duration, &track.Genre, &track.Path, &track.DateAdded)
 	assert.Nil(suite.T(), errGet)
 	assert.Equal(suite.T(), "Artist #2 - Album #1 - Track #1", track.Title)
 	assert.Equal(suite.T(), 0, track.CoverId)
@@ -95,36 +107,31 @@ func (suite *LocalFSRepoTestSuite) TestScanMediaFiles() {
 	assert.Equal(suite.T(), "../../testdata/mp3/artist 2/Artist 2 - Album 1 - Track 1.mp3", track.Path)
 
 	// Test the album of the track.
-	var album = domain.Album{}
-	errGetAlbum := suite.LocalFSRepository.AppContext.DB.SelectOne(&album, "SELECT * FROM albums WHERE id = ?", track.AlbumId)
+	album, errGetAlbum := suite.AlbumRepository.Get(track.AlbumId, false)
 	assert.Nil(suite.T(), errGetAlbum)
 	assert.Equal(suite.T(), "Artist #2 - Album #1", album.Title)
 	assert.Equal(suite.T(), "2017", album.Year)
 	assert.Equal(suite.T(), 0, album.CoverId)
 
 	// Test the artist of the track.
-	var artist = domain.Artist{}
-	errGetArtist := suite.LocalFSRepository.AppContext.DB.SelectOne(&artist, "SELECT * FROM artists WHERE id = ?", track.ArtistId)
+	artist, errGetArtist := suite.ArtistRepository.Get(track.ArtistId, false)
 	assert.Nil(suite.T(), errGetArtist)
 	assert.Equal(suite.T(), "Artist #2", artist.Name)
 
 	// Test compilations processing.
 	var compilationTrack = domain.Track{}
-	errCompilationTrack := suite.LocalFSRepository.AppContext.DB.SelectOne(
-		&compilationTrack,
-		"SELECT * FROM tracks WHERE path = ?", "../../testdata/mp3/compilation/Artist 1 - Compilation - Track 1.mp3")
+	errCompilationTrack := suite.TrackRepository.AppContext.DB.
+		QueryRow(
+			"SELECT id, title, album_id, artist_id, cover_id, disc, number, duration, genre, path, created_at FROM tracks WHERE path = ?",
+			"../../testdata/mp3/compilation/Artist 1 - Compilation - Track 1.mp3",
+		).
+		Scan(&compilationTrack.Id, &compilationTrack.Title, &compilationTrack.AlbumId, &compilationTrack.ArtistId, &compilationTrack.CoverId, &compilationTrack.Disc, &compilationTrack.Number, &compilationTrack.Duration, &compilationTrack.Genre, &compilationTrack.Path, &compilationTrack.DateAdded)
 	assert.Nil(suite.T(), errCompilationTrack)
 
-	var compilationAlbum = domain.Album{}
-	errCompilationAlbum := suite.LocalFSRepository.AppContext.DB.SelectOne(
-		&compilationAlbum,
-		"SELECT * FROM albums WHERE id = ?", compilationTrack.AlbumId)
+	compilationAlbum, errCompilationAlbum := suite.AlbumRepository.Get(compilationTrack.AlbumId, false)
 	assert.Nil(suite.T(), errCompilationAlbum)
 
-	var compilationAlbumArtist = domain.Artist{}
-	errCompilationAlbumArtist := suite.LocalFSRepository.AppContext.DB.SelectOne(
-		&compilationAlbumArtist,
-		"SELECT * FROM artists WHERE id = ?", compilationAlbum.ArtistId)
+	compilationAlbumArtist, errCompilationAlbumArtist := suite.ArtistRepository.Get(compilationAlbum.ArtistId, false)
 	assert.Nil(suite.T(), errCompilationAlbumArtist)
 	assert.Equal(suite.T(), business.LibraryDefaultCompilationArtist, compilationAlbumArtist.Name)
 
@@ -136,7 +143,7 @@ func (suite *LocalFSRepoTestSuite) TestMediaFileExists() {
 	exists := suite.LocalFSRepository.MediaFileExists(TestFSLibDir + "/no artist - no album - no title.mp3")
 	assert.True(suite.T(), exists)
 
-	// Test with a non existing media file.
+	// Test with a non-existing media file.
 	exists = suite.LocalFSRepository.MediaFileExists(TestFSLibDir + "/whatever.mp3")
 	assert.False(suite.T(), exists)
 }
@@ -146,10 +153,10 @@ func (suite *LocalFSRepoTestSuite) TestMediaFileExists() {
 // TODO test LocalFSRepository.DeleteCovers.
 
 /*
-Below are whitebox (internal) tests.
-*/
+ * Below are whitebox (internal) tests.
+ */
 
-// TODO Cannot test these functions directly because gorp.Transaction is not abstracted.
+// TODO Cannot test these functions directly because Transaction is not abstracted.
 func (suite *LocalFSRepoTestSuite) TestProcessArtist()          {}
 func (suite *LocalFSRepoTestSuite) TestProcessAlbum()           {}
 func (suite *LocalFSRepoTestSuite) TestProcessTrack()           {}
@@ -225,7 +232,7 @@ func (suite *LocalFSRepoTestSuite) TestGetMetadataFromFile() {
 	assert.Equal(suite.T(), "jpg", meta.Picture.Ext)
 	assert.NotEmpty(suite.T(), meta.Picture.Data)
 
-	// Test with non existant file.
+	// Test with non-existing file.
 	meta, err = getMetadataFromFile("non/existant/file.mp3")
 	assert.NotNil(suite.T(), err)
 

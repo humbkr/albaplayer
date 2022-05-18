@@ -31,7 +31,9 @@ type LibraryRepositoryMock struct {
 	mock.Mock
 }
 
-func (m *LibraryRepositoryMock) Erase() {}
+func (m *LibraryRepositoryMock) Erase() error {
+	return nil
+}
 
 // Mock for artist repository.
 type ArtistRepositoryMock struct {

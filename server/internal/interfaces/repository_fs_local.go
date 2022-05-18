@@ -3,8 +3,13 @@ package interfaces
 import (
 	"bytes"
 	"crypto/md5"
+	"database/sql"
 	"encoding/hex"
 	"errors"
+	"github.com/dhowden/tag"
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/domain"
+	"github.com/spf13/viper"
 	"io"
 	"io/ioutil"
 	"log"
@@ -13,13 +18,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
-
-	"github.com/dhowden/tag"
-	"github.com/go-gorp/gorp"
-	"github.com/humbkr/albaplayer/internal/business"
-	"github.com/humbkr/albaplayer/internal/domain"
-	"github.com/spf13/viper"
 )
 
 var validCoverExtensions = []string{
@@ -63,32 +61,31 @@ type LocalFilesystemRepository struct {
 func (r LocalFilesystemRepository) ScanMediaFiles(path string) (processed int, added int, err error) {
 	log.Println("scan folder " + path)
 
-	// TODO Find a way to not have to get the datasource implementation.
-	gorpDbMap, ok := r.AppContext.DB.(*gorp.DbMap)
-	if !ok {
-		log.Fatal("Cannot get underlying gorp dbmap")
-	}
-
-	dbTransaction, _ := gorpDbMap.Begin()
+	dbTransaction, _ := r.AppContext.DB.Begin()
 
 	// Get the artist id of "Various artists" (always created before we start scanning).
 	var variousArtistsId int
-	var entities []domain.Artist
-	_, transErr := dbTransaction.Select(&entities, "SELECT * FROM artists WHERE name = ?", business.LibraryDefaultCompilationArtist)
-	if transErr == nil {
-		if len(entities) > 0 {
-			variousArtistsId = entities[0].Id
-		}
+	err = dbTransaction.
+		QueryRow("SELECT id FROM artists WHERE name = ?", business.LibraryDefaultCompilationArtist).
+		Scan(&variousArtistsId)
+	if err != nil {
+		dbTransaction.Rollback()
+		return 0, 0, err
 	}
 
 	err = scanDirectory(path, variousArtistsId, dbTransaction)
-	dbTransaction.Commit()
+	if err != nil {
+		dbTransaction.Rollback()
+		return 0, 0, err
+	}
+
+	err = dbTransaction.Commit()
 
 	return
 }
 
 // scanDirectory recursively browses a directory and import / update all the audio files in the database.
-func scanDirectory(path string, variousArtistsId int, dbTransaction *gorp.Transaction) (err error) {
+func scanDirectory(path string, variousArtistsId int, dbTransaction *sql.Tx) (err error) {
 	if _, err = os.Stat(path); os.IsNotExist(err) {
 		return
 	}
@@ -134,7 +131,7 @@ func scanDirectory(path string, variousArtistsId int, dbTransaction *gorp.Transa
 	return
 }
 
-func processMediaFiles(mediaFiles map[string][]mediaMetadata, cover string, variousArtistsId int, dbTransaction *gorp.Transaction) {
+func processMediaFiles(mediaFiles map[string][]mediaMetadata, cover string, variousArtistsId int, dbTransaction *sql.Tx) {
 	// MediaFiles is a map of albums found in one directory.
 	uniqueAlbum := len(mediaFiles) < 2
 
@@ -234,37 +231,20 @@ func (r LocalFilesystemRepository) DeleteCovers() error {
 
 // processArtist saves an artist info in the database.
 // Returns an artist id.
-func processArtist(dbTransaction *gorp.Transaction, metadata *mediaMetadata) (id int, err error) {
+func processArtist(dbTransaction *sql.Tx, metadata *mediaMetadata) (id int, err error) {
 	// Process artist if any.
 	if metadata.Artist != "" {
-		artist := domain.Artist{}
-
 		// See if the artist exists and if so instantiate it with existing data.
-		var entities []domain.Artist
-		// TODO Bad! Persistance layer should be abstracted!
-		_, transErr := dbTransaction.Select(&entities, "SELECT * FROM artists WHERE name = ?", metadata.Artist)
-		if transErr == nil {
-			if len(entities) > 0 {
-				artist = entities[0]
-			}
-		}
+		artist, _ := getArtistByNameTransaction(dbTransaction, metadata.Artist)
 
 		artist.Name = metadata.Artist
 
-		if artist.Id != 0 {
-			// Update.
-			_, err = dbTransaction.Update(&artist)
-		} else {
-			// Insert new entity.
-			artist.DateAdded = time.Now().Unix()
-			err = dbTransaction.Insert(&artist)
-
-		}
+		err = saveArtistTransaction(dbTransaction, &artist)
 		if err == nil {
 			id = artist.Id
 		}
 
-		return
+		return id, err
 	}
 
 	return 0, errors.New("no artist to process")
@@ -272,18 +252,10 @@ func processArtist(dbTransaction *gorp.Transaction, metadata *mediaMetadata) (id
 
 // processAlbum saves an album info in the database.
 // Returns an album id.
-func processAlbum(dbTransaction *gorp.Transaction, metadata *mediaMetadata, artistId int, coverId int) (id int, err error) {
+func processAlbum(dbTransaction *sql.Tx, metadata *mediaMetadata, artistId int, coverId int) (id int, err error) {
 	if metadata.Album != "" {
-		album := domain.Album{}
 		// See if the album exists and if so instantiate it with existing data.
-		var entities []domain.Album
-		// TODO Bad! Persistance layer should be abstracted!
-		_, transErr := dbTransaction.Select(&entities, "SELECT * FROM albums WHERE title = ? AND artist_id = ?", metadata.Album, artistId)
-		if transErr == nil {
-			if len(entities) > 0 {
-				album = entities[0]
-			}
-		}
+		album, _ := getAlbumByNameTransaction(dbTransaction, metadata.Album)
 
 		album.Title = metadata.Album
 		album.ArtistId = artistId
@@ -291,20 +263,12 @@ func processAlbum(dbTransaction *gorp.Transaction, metadata *mediaMetadata, arti
 		album.Year = metadata.Year
 		album.CoverId = coverId
 
-		if album.Id != 0 {
-			// Update.
-			_, err = dbTransaction.Update(&album)
-		} else {
-			// Insert new entity.
-			album.DateAdded = time.Now().Unix()
-			err = dbTransaction.Insert(&album)
-		}
-
+		err = saveAlbumTransaction(dbTransaction, &album)
 		if err == nil {
 			id = album.Id
 		}
 
-		return
+		return id, err
 	}
 
 	return 0, errors.New("no album to process")
@@ -312,16 +276,9 @@ func processAlbum(dbTransaction *gorp.Transaction, metadata *mediaMetadata, arti
 
 // processTrack saves a track info in the database.
 // Returns a track id.
-func processTrack(dbTransaction *gorp.Transaction, metadata *mediaMetadata, artistId int, albumId int, coverId int) (id int, err error) {
-	track := domain.Track{}
-
+func processTrack(dbTransaction *sql.Tx, metadata *mediaMetadata, artistId int, albumId int, coverId int) (id int, err error) {
 	// See if the track exists and if so instantiate it with existing data.
-	var entities []domain.Track
-	// TODO Bad! Persistance layer should be abstracted!
-	_, transErr := dbTransaction.Select(&entities, "SELECT * FROM tracks WHERE path = ?", metadata.Path)
-	if transErr == nil && len(entities) > 0 {
-		track = entities[0]
-	}
+	track, _ := getTrackByNameTransaction(dbTransaction, metadata.Title)
 
 	track.ArtistId = artistId
 	track.AlbumId = albumId
@@ -333,27 +290,21 @@ func processTrack(dbTransaction *gorp.Transaction, metadata *mediaMetadata, arti
 	track.Duration = metadata.Duration
 	track.Path = metadata.Path
 
-	if track.Id != 0 {
-		// Update.
-		_, err = dbTransaction.Update(&track)
-	} else {
-		// Insert new entity.
-		track.DateAdded = time.Now().Unix()
-		err = dbTransaction.Insert(&track)
+	err = saveTrackTransaction(dbTransaction, &track)
+	if err == nil {
+		id = track.Id
 	}
 
-	return track.Id, err
+	return
 }
 
 // processCover saves a cover info in the database and filesystem.
 // Returns a cover id.
-func processCover(dbTransaction *gorp.Transaction, cover domain.Cover) (id int, err error) {
+func processCover(dbTransaction *sql.Tx, cover domain.Cover) (id int, err error) {
 	cover.Path = cover.Hash + cover.Ext
 
-	var coverFromDb domain.Cover
-	// TODO Bad! Persistance layer should be abstracted!
-	coverExistsErr := dbTransaction.SelectOne(&coverFromDb, "SELECT * FROM covers WHERE hash = ?", cover.Hash)
-	if coverExistsErr == nil && coverFromDb.Id != 0 {
+	coverFromDb, err := getCoverByNameTransaction(dbTransaction, cover.Hash)
+	if err == nil {
 		// Nothing to do about the cover, just return the cover id to be used to link it to the track.
 		id = coverFromDb.Id
 
@@ -361,7 +312,7 @@ func processCover(dbTransaction *gorp.Transaction, cover domain.Cover) (id int, 
 	}
 
 	// Else we have to add a new cover in the database.
-	err = dbTransaction.Insert(&cover)
+	err = saveCoverTransaction(dbTransaction, &cover)
 	// And to the filesystem.
 	if err == nil && cover.Id != 0 {
 		id = cover.Id
