@@ -10,7 +10,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.13
 	github.com/rs/cors v1.8.2
 	github.com/rubenv/sql-migrate v1.1.1
-	github.com/spf13/cobra v1.2.1
+	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.1
 	github.com/vektah/gqlparser/v2 v2.4.2
