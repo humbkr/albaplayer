@@ -8,13 +8,13 @@ require (
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/markbates/pkger v0.17.1
 	github.com/mattn/go-sqlite3 v1.14.13
-	github.com/natefinch/lumberjack v0.0.0-20170531160350-a96e63847dc3
 	github.com/rs/cors v0.0.0-20170727213201-7af7a1e09ba3
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.3.2
 	github.com/stretchr/testify v1.7.1
 	github.com/vektah/gqlparser/v2 v2.4.2
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
 
 require (
@@ -46,7 +46,6 @@ require (
 	golang.org/x/tools v0.1.10 // indirect
 	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df // indirect
 	gopkg.in/gorp.v1 v1.7.2 // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )

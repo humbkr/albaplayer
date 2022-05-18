@@ -2,11 +2,11 @@ package internal
 
 import (
 	"fmt"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"log"
 
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/humbkr/albaplayer/internal/interfaces"
-	"github.com/natefinch/lumberjack"
 	"github.com/spf13/viper"
 )
 
