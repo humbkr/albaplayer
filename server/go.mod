@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/99designs/gqlgen v0.17.5
-	github.com/dhowden/tag v0.0.0-20181104225729-a9f04c2798ca
+	github.com/dhowden/tag v0.0.0-20201120070457-d52dcb253c63
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/markbates/pkger v0.17.1
 	github.com/mattn/go-sqlite3 v1.12.0
