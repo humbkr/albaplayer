@@ -8,7 +8,7 @@ require (
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/markbates/pkger v0.17.1
 	github.com/mattn/go-sqlite3 v1.14.13
-	github.com/rs/cors v0.0.0-20170727213201-7af7a1e09ba3
+	github.com/rs/cors v1.8.2
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.3.2
