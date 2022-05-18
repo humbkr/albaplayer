@@ -7,7 +7,7 @@ require (
 	github.com/dhowden/tag v0.0.0-20201120070457-d52dcb253c63
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/markbates/pkger v0.17.1
-	github.com/mattn/go-sqlite3 v1.12.0
+	github.com/mattn/go-sqlite3 v1.14.13
 	github.com/natefinch/lumberjack v0.0.0-20170531160350-a96e63847dc3
 	github.com/rs/cors v0.0.0-20170727213201-7af7a1e09ba3
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
