@@ -1,7 +1,7 @@
 import React, { Ref } from 'react'
 import styled, { withTheme } from 'styled-components'
 import { AutoSizer, List } from 'react-virtualized'
-import ListItem from 'modules/playlist/components/ListItem'
+import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 import PlaylistCareListItem from './PlaylistCareListItem'
 
 interface Props {
@@ -28,34 +28,40 @@ const PlaylistCareList = ({ items, forwardedRef, theme }: InternalProps) => {
     index: number
     style: {}
   }) => (
-    <ListItem selected={false} border key={key} style={style}>
+    <VirtualListItem selected={false} border key={key} style={style}>
       <PlaylistCareListItem
         item={items[index]}
         selected={false}
         handleRemoveTrack={() => null}
       />
-    </ListItem>
+    </VirtualListItem>
   )
 
   return (
     // @ts-ignore
     <Wrapper>
+      {/* @ts-ignore */}
       <AutoSizer>
         {({ height, width }) => (
-          <List
-            // @ts-ignore
-            ref={forwardedRef}
-            width={width}
-            height={height}
-            rowHeight={parseInt(theme.itemHeight, 0)}
-            rowCount={items.length}
-            rowRenderer={({ key, index, style }) => rowRenderer({
-              items,
-              key,
-              index,
-              style,
-            })}
-          />
+          <>
+            {/* @ts-ignore */}
+            <List
+              // @ts-ignore
+              ref={forwardedRef}
+              width={width}
+              height={height}
+              rowHeight={parseInt(theme.itemHeight, 0)}
+              rowCount={items.length}
+              rowRenderer={({ key, index, style }) =>
+                rowRenderer({
+                  items,
+                  key,
+                  index,
+                  style,
+                })
+              }
+            />
+          </>
         )}
       </AutoSizer>
     </Wrapper>

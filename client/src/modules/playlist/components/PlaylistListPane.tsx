@@ -1,20 +1,20 @@
 import React, { FunctionComponent, Ref, useState } from 'react'
 import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { addTrack, playTrack } from 'modules/player/store'
 import PlaylistsListHeader from 'modules/playlist/components/PlaylistListHeader'
-import PlaylistList from 'modules/playlist/components/PlaylistList'
 import {
   playlistsSelector,
   playlistSelectPlaylist,
 } from 'modules/playlist/store'
-// eslint-disable-next-line import/no-cycle
 import PlaylistContextMenu from 'modules/playlist/components/PlaylistContextMenu'
-import ListItem from 'modules/playlist/components/ListItem'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
+import VirtualList from 'common/components/virtualLists/VirtualList'
+import PlaylistTeaser from 'modules/playlist/components/PlaylistTeaser'
+import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 
 interface Props {
-  switchPaneHandler: (e: React.KeyboardEvent) => void
+  switchPaneHandler: (e: KeyboardEvent) => void
   openPlaylistModal: () => void
 }
 
@@ -29,18 +29,18 @@ const PlaylistListPane: FunctionComponent<InternalProps> = ({
 }) => {
   const [modalPlayerIsOpen, setModalPlayerIsOpen] = useState(false)
 
-  const selected = useSelector(
-    (state: RootState) => state.playlist.currentPlaylist.playlist
+  const selected = useAppSelector(
+    (state) => state.playlist.currentPlaylist.playlist
   )
-  const currentPosition = useSelector(
-    (state: RootState) => state.playlist.currentPlaylist.position
+  const currentPosition = useAppSelector(
+    (state) => state.playlist.currentPlaylist.position
   )
-  const playlists = useSelector((state: RootState) => playlistsSelector(state))
+  const playlists = useAppSelector((state) => playlistsSelector(state))
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 13) {
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.code === 'Enter') {
       setModalPlayerIsOpen(true)
     } else {
       switchPaneHandler(e)
@@ -54,22 +54,26 @@ const PlaylistListPane: FunctionComponent<InternalProps> = ({
     dispatch(addTrack(trackId))
   }
 
-  const handleSelectPlaylist = (playlist: Playlist, playlistIndex: number) => {
-    dispatch(
-      playlistSelectPlaylist({ selectedPlaylist: playlist, playlistIndex })
-    )
+  const onItemClick = (itemId: string, index: number) => {
+    const selectedPlaylist = playlists.find((item) => item.id === itemId)
+    if (selectedPlaylist) {
+      dispatch(
+        playlistSelectPlaylist({ selectedPlaylist, playlistIndex: index })
+      )
+    }
   }
 
   return (
     <Wrapper>
       <List>
         <PlaylistsListHeader onAddClick={openPlaylistModal} />
-        <PlaylistList
-          items={playlists}
-          currentPosition={currentPosition}
-          onItemClick={handleSelectPlaylist}
-          onKeyDown={onKeyDown}
+        <VirtualList
           ref={forwardedRef}
+          items={playlists}
+          itemDisplay={PlaylistTeaser}
+          currentPosition={currentPosition}
+          onItemClick={onItemClick}
+          onKeyDown={onKeyDown}
         />
         <KeyboardNavPlayPopup
           id="playlists-nav-modal"
@@ -86,7 +90,6 @@ const PlaylistListPane: FunctionComponent<InternalProps> = ({
 }
 
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <PlaylistListPane {...props} forwardedRef={ref} />
 ))
 
@@ -98,9 +101,12 @@ const Wrapper = styled.div`
 
   :focus-within {
     // Can't find a way to manage that directly in the
-    // ListItem component.
-    ${ListItem}.selected {
+    // VirtualListItem component.
+    ${VirtualListItem}.selected {
       ${(props) => `background-color: ${props.theme.highlightFocus}`};
+    }
+    ${VirtualListItem} .selected {
+      ${(props) => `color: ${props.theme.textHighlightFocusColor}`};
     }
   }
 `

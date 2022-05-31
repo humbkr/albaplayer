@@ -31,7 +31,7 @@ function KeyboardNavPlayPopup({
     modalRef.current.focus()
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent): void => {
+  const handleKeyDown = (e: KeyboardEvent): void => {
     e.preventDefault()
     if (e.keyCode === 13) {
       // If Enter adds element to the end of the playlist.
@@ -72,6 +72,7 @@ function KeyboardNavPlayPopup({
         role="button"
         ref={modalRef}
         tabIndex={0}
+        // @ts-ignore
         onKeyDown={handleKeyDown}
       >
         <div>

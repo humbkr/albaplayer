@@ -1,13 +1,13 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import ActionButtonIcon from 'common/components/ActionButtonIcon'
 import Icon from '../../../common/components/Icon'
 
-const PlaylistCareListItem: FunctionComponent<{
+type Props = {
   item: PlaylistCareItem
-  selected: boolean
-  handleRemoveTrack: (position: number) => void
-}> = ({ item, handleRemoveTrack, selected = false }) => {
+  selected?: boolean
+}
+
+const PlaylistCareListItem = ({ item, selected = false }: Props) => {
   const { track, position } = item
 
   return (
@@ -37,24 +37,12 @@ const PlaylistCareListItem: FunctionComponent<{
           </Found>
         )}
       </Result>
-      <TrackActions className={selected ? 'selected' : ''}>
-        <ActionButtonIcon
-          icon="delete"
-          onClick={() => handleRemoveTrack(position)}
-        />
-      </TrackActions>
     </TrackWrapper>
   )
 }
 
 export default PlaylistCareListItem
 
-const TrackActions = styled.div`
-  display: none;
-  vertical-align: middle;
-  text-align: right;
-  color: ${(props) => props.theme.textSecondaryColor};
-`
 const TrackWrapper = styled.div`
   display: grid;
   grid-template-columns: 60px auto auto 44px;
@@ -63,12 +51,6 @@ const TrackWrapper = styled.div`
 
   > * {
     align-self: center;
-  }
-
-  :hover {
-    ${TrackActions} {
-      display: block;
-    }
   }
 `
 const TrackFirstColumn = styled.div`

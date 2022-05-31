@@ -1,13 +1,12 @@
-import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router'
+import { useAppDispatch } from 'store/hooks'
 import { search, setSearchFilter } from '../store'
 
 function useSearch() {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const history = useHistory()
 
   const searchForArtist = (artist: string) => {
-    console.log('searchForArtist:', artist)
     dispatch(setSearchFilter('artist'))
     dispatch(search(artist))
     history.push('/library')

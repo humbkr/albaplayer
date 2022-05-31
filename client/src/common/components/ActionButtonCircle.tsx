@@ -19,6 +19,7 @@ const ActionButtonCircle: FunctionComponent<{
   testId,
 }) => (
   <ActionButtonCircleWrapper
+    // @ts-ignore
     onClick={onClick}
     color={color}
     data-testid={testId}

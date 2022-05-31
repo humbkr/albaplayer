@@ -1,15 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
 import ActionButton from 'common/components/ActionButton'
 import { queueClear } from 'modules/player/store'
 import { contextMenu } from 'react-contexify'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import QueueActionsMoreContextMenu from './QueueActionsMoreContextMenu'
 
 const NowPlayingQueueActions = () => {
-  const { items } = useSelector((state: RootState) => state.queue)
-  const dispatch = useDispatch()
+  const { items } = useAppSelector((state) => state.queue)
+  const dispatch = useAppDispatch()
 
   const handleQueueActionsMore = (e: React.MouseEvent) => {
     e.preventDefault()

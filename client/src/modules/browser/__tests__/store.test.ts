@@ -295,11 +295,12 @@ const initialStateForFilterTesting: initialStateForFilterTestingType = {
 }
 
 const mockStore = configureMockStore([thunk])
-const makeMockStore = (customState: any = {}) => mockStore({
-  library: mockLibraryState,
-  libraryBrowser: browserInitialState,
-  ...customState,
-})
+const makeMockStore = (customState: any = {}) =>
+  mockStore({
+    library: mockLibraryState,
+    libraryBrowser: browserInitialState,
+    ...customState,
+  })
 
 describe('library browser (redux)', () => {
   describe('reducer', () => {
@@ -881,7 +882,9 @@ describe('library browser (redux)', () => {
         }))
 
       const filteredTracks = Object.values<Track>(mockLibraryState.tracks)
-        .filter((item) => item.title.toUpperCase().includes('I draw a map'.toUpperCase()))
+        .filter((item) =>
+          item.title.toUpperCase().includes('I draw a map'.toUpperCase())
+        )
         .map((track) => ({
           ...track,
           artist: mockLibraryState.artists[track.artistId as string],
@@ -958,7 +961,9 @@ describe('library browser (redux)', () => {
         }))
 
       const filteredTracks = Object.values<Track>(mockLibraryState.tracks)
-        .filter((item) => item.title.toUpperCase().includes('I draw a map'.toUpperCase()))
+        .filter((item) =>
+          item.title.toUpperCase().includes('I draw a map'.toUpperCase())
+        )
         .map((track) => ({
           ...track,
           artist: mockLibraryState.artists[track.artistId as string],
@@ -1068,7 +1073,9 @@ describe('library browser (redux)', () => {
         }))
 
       const filteredTracks = Object.values<Track>(mockLibraryState.tracks)
-        .filter((item) => item.title.toUpperCase().includes('I draw a map'.toUpperCase()))
+        .filter((item) =>
+          item.title.toUpperCase().includes('I draw a map'.toUpperCase())
+        )
         .map((track) => ({
           ...track,
           artist: mockLibraryState.artists[track.artistId as string],
@@ -1138,7 +1145,9 @@ describe('library browser (redux)', () => {
         }))
 
       const filteredTracks = Object.values<Track>(mockLibraryState.tracks)
-        .filter((item) => item.title.toUpperCase().includes('I draw a map'.toUpperCase()))
+        .filter((item) =>
+          item.title.toUpperCase().includes('I draw a map'.toUpperCase())
+        )
         .map((track) => ({
           ...track,
           artist: mockLibraryState.artists[track.artistId as string],
@@ -1483,8 +1492,9 @@ describe('library browser (redux)', () => {
 
       const filteredTracks = Object.values<Track>(mockLibraryState.tracks)
         .filter(
-          (item) => item.albumId
-            && filteredAlbums.map((album) => album.id).includes(item.albumId)
+          (item) =>
+            item.albumId &&
+            filteredAlbums.map((album) => album.id).includes(item.albumId)
         )
         .map((track) => ({
           ...track,
@@ -1605,31 +1615,34 @@ describe('library browser (redux)', () => {
         },
         {
           payload: {
-            filteredArtists: initialStateForFilterTesting.libraryBrowser.search.filteredArtists.filter(
-              (item) => item.id === '1'
-            ),
-            filteredAlbums: initialStateForFilterTesting.libraryBrowser.search.filteredAlbums
-              .filter((item) => item.artistId === '1')
-              .map((album) => ({
-                ...album,
-                artist:
-                  initialStateForFilterTesting.library.artists[
-                    album.artistId as string
-                  ],
-              })),
-            filteredTracks: initialStateForFilterTesting.libraryBrowser.search.filteredTracks
-              .filter((item) => item.artistId === '1')
-              .map((track) => ({
-                ...track,
-                artist:
-                  initialStateForFilterTesting.library.artists[
-                    track.artistId as string
-                  ],
-                album:
-                  initialStateForFilterTesting.library.albums[
-                    track.albumId as string
-                  ],
-              })),
+            filteredArtists:
+              initialStateForFilterTesting.libraryBrowser.search.filteredArtists.filter(
+                (item) => item.id === '1'
+              ),
+            filteredAlbums:
+              initialStateForFilterTesting.libraryBrowser.search.filteredAlbums
+                .filter((item) => item.artistId === '1')
+                .map((album) => ({
+                  ...album,
+                  artist:
+                    initialStateForFilterTesting.library.artists[
+                      album.artistId as string
+                    ],
+                })),
+            filteredTracks:
+              initialStateForFilterTesting.libraryBrowser.search.filteredTracks
+                .filter((item) => item.artistId === '1')
+                .map((track) => ({
+                  ...track,
+                  artist:
+                    initialStateForFilterTesting.library.artists[
+                      track.artistId as string
+                    ],
+                  album:
+                    initialStateForFilterTesting.library.albums[
+                      track.albumId as string
+                    ],
+                })),
             searchTerm: 'place',
           },
           type: 'libraryBrowser/libraryBrowserSearchFilter',
@@ -1666,31 +1679,34 @@ describe('library browser (redux)', () => {
         },
         {
           payload: {
-            filteredArtists: initialStateForFilterTesting.libraryBrowser.search.filteredArtists.filter(
-              (item) => item.id === '2'
-            ),
-            filteredAlbums: initialStateForFilterTesting.libraryBrowser.search.filteredAlbums
-              .filter((item) => item.artistId === '2')
-              .map((album) => ({
-                ...album,
-                artist:
-                  initialStateForFilterTesting.library.artists[
-                    album.artistId as string
-                  ],
-              })),
-            filteredTracks: initialStateForFilterTesting.libraryBrowser.search.filteredTracks
-              .filter((item) => item.artistId === '2')
-              .map((track) => ({
-                ...track,
-                artist:
-                  initialStateForFilterTesting.library.artists[
-                    track.artistId as string
-                  ],
-                album:
-                  initialStateForFilterTesting.library.albums[
-                    track.albumId as string
-                  ],
-              })),
+            filteredArtists:
+              initialStateForFilterTesting.libraryBrowser.search.filteredArtists.filter(
+                (item) => item.id === '2'
+              ),
+            filteredAlbums:
+              initialStateForFilterTesting.libraryBrowser.search.filteredAlbums
+                .filter((item) => item.artistId === '2')
+                .map((album) => ({
+                  ...album,
+                  artist:
+                    initialStateForFilterTesting.library.artists[
+                      album.artistId as string
+                    ],
+                })),
+            filteredTracks:
+              initialStateForFilterTesting.libraryBrowser.search.filteredTracks
+                .filter((item) => item.artistId === '2')
+                .map((track) => ({
+                  ...track,
+                  artist:
+                    initialStateForFilterTesting.library.artists[
+                      track.artistId as string
+                    ],
+                  album:
+                    initialStateForFilterTesting.library.albums[
+                      track.albumId as string
+                    ],
+                })),
             searchTerm: 'place',
           },
           type: 'libraryBrowser/libraryBrowserSearchFilter',
@@ -1727,31 +1743,34 @@ describe('library browser (redux)', () => {
         },
         {
           payload: {
-            filteredArtists: initialStateForFilterTesting.libraryBrowser.search.filteredArtists.filter(
-              (item) => item.id === '3'
-            ),
-            filteredAlbums: initialStateForFilterTesting.libraryBrowser.search.filteredAlbums
-              .filter((item) => item.artistId === '3')
-              .map((album) => ({
-                ...album,
-                artist:
-                  initialStateForFilterTesting.library.artists[
-                    album.artistId as string
-                  ],
-              })),
-            filteredTracks: initialStateForFilterTesting.libraryBrowser.search.filteredTracks
-              .filter((item) => item.artistId === '3')
-              .map((track) => ({
-                ...track,
-                artist:
-                  initialStateForFilterTesting.library.artists[
-                    track.artistId as string
-                  ],
-                album:
-                  initialStateForFilterTesting.library.albums[
-                    track.albumId as string
-                  ],
-              })),
+            filteredArtists:
+              initialStateForFilterTesting.libraryBrowser.search.filteredArtists.filter(
+                (item) => item.id === '3'
+              ),
+            filteredAlbums:
+              initialStateForFilterTesting.libraryBrowser.search.filteredAlbums
+                .filter((item) => item.artistId === '3')
+                .map((album) => ({
+                  ...album,
+                  artist:
+                    initialStateForFilterTesting.library.artists[
+                      album.artistId as string
+                    ],
+                })),
+            filteredTracks:
+              initialStateForFilterTesting.libraryBrowser.search.filteredTracks
+                .filter((item) => item.artistId === '3')
+                .map((track) => ({
+                  ...track,
+                  artist:
+                    initialStateForFilterTesting.library.artists[
+                      track.artistId as string
+                    ],
+                  album:
+                    initialStateForFilterTesting.library.albums[
+                      track.albumId as string
+                    ],
+                })),
             searchTerm: 'place',
           },
           type: 'libraryBrowser/libraryBrowserSearchFilter',

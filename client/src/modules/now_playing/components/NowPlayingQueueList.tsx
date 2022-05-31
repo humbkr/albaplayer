@@ -1,94 +1,23 @@
-import React, { FunctionComponent } from 'react'
-import { AutoSizer, List, WindowScroller } from 'react-virtualized'
-import {
-  SortableContainer,
-  SortableElement,
-  arrayMove,
-} from 'react-sortable-hoc'
-import 'react-virtualized/styles.css'
+import React, { useEffect } from 'react'
 import NowPlayingQueueItem from 'modules/now_playing/components/NowPlayingQueueItem'
+import { Virtuoso } from 'react-virtuoso'
+import {
+  DraggableProvided,
+  DragDropContext,
+  DropResult,
+  Droppable,
+  Draggable,
+} from '@react-forked/dnd'
+import { arrayMoveImmutable } from 'array-move'
+import styled from 'styled-components'
 
-// Make Queue item sortable.
-const SortableItem = SortableElement(
-  ({
-    item,
-    style,
-    current,
-  }: {
-    item: QueueItemDisplay
-    style: {}
-    current: number
-  }) => <NowPlayingQueueItem item={item} style={style} currentIndex={current} />
-)
-
-// List managed by react-virtualized.
-const VirtualList: FunctionComponent<{
-  current: number
-  items: QueueItemDisplay[]
-  rowHeight: number
-  height: number
-  width: number
-  isScrolling: boolean
-  onScroll: () => void
-  scrollTop: number
-}> = ({
-  current,
-  items,
-  rowHeight,
-  height,
-  width,
-  isScrolling,
-  onScroll,
-  scrollTop,
-}) => {
-  // Magic function used by react-virtualized.
-  const rowRenderer = ({
-    // eslint-disable-next-line no-shadow
-    items,
-    key,
-    index,
-    style,
-  }: {
-    items: QueueItemDisplay[]
-    key: string
-    index: number
-    style: {}
-  }) => (
-    <SortableItem
-      item={items[index]}
-      index={index}
-      key={key}
-      style={style}
-      current={current}
-    />
-  )
-
-  return (
-    <List
-      autoHeight
-      height={height}
-      isScrolling={isScrolling}
-      onScroll={onScroll}
-      rowCount={items.length}
-      rowHeight={rowHeight}
-      rowRenderer={({ key, index, style }) => rowRenderer({
-        items,
-        key,
-        index,
-        style,
-      })}
-      scrollTop={scrollTop}
-      width={width}
-    />
-  )
+type ItemProps = {
+  provided: DraggableProvided
+  item: QueueItemDisplay
+  isDragging: boolean
 }
 
-// Make list a sortable container.
-const SortableList = SortableContainer(VirtualList)
-
-// Final list element.
-// eslint-disable-next-line react/no-multi-comp
-const NowPlayingQueueList: FunctionComponent<{
+type Props = {
   items: QueueItemDisplay[]
   itemHeight: number
   onQueueUpdate: (
@@ -96,17 +25,34 @@ const NowPlayingQueueList: FunctionComponent<{
     newCurrentTrackIndex: number
   ) => void
   current: number
-}> = ({
-  items, onQueueUpdate, current, itemHeight,
-}) => {
-  const onSortEnd = ({
-    oldIndex,
-    newIndex,
-  }: {
-    oldIndex: number
-    newIndex: number
-  }) => {
-    if (oldIndex !== newIndex) {
+}
+
+const NowPlayingQueueList = ({ items, onQueueUpdate, current, itemHeight }: Props) => {
+  useEffect(() => {
+    // Virtuoso's resize observer can throw this error,
+    // which is caught by DnD and aborts dragging.
+    window.addEventListener('error', (e) => {
+      if (
+        e.message ===
+        'ResizeObserver loop completed with undelivered notifications.' ||
+        e.message === 'ResizeObserver loop limit exceeded'
+      ) {
+        e.stopImmediatePropagation()
+      }
+    })
+
+    // TODO: remove event listener at unmount.
+  }, [])
+
+  const onDragEnd = React.useCallback(
+    (result: DropResult) => {
+      if (!result.destination || result.source.index === result.destination.index) {
+        return
+      }
+
+      const oldIndex = result.source.index
+      const newIndex = result.destination.index
+
       let newCurrent = current
       if (oldIndex < current && newIndex >= current) {
         newCurrent--
@@ -116,34 +62,74 @@ const NowPlayingQueueList: FunctionComponent<{
         newCurrent = newIndex
       }
 
-      onQueueUpdate(arrayMove(items, oldIndex, newIndex), newCurrent)
-    }
-  }
+      onQueueUpdate(arrayMoveImmutable(items, oldIndex, newIndex), newCurrent)
+    },
+    [current, items, onQueueUpdate]
+  )
+
+  const Item = React.useMemo(() => ({ provided, item, isDragging }: ItemProps) => (
+    <div
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+      ref={provided.innerRef}
+      style={{ ...provided.draggableProps.style }}
+    >
+      <DraggableItem isDragging={isDragging}>
+        <NowPlayingQueueItem item={item} currentIndex={current} />
+      </DraggableItem>
+    </div>
+  ), [current])
+
+  const HeightPreservingItem = React.useMemo(() =>
+    // @ts-ignore
+   ({ children, ...props }) => (
+    // The height is necessary to prevent the item container from collapsing,
+    // which confuses Virtuoso measurements.
+    <div {...props} style={{ height: `${itemHeight}px` }}>
+      {children}
+    </div>
+  )
+  , [itemHeight])
 
   return (
-    <WindowScroller>
-      {({
-        height, isScrolling, onChildScroll, scrollTop,
-      }) => (
-        <AutoSizer disableHeight>
-          {({ width }) => (
-            <SortableList
-              current={current}
-              items={items}
-              width={width}
-              height={height}
-              rowHeight={itemHeight}
-              isScrolling={isScrolling}
-              // @ts-ignore
-              onScroll={onChildScroll}
-              scrollTop={scrollTop}
-              onSortEnd={onSortEnd}
-            />
+    <div
+      // Important: drag and drop won't work without this.
+      style={{ overflow: 'auto' }}
+    >
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable
+          droppableId="droppable"
+          mode="virtual"
+          renderClone={(provided, snapshot, rubric) => (
+            <Item provided={provided} isDragging={snapshot.isDragging} item={items[rubric.source.index]} />
           )}
-        </AutoSizer>
-      )}
-    </WindowScroller>
+        >
+          {(provided) => (
+            <div ref={provided.innerRef}>
+              <Virtuoso
+                useWindowScroll
+                components={{
+                  // @ts-ignore
+                  Item: HeightPreservingItem,
+                }}
+                fixedItemHeight={itemHeight}
+                data={items}
+                itemContent={(index, item) => (
+                  <Draggable draggableId={item.track.id} index={index} key={item.track.id}>
+                    {(provided) => <Item provided={provided} item={item} isDragging={false} />}
+                  </Draggable>
+                )}
+              />
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </div>
   )
 }
 
 export default NowPlayingQueueList
+
+const DraggableItem = styled.div<{ isDragging: boolean }>`
+  ${(props) => (props.isDragging ? `background-color: ${props.theme.highlight}` : '')};
+`

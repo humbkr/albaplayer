@@ -13,9 +13,10 @@ import { api } from '../../../api'
 
 jest.mock('api')
 const mockStore = configureMockStore([thunk])
-const makeMockStore = (customState: any = {}) => mockStore({
-  ...customState,
-})
+const makeMockStore = (customState: any = {}) =>
+  mockStore({
+    ...customState,
+  })
 
 const mockLibraryState: LibraryStateType = {
   ...libraryInitialState,
@@ -257,9 +258,10 @@ describe('library (redux)', () => {
   describe('fetchLibrary thunk', () => {
     it('should dispatch correct actions when api call is successful', async () => {
       api.getLibrary = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore()
@@ -288,9 +290,10 @@ describe('library (redux)', () => {
 
     it('should dispatch correct actions when api call is unsuccessful', async () => {
       api.getLibrary = jest.fn().mockImplementationOnce(
-        () => new Promise((_, reject) => {
-          reject()
-        })
+        () =>
+          new Promise((_, reject) => {
+            reject()
+          })
       )
 
       const store = makeMockStore()
@@ -331,11 +334,12 @@ describe('library (redux)', () => {
       }
 
       api.getVariable = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve({
-            data: { variable: { value: '20200417130000' } },
+        () =>
+          new Promise((resolve) => {
+            resolve({
+              data: { variable: { value: '20200417130000' } },
+            })
           })
-        })
       )
 
       expect(await shouldFetchLibrary(testState)).toBeFalse()
@@ -348,11 +352,12 @@ describe('library (redux)', () => {
       }
 
       api.getVariable = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve({
-            data: { variable: { value: '20200417130001' } },
+        () =>
+          new Promise((resolve) => {
+            resolve({
+              data: { variable: { value: '20200417130001' } },
+            })
           })
-        })
       )
 
       expect(await shouldFetchLibrary(testState)).toBeTrue()
@@ -365,9 +370,10 @@ describe('library (redux)', () => {
       }
 
       api.getVariable = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve, reject) => {
-          reject()
-        })
+        () =>
+          new Promise((resolve, reject) => {
+            reject()
+          })
       )
 
       expect(await shouldFetchLibrary(testState)).toBeTrue()

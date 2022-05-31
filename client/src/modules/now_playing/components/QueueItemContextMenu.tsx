@@ -1,10 +1,6 @@
-import React, { FunctionComponent } from 'react'
-import {
-  Menu as ContextMenu, Item, Separator, Submenu,
-} from 'react-contexify'
+import React from 'react'
+import { Menu as ContextMenu, Item, Separator, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
-import { MenuItemEventHandler } from 'react-contexify/lib/types'
-import { useDispatch, useSelector } from 'react-redux'
 import {
   setItemFromQueue,
   playerTogglePlayPause,
@@ -15,29 +11,25 @@ import {
   addTrack as addTrackToPlaylist,
 } from 'modules/playlist/store'
 import { useHistory } from 'react-router'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { search, setSearchFilter } from '../../browser/store'
 
-interface MenuItemEventHandlerTrack extends MenuItemEventHandler {
-  props: {
-    position: number
-    track: Track
-  }
-}
-
-const QueueItemContextMenu: FunctionComponent = () => {
-  const playlists: Playlist[] = useSelector((state: RootState) => playlistsSelector(state))
-  const dispatch = useDispatch()
+const QueueItemContextMenu = () => {
+  const playlists: Playlist[] = useAppSelector((state) =>
+    playlistsSelector(state)
+  )
+  const dispatch = useAppDispatch()
   const history = useHistory()
 
   const findAllByArtist = (menuItem: any) => {
     dispatch(setSearchFilter('artist'))
-    dispatch(search(menuItem.props.track?.artist?.name))
+    dispatch(search(menuItem.props.data.track?.artist?.name))
     history.push('/library')
   }
 
   const findAllByAlbum = (menuItem: any) => {
     dispatch(setSearchFilter('album'))
-    dispatch(search(menuItem.props.track?.album?.title))
+    dispatch(search(menuItem.props.data.track?.album?.title))
     history.push('/library')
   }
 
@@ -47,13 +39,13 @@ const QueueItemContextMenu: FunctionComponent = () => {
   }
 
   const handleAddTrackToPlaylist = (
-    menuItem: MenuItemEventHandlerTrack,
+    menuItem: any,
     playlist: Playlist
   ) => {
     dispatch(
       addTrackToPlaylist({
         playlistId: playlist.id,
-        trackId: menuItem.props?.track?.id,
+        trackId: menuItem.props.data.track?.id,
       })
     )
   }
@@ -62,23 +54,39 @@ const QueueItemContextMenu: FunctionComponent = () => {
     <Item
       key={item.id}
       // @ts-ignore
-      onClick={(menuItem: MenuItemEventHandlerTrack) => handleAddTrackToPlaylist(menuItem, item)}
+      onClick={(menuItem) =>
+        handleAddTrackToPlaylist(menuItem, item)
+      }
     >
       {item.title}
     </Item>
   ))
+  playlistsItems.push(
+    <Item
+      key="new"
+      onClick={(menuItem: any) =>
+        dispatch(addTrackToPlaylist({ trackId: menuItem.props.data.track.id }))
+      }
+    >
+      + Create new playlist
+    </Item>
+  )
 
   return (
     <ContextMenu id="queue-item-context-menu">
       <Item
         // @ts-ignore
-        onClick={(menuItem: MenuItemEventHandlerTrack) => handlePlayTrack(menuItem.props?.position - 1)}
+        onClick={(menuItem: any) =>
+          handlePlayTrack(menuItem.props.data.position - 1)
+        }
       >
         Play track
       </Item>
       <Item
         // @ts-ignore
-        onClick={(menuItem: MenuItemEventHandlerTrack) => dispatch(queueRemoveTrack(menuItem.props?.position - 1))}
+        onClick={(menuItem: any) =>
+          dispatch(queueRemoveTrack(menuItem.props.data.position - 1))
+        }
       >
         Remove track from queue
       </Item>

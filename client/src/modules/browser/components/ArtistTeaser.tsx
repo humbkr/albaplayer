@@ -1,15 +1,17 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 
-const ArtistTeaser: FunctionComponent<{
+type Props = {
   item: Artist
   index: number
-  onContextMenu: (p: { scrollToRow: number; itemId: string }) => void
-}> = ({ item, index, onContextMenu }) => {
+  onContextMenu: (itemId: string, index: number) => void
+}
+
+const ArtistTeaser = ({ item, index, onContextMenu }: Props) => {
   const onRightClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    onContextMenu({ scrollToRow: index, itemId: item.id })
+    onContextMenu(item.id, index)
     contextMenu.show({
       id: 'artist-context-menu',
       event: e,

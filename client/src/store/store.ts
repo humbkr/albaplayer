@@ -14,6 +14,7 @@ import storage from 'redux-persist/lib/storage'
 import rootReducer from './rootReducer'
 import migrations from './migrations'
 
+// @ts-ignore
 const persistanceReducer = persistReducer(
   {
     key: 'root',
@@ -27,6 +28,7 @@ const persistanceReducer = persistReducer(
   rootReducer
 )
 
+// @ts-ignore
 const store = configureStore({
   reducer: persistanceReducer,
   middleware: getDefaultMiddleware({
@@ -34,7 +36,7 @@ const store = configureStore({
       // Ignore non serializable data for redux-persist actions.
       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
     },
-    // Note: if you want to use a huge library in development, uncomment the following lines.
+    // Note: if you want to use a huge music library in development, uncomment the following lines.
     // serializableCheck: false,
     // immutableCheck: false,
   }),

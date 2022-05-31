@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { Motion, spring } from 'react-motion'
 import * as Buttons from 'modules/player/components/buttons'
 import ProgressBarHandler from './ProgressBarHandler'
 import VolumeBar from './VolumeBar'
@@ -153,43 +152,34 @@ class VolumeContainer extends React.PureComponent {
         onMouseLeave={this.onMouseOut}
       >
         <VolumeButton onClick={this.onClickMute} />
-        <Motion
-          style={{
-            w: this.state.mouseOverBox || this.holding ? 208 : 0,
-            opacity: spring(this.state.mouseOverBox ? 1 : 0),
-          }}
-        >
-          {({ w, opacity }) => (
-            <VolumeOverlay
-              style={{
-                width: `${w}px`,
-                opacity,
-              }}
-            >
-              <VolumeBarWrapper>
-                <VolumeBar
-                  width={this.svgWidth}
-                  height={this.svgHeight}
-                  barThickness={this.volumeThickness}
-                  handlerWidth={this.handlerWidth * (105 / 80)}
-                  translate={this.state.translate}
-                  onClick={this.onClick}
-                >
-                  <ProgressBarHandler
-                    width={this.handlerWidth}
-                    height={this.handlerHeight}
-                    visibility
-                    translate={`translate(${this.state.translate}, 0)`}
-                    onMouseDown={this.onMouseDown}
-                  />
-                </VolumeBar>
-              </VolumeBarWrapper>
-              <VolumeOverlayEnd>
-                <Buttons.VolumeHighBtn />
-              </VolumeOverlayEnd>
-            </VolumeOverlay>
-          )}
-        </Motion>
+          <VolumeOverlay
+            style={{
+              width: this.state.mouseOverBox || this.holding ? '208px' : 0,
+              opacity: this.state.mouseOverBox ? 1 : 0,
+            }}
+          >
+            <VolumeBarWrapper>
+              <VolumeBar
+                width={this.svgWidth}
+                height={this.svgHeight}
+                barThickness={this.volumeThickness}
+                handlerWidth={this.handlerWidth * (105 / 80)}
+                translate={this.state.translate}
+                onClick={this.onClick}
+              >
+                <ProgressBarHandler
+                  width={this.handlerWidth}
+                  height={this.handlerHeight}
+                  visibility
+                  translate={`translate(${this.state.translate}, 0)`}
+                  onMouseDown={this.onMouseDown}
+                />
+              </VolumeBar>
+            </VolumeBarWrapper>
+            <VolumeOverlayEnd>
+              <Buttons.VolumeHighBtn />
+            </VolumeOverlayEnd>
+          </VolumeOverlay>
       </VolumeContainerWrapper>
     )
   }

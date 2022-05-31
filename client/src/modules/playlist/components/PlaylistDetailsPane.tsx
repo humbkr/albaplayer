@@ -1,6 +1,5 @@
 import React, { FunctionComponent, Ref, useState } from 'react'
 import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
 import { contextMenu } from 'react-contexify'
 import ActionButtonIcon from 'common/components/ActionButtonIcon'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
@@ -10,47 +9,45 @@ import {
   playPlaylist,
   addPlaylist,
 } from 'modules/player/store'
-import ListItem from 'modules/playlist/components/ListItem'
+import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 import {
   playlistRemoveTrack,
   playlistSelectTrack,
   playlistUpdateItems,
 } from 'modules/playlist/store'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import PlaylistTrackList from './PlaylistTrackList'
 import PlaylistTrackContextMenu from './PlaylistTrackContextMenu'
 import PlaylistActionsMoreContextMenu from './PlaylistActionsMoreContextMenu'
 
-interface Props {
-  switchPaneHandler: (e: React.KeyboardEvent) => void
+type Props = {
+  switchPaneHandler: (e: KeyboardEvent) => void
 }
 
-interface InternalProps extends Props {
+type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-/**
- * @return {null}
- */
 const PlaylistDetailsPane: FunctionComponent<InternalProps> = ({
   switchPaneHandler,
   forwardedRef,
 }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
-  const playlist = useSelector(
-    (state: RootState) => state.playlist.currentPlaylist.playlist
+  const playlist = useAppSelector(
+    (state) => state.playlist.currentPlaylist.playlist
   )
-  const currentPosition = useSelector(
-    (state: RootState) => state.playlist.currentTrack.position
+  const currentPosition = useAppSelector(
+    (state) => state.playlist.currentTrack.position
   )
-  const currentTrackId = useSelector(
-    (state: RootState) => state.playlist.currentTrack.id
+  const currentTrackId = useAppSelector(
+    (state) => state.playlist.currentTrack.id
   )
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 13) {
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.code === 'Enter') {
       setModalIsOpen(true)
     } else {
       switchPaneHandler(e)
@@ -62,6 +59,10 @@ const PlaylistDetailsPane: FunctionComponent<InternalProps> = ({
   }
 
   const handlePlaylistSelectTrack = (trackId: string, trackIndex: number) => {
+    // We have to explicitly give the focus on click, I don't know exactly why.
+    // Probably because of the drag'n'drop lib.
+    // @ts-ignore
+    forwardedRef.current.children[0].focus()
     dispatch(playlistSelectTrack({ trackId, trackIndex }))
   }
 
@@ -171,11 +172,11 @@ const Wrapper = styled.div`
 
   :focus-within {
     // Can't find a way to manage that directly in the
-    // ListItem component.
-    ${ListItem}.selected {
+    // VirtualListItem component.
+    ${VirtualListItem}.selected {
       ${(props) => `background-color: ${props.theme.highlightFocus}`};
     }
-    ${ListItem} .selected {
+    ${VirtualListItem} .selected {
       ${(props) => `color: ${props.theme.textHighlightFocusColor}`};
     }
   }

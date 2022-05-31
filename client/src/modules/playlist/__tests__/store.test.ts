@@ -23,11 +23,12 @@ import { libraryInitialState, LibraryStateType } from '../../library/store'
 
 jest.mock('api')
 const mockStore = configureMockStore([thunk])
-const makeMockStore = (customState: any = {}) => mockStore({
-  library: libraryInitialState,
-  playlist: playlistsInitialState,
-  ...customState,
-})
+const makeMockStore = (customState: any = {}) =>
+  mockStore({
+    library: libraryInitialState,
+    playlist: playlistsInitialState,
+    ...customState,
+  })
 
 const mockLibraryState: LibraryStateType = {
   ...libraryInitialState,

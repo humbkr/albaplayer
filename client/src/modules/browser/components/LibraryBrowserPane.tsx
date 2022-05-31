@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import LibraryBrowserListItem from 'modules/browser/components/LibraryBrowserListItem'
+import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 
 const LibraryBrowserPane = styled.div`
   display: flex;
@@ -9,11 +9,11 @@ const LibraryBrowserPane = styled.div`
 
   :focus-within {
     // Can't find a way to manage that directly in the
-    // LibraryBrowserListItem component.
-    ${LibraryBrowserListItem}.selected {
+    // VirtualListItem component.
+    ${VirtualListItem}.selected {
       ${(props) => `background-color: ${props.theme.highlightFocus}`};
     }
-    ${LibraryBrowserListItem} .selected {
+    ${VirtualListItem} .selected {
       ${(props) => `color: ${props.theme.textHighlightFocusColor}`};
     }
   }

@@ -1,22 +1,21 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
-import Icon from '../../../common/components/Icon'
-import ActionButton from '../../../common/components/ActionButton'
-import PlaylistCareList from './PlaylistCareList'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
+import PlaylistCareListItem from 'modules/playlist/components/PlaylistCareListItem'
+import VirtualList from 'common/components/virtualLists/VirtualList'
+import Icon from 'common/components/Icon'
+import ActionButton from 'common/components/ActionButton'
+import Loading from 'common/components/Loading'
+import { LibraryStateType } from 'modules/library/store'
 import { findSimilarTracks } from '../utils/playlistCare'
-import { LibraryStateType } from '../../library/store'
-import Loading from '../../../common/components/Loading'
 import { PlaylistPane, playlistUpdateItems, playlistChangePane } from '../store'
 
 const PlaylistsCarePane = () => {
-  const library: LibraryStateType = useSelector(
-    (state: RootState) => state.library
+  const library: LibraryStateType = useAppSelector((state) => state.library)
+  const playlist: Playlist = useAppSelector(
+    (state) => state.playlist.currentPlaylist.playlist
   )
-  const playlist: Playlist = useSelector(
-    (state: RootState) => state.playlist.currentPlaylist.playlist
-  )
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const [items, setItems] = useState<PlaylistCareItem[]>(
     playlist.items.map((item) => ({
@@ -98,9 +97,12 @@ const PlaylistsCarePane = () => {
           </Actions>
         </ActionsWrapper>
         <ListWrapper>
-          <PlaylistCareList
+          <VirtualList
             items={items}
-            currentProcessedItem={currentProcessedTrack}
+            itemDisplay={PlaylistCareListItem}
+            currentPosition={0}
+            onItemClick={() => null}
+            onKeyDown={() => null}
           />
         </ListWrapper>
       </Main>

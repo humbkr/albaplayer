@@ -7,9 +7,7 @@ const LibraryBrowserListHeader: FunctionComponent<{
   orderBy: string
   title?: string
   onChange: (event: React.MouseEvent<HTMLSelectElement>) => void
-}> = ({
-  orderByOptions, orderBy, title = '', onChange,
-}) => (
+}> = ({ orderByOptions, orderBy, title = '', onChange }) => (
   <LibraryBrowserListHeaderWrapper>
     <ContentWrapper>
       <h2>{title}</h2>

@@ -1,8 +1,5 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  Menu as ContextMenu, Item, Submenu, Separator,
-} from 'react-contexify'
+import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
 import { MenuItemEventHandler } from 'react-contexify/lib/types'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
@@ -13,6 +10,7 @@ import {
   PlaylistPane,
 } from 'modules/playlist/store'
 // eslint-disable-next-line import/no-cycle
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { EditPlaylistContext } from '../scenes/Playlists'
 import { playPlaylistAfterCurrent } from '../../player/store'
 
@@ -23,19 +21,21 @@ interface MenuItemEventHandlerPlaylist extends MenuItemEventHandler {
 }
 
 const PlaylistActionsMoreContextMenu: React.FC = () => {
-  const playlists = useSelector((state: RootState) => playlistsSelector(state))
+  const playlists = useAppSelector((state) => playlistsSelector(state))
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const playlistsItems = playlists.map((item) => (
     <Item
       key={item.id}
-      onClick={(menuItem: any) => dispatch(
-        addPlaylistToPlaylist({
-          playlistId: item.id,
-          playlistToAddId: menuItem.props.playlist.id,
-        })
-      )}
+      onClick={(menuItem: any) =>
+        dispatch(
+          addPlaylistToPlaylist({
+            playlistId: item.id,
+            playlistToAddId: menuItem.props.playlist.id,
+          })
+        )
+      }
     >
       {item.title}
     </Item>
@@ -43,9 +43,11 @@ const PlaylistActionsMoreContextMenu: React.FC = () => {
   playlistsItems.push(
     <Item
       key="new"
-      onClick={(menuItem: any) => dispatch(
-        addPlaylistToPlaylist({ playlistToAddId: menuItem.props.playlist.id })
-      )}
+      onClick={(menuItem: any) =>
+        dispatch(
+          addPlaylistToPlaylist({ playlistToAddId: menuItem.props.playlist.id })
+        )
+      }
     >
       + Duplicate playlist
     </Item>
@@ -56,7 +58,9 @@ const PlaylistActionsMoreContextMenu: React.FC = () => {
       {(value: any) => (
         <ContextMenu id="playlist-actions-more-menu">
           <Item
-            onClick={(menuItem: any) => dispatch(playPlaylistAfterCurrent(menuItem.props.playlist.id))}
+            onClick={(menuItem: any) =>
+              dispatch(playPlaylistAfterCurrent(menuItem.props.playlist.id))
+            }
           >
             Play after current track
           </Item>

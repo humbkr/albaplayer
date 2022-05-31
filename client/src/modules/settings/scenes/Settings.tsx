@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
 import ActionButton from 'common/components/ActionButton'
 import Loading from 'common/components/Loading'
 import Message, { MessageType } from 'common/components/Message'
@@ -12,30 +11,29 @@ import {
   setTheme,
 } from 'modules/settings/store'
 import SelectList from 'modules/settings/components/SelectList'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import info from '../../../../package.json'
 
 function Settings() {
-  const artistsNumber = useSelector(
-    (state: RootState) => Object.keys(state.library.artists).length
+  const artistsNumber = useAppSelector(
+    (state) => Object.keys(state.library.artists).length
   )
-  const albumsNumber = useSelector(
-    (state: RootState) => Object.keys(state.library.albums).length
+  const albumsNumber = useAppSelector(
+    (state) => Object.keys(state.library.albums).length
   )
-  const tracksNumber = useSelector(
-    (state: RootState) => Object.keys(state.library.tracks).length
+  const tracksNumber = useAppSelector(
+    (state) => Object.keys(state.library.tracks).length
   )
-  const libraryIsUpdating = useSelector(
-    (state: RootState) => state.settings.library.isUpdating
+  const libraryIsUpdating = useAppSelector(
+    (state) => state.settings.library.isUpdating
   )
-  const libraryError = useSelector(
-    (state: RootState) => state.settings.library.error
+  const libraryError = useAppSelector((state) => state.settings.library.error)
+  const librarySettings = useAppSelector(
+    (state) => state.settings.library.config
   )
-  const librarySettings = useSelector(
-    (state: RootState) => state.settings.library.config
-  )
-  const theme = useSelector((state: RootState) => state.settings.theme)
+  const theme = useAppSelector((state) => state.settings.theme)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const themeOptions = Object.entries(themes).map((item) => ({
     value: item[0],
@@ -99,7 +97,9 @@ function Settings() {
           testId="settings-theme-select"
           options={themeOptions}
           value={theme}
-          onChangeHandler={(event) => dispatch(setTheme(event.currentTarget.value))}
+          onChangeHandler={(event) =>
+            dispatch(setTheme(event.currentTarget.value))
+          }
         />
       </Paragraph>
       <VersionNumber data-testid="settings-version">

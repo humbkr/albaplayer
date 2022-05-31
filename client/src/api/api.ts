@@ -1,5 +1,4 @@
-import gql from 'graphql-tag'
-import { ApolloQueryResult } from 'apollo-client/core/types'
+import { ApolloQueryResult, gql } from '@apollo/client'
 import apolloClient from './apollo'
 import {
   convertAPIAlbumToAppAlbum,
@@ -63,9 +62,8 @@ const getLibrary = async (): Promise<LibraryInitResponse | null> => {
     }
   `
 
-  const response: ApolloQueryResult<ApiLibraryInitResult> = await apolloClient.query(
-    { query: libraryInit }
-  )
+  const response: ApolloQueryResult<ApiLibraryInitResult> =
+    await apolloClient.query({ query: libraryInit })
 
   if (response.data) {
     // Convert API data to app models.

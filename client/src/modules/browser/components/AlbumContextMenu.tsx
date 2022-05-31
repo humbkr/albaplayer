@@ -1,8 +1,5 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  Menu as ContextMenu, Item, Submenu, Separator,
-} from 'react-contexify'
+import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
   addAlbum,
@@ -13,11 +10,12 @@ import {
   playlistsSelector,
   addAlbum as addAlbumToPlaylist,
 } from 'modules/playlist/store'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { search, setSearchFilter } from '../store'
 
 const AlbumContextMenu = () => {
-  const playlists = useSelector((state: RootState) => playlistsSelector(state))
-  const dispatch = useDispatch()
+  const playlists = useAppSelector((state) => playlistsSelector(state))
+  const dispatch = useAppDispatch()
 
   const findAllByArtist = (menuItem: any) => {
     dispatch(setSearchFilter('artist'))
@@ -27,12 +25,14 @@ const AlbumContextMenu = () => {
   const playlistsItems = playlists.map((item: Playlist) => (
     <Item
       key={item.id}
-      onClick={(menuItem: any) => dispatch(
-        addAlbumToPlaylist({
-          playlistId: item.id,
-          albumId: menuItem.props.data.id,
-        })
-      )}
+      onClick={(menuItem: any) =>
+        dispatch(
+          addAlbumToPlaylist({
+            playlistId: item.id,
+            albumId: menuItem.props.data.id,
+          })
+        )
+      }
     >
       {item.title}
     </Item>
@@ -40,7 +40,9 @@ const AlbumContextMenu = () => {
   playlistsItems.push(
     <Item
       key="new"
-      onClick={(menuItem: any) => dispatch(addAlbumToPlaylist({ albumId: menuItem.props.data.id }))}
+      onClick={(menuItem: any) =>
+        dispatch(addAlbumToPlaylist({ albumId: menuItem.props.data.id }))
+      }
     >
       + Create new playlist
     </Item>
@@ -54,7 +56,9 @@ const AlbumContextMenu = () => {
         Play now
       </Item>
       <Item
-        onClick={(menuItem: any) => dispatch(playAlbumAfterCurrent(menuItem.props.data.id))}
+        onClick={(menuItem: any) =>
+          dispatch(playAlbumAfterCurrent(menuItem.props.data.id))
+        }
       >
         Play after current track
       </Item>

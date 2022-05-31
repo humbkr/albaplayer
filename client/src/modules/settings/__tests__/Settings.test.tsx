@@ -1,6 +1,6 @@
 import React from 'react'
 import { Provider as ReduxProvider } from 'react-redux'
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, screen } from '@testing-library/react'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import thunk from 'redux-thunk'
 import { ThemeProvider } from 'styled-components'
@@ -11,10 +11,11 @@ import info from '../../../../package.json'
 import { initialState } from '../store'
 
 const mockStore = configureMockStore([thunk])
-const makeMockStore = (customState: any = {}) => mockStore({
-  settings: initialState,
-  ...customState,
-})
+const makeMockStore = (customState: any = {}) =>
+  mockStore({
+    settings: initialState,
+    ...customState,
+  })
 
 describe('Settings scene', () => {
   it('should display without error', () => {
@@ -47,7 +48,7 @@ describe('Settings scene', () => {
       },
     })
 
-    const { queryByTestId, getByText } = render(
+    render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
           <Settings />
@@ -55,18 +56,18 @@ describe('Settings scene', () => {
       </ReduxProvider>
     )
 
-    expect(queryByTestId('settings-library')).not.toBeNull()
+    expect(screen.getByTestId('settings-library')).not.toBeNull()
     expect(
-      getByText(
+      screen.getByText(
         'There are currently 2 artists, 4 albums and 6 tracks in the library.'
       )
-    )
-    expect(queryByTestId('settings-library-updating')).toBeNull()
-    expect(queryByTestId('settings-theme')).not.toBeNull()
-    expect(queryByTestId('settings-version')).not.toBeNull()
+    ).not.toBeNull()
+    expect(screen.queryByTestId('settings-library-updating')).toBeNull()
+    expect(screen.getByTestId('settings-theme')).not.toBeNull()
+    expect(screen.getByTestId('settings-version')).not.toBeNull()
 
     const regex = new RegExp(`Version: ${info.version}`)
-    expect(getByText(regex))
+    expect(screen.getByText(regex)).toBeInTheDocument()
   })
 
   it('should launch a library update when corresponding button is pressed', () => {
@@ -79,7 +80,7 @@ describe('Settings scene', () => {
     })
     store.dispatch = jest.fn()
 
-    const { getByTestId } = render(
+    render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
           <Settings />
@@ -87,7 +88,7 @@ describe('Settings scene', () => {
       </ReduxProvider>
     )
 
-    fireEvent.click(getByTestId('settings-library-update'))
+    fireEvent.click(screen.getByTestId('settings-library-update'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
@@ -103,7 +104,7 @@ describe('Settings scene', () => {
     })
     store.dispatch = jest.fn()
 
-    const { getByTestId } = render(
+    render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
           <Settings />
@@ -111,7 +112,7 @@ describe('Settings scene', () => {
       </ReduxProvider>
     )
 
-    fireEvent.click(getByTestId('settings-library-erase'))
+    fireEvent.click(screen.getByTestId('settings-library-erase'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
@@ -125,7 +126,7 @@ describe('Settings scene', () => {
     })
     store.dispatch = jest.fn()
 
-    const { getByTestId } = render(
+    render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
           <Settings />
@@ -133,7 +134,7 @@ describe('Settings scene', () => {
       </ReduxProvider>
     )
 
-    fireEvent.change(getByTestId('settings-theme-select'))
+    fireEvent.change(screen.getByTestId('settings-theme-select'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
@@ -155,7 +156,7 @@ describe('Settings scene', () => {
     })
     store.dispatch = jest.fn()
 
-    const { getByTestId } = render(
+    render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
           <Settings />
@@ -163,7 +164,7 @@ describe('Settings scene', () => {
       </ReduxProvider>
     )
 
-    expect(getByTestId('settings-library-updating'))
+    expect(screen.getByTestId('settings-library-updating')).not.toBeNull()
   })
 
   it('should display an error when library update has failed', () => {
@@ -184,7 +185,7 @@ describe('Settings scene', () => {
     })
     store.dispatch = jest.fn()
 
-    const { getByText } = render(
+    render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
           <Settings />
@@ -192,6 +193,6 @@ describe('Settings scene', () => {
       </ReduxProvider>
     )
 
-    expect(getByText('It failed.'))
+    expect(screen.getByText('It failed.')).toBeInTheDocument()
   })
 })

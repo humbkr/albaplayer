@@ -22,6 +22,7 @@ const ActionButtonIcon: FunctionComponent<{
   <Wrapper
     className={className}
     disabled={disabled}
+    // @ts-ignore
     onClick={onClick}
     data-testid={testId}
   >

@@ -31,7 +31,8 @@ const playerSlice = createSlice({
   reducers: {
     playerTogglePlayPause(state, action: PayloadAction<boolean>) {
       if (state.track || action.payload !== undefined) {
-        state.playing = action.payload === undefined ? !state.playing : action.payload
+        state.playing =
+          action.payload === undefined ? !state.playing : action.payload
       }
     },
     playerToggleShuffle(state) {

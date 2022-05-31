@@ -180,205 +180,202 @@ export const libraryBrowserInit = (): AppThunk => (dispatch, getState) => {
 
 export const initArtists = (): AppThunk => (dispatch, getState) => {
   const state = getState()
-  const artists = state.libraryBrowser.search.term === ''
-    ? Object.values(state.library.artists)
-    : state.libraryBrowser.search.filteredArtists
+  const artists =
+    state.libraryBrowser.search.term === ''
+      ? Object.values(state.library.artists)
+      : state.libraryBrowser.search.filteredArtists
 
   dispatch(libraryBrowserInitArtists(artists))
 }
 
-export const search = (text: string): AppThunk => (dispatch) => {
-  dispatch(libraryBrowserSearchUpdateInput(text))
+export const search =
+  (text: string): AppThunk =>
+  (dispatch) => {
+    dispatch(libraryBrowserSearchUpdateInput(text))
 
-  // Launch the search only if user has typed 3 or more characters.
-  if (text.length > 2) {
-    dispatch(searchFilter(text))
-  } else if (text.length === 0) {
-    // Reinitialise library browser.
-    dispatch(selectArtist({ artistId: '0', index: 0 }))
-    // Others tabs will be reinitialised automatically.
-    dispatch(libraryBrowserInit())
-  }
-}
-
-export const setSearchFilter = (filter: SearchFilter): AppThunk => (
-  dispatch,
-  getState
-) => {
-  const {
-    libraryBrowser: {
-      search: { term },
-    },
-  } = getState()
-
-  dispatch(libraryBrowserSetFilter(filter))
-
-  if (term.length > 2) {
-    dispatch(searchFilter(term))
-  }
-}
-
-export const selectArtist = ({
-  artistId,
-  index,
-}: {
-  artistId: string
-  index: number
-}): AppThunk => (dispatch, getState) => {
-  const { libraryBrowser, library } = getState()
-
-  let filteredAlbums: Album[] = []
-  let filteredTracks: Track[] = []
-
-  const userHasSearched = libraryBrowser.search.term !== ''
-
-  // If the user has searched for something, the filtering is done only on the results already
-  // filtered from the search term. Else we filter on the original library.
-  let albumsToFilter
-  if (userHasSearched) {
-    albumsToFilter = [...libraryBrowser.search.filteredAlbums]
-  } else {
-    albumsToFilter = Object.values<Album>(library.albums)
-  }
-
-  let tracksToFilter
-  if (userHasSearched) {
-    tracksToFilter = [...libraryBrowser.search.filteredTracks]
-  } else {
-    tracksToFilter = Object.values<Track>(library.tracks)
-  }
-
-  if (artistId !== '0') {
-    if (artistId === APIConstants.COMPILATION_ARTIST_ID) {
-      // Special case for compilations which are grouped under the "Various artists" artist.
-      filteredAlbums = albumsToFilter.filter(
-        (item) => item.artistId === artistId
-      )
-      // We have to get all the tracks from all the compilation albums.
-      const albumsIds = filteredAlbums.map((item) => item.id)
-      filteredTracks = tracksToFilter.filter((item) => albumsIds.includes(item.albumId))
-    } else {
-      // To display all the albums containing tracks of an artist, including
-      // the compilations, we can't directly filter albums on artistId, we have
-      // to instead display all the albums for which tracks have been found.
-      filteredTracks = tracksToFilter.filter(
-        (item) => item.artistId === artistId
-      )
-      const tracksAlbums = filteredTracks.map((item) => item.albumId)
-      filteredAlbums = albumsToFilter.filter(
-        (item) => artistId === '0' || tracksAlbums.includes(item.id)
-      )
+    // Launch the search only if user has typed 3 or more characters.
+    if (text.length > 2) {
+      dispatch(searchFilter(text))
+    } else if (text.length === 0) {
+      // Reinitialise library browser.
+      dispatch(selectArtist({ artistId: '0', index: 0 }))
+      // Others tabs will be reinitialised automatically.
+      dispatch(libraryBrowserInit())
     }
-  } else {
-    // Display all albums.
-    filteredAlbums = albumsToFilter
-    // If user searched for something display all already filtered tracks.
+  }
+
+export const setSearchFilter =
+  (filter: SearchFilter): AppThunk =>
+  (dispatch, getState) => {
+    const {
+      libraryBrowser: {
+        search: { term },
+      },
+    } = getState()
+
+    dispatch(libraryBrowserSetFilter(filter))
+
+    if (term.length > 2) {
+      dispatch(searchFilter(term))
+    }
+  }
+
+export const selectArtist =
+  ({ artistId, index }: { artistId: string; index: number }): AppThunk =>
+  (dispatch, getState) => {
+    const { libraryBrowser, library } = getState()
+
+    let filteredAlbums: Album[] = []
+    let filteredTracks: Track[] = []
+
+    const userHasSearched = libraryBrowser.search.term !== ''
+
+    // If the user has searched for something, the filtering is done only on the results already
+    // filtered from the search term. Else we filter on the original library.
+    let albumsToFilter
     if (userHasSearched) {
+      albumsToFilter = [...libraryBrowser.search.filteredAlbums]
+    } else {
+      albumsToFilter = Object.values<Album>(library.albums)
+    }
+
+    let tracksToFilter
+    if (userHasSearched) {
+      tracksToFilter = [...libraryBrowser.search.filteredTracks]
+    } else {
+      tracksToFilter = Object.values<Track>(library.tracks)
+    }
+
+    if (artistId !== '0') {
+      if (artistId === APIConstants.COMPILATION_ARTIST_ID) {
+        // Special case for compilations which are grouped under the "Various artists" artist.
+        filteredAlbums = albumsToFilter.filter(
+          (item) => item.artistId === artistId
+        )
+        // We have to get all the tracks from all the compilation albums.
+        const albumsIds = filteredAlbums.map((item) => item.id)
+        filteredTracks = tracksToFilter.filter((item) =>
+          albumsIds.includes(item.albumId)
+        )
+      } else {
+        // To display all the albums containing tracks of an artist, including
+        // the compilations, we can't directly filter albums on artistId, we have
+        // to instead display all the albums for which tracks have been found.
+        filteredTracks = tracksToFilter.filter(
+          (item) => item.artistId === artistId
+        )
+        const tracksAlbums = filteredTracks.map((item) => item.albumId)
+        filteredAlbums = albumsToFilter.filter(
+          (item) => artistId === '0' || tracksAlbums.includes(item.id)
+        )
+      }
+    } else {
+      // Display all albums.
+      filteredAlbums = albumsToFilter
+      // If user searched for something display all already filtered tracks.
+      if (userHasSearched) {
+        filteredTracks = tracksToFilter
+      }
+    }
+
+    const hydratedAlbums = filteredAlbums.map((album) => ({
+      ...album,
+      artist: library.artists[album.artistId as string],
+    }))
+
+    const hydratedTracks = filteredTracks.map((track) => ({
+      ...track,
+      artist: library.artists[track.artistId as string],
+      album: library.albums[track.albumId as string],
+    }))
+
+    dispatch(
+      libraryBrowserSelectArtist({
+        artistId,
+        index,
+        filteredAlbums: hydratedAlbums,
+        filteredTracks: hydratedTracks,
+      })
+    )
+  }
+
+export const selectAlbum =
+  ({ albumId, index }: { albumId: string; index: number }): AppThunk =>
+  (dispatch, getState) => {
+    const { libraryBrowser, library } = getState()
+
+    let filteredTracks: Track[] = []
+    let compilationsIds: string[] = []
+
+    const userHasSearched = libraryBrowser.search.term !== ''
+
+    let tracksToFilter
+    if (userHasSearched) {
+      tracksToFilter = [...libraryBrowser.search.filteredTracks]
+    } else {
+      tracksToFilter = Object.values<Track>(library.tracks)
+    }
+
+    if (libraryBrowser.selectedArtists === APIConstants.COMPILATION_ARTIST_ID) {
+      // We want to display all tracks for all the compilations, keep track (hoho) of the albums
+      // being compilations.
+      compilationsIds = libraryBrowser.albums.map((item: Album) => item.id)
+    }
+
+    if (libraryBrowser.selectedArtists !== '0' || albumId !== '0') {
+      filteredTracks = tracksToFilter.filter((item) => {
+        if (
+          libraryBrowser.selectedArtists ===
+            APIConstants.COMPILATION_ARTIST_ID &&
+          albumId === '0'
+        ) {
+          // If "various artists" artist selected and no specific album selected,
+          // Display all tracks for all the compilations.
+          return compilationsIds.includes(item.albumId)
+        }
+        if (
+          libraryBrowser.selectedArtists === APIConstants.COMPILATION_ARTIST_ID
+        ) {
+          // If "various artists" artist selected and specific album selected,
+          // Display all tracks for this album.
+          return item.albumId === albumId
+        }
+        if (libraryBrowser.selectedArtists !== '0' && albumId === '0') {
+          // If no specific album selected, display all the tracks of
+          // the selected artist for all albums of this artist.
+          return item.artistId === libraryBrowser.selectedArtists
+        }
+        if (libraryBrowser.selectedArtists === '0') {
+          // If no artist selected, display all the tracks
+          // for the selected album.
+          return item.albumId === albumId
+        }
+
+        // Else return the tracks for the selected album and artist.
+        return (
+          item.albumId === albumId &&
+          item.artistId === libraryBrowser.selectedArtists
+        )
+      })
+    } else if (userHasSearched) {
+      // If user searched for something display all already filtered tracks.
       filteredTracks = tracksToFilter
     }
+
+    const hydratedTracks = filteredTracks.map((track) => ({
+      ...track,
+      artist: library.artists[track.artistId as string],
+      album: library.albums[track.albumId as string],
+    }))
+
+    dispatch(
+      libraryBrowserSelectAlbum({
+        albumId,
+        index,
+        filteredTracks: hydratedTracks,
+      })
+    )
   }
-
-  const hydratedAlbums = filteredAlbums.map((album) => ({
-    ...album,
-    artist: library.artists[album.artistId as string],
-  }))
-
-  const hydratedTracks = filteredTracks.map((track) => ({
-    ...track,
-    artist: library.artists[track.artistId as string],
-    album: library.albums[track.albumId as string],
-  }))
-
-  dispatch(
-    libraryBrowserSelectArtist({
-      artistId,
-      index,
-      filteredAlbums: hydratedAlbums,
-      filteredTracks: hydratedTracks,
-    })
-  )
-}
-
-export const selectAlbum = ({
-  albumId,
-  index,
-}: {
-  albumId: string
-  index: number
-}): AppThunk => (dispatch, getState) => {
-  const { libraryBrowser, library } = getState()
-
-  let filteredTracks: Track[] = []
-  let compilationsIds: string[] = []
-
-  const userHasSearched = libraryBrowser.search.term !== ''
-
-  let tracksToFilter
-  if (userHasSearched) {
-    tracksToFilter = [...libraryBrowser.search.filteredTracks]
-  } else {
-    tracksToFilter = Object.values<Track>(library.tracks)
-  }
-
-  if (libraryBrowser.selectedArtists === APIConstants.COMPILATION_ARTIST_ID) {
-    // We want to display all tracks for all the compilations, keep track (hoho) of the albums
-    // being compilations.
-    compilationsIds = libraryBrowser.albums.map((item: Album) => item.id)
-  }
-
-  if (libraryBrowser.selectedArtists !== '0' || albumId !== '0') {
-    filteredTracks = tracksToFilter.filter((item) => {
-      if (
-        libraryBrowser.selectedArtists === APIConstants.COMPILATION_ARTIST_ID
-        && albumId === '0'
-      ) {
-        // If "various artists" artist selected and no specific album selected,
-        // Display all tracks for all the compilations.
-        return compilationsIds.includes(item.albumId)
-      }
-      if (
-        libraryBrowser.selectedArtists === APIConstants.COMPILATION_ARTIST_ID
-      ) {
-        // If "various artists" artist selected and specific album selected,
-        // Display all tracks for this album.
-        return item.albumId === albumId
-      }
-      if (libraryBrowser.selectedArtists !== '0' && albumId === '0') {
-        // If no specific album selected, display all the tracks of
-        // the selected artist for all albums of this artist.
-        return item.artistId === libraryBrowser.selectedArtists
-      }
-      if (libraryBrowser.selectedArtists === '0') {
-        // If no artist selected, display all the tracks
-        // for the selected album.
-        return item.albumId === albumId
-      }
-
-      // Else return the tracks for the selected album and artist.
-      return (
-        item.albumId === albumId
-        && item.artistId === libraryBrowser.selectedArtists
-      )
-    })
-  } else if (userHasSearched) {
-    // If user searched for something display all already filtered tracks.
-    filteredTracks = tracksToFilter
-  }
-
-  const hydratedTracks = filteredTracks.map((track) => ({
-    ...track,
-    artist: library.artists[track.artistId as string],
-    album: library.albums[track.albumId as string],
-  }))
-
-  dispatch(
-    libraryBrowserSelectAlbum({
-      albumId,
-      index,
-      filteredTracks: hydratedTracks,
-    })
-  )
-}
 
 /**
  * Search thunk.
@@ -395,161 +392,165 @@ export const selectAlbum = ({
  *   included in the results.
  *
  */
-export const searchFilter = (searchTerm: string): AppThunk => (
-  dispatch,
-  getState
-) => {
-  const state = getState()
+export const searchFilter =
+  (searchTerm: string): AppThunk =>
+  (dispatch, getState) => {
+    const state = getState()
 
-  // Get library lists as arrays.
-  const libraryArtists = Object.values<Artist>(state.library.artists)
-  const libraryAlbums = Object.values<Album>(state.library.albums)
-  const libraryTracks = Object.values<Track>(state.library.tracks)
+    // Get library lists as arrays.
+    const libraryArtists = Object.values<Artist>(state.library.artists)
+    const libraryAlbums = Object.values<Album>(state.library.albums)
+    const libraryTracks = Object.values<Track>(state.library.tracks)
 
-  // Artists and albums are updated with search results from respectively albums + tracks and
-  // tracks so we can't directly filter the original lists.
-  const artistsIds: string[] = []
-  const albumsIds: string[] = []
-  // Tracks list can be filtered directly though because we already have all the artists and
-  // albums info we need at the moment of filtering the tracks list.
-  const filteredTracks: Track[] = []
+    // Artists and albums are updated with search results from respectively albums + tracks and
+    // tracks so we can't directly filter the original lists.
+    const artistsIds: string[] = []
+    const albumsIds: string[] = []
+    // Tracks list can be filtered directly though because we already have all the artists and
+    // albums info we need at the moment of filtering the tracks list.
+    const filteredTracks: Track[] = []
 
-  // Get ids of all artists whose name is matching the search term.
-  if (
-    state.libraryBrowser.search.filter === 'all'
-    || state.libraryBrowser.search.filter === 'artist'
-  ) {
-    libraryArtists.forEach((item) => {
-      if (item.name.toUpperCase().includes(searchTerm.toUpperCase())) {
-        artistsIds.push(item.id)
-      }
-    })
-  }
-
-  // Store artists and album ids that are not found with a direct match in separate variables.
-  const undirectAlbumsIds: string[] = []
-  const undirectArtistsIds: string[] = []
-  // Special case for compilation albums.
-  const compilationAlbums: string[] = []
-
-  libraryAlbums.forEach((item) => {
-    // Get ids of all albums whose title is matching the search term.
+    // Get ids of all artists whose name is matching the search term.
     if (
-      state.libraryBrowser.search.filter === 'all'
-      || state.libraryBrowser.search.filter === 'album'
+      state.libraryBrowser.search.filter === 'all' ||
+      state.libraryBrowser.search.filter === 'artist'
     ) {
-      if (item.title.toUpperCase().includes(searchTerm.toUpperCase())) {
-        albumsIds.push(item.id)
+      libraryArtists.forEach((item) => {
+        if (item.name.toUpperCase().includes(searchTerm.toUpperCase())) {
+          artistsIds.push(item.id)
+        }
+      })
+    }
 
-        // Add album's artist id to the list of artists.
-        if (item.artistId && !artistsIds.includes(item.artistId)) {
-          undirectArtistsIds.push(item.artistId)
+    // Store artists and album ids that are not found with a direct match in separate variables.
+    const undirectAlbumsIds: string[] = []
+    const undirectArtistsIds: string[] = []
+    // Special case for compilation albums.
+    const compilationAlbums: string[] = []
+
+    libraryAlbums.forEach((item) => {
+      // Get ids of all albums whose title is matching the search term.
+      if (
+        state.libraryBrowser.search.filter === 'all' ||
+        state.libraryBrowser.search.filter === 'album'
+      ) {
+        if (item.title.toUpperCase().includes(searchTerm.toUpperCase())) {
+          albumsIds.push(item.id)
+
+          // Add album's artist id to the list of artists.
+          if (item.artistId && !artistsIds.includes(item.artistId)) {
+            undirectArtistsIds.push(item.artistId)
+          }
         }
       }
-    }
 
-    // Also get all albums of artists that have previously been found.
-    if (item.artistId && artistsIds.includes(item.artistId)) {
-      if (
-        item.artistId === APIConstants.COMPILATION_ARTIST_ID
-        && !compilationAlbums.includes(item.id)
-      ) {
-        // Track compilation albums separately.
-        compilationAlbums.push(item.id)
-      } else if (!albumsIds.includes(item.id)) {
-        undirectAlbumsIds.push(item.id)
+      // Also get all albums of artists that have previously been found.
+      if (item.artistId && artistsIds.includes(item.artistId)) {
+        if (
+          item.artistId === APIConstants.COMPILATION_ARTIST_ID &&
+          !compilationAlbums.includes(item.id)
+        ) {
+          // Track compilation albums separately.
+          compilationAlbums.push(item.id)
+        } else if (!albumsIds.includes(item.id)) {
+          undirectAlbumsIds.push(item.id)
+        }
       }
-    }
-  })
+    })
 
-  libraryTracks.forEach((item) => {
-    // Also get all tracks of artists and albums that have previously been found.
-    if (item.artistId && artistsIds.includes(item.artistId)) {
-      if (!filteredTracks.includes(item)) {
-        filteredTracks.push(item)
-      }
-    }
-    if (item.albumId && albumsIds.includes(item.albumId)) {
-      if (!filteredTracks.includes(item)) {
-        filteredTracks.push(item)
-      }
-    }
-    if (item.albumId && compilationAlbums.includes(item.albumId)) {
-      if (!filteredTracks.includes(item)) {
-        filteredTracks.push(item)
-      }
-    }
-
-    // Get ids of all tracks whose title is matching the search term.
-    if (
-      state.libraryBrowser.search.filter === 'all'
-      || state.libraryBrowser.search.filter === 'track'
-    ) {
-      if (item.title.toUpperCase().includes(searchTerm.toUpperCase())) {
+    libraryTracks.forEach((item) => {
+      // Also get all tracks of artists and albums that have previously been found.
+      if (item.artistId && artistsIds.includes(item.artistId)) {
         if (!filteredTracks.includes(item)) {
           filteredTracks.push(item)
         }
-
-        // Add track's artist id to the list of artists.
-        if (item.artistId && !undirectArtistsIds.includes(item.artistId)) {
-          undirectArtistsIds.push(item.artistId)
-        }
-
-        // Add track's album id to the list of albums.
-        if (item.albumId && !undirectAlbumsIds.includes(item.albumId)) {
-          undirectAlbumsIds.push(item.albumId)
+      }
+      if (item.albumId && albumsIds.includes(item.albumId)) {
+        if (!filteredTracks.includes(item)) {
+          filteredTracks.push(item)
         }
       }
-    }
-  })
+      if (item.albumId && compilationAlbums.includes(item.albumId)) {
+        if (!filteredTracks.includes(item)) {
+          filteredTracks.push(item)
+        }
+      }
 
-  // Add back artists added from album matching.
-  undirectArtistsIds.forEach((item) => {
-    if (!artistsIds.includes(item)) {
-      artistsIds.push(item)
-    }
-  })
+      // Get ids of all tracks whose title is matching the search term.
+      if (
+        state.libraryBrowser.search.filter === 'all' ||
+        state.libraryBrowser.search.filter === 'track'
+      ) {
+        if (item.title.toUpperCase().includes(searchTerm.toUpperCase())) {
+          if (!filteredTracks.includes(item)) {
+            filteredTracks.push(item)
+          }
 
-  // Add back albums added from artists matching.
-  undirectAlbumsIds.forEach((item) => {
-    if (!albumsIds.includes(item)) {
-      albumsIds.push(item)
-    }
-  })
-  compilationAlbums.forEach((item) => {
-    if (!albumsIds.includes(item)) {
-      albumsIds.push(item)
-    }
-  })
+          // Add track's artist id to the list of artists.
+          if (item.artistId && !undirectArtistsIds.includes(item.artistId)) {
+            undirectArtistsIds.push(item.artistId)
+          }
 
-  // Then filter the artists and albums.
-  const filteredArtists = libraryArtists.filter((item) => artistsIds.includes(item.id))
-  const filteredAlbums = libraryAlbums.filter((item) => albumsIds.includes(item.id))
-
-  // Hydrate elements.
-  const hydratedAlbums = filteredAlbums.map((album) => ({
-    ...album,
-    artist: state.library.artists[album.artistId as string],
-  }))
-
-  const hydratedTracks = filteredTracks.map((track) => ({
-    ...track,
-    artist: state.library.artists[track.artistId as string],
-    album: state.library.albums[track.albumId as string],
-  }))
-
-  dispatch(
-    libraryBrowserSearchFilter({
-      searchTerm,
-      filteredArtists,
-      filteredAlbums: hydratedAlbums,
-      filteredTracks: hydratedTracks,
+          // Add track's album id to the list of albums.
+          if (item.albumId && !undirectAlbumsIds.includes(item.albumId)) {
+            undirectAlbumsIds.push(item.albumId)
+          }
+        }
+      }
     })
-  )
-}
+
+    // Add back artists added from album matching.
+    undirectArtistsIds.forEach((item) => {
+      if (!artistsIds.includes(item)) {
+        artistsIds.push(item)
+      }
+    })
+
+    // Add back albums added from artists matching.
+    undirectAlbumsIds.forEach((item) => {
+      if (!albumsIds.includes(item)) {
+        albumsIds.push(item)
+      }
+    })
+    compilationAlbums.forEach((item) => {
+      if (!albumsIds.includes(item)) {
+        albumsIds.push(item)
+      }
+    })
+
+    // Then filter the artists and albums.
+    const filteredArtists = libraryArtists.filter((item) =>
+      artistsIds.includes(item.id)
+    )
+    const filteredAlbums = libraryAlbums.filter((item) =>
+      albumsIds.includes(item.id)
+    )
+
+    // Hydrate elements.
+    const hydratedAlbums = filteredAlbums.map((album) => ({
+      ...album,
+      artist: state.library.artists[album.artistId as string],
+    }))
+
+    const hydratedTracks = filteredTracks.map((track) => ({
+      ...track,
+      artist: state.library.artists[track.artistId as string],
+      album: state.library.albums[track.albumId as string],
+    }))
+
+    dispatch(
+      libraryBrowserSearchFilter({
+        searchTerm,
+        filteredArtists,
+        filteredAlbums: hydratedAlbums,
+        filteredTracks: hydratedTracks,
+      })
+    )
+  }
 
 const getArtists = (state: RootState) => state.libraryBrowser.artists
-const getArtistsSortOrder = (state: RootState) => state.libraryBrowser.sortArtists
+const getArtistsSortOrder = (state: RootState) =>
+  state.libraryBrowser.sortArtists
 export const getArtistsList = createSelector(
   [getArtists, getArtistsSortOrder],
   (list: Artist[], sortOrder: SortOrder) => {

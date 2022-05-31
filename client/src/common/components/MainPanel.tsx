@@ -1,19 +1,17 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Route, withRouter } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 import LibraryBrowser from 'modules/browser/scenes/LibraryBrowser'
 import NowPlaying from 'modules/now_playing/scenes/NowPlaying'
 import LoadingScreen from 'common/components/LoadingScreen'
 import Settings from 'modules/settings/scenes/Settings'
 import Playlists from 'modules/playlist/scenes/Playlists'
+import { useAppSelector } from 'store/hooks'
 import Dashboard from '../../modules/dashboard/scenes/Dashboard'
 
 const MainPanel = () => {
-  const isFetching = useSelector((state: RootState) => state.library.isFetching)
-  const isInitialized = useSelector(
-    (state: RootState) => state.library.isInitialized
-  )
+  const isFetching = useAppSelector((state) => state.library.isFetching)
+  const isInitialized = useAppSelector((state) => state.library.isInitialized)
 
   return (
     <div>

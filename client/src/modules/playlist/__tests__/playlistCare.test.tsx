@@ -296,6 +296,7 @@ describe('playlistCare', () => {
       expect(result2.length).toBe(1)
     })
 
+    // eslint-disable-next-line max-len
     it('should find only one track when only one track is a match with track title, album title, and artist name', () => {
       const toSearch: Track = {
         id: '51',

@@ -8,9 +8,7 @@ const PlaylistItem: FunctionComponent<{
   selected: boolean
   handleRemoveTrack: (position: number) => void
   onContextMenu: (p: { scrollToRow: number }) => void
-}> = ({
-  item, handleRemoveTrack, onContextMenu, selected = false,
-}) => {
+}> = ({ item, handleRemoveTrack, onContextMenu, selected = false }) => {
   const { track, position } = item
 
   const onRightClick = (e: React.MouseEvent) => {
@@ -63,6 +61,7 @@ const TrackWrapper = styled.div`
   grid-template-columns: 60px auto 44px;
   height: ${(props) => props.theme.itemHeight};
   border-bottom: 1px solid ${(props) => props.theme.separatorColor};
+  color: ${(props) => props.theme.textPrimaryColor};
 
   > * {
     align-self: center;

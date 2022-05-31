@@ -1,9 +1,7 @@
 import React, { FunctionComponent, useRef } from 'react'
 import styled, { withTheme } from 'styled-components'
 import Modal from 'react-modal'
-import {
-  Formik, Form, Field, ErrorMessage, FormikErrors,
-} from 'formik'
+import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik'
 import dayjs from 'dayjs'
 import { getRandomInt } from 'common/utils/utils'
 import ActionButton from 'common/components/ActionButton'
@@ -56,7 +54,7 @@ const PlaylistAddPopup: FunctionComponent<{
 
   // Prevents weird bug when user is pressing enter to validate the form:
   // without this the modal doesn't close even if state is correct.
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.keyCode === 13) {
       e.preventDefault()
     }
@@ -90,6 +88,7 @@ const PlaylistAddPopup: FunctionComponent<{
     >
       <ModalContent
         role="button"
+        // @ts-ignore
         onKeyDown={(e) => handleKeyDown(e)}
         tabIndex={0}
       >
@@ -127,7 +126,7 @@ const PlaylistAddPopup: FunctionComponent<{
                 type="text"
                 name="title"
                 innerRef={titleField}
-                onKeyDown={(e: React.KeyboardEvent) => {
+                onKeyDown={(e: KeyboardEvent) => {
                   if (e.keyCode === 13) {
                     handleSubmit()
                   }

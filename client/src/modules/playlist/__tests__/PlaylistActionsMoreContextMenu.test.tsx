@@ -7,6 +7,7 @@ import PlaylistActionsMoreContextMenu from '../components/PlaylistActionsMoreCon
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 
 jest.mock('react-modal', () => {
+  // eslint-disable-next-line jest/no-mocks-import
   const TestReactModal = require('../../../../__mocks__/react-modal')
   return TestReactModal.default
 })

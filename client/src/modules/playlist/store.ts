@@ -216,177 +216,183 @@ export default playlistSlice.reducer
  * Adds a track to a given playlist or create a new playlist with this track if no playlist id
  * is provided.
  */
-export const addTrack = ({
-  playlistId,
-  trackId,
-}: {
-  playlistId?: string
-  trackId: string
-}): AppThunk => (dispatch, getState) => {
-  const { library } = getState()
+export const addTrack =
+  ({
+    playlistId,
+    trackId,
+  }: {
+    playlistId?: string
+    trackId: string
+  }): AppThunk =>
+  (dispatch, getState) => {
+    const { library } = getState()
 
-  // Get track info from the library.
-  const track = { ...library.tracks[trackId] }
-  // Hydrate track with album and artist info.
-  track.artist = library.artists[track.artistId]
-  track.album = library.albums[track.albumId]
+    // Get track info from the library.
+    const track = { ...library.tracks[trackId] }
+    // Hydrate track with album and artist info.
+    track.artist = library.artists[track.artistId]
+    track.album = library.albums[track.albumId]
 
-  if (playlistId) {
-    dispatch(playlistAddTracks({ playlistId, tracks: [track] }))
-  } else {
-    dispatch(createPlaylist({ name: 'New playlist', tracks: [track] }))
+    if (playlistId) {
+      dispatch(playlistAddTracks({ playlistId, tracks: [track] }))
+    } else {
+      dispatch(createPlaylist({ name: 'New playlist', tracks: [track] }))
+    }
   }
-}
 
 /**
  * Adds an album to a given playlist or create a new playlist with this album if no playlist id
  * is provided.
  */
-export const addAlbum = ({
-  playlistId,
-  albumId,
-}: {
-  playlistId?: string
-  albumId: string
-}): AppThunk => (dispatch, getState) => {
-  const { library } = getState()
+export const addAlbum =
+  ({
+    playlistId,
+    albumId,
+  }: {
+    playlistId?: string
+    albumId: string
+  }): AppThunk =>
+  (dispatch, getState) => {
+    const { library } = getState()
 
-  // Get tracks from album.
-  const filteredTracks = Object.values<Track>(library.tracks).filter(
-    (track) => albumId === track.albumId
-  )
+    // Get tracks from album.
+    const filteredTracks = Object.values<Track>(library.tracks).filter(
+      (track) => albumId === track.albumId
+    )
 
-  // Hydrate tracks with album and artist info.
-  const augmentedTracks = filteredTracks.map((track) => ({
-    ...track,
-    artist: library.artists[track.artistId as string],
-    album: library.albums[track.albumId as string],
-  }))
+    // Hydrate tracks with album and artist info.
+    const augmentedTracks = filteredTracks.map((track) => ({
+      ...track,
+      artist: library.artists[track.artistId as string],
+      album: library.albums[track.albumId as string],
+    }))
 
-  if (playlistId) {
-    dispatch(playlistAddTracks({ playlistId, tracks: augmentedTracks }))
-  } else {
-    dispatch(createPlaylist({ name: 'New playlist', tracks: augmentedTracks }))
+    if (playlistId) {
+      dispatch(playlistAddTracks({ playlistId, tracks: augmentedTracks }))
+    } else {
+      dispatch(
+        createPlaylist({ name: 'New playlist', tracks: augmentedTracks })
+      )
+    }
   }
-}
 
 /**
  * Adds an artist to a given playlist or create a new playlist with this artist if no playlist id
  * is provided.
  */
-export const addArtist = ({
-  playlistId,
-  artistId,
-}: {
-  playlistId?: string
-  artistId: string
-}): AppThunk => (dispatch, getState) => {
-  const { library } = getState()
+export const addArtist =
+  ({
+    playlistId,
+    artistId,
+  }: {
+    playlistId?: string
+    artistId: string
+  }): AppThunk =>
+  (dispatch, getState) => {
+    const { library } = getState()
 
-  // Get tracks from artist.
-  const filteredTracks = Object.values<Track>(library.tracks).filter(
-    (track) => artistId === track.artistId
-  )
+    // Get tracks from artist.
+    const filteredTracks = Object.values<Track>(library.tracks).filter(
+      (track) => artistId === track.artistId
+    )
 
-  // Hydrate tracks with album and artist info.
-  const augmentedTracks = filteredTracks.map((track) => ({
-    ...track,
-    artist: library.artists[track.artistId as string],
-    album: library.albums[track.albumId as string],
-  }))
+    // Hydrate tracks with album and artist info.
+    const augmentedTracks = filteredTracks.map((track) => ({
+      ...track,
+      artist: library.artists[track.artistId as string],
+      album: library.albums[track.albumId as string],
+    }))
 
-  if (playlistId) {
-    dispatch(playlistAddTracks({ playlistId, tracks: augmentedTracks }))
-  } else {
-    dispatch(createPlaylist({ name: 'New playlist', tracks: augmentedTracks }))
+    if (playlistId) {
+      dispatch(playlistAddTracks({ playlistId, tracks: augmentedTracks }))
+    } else {
+      dispatch(
+        createPlaylist({ name: 'New playlist', tracks: augmentedTracks })
+      )
+    }
   }
-}
 
 /**
  * Adds a playlist to a given playlist or create a copy of this playlist if no playlist id
  * is provided.
  */
-export const addPlaylist = ({
-  playlistId,
-  playlistToAddId,
-}: {
-  playlistId?: string
-  playlistToAddId: string
-}): AppThunk => (dispatch, getState) => {
-  const { playlist } = getState()
+export const addPlaylist =
+  ({
+    playlistId,
+    playlistToAddId,
+  }: {
+    playlistId?: string
+    playlistToAddId: string
+  }): AppThunk =>
+  (dispatch, getState) => {
+    const { playlist } = getState()
 
-  const tracks = playlist.playlists[playlistToAddId].items.map(
-    (item: PlaylistItem) => item.track
-  )
+    const tracks = playlist.playlists[playlistToAddId].items.map(
+      (item: PlaylistItem) => item.track
+    )
 
-  if (playlistId) {
-    dispatch(
-      playlistAddTracks({
-        playlistId,
-        tracks,
-      })
-    )
-  } else {
-    dispatch(
-      createPlaylist({
-        name: `Copy of ${playlist.playlists[playlistToAddId].title}`,
-        tracks,
-      })
-    )
+    if (playlistId) {
+      dispatch(
+        playlistAddTracks({
+          playlistId,
+          tracks,
+        })
+      )
+    } else {
+      dispatch(
+        createPlaylist({
+          name: `Copy of ${playlist.playlists[playlistToAddId].title}`,
+          tracks,
+        })
+      )
+    }
   }
-}
 
 /**
  * Adds the current queue to a given playlist or create a new playlist with the queue if no
  * playlist id is provided.
  */
-export const addCurrentQueue = ({
-  playlistId,
-}: {
-  playlistId?: string
-}): AppThunk => (dispatch, getState) => {
-  const { queue } = getState()
+export const addCurrentQueue =
+  ({ playlistId }: { playlistId?: string }): AppThunk =>
+  (dispatch, getState) => {
+    const { queue } = getState()
 
-  const tracks = queue.items.map((item: QueueItem) => item.track)
+    const tracks = queue.items.map((item: QueueItem) => item.track)
 
-  if (playlistId) {
+    if (playlistId) {
+      dispatch(
+        playlistAddTracks({
+          playlistId,
+          tracks,
+        })
+      )
+    } else {
+      dispatch(
+        createPlaylist({
+          name: 'New playlist from queue',
+          tracks,
+        })
+      )
+    }
+  }
+
+export const createPlaylist =
+  ({ name, tracks }: { name: string; tracks: Track[] }): AppThunk =>
+  (dispatch) => {
+    const playlistItems = tracks.map((item: Track, index: number) => ({
+      track: item,
+      position: index + 1,
+    }))
+
     dispatch(
-      playlistAddTracks({
-        playlistId,
-        tracks,
-      })
-    )
-  } else {
-    dispatch(
-      createPlaylist({
-        name: 'New playlist from queue',
-        tracks,
+      playlistCreatePlaylist({
+        id: `temp_${getRandomInt(1, 100000)}`,
+        title: name,
+        date: dayjs().format('YYYY-MM-DD'),
+        items: playlistItems,
       })
     )
   }
-}
-
-export const createPlaylist = ({
-  name,
-  tracks,
-}: {
-  name: string
-  tracks: Track[]
-}): AppThunk => (dispatch) => {
-  const playlistItems = tracks.map((item: Track, index: number) => ({
-    track: item,
-    position: index + 1,
-  }))
-
-  dispatch(
-    playlistCreatePlaylist({
-      id: `temp_${getRandomInt(1, 100000)}`,
-      title: name,
-      date: dayjs().format('YYYY-MM-DD'),
-      items: playlistItems,
-    })
-  )
-}
 
 export const playlistsSelector = createSelector(
   [(state: RootState) => state.playlist.playlists],

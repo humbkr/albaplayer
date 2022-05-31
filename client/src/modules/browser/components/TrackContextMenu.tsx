@@ -1,8 +1,5 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  Menu as ContextMenu, Item, Submenu, Separator,
-} from 'react-contexify'
+import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
   addTrack,
@@ -13,11 +10,12 @@ import {
   playlistsSelector,
   addTrack as addTrackToPlaylist,
 } from 'modules/playlist/store'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { search, setSearchFilter } from '../store'
 
 const TrackContextMenu = () => {
-  const playlists = useSelector((state: RootState) => playlistsSelector(state))
-  const dispatch = useDispatch()
+  const playlists = useAppSelector((state) => playlistsSelector(state))
+  const dispatch = useAppDispatch()
 
   const findAllByArtist = (menuItem: any) => {
     dispatch(setSearchFilter('artist'))
@@ -32,12 +30,14 @@ const TrackContextMenu = () => {
   const playlistsItems = playlists.map((item: Playlist) => (
     <Item
       key={item.id}
-      onClick={(menuItem: any) => dispatch(
-        addTrackToPlaylist({
-          playlistId: item.id,
-          trackId: menuItem.props.data.id,
-        })
-      )}
+      onClick={(menuItem: any) =>
+        dispatch(
+          addTrackToPlaylist({
+            playlistId: item.id,
+            trackId: menuItem.props.data.id,
+          })
+        )
+      }
     >
       {item.title}
     </Item>
@@ -45,7 +45,9 @@ const TrackContextMenu = () => {
   playlistsItems.push(
     <Item
       key="new"
-      onClick={(menuItem: any) => dispatch(addTrackToPlaylist({ trackId: menuItem.props.data.id }))}
+      onClick={(menuItem: any) =>
+        dispatch(addTrackToPlaylist({ trackId: menuItem.props.data.id }))
+      }
     >
       + Create new playlist
     </Item>
@@ -59,7 +61,9 @@ const TrackContextMenu = () => {
         Play now
       </Item>
       <Item
-        onClick={(menuItem: any) => dispatch(playTrackAfterCurrent(menuItem.props.data.id))}
+        onClick={(menuItem: any) =>
+          dispatch(playTrackAfterCurrent(menuItem.props.data.id))
+        }
       >
         Play after current track
       </Item>

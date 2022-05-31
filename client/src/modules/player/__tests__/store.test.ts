@@ -40,11 +40,12 @@ jest.mock('api')
 api.getFullTrackInfo = jest.fn()
 
 const mockStore = configureMockStore([thunk])
-const makeMockStore = (customState: any = {}) => mockStore({
-  player: playerInitialState,
-  queue: queueInitialState,
-  ...customState,
-})
+const makeMockStore = (customState: any = {}) =>
+  mockStore({
+    player: playerInitialState,
+    queue: queueInitialState,
+    ...customState,
+  })
 
 const mockLibraryState: LibraryStateType = {
   ...libraryInitialState,
@@ -240,9 +241,10 @@ describe('player (redux)', () => {
 
     it('should handle setting a track', async () => {
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -308,9 +310,10 @@ describe('player (redux)', () => {
 
     it('should handle setting a track with a cover', async () => {
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -793,9 +796,10 @@ describe('player (redux)', () => {
       }
 
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -856,9 +860,10 @@ describe('player (redux)', () => {
       }
 
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -923,9 +928,10 @@ describe('player (redux)', () => {
       }
 
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -976,9 +982,10 @@ describe('player (redux)', () => {
       }
 
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -1033,9 +1040,10 @@ describe('player (redux)', () => {
       }
 
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -1093,6 +1101,7 @@ describe('player (redux)', () => {
       expect(store.dispatch(setNextTrack(false))).toBeNull()
     })
 
+    // eslint-disable-next-line max-len
     it('should dispatch correct actions when there is no next track in queue and previous track has finished naturally', () => {
       const store = makeMockStore({
         library: mockLibraryState,
@@ -1112,9 +1121,10 @@ describe('player (redux)', () => {
       })
 
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise<void>((resolve) => {
-          resolve()
-        })
+        () =>
+          new Promise<void>((resolve) => {
+            resolve()
+          })
       )
 
       const expected = [playerSetProgress(0), playerTogglePlayPause(false)]
@@ -1169,9 +1179,10 @@ describe('player (redux)', () => {
       }
 
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -1230,9 +1241,10 @@ describe('player (redux)', () => {
       }
 
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -1283,9 +1295,10 @@ describe('player (redux)', () => {
       }
 
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -1314,6 +1327,7 @@ describe('player (redux)', () => {
       expect(actual).toEqual(expected)
     })
 
+    // eslint-disable-next-line max-len
     it('should dispatch correct actions when there is no previous track in queue and repeat all is enabled', async () => {
       const response = {
         data: {
@@ -1340,9 +1354,10 @@ describe('player (redux)', () => {
       }
 
       api.getFullTrackInfo = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       const store = makeMockStore({
@@ -1428,9 +1443,11 @@ describe('player (redux)', () => {
 
       tracks.forEach((track) => {
         if (track.artistId) {
+          // eslint-disable-next-line jest/no-conditional-expect
           expect(track.artist).toBe(mockLibraryState.artists[track.artistId])
         }
         if (track.albumId) {
+          // eslint-disable-next-line jest/no-conditional-expect
           expect(track.album).toBe(mockLibraryState.albums[track.albumId])
         }
       })
@@ -1453,9 +1470,11 @@ describe('player (redux)', () => {
 
       tracks.forEach((track) => {
         if (track.artistId) {
+          // eslint-disable-next-line jest/no-conditional-expect
           expect(track.artist).toBe(mockLibraryState.artists[track.artistId])
         }
         if (track.albumId) {
+          // eslint-disable-next-line jest/no-conditional-expect
           expect(track.album).toBe(mockLibraryState.albums[track.albumId])
         }
       })
@@ -1536,9 +1555,11 @@ describe('player (redux)', () => {
       expect(tracks.length).toBe(2)
       tracks.forEach((track) => {
         if (track.artistId) {
+          // eslint-disable-next-line jest/no-conditional-expect
           expect(track.artist).toBe(mockLibraryState.artists[track.artistId])
         }
         if (track.albumId) {
+          // eslint-disable-next-line jest/no-conditional-expect
           expect(track.album).toBe(mockLibraryState.albums[track.albumId])
         }
       })

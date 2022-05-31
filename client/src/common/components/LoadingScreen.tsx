@@ -1,13 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
 import Loading from 'common/components/Loading'
+import { useAppSelector } from 'store/hooks'
 
 const LoadingScreen = () => {
-  const isFetching = useSelector((state: RootState) => state.library.isFetching)
-  const initHasFailed = useSelector(
-    (state: RootState) => state.library.initHasFailed
-  )
+  const isFetching = useAppSelector((state) => state.library.isFetching)
+  const initHasFailed = useAppSelector((state) => state.library.initHasFailed)
 
   return (
     <LoadingScreenWrapper>

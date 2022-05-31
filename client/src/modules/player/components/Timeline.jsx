@@ -21,9 +21,9 @@ class Timeline extends React.Component {
   // eslint-disable-next-line
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (
-      !Number.isNaN(nextProps.duration)
-      && nextProps.duration !== 0
-      && !this.holding
+      !Number.isNaN(nextProps.duration) &&
+      nextProps.duration !== 0 &&
+      !this.holding
     ) {
       const lengthPerSecond = this.state.barWidth / nextProps.duration
       const length = nextProps.progress * lengthPerSecond

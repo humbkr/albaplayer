@@ -33,8 +33,8 @@ export const getRandomAlbums = (): AppThunk => (dispatch, getState) => {
 
   const alreadyPicked: number[] = []
   while (
-    alreadyPicked.length < numberOfAlbumsToGet
-    && alreadyPicked.length < albums.length
+    alreadyPicked.length < numberOfAlbumsToGet &&
+    alreadyPicked.length < albums.length
   ) {
     const randomIndex = getRandomInt(0, albums.length)
     if (!alreadyPicked.includes(randomIndex)) {
