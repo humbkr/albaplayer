@@ -66,7 +66,7 @@ describe('LibraryBrowserSearchBar', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('changes the filter to artists when pressing the corresponding button', () => {
+  it('changes the filter to artists when pressing the corresponding button', async () => {
     const store = makeMockStore({
       libraryBrowser: browserInitialState,
       search: {
@@ -84,7 +84,7 @@ describe('LibraryBrowserSearchBar', () => {
     )
 
     expect(screen.getByTestId('search-filter-artist')).toBeInTheDocument()
-    userEvent.click(screen.getByTestId('search-filter-artist'))
+    await userEvent.click(screen.getByTestId('search-filter-artist'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
@@ -102,11 +102,11 @@ describe('LibraryBrowserSearchBar', () => {
     )
 
     expect(screen.getByTestId('search-filter-album')).toBeInTheDocument()
-    userEvent.click(screen.getByTestId('search-filter-album'))
+    await userEvent.click(screen.getByTestId('search-filter-album'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
-  it('changes the filter to tracks when pressing the corresponding button', () => {
+  it('changes the filter to tracks when pressing the corresponding button', async () => {
     const store = makeMockStore({
       libraryBrowser: browserInitialState,
       search: {
@@ -124,7 +124,7 @@ describe('LibraryBrowserSearchBar', () => {
     )
 
     expect(screen.getByTestId('search-filter-track')).toBeInTheDocument()
-    userEvent.click(screen.getByTestId('search-filter-track'))
+    await userEvent.click(screen.getByTestId('search-filter-track'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
@@ -148,7 +148,7 @@ describe('LibraryBrowserSearchBar', () => {
     )
 
     expect(screen.getByTestId('search-filter-all')).toBeInTheDocument()
-    userEvent.click(screen.getByTestId('search-filter-all'))
+    await userEvent.click(screen.getByTestId('search-filter-all'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
@@ -165,7 +165,7 @@ describe('LibraryBrowserSearchBar', () => {
       </ReduxProvider>
     )
 
-    userEvent.type(screen.getByTestId('search-input'), 'all them witches')
+    await userEvent.type(screen.getByTestId('search-input'), 'all them witches')
     expect(screen.getByTestId('search-input') as HTMLInputElement).toHaveValue(
       'all them witches'
     )

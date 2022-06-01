@@ -70,7 +70,7 @@ describe('PlaylistContextMenu', () => {
     expect(screen.getByText('Edit playlist')).toBeInTheDocument()
   })
 
-  it('dispatches the correct actions when pressing "Play now"', () => {
+  it('dispatches the correct actions when pressing "Play now"', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -79,13 +79,13 @@ describe('PlaylistContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistcontextmenu'))
-    userEvent.click(screen.getByText('Play now'))
+    await userEvent.click(screen.getByText('Play now'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
   })
 
-  it('dispatches the correct actions when pressing "Play after current track"', () => {
+  it('dispatches the correct actions when pressing "Play after current track"', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -94,13 +94,13 @@ describe('PlaylistContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistcontextmenu'))
-    userEvent.click(screen.getByText('Play after current track'))
+    await userEvent.click(screen.getByText('Play after current track'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
   })
 
-  it('dispatches the correct actions when pressing "Add to queue"', () => {
+  it('dispatches the correct actions when pressing "Add to queue"', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -109,13 +109,13 @@ describe('PlaylistContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistcontextmenu'))
-    userEvent.click(screen.getByText('Add to queue'))
+    await userEvent.click(screen.getByText('Add to queue'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
   })
 
-  it('dispatches the correct actions when pressing on a playlist name', () => {
+  it('dispatches the correct actions when pressing on a playlist name', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -124,13 +124,13 @@ describe('PlaylistContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistcontextmenu'))
-    userEvent.click(screen.getByText('Playlist one'))
+    await userEvent.click(screen.getByText('Playlist one'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
   })
 
-  it('dispatches the correct actions when pressing on Create new playlist', () => {
+  it('dispatches the correct actions when pressing on Create new playlist', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -139,7 +139,7 @@ describe('PlaylistContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistcontextmenu'))
-    userEvent.click(screen.getByText('+ Duplicate playlist'))
+    await userEvent.click(screen.getByText('+ Duplicate playlist'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
