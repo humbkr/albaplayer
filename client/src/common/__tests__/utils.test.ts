@@ -1,8 +1,8 @@
 import {
   libraryInitialState,
   LibraryStateType,
-} from '../../modules/library/store'
-import { immutableSortTracks } from '../utils/utils'
+} from 'modules/library/store'
+import { arrayMoveImmutable, arrayMoveMutable, immutableSortTracks } from '../utils/utils'
 
 const mockLibraryState: LibraryStateType = {
   ...libraryInitialState,
@@ -198,5 +198,23 @@ describe('common utils', () => {
       expect(sorted[7]).toBe(mockLibraryState.tracks[8])
       expect(sorted[8]).toBe(mockLibraryState.tracks[9])
     })
+  })
+
+  describe('arrayMoveMutable', () => {
+    const fixture = [1, 2, 3, 4, 5]
+    arrayMoveMutable(fixture, 3, 0)
+    expect(fixture).toEqual([4, 1, 2, 3, 5])
+  })
+
+  describe('arrayMoveImmutable', () => {
+    const fixture = [1, 2, 3, 4, 5]
+
+    expect(arrayMoveImmutable(fixture, 3, 0)).toEqual([4, 1, 2, 3, 5])
+    expect(arrayMoveImmutable(fixture, -1, 0)).toEqual([5, 1, 2, 3, 4])
+    expect(arrayMoveImmutable(fixture, 1, -2)).toEqual([1, 3, 4, 2, 5])
+    expect(arrayMoveImmutable(fixture, -3, -4)).toEqual([1, 3, 2, 4, 5])
+    expect(arrayMoveImmutable(fixture, 5, 6)).toEqual([1, 2, 3, 4, 5])
+    expect(arrayMoveImmutable(fixture, -1000, 0)).toEqual(fixture)
+    expect(arrayMoveImmutable(fixture, 1000, 0)).toEqual(fixture)
   })
 })

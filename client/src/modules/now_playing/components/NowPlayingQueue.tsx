@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled, { withTheme } from 'styled-components'
 import { queueReplace, queueSetCurrent } from 'modules/player/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
@@ -7,7 +7,11 @@ import NowPlayingQueueList from './NowPlayingQueueList'
 import NowPlayingQueueActions from './NowPlayingQueueActions'
 import QueueItemContextMenu from './QueueItemContextMenu'
 
-const NowPlayingQueue: FunctionComponent<{ theme: AppTheme }> = ({ theme }) => {
+type Props = {
+  theme: AppTheme
+}
+
+const NowPlayingQueue = ({ theme }: Props) => {
   const { items, current } = useAppSelector((state) => state.queue)
   const dispatch = useAppDispatch()
 

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Ref, useState } from 'react'
+import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import ActionButtonIcon from 'common/components/ActionButtonIcon'
@@ -28,10 +28,10 @@ type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const PlaylistDetailsPane: FunctionComponent<InternalProps> = ({
+const PlaylistDetailsPane = ({
   switchPaneHandler,
   forwardedRef,
-}) => {
+}: InternalProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
   const playlist = useAppSelector(

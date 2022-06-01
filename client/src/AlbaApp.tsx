@@ -1,6 +1,5 @@
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components'
 import React, { useEffect } from 'react'
-import { withRouter } from 'react-router-dom'
 import Sidebar from 'common/components/Sidebar'
 import MainPanel from 'common/components/MainPanel'
 import { initLibrary } from 'modules/library/store'
@@ -32,9 +31,7 @@ function AlbaApp() {
   )
 }
 
-// Need to use withRouter here or the views in MainPanel won't change.
-// https://github.com/ReactTraining/react-router/issues/4671
-export default withRouter(AlbaApp)
+export default AlbaApp
 
 // Global styles used by the styled components.
 const GlobalStyle = createGlobalStyle<{ theme: AppTheme }>`

@@ -1,8 +1,8 @@
 import React from 'react'
-import { StaticRouter } from 'react-router'
 import { render, screen } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
+import { BrowserRouter } from 'react-router-dom'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import themeDefault from '../../../themes/default'
 import { dashboardInitialState } from '../store'
@@ -68,9 +68,9 @@ describe('dashboard - RecentlyAddedAlbums', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <StaticRouter>
+          <BrowserRouter>
             <RecentlyAddedAlbums />
-          </StaticRouter>
+          </BrowserRouter>
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -88,9 +88,9 @@ describe('dashboard - RecentlyAddedAlbums', () => {
     render(
       <ReduxProvider store={customStore}>
         <ThemeProvider theme={themeDefault}>
-          <StaticRouter>
+          <BrowserRouter>
             <RecentlyAddedAlbums />
-          </StaticRouter>
+          </BrowserRouter>
         </ThemeProvider>
       </ReduxProvider>
     )

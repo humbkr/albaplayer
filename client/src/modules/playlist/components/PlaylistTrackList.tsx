@@ -1,7 +1,6 @@
 import React, { Ref, useEffect, useRef } from 'react'
 import styled, { withTheme } from 'styled-components'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
-import { arrayMoveImmutable } from 'array-move'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 import PlaylistItemComponent from 'modules/playlist/components/PlaylistItem'
 import {
@@ -11,6 +10,7 @@ import {
   Droppable,
   DropResult,
 } from '@react-forked/dnd'
+import { arrayMoveImmutable } from 'common/utils/utils'
 
 type ItemProps = {
   provided: DraggableProvided
@@ -82,9 +82,6 @@ const PlaylistTrackList = ({
 
   const Item = React.useMemo(() => ({ provided, item, index, isDragging }: ItemProps) => {
     const selected = index === currentPosition
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const itemRef = useRef<HTMLDivElement>()
 
     return (
       <div

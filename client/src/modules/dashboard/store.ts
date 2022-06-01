@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-export interface DashboardStateType {
+export type DashboardStateType = {
   randomAlbumsNumber: number
   randomAlbums: Album[]
 }

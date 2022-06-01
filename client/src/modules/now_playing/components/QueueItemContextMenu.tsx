@@ -10,7 +10,7 @@ import {
   playlistsSelector,
   addTrack as addTrackToPlaylist,
 } from 'modules/playlist/store'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { search, setSearchFilter } from '../../browser/store'
 
@@ -19,18 +19,18 @@ const QueueItemContextMenu = () => {
     playlistsSelector(state)
   )
   const dispatch = useAppDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const findAllByArtist = (menuItem: any) => {
     dispatch(setSearchFilter('artist'))
     dispatch(search(menuItem.props.data.track?.artist?.name))
-    history.push('/library')
+    navigate('/library')
   }
 
   const findAllByAlbum = (menuItem: any) => {
     dispatch(setSearchFilter('album'))
     dispatch(search(menuItem.props.data.track?.album?.title))
-    history.push('/library')
+    navigate('/library')
   }
 
   const handlePlayTrack = (position: number) => {

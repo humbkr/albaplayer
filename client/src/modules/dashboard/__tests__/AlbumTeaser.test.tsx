@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
 import { createMemoryHistory } from 'history'
-import { Router } from 'react-router'
+import { BrowserRouter as Router } from 'react-router-dom'
 import AlbumTeaser from '../components/AlbumTeaser'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import themeDefault from '../../../themes/default'
@@ -40,7 +40,7 @@ describe('dashboard - AlbumTeaser', () => {
   it('should render correctly', () => {
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaser
               album={album}
@@ -62,7 +62,7 @@ describe('dashboard - AlbumTeaser', () => {
   it('should display an overlay if mouse is over', () => {
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaser
               album={album}
@@ -100,7 +100,7 @@ describe('dashboard - AlbumTeaser', () => {
 
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaser
               album={album}
@@ -126,7 +126,7 @@ describe('dashboard - AlbumTeaser', () => {
 
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaser
               album={album}
@@ -151,7 +151,7 @@ describe('dashboard - AlbumTeaser', () => {
   it('should play the album if user clicks on the play button', () => {
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaser
               album={album}
@@ -173,7 +173,7 @@ describe('dashboard - AlbumTeaser', () => {
 
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaser
               album={customAlbum}

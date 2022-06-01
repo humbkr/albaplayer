@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Ref, useState } from 'react'
+import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { addAlbum, playAlbum } from 'modules/player/store'
@@ -14,18 +14,18 @@ import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import AlbumContextMenu from './AlbumContextMenu'
 
-interface Props {
+type Props = {
   switchPaneHandler: (e: KeyboardEvent) => void
 }
 
-interface InternalProps extends Props {
+type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const AlbumsPaneContainer: FunctionComponent<InternalProps> = ({
+const AlbumsPaneContainer = ({
   switchPaneHandler,
   forwardedRef,
-}) => {
+}: InternalProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
   const albums = useAppSelector((state) => getAlbumsList(state))

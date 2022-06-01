@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useRef } from 'react'
+import React, { useRef } from 'react'
 import styled, { withTheme } from 'styled-components'
 import Modal from 'react-modal'
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik'
@@ -9,25 +9,27 @@ import ActionButton from 'common/components/ActionButton'
 // http://reactcommunity.org/react-modal/accessibility/
 Modal.setAppElement('#root')
 
-const PlaylistAddPopup: FunctionComponent<{
+type Props = {
   id: string
   isOpen: boolean
   mode: string
-  playlist: Playlist
+  playlist?: Playlist
   theme: AppTheme
   onClose: () => void
   onCreatePlaylist: (playlist: Playlist) => void
   onEditPlaylist: (playlist: Playlist) => void
-}> = ({
+}
+
+const PlaylistAddPopup = ({
   id,
   isOpen,
   onClose,
   mode = 'add',
-  playlist = null,
+  playlist,
   theme,
   onCreatePlaylist,
   onEditPlaylist,
-}) => {
+}: Props) => {
   const titleField = useRef<HTMLInputElement>(null)
 
   const afterOpenModal = () => {
@@ -55,7 +57,7 @@ const PlaylistAddPopup: FunctionComponent<{
   // Prevents weird bug when user is pressing enter to validate the form:
   // without this the modal doesn't close even if state is correct.
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.keyCode === 13) {
+    if (e.code === 'Enter') {
       e.preventDefault()
     }
   }
@@ -127,7 +129,7 @@ const PlaylistAddPopup: FunctionComponent<{
                 name="title"
                 innerRef={titleField}
                 onKeyDown={(e: KeyboardEvent) => {
-                  if (e.keyCode === 13) {
+                  if (e.code === 'Enter') {
                     handleSubmit()
                   }
                 }}

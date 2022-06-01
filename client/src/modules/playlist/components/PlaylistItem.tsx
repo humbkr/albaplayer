@@ -1,14 +1,16 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import ActionButtonIcon from 'common/components/ActionButtonIcon'
 
-const PlaylistItem: FunctionComponent<{
+type Props = {
   item: PlaylistItem
-  selected: boolean
+  selected?: boolean
   handleRemoveTrack: (position: number) => void
   onContextMenu: (p: { scrollToRow: number }) => void
-}> = ({ item, handleRemoveTrack, onContextMenu, selected = false }) => {
+}
+
+const PlaylistItem = ({ item, handleRemoveTrack, onContextMenu, selected = false }: Props) => {
   const { track, position } = item
 
   const onRightClick = (e: React.MouseEvent) => {

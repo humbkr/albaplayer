@@ -1,8 +1,12 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled, { css, keyframes } from 'styled-components'
 import Icon from 'common/components/Icon'
 
-const Loading: FunctionComponent<{ size?: string }> = ({ size = '1.8em' }) => (
+type Props = {
+  size?: string
+}
+
+const Loading = ({ size = '1.8em' }: Props) => (
   <LoadingStyled fontSize={size}>camera</LoadingStyled>
 )
 

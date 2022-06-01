@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Ref, useState } from 'react'
+import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { addTrack, playTrack } from 'modules/player/store'
@@ -13,20 +13,20 @@ import VirtualList from 'common/components/virtualLists/VirtualList'
 import PlaylistTeaser from 'modules/playlist/components/PlaylistTeaser'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 
-interface Props {
+type Props = {
   switchPaneHandler: (e: KeyboardEvent) => void
   openPlaylistModal: () => void
 }
 
-interface InternalProps extends Props {
+type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const PlaylistListPane: FunctionComponent<InternalProps> = ({
+const PlaylistListPane = ({
   switchPaneHandler,
   openPlaylistModal,
   forwardedRef,
-}) => {
+}: InternalProps) => {
   const [modalPlayerIsOpen, setModalPlayerIsOpen] = useState(false)
 
   const selected = useAppSelector(

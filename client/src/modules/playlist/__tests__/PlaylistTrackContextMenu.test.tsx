@@ -53,9 +53,7 @@ const store = makeMockStore({
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
-  useHistory: () => ({
-    push: jest.fn(),
-  }),
+  useNavigate: jest.fn(),
 }))
 
 describe('PlaylistTrackContextMenu', () => {

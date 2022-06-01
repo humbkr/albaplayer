@@ -9,7 +9,7 @@ import { useAppSelector } from 'store/hooks'
 
 const SEARCH_ENGINE_URL = 'https://www.google.fr/search?q='
 
-interface TrackInfo {
+type TrackInfo = {
   title: string
   artist: string
   album: string

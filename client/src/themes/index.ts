@@ -2,7 +2,7 @@ import themeDefault from './default'
 import themeDark from './dark'
 import themeDarkOrange from './darkOrange'
 
-interface ThemeDefinition {
+type ThemeDefinition = {
   name: string
   config: AppTheme
 }

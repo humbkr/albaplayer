@@ -1,7 +1,7 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
-const ActionButtonCircle: FunctionComponent<{
+type Props = {
   size?: number
   borderWidth?: number
   color?: string
@@ -9,7 +9,9 @@ const ActionButtonCircle: FunctionComponent<{
   backgroundColor?: string
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void
   testId?: string
-}> = ({
+}
+
+const ActionButtonCircle = ({
   size = 50,
   borderWidth = 1,
   color = '#fff',
@@ -17,7 +19,7 @@ const ActionButtonCircle: FunctionComponent<{
   backgroundColor = 'transparent',
   onClick,
   testId,
-}) => (
+}: Props) => (
   <ActionButtonCircleWrapper
     // @ts-ignore
     onClick={onClick}

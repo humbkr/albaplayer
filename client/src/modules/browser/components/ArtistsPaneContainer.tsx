@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Ref, useState } from 'react'
+import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { playArtist, addArtist } from 'modules/player/store'
@@ -14,18 +14,18 @@ import ArtistTeaser from './ArtistTeaser'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 
-interface Props {
+type Props = {
   switchPaneHandler: (e: KeyboardEvent) => void
 }
 
-interface InternalProps extends Props {
+type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const ArtistsPaneContainer: FunctionComponent<InternalProps> = ({
+const ArtistsPaneContainer = ({
   switchPaneHandler,
   forwardedRef,
-}) => {
+}: InternalProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
   const artists = useAppSelector((state) => getArtistsList(state))
@@ -62,7 +62,7 @@ const ArtistsPaneContainer: FunctionComponent<InternalProps> = ({
   }
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.keyCode === 13) {
+    if (e.code === 'Enter') {
       setModalIsOpen(true)
     } else {
       switchPaneHandler(e)

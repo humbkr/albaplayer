@@ -8,8 +8,8 @@ import {
   Droppable,
   Draggable,
 } from '@react-forked/dnd'
-import { arrayMoveImmutable } from 'array-move'
 import styled from 'styled-components'
+import { arrayMoveImmutable } from 'common/utils/utils'
 
 type ItemProps = {
   provided: DraggableProvided

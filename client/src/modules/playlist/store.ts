@@ -7,7 +7,7 @@ export enum PlaylistPane {
   Fix,
 }
 
-export interface PlaylistsStateType {
+export type PlaylistsStateType = {
   playlists: { [id: string]: Playlist }
   currentPlaylist: {
     playlist: Playlist | null

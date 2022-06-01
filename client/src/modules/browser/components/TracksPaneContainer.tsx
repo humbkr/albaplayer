@@ -1,31 +1,31 @@
-import React, { FunctionComponent, Ref, useState } from 'react'
+import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { addTrack, playTrack } from 'modules/player/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import VirtualList from 'common/components/virtualLists/VirtualList'
 import {
   getTracksList,
   libraryBrowserSortTracks,
   libraryBrowserSelectTrack,
 } from '../store'
-import VirtualList from 'common/components/virtualLists/VirtualList'
 import TrackTeaser from './TrackTeaser'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 import TrackContextMenu from './TrackContextMenu'
 import LibraryBrowserPane from './LibraryBrowserPane'
 
-interface Props {
+type Props = {
   switchPaneHandler: (e: KeyboardEvent) => void
 }
 
-interface InternalProps extends Props {
+type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const TracksPaneContainer: FunctionComponent<InternalProps> = ({
+const TracksPaneContainer = ({
   switchPaneHandler,
   forwardedRef,
-}) => {
+}: InternalProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
   const tracks = useAppSelector((state) => getTracksList(state))
@@ -65,7 +65,7 @@ const TracksPaneContainer: FunctionComponent<InternalProps> = ({
   }
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.keyCode === 13) {
+    if (e.code === 'Enter') {
       setModalIsOpen(true)
     } else {
       switchPaneHandler(e)

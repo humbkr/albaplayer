@@ -9,10 +9,9 @@ import {
   playlistChangePane,
   PlaylistPane,
 } from 'modules/playlist/store'
-// eslint-disable-next-line import/no-cycle
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { playPlaylistAfterCurrent } from 'modules/player/store'
 import { EditPlaylistContext } from '../scenes/Playlists'
-import { playPlaylistAfterCurrent } from '../../player/store'
 
 interface MenuItemEventHandlerPlaylist extends MenuItemEventHandler {
   props: {
