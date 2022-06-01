@@ -2,7 +2,7 @@ import configureMockStore from 'redux-mock-store'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import thunk from 'redux-thunk'
 import { api, apolloClient } from 'api'
-import { ApolloQueryResult } from 'apollo-client'
+import { ApolloQueryResult } from '@apollo/client'
 import settingsSlice, {
   initialState,
   setTheme,
@@ -354,7 +354,6 @@ describe('settings (redux)', () => {
               },
               loading: false,
               networkStatus: 7,
-              stale: false,
             })
           })
       )
@@ -413,7 +412,6 @@ describe('settings (redux)', () => {
               },
               loading: false,
               networkStatus: 7,
-              stale: false,
             })
           })
       )

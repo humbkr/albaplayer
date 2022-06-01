@@ -1801,6 +1801,7 @@ describe('library browser (redux)', () => {
         'name'
       )
 
+      // @ts-ignore
       const sorted = getArtistsList(store.getState())
       // First item must be 'All' placeholder.
       expect(sorted[0]).toEqual({
@@ -1830,6 +1831,7 @@ describe('library browser (redux)', () => {
         'id'
       )
 
+      // @ts-ignore
       const sorted = getArtistsList(store.getState())
       // First item must be 'All' placeholder.
       expect(sorted[0]).toEqual({
@@ -1861,6 +1863,7 @@ describe('library browser (redux)', () => {
         'title'
       )
 
+      // @ts-ignore
       const sorted = getAlbumsList(store.getState())
       // First item must be 'All' placeholder.
       expect(sorted[0]).toEqual({
@@ -1890,6 +1893,7 @@ describe('library browser (redux)', () => {
         'year'
       )
 
+      // @ts-ignore
       const sorted = getAlbumsList(store.getState())
       // First item must be 'All' placeholder.
       expect(sorted[0]).toEqual({
@@ -1921,6 +1925,7 @@ describe('library browser (redux)', () => {
         'title'
       )
 
+      // @ts-ignore
       const sorted = getTracksList(store.getState())
       // First item must be 'All' placeholder.
       expect(sorted[0]).toEqual({
@@ -1950,6 +1955,7 @@ describe('library browser (redux)', () => {
         'id'
       )
 
+      // @ts-ignore
       const sorted = getTracksList(store.getState())
       // First item must be 'All' placeholder.
       expect(sorted[0]).toEqual({
