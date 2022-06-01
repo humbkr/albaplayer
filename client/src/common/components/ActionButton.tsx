@@ -22,7 +22,6 @@ const ActionButton = ({
   <ActionButtonWrapper
     raised={raised}
     disabled={disabled}
-    // @ts-ignore
     onClick={onClick}
     data-testid={testId}
   >
