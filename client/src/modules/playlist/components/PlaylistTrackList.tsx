@@ -1,4 +1,4 @@
-import React, { Ref, useEffect, useRef } from 'react'
+import React, { Ref, useEffect } from 'react'
 import styled, { withTheme } from 'styled-components'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
@@ -52,7 +52,7 @@ const PlaylistTrackList = ({
     window.addEventListener('error', (e) => {
       if (
         e.message ===
-        'ResizeObserver loop completed with undelivered notifications.' ||
+          'ResizeObserver loop completed with undelivered notifications.' ||
         e.message === 'ResizeObserver loop limit exceeded'
       ) {
         e.stopImmediatePropagation()
@@ -64,7 +64,10 @@ const PlaylistTrackList = ({
 
   const onDragEnd = React.useCallback(
     (result: DropResult) => {
-      if (!result.destination || result.source.index === result.destination.index) {
+      if (
+        !result.destination ||
+        result.source.index === result.destination.index
+      ) {
         return
       }
 
@@ -76,51 +79,60 @@ const PlaylistTrackList = ({
         arrayMoveImmutable(items, oldIndex, newIndex)
       )
       onItemClick(result.source.droppableId, newIndex)
-    }, [items, onItemClick, onTrackListUpdate, playlistId])
+    },
+    [items, onItemClick, onTrackListUpdate, playlistId]
+  )
 
   const ref = React.useRef<VirtuosoHandle | null>(null)
 
-  const Item = React.useMemo(() => ({ provided, item, index, isDragging }: ItemProps) => {
-    const selected = index === currentPosition
+  const Item = React.useMemo(
+    () =>
+      ({ provided, item, index, isDragging }: ItemProps) => {
+        const selected = index === currentPosition
 
-    return (
-      <div
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-        ref={provided.innerRef}
-        style={{ ...provided.draggableProps.style }}
-      >
-        <DraggableItem isDragging={isDragging}>
-          <VirtualListItem
-            className={selected ? 'selected' : ''}
-            selected={selected}
-            border
-            key={item.track.id}
-            onClick={() => onItemClick(item.track.id, index)}
+        return (
+          <div
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
+            style={{ ...provided.draggableProps.style }}
           >
-            <PlaylistItemComponent
-              item={item}
-              selected={selected}
-              // Select item on context click.
-              onContextMenu={() => onItemClick(item.track.id, index)}
-              handleRemoveTrack={handleRemoveTrack}
-            />
-          </VirtualListItem>
-        </DraggableItem>
-      </div>
-    )
-  }, [currentPosition, handleRemoveTrack, onItemClick])
+            <DraggableItem isDragging={isDragging}>
+              <VirtualListItem
+                className={selected ? 'selected' : ''}
+                selected={selected}
+                border
+                key={item.track.id}
+                onClick={() => onItemClick(item.track.id, index)}
+              >
+                <PlaylistItemComponent
+                  item={item}
+                  selected={selected}
+                  // Select item on context click.
+                  onContextMenu={() => onItemClick(item.track.id, index)}
+                  handleRemoveTrack={handleRemoveTrack}
+                />
+              </VirtualListItem>
+            </DraggableItem>
+          </div>
+        )
+      },
+    [currentPosition, handleRemoveTrack, onItemClick]
+  )
 
-  const HeightPreservingItem = React.useMemo(() =>
+  const HeightPreservingItem = React.useMemo(
+    () =>
       // @ts-ignore
-      ({ children, ...props }) => (
-        // The height is necessary to prevent the item container from collapsing,
-        // which confuses Virtuoso measurements.
-        <div {...props} style={{ height: theme.itemHeight }}>
-          {children}
-        </div>
-      )
-    , [theme.itemHeight])
+      ({ children, ...props }) =>
+        (
+          // The height is necessary to prevent the item container from collapsing,
+          // which confuses Virtuoso measurements.
+          <div {...props} style={{ height: theme.itemHeight }}>
+            {children}
+          </div>
+        ),
+    [theme.itemHeight]
+  )
 
   const keyDownCallback = React.useCallback(
     (e: KeyboardEvent) => {
@@ -184,8 +196,19 @@ const PlaylistTrackList = ({
                 Item: HeightPreservingItem,
               }}
               itemContent={(index, item) => (
-                <Draggable draggableId={item.track.id} index={index} key={item.track.id}>
-                  {(provided) => <Item provided={provided} item={item} isDragging={false} index={index} />}
+                <Draggable
+                  draggableId={item.track.id}
+                  index={index}
+                  key={item.track.id}
+                >
+                  {(provided) => (
+                    <Item
+                      provided={provided}
+                      item={item}
+                      isDragging={false}
+                      index={index}
+                    />
+                  )}
                 </Draggable>
               )}
             />
@@ -198,16 +221,15 @@ const PlaylistTrackList = ({
 
 const ThemedPlaylistTrackList = withTheme(PlaylistTrackList)
 
-export default React.forwardRef<HTMLDivElement, Props>(
-  (props, ref) => (
-    <ThemedPlaylistTrackList {...props} forwardedRef={ref} />
-  )
-)
+export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
+  <ThemedPlaylistTrackList {...props} forwardedRef={ref} />
+))
 
 const Wrapper = styled.div`
   display: flex;
   flex: 1;
 `
 const DraggableItem = styled.div<{ isDragging: boolean }>`
-  ${(props) => (props.isDragging ? `background-color: ${props.theme.highlight}` : '')};
+  ${(props) =>
+    props.isDragging ? `background-color: ${props.theme.highlight}` : ''};
 `

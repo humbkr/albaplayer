@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
 import { BrowserRouter as Router } from 'react-router-dom'
-import { createMemoryHistory } from 'history'
 import AlbumTeaserHorizontal from '../components/AlbumTeaserHorizontal'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import themeDefault from '../../../themes/default'
@@ -32,9 +31,6 @@ const album: Album = {
     name: 'Test artist',
   },
 }
-
-// Required to mock useLocation, useHistory, and other react-router functionalities.
-const history = createMemoryHistory()
 
 describe('dashboard - AlbumTeaserHorizontal', () => {
   it('should render correctly', () => {

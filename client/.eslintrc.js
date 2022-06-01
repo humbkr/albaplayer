@@ -20,6 +20,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   root: true,
   rules: {
+    '@typescript-eslint/no-unused-vars': 'error',
     'arrow-parens': ['warn', 'always'],
     'arrow-body-style': ['warn'],
     'capitalized-comments': [
@@ -57,6 +58,6 @@ module.exports = {
   settings: {
     react: {
       version: 'detect',
-    }
-  }
+    },
+  },
 }
