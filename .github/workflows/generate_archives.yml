@@ -3,7 +3,7 @@ name: Generate archives
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   generate_archives:
@@ -16,14 +16,13 @@ jobs:
           echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
           echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
           echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
-
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Generate build files
         uses: thatisuday/go-cross-build@v1
         with:
-          platforms: 'linux/amd64, darwin/amd64, windows/amd64'
+          platforms: 'linux/amd64, darwin/amd64, darwin/arm64, windows/amd64'
           package: 'server'
           name: 'albaplayer'
           compress: 'false'
@@ -36,13 +35,11 @@ jobs:
           mkdir dist
           echo "version: ${{ env.SOURCE_TAG }}" >> dist/version.txt
           echo "build date: ${DATE}" >> dist/version.txt
-
       - name: Generate frontend
         run: |
           cd client
           yarn install
           yarn build
-
       - name: Build linux archive
         env:
           SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
@@ -56,7 +53,6 @@ jobs:
           cp -R ../client/build ./linux/web
           tar czf albaplayer-linux-${{ env.SOURCE_TAG }}.tar.gz linux
           rm linux
-
       - name: Build macos archive
         env:
           SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
@@ -69,7 +65,6 @@ jobs:
           cp -R ../client/build ./macos/web
           zip -rq albaplayer-macos-${{ env.SOURCE_TAG }}.zip macos
           rm macos
-
       - name: Build windows archive
         env:
           SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
@@ -82,15 +77,13 @@ jobs:
           cp -R ../client/build ./windows/web
           zip -rq albaplayer-windows-${{ env.SOURCE_TAG }}.zip windows
           rm windows
-
       - name: Cleanup temporary build files
         run: |
           rm dist/version.txt
-
       - name: Upload archives to server
         env:
           SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
-        uses: mdallasanta/ssh-scp-deploy@1.1.0
+        uses: mdallasanta/ssh-scp-deploy@v1.1.0
         with:
           local: './dist'
           remote: ${{ secrets.REMOTE_UPLOAD_PATH }}${{ env.SOURCE_TAG }}
@@ -106,5 +99,3 @@ jobs:
           name: generated-archives
           path: |
             dist
-
-#  upload_archives:
