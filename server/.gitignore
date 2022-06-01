@@ -6,7 +6,7 @@ app.log
 /build/windows
 /build/albaplayer-*
 /build/version.txt
-/alba-player
+/albaplayer
 pkged.go
 
 # Config files

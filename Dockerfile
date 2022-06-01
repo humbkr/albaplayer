@@ -1,5 +1,5 @@
 ## Client build phase
-FROM node:14 as build_client
+FROM node:16 as build_client
 
 ADD client /app
 WORKDIR /app
@@ -8,7 +8,7 @@ RUN yarn install
 RUN yarn build
 
 ## Server build phase
-FROM golang:1.15 AS build_server
+FROM golang:1.18 AS build_server
 
 ADD server /app
 WORKDIR /app
