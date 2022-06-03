@@ -38,9 +38,9 @@ RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=x86_64-linux-gnu-gcc go build -a -o
 RUN cp /app/build/prod.alba.yml /generated/alba.yml
 
 ## Final image
-FROM frolvlad/alpine-glibc
-RUN apk add --no-cache \
-    ca-certificates
+FROM debian
+#RUN apk add --no-cache \
+#    ca-certificates
 
 COPY --from=build_server /generated/ /app/
 RUN chmod +x /app/alba
