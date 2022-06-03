@@ -55,6 +55,4 @@ jobs:
           port: ${{ secrets.REMOTE_PORT }}
           username: ${{ secrets.REMOTE_USER }}
           password: ${{ secrets.REMOTE_PASSWORD }}
-          script: |
-            cd ${{ secrets.REMOTE_INT_PATH }}
-            sed -i 's%\(ghcr.io/humbkr/albaplayer:\)[[:digit:]]\.[[:digit:]]\.[[:digit:]]%\1${{ needs.build_and_push_image.outputs.version }}%' docker-compose.yml
+          script: albaplayerintupdate ${{ needs.build_and_push_image.outputs.version }}
