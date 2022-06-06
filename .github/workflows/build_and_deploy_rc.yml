@@ -55,4 +55,4 @@ jobs:
           port: ${{ secrets.REMOTE_PORT }}
           username: ${{ secrets.REMOTE_USER }}
           password: ${{ secrets.REMOTE_PASSWORD }}
-          script: albaplayerintupdate ${{ needs.build_and_push_image.outputs.version }}
+          script: upalbaint ${{ needs.build_and_push_image.outputs.version }}
