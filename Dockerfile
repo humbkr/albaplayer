@@ -39,8 +39,6 @@ RUN cp /app/build/prod.alba.yml /generated/alba.yml
 
 ## Final image
 FROM debian
-#RUN apk add --no-cache \
-#    ca-certificates
 
 COPY --from=build_server /generated/ /app/
 RUN chmod +x /app/alba

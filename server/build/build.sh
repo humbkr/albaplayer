@@ -22,6 +22,11 @@ echo "Start build for MacOs..."
 env CC=o64-clang GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build -o ${project_root}/build/macos/alba ${project_root}/main.go
 echo "Finished."
 
+# Build for MacOs on Apple Silicon.
+echo "Start build for MacOs..."
+env CC=o64-clang GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go build -o ${project_root}/build/macos/alba ${project_root}/main.go
+echo "Finished."
+
 # Build for Windows.
 echo "Start build for Windows..."
 env CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 CGO_ENABLED=1 go build -o ${project_root}/build/windows/alba.exe ${project_root}/main.go
