@@ -1,4 +1,4 @@
-const themeDefault = {
+const themeDefault: AppTheme = {
   // Type of theme.
   isDark: false,
 
@@ -56,8 +56,14 @@ const themeDefault = {
 
   player: {
     buttons: {
-      color: '#ffffff',
-      colorEnabled: '#f97c4b',
+      playback: {
+        colorEnabled: '#ffffff',
+        colorDisabled: '#ffffff',
+      },
+      options: {
+        colorEnabled: '#f97c4b',
+        colorDisabled: '#ffffff',
+      },
     },
     // TODO use this
     timeline: {
@@ -68,12 +74,6 @@ const themeDefault = {
   },
 
   nowPlaying: {
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    textPrimaryColor: '#ffffff',
-    textSecondaryColor: '#92929d',
-  },
-
-  dashboard: {
     backgroundColor: 'rgba(0, 0, 0, 0.65)',
     textPrimaryColor: '#ffffff',
     textSecondaryColor: '#92929d',

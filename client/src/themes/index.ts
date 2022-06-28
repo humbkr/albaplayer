@@ -1,10 +1,11 @@
+import { DefaultTheme } from 'styled-components'
 import themeDefault from './default'
 import themeDark from './dark'
 import themeDarkOrange from './darkOrange'
 
 type ThemeDefinition = {
   name: string
-  config: AppTheme
+  config: DefaultTheme
 }
 
 const themes = {
