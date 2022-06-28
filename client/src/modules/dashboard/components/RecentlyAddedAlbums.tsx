@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import AlbumTeaserHorizontal from 'modules/dashboard/components/AlbumTeaserHorizontal'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { immutableNestedSort } from 'common/utils/utils'
+import { useAppSelector } from 'store/hooks'
 import { LibraryStateType } from '../../library/store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
@@ -24,7 +24,7 @@ export const getRecentlyAddedAlbums = (
 }
 
 const RecentlyAddedAlbums: React.FC = () => {
-  const library = useSelector((state: RootState) => state.library)
+  const library = useAppSelector((state) => state.library)
 
   const [albums, setAlbums] = useState<Album[]>([])
   const [selectedAlbum, setSelectedAlbum] = useState<string | undefined>(

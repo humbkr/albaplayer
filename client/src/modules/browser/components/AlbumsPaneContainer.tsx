@@ -1,44 +1,42 @@
-import React, { FunctionComponent, Ref, useState } from 'react'
+import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { addAlbum, playAlbum } from 'modules/player/store'
-import LibraryBrowserList from 'modules/browser/components/LibraryBrowserList'
+import VirtualList from 'common/components/virtualLists/VirtualList'
 import AlbumTeaser from 'modules/browser/components/AlbumTeaser'
 import {
   getAlbumsList,
   libraryBrowserSortAlbums,
   selectAlbum,
 } from 'modules/browser/store'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import AlbumContextMenu from './AlbumContextMenu'
 
-interface Props {
-  switchPaneHandler: (e: React.KeyboardEvent) => void
+type Props = {
+  switchPaneHandler: (e: KeyboardEvent) => void
 }
 
-interface InternalProps extends Props {
+type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const AlbumsPaneContainer: FunctionComponent<InternalProps> = ({
+const AlbumsPaneContainer = ({
   switchPaneHandler,
   forwardedRef,
-}) => {
+}: InternalProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
-  const albums = useSelector((state: RootState) => getAlbumsList(state))
-  const orderBy = useSelector(
-    (state: RootState) => state.libraryBrowser.sortAlbums
+  const albums = useAppSelector((state) => getAlbumsList(state))
+  const orderBy = useAppSelector((state) => state.libraryBrowser.sortAlbums)
+  const currentPosition = useAppSelector(
+    (state) => state.libraryBrowser.currentPositionAlbums
   )
-  const currentPosition = useSelector(
-    (state: RootState) => state.libraryBrowser.currentPositionAlbums
+  const currentAlbum = useAppSelector(
+    (state) => state.libraryBrowser.selectedAlbums
   )
-  const currentAlbum = useSelector(
-    (state: RootState) => state.libraryBrowser.selectedAlbums
-  )
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const orderByOptions: { value: AlbumsSortOptions; label: string }[] = [
     { value: 'title', label: 'title' },
@@ -65,8 +63,8 @@ const AlbumsPaneContainer: FunctionComponent<InternalProps> = ({
     dispatch(addAlbum(albumId))
   }
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 13) {
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.code === 'Enter') {
       setModalIsOpen(true)
     } else {
       switchPaneHandler(e)
@@ -82,7 +80,7 @@ const AlbumsPaneContainer: FunctionComponent<InternalProps> = ({
           orderByOptions={orderByOptions}
           onChange={onSortChangeHandler}
         />
-        <LibraryBrowserList
+        <VirtualList
           ref={forwardedRef}
           items={albums}
           itemDisplay={AlbumTeaser}

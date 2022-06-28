@@ -1,18 +1,16 @@
 import React, { forwardRef, Ref } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { DebounceInput } from 'react-debounce-input'
 import { search, setSearchFilter } from 'modules/browser/store'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 
 const LibraryBrowserSearchBar: React.FC<{
   forwardedRef: Ref<HTMLElement>
 }> = ({ forwardedRef }) => {
-  const searchState = useSelector(
-    (state: RootState) => state.libraryBrowser.search
-  )
+  const searchState = useAppSelector((state) => state.libraryBrowser.search)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const changeFilter = (filter: SearchFilter) => {
     dispatch(setSearchFilter(filter))
@@ -96,7 +94,8 @@ const FilterButtonWrapper = styled.div<{
   justify-content: center;
   align-items: center;
   width: ${(props) => props.theme.itemHeight};
-  background-color: ${(props) => (props.active ? props.theme.highlightFocus : props.theme.sidebar.background)};
+  background-color: ${(props) =>
+    props.active ? props.theme.highlightFocus : props.theme.sidebar.background};
   border-right: 1px solid ${(props) => props.theme.sidebar.separatorColor};
 `
 const ActionButtonIconStyled = styled(ActionButtonIcon)`

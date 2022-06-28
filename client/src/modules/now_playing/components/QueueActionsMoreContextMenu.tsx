@@ -1,17 +1,19 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { Menu as ContextMenu, Item, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import { playlistsSelector, addCurrentQueue } from 'modules/playlist/store'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 
 const QueueActionsMoreContextMenu: React.FC = () => {
-  const playlists = useSelector((state: RootState) => playlistsSelector(state))
-  const dispatch = useDispatch()
+  const playlists = useAppSelector((state) => playlistsSelector(state))
+  const dispatch = useAppDispatch()
 
   const playlistsItems = playlists.map((item) => (
     <Item
       key={item.id}
-      onClick={(menuItem: any) => dispatch(addCurrentQueue({ playlistId: menuItem.props.data.id }))}
+      onClick={(menuItem: any) =>
+        dispatch(addCurrentQueue({ playlistId: menuItem.props.data.id }))
+      }
     >
       {item.title}
     </Item>

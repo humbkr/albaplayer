@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/humbkr/albaplayer/internal/alba"
+	"github.com/humbkr/albaplayer/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +20,7 @@ var scanCmd = &cobra.Command{
 	Short: "Scan media library folder",
 	Long:  `Scan media library folder specified in alba.yml.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		libraryInteractor := alba.InitApp()
+		libraryInteractor := internal.InitApp()
 
 		fmt.Println("Scanning media library, this can take several minutes...")
 

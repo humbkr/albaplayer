@@ -5,7 +5,7 @@ import Modal from 'react-modal'
 // http://reactcommunity.org/react-modal/accessibility/
 Modal.setAppElement('#root')
 
-interface Props {
+type Props = {
   id: string
   isOpen: boolean
   onClose: () => void
@@ -31,12 +31,12 @@ function KeyboardNavPlayPopup({
     modalRef.current.focus()
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent): void => {
+  const handleKeyDown = (e: KeyboardEvent): void => {
     e.preventDefault()
-    if (e.keyCode === 13) {
+    if (e.code === 'Enter') {
       // If Enter adds element to the end of the playlist.
       handleAddToQueue(itemId)
-    } else if (e.keyCode === 32) {
+    } else if (e.code === 'Space') {
       // If Space plays the element directly.
       handlePlayNow(itemId)
     }
@@ -72,6 +72,7 @@ function KeyboardNavPlayPopup({
         role="button"
         ref={modalRef}
         tabIndex={0}
+        // @ts-ignore
         onKeyDown={handleKeyDown}
       >
         <div>

@@ -1,11 +1,11 @@
-function immutableRemove(arr: Array<any>, index: number): Array<any> {
+export function immutableRemove(arr: Array<any>, index: number): Array<any> {
   return arr.slice(0, index).concat(arr.slice(index + 1))
 }
 
 /**
  * @param duration Duration to format in seconds.
  */
-const formatDuration = (duration: number): string => {
+export const formatDuration = (duration: number): string => {
   if (duration === undefined) {
     return ''
   }
@@ -28,14 +28,14 @@ const sanitizeDiscNumber = (discNumber: number | string): string => {
   return `D${split[0]}`
 }
 
-const sanitizeTrackNumber = (trackNumber: number | string): string => {
+export const sanitizeTrackNumber = (trackNumber: number | string): string => {
   const asString = `${trackNumber}`
   const split = asString.split('/')
 
   return `T${split[0].padStart(3, '0')}`
 }
 
-const immutableNestedSort = (
+export const immutableNestedSort = (
   items: Array<any>,
   prop: string,
   order: SortOrder = 'ASC'
@@ -80,7 +80,7 @@ const immutableNestedSort = (
 /**
  * Sort function specifically designed for tracks list.
  */
-const immutableSortTracks = (items: Array<any>, prop: string): Array<any> => {
+export const immutableSortTracks = (items: Array<any>, prop: string): Array<any> => {
   let result = 0
 
   return [...items].sort((propA, propB) => {
@@ -121,16 +121,29 @@ const immutableSortTracks = (items: Array<any>, prop: string): Array<any> => {
  * lower than max if max isn't an integer).
  * Using Math.round() will give you a non-uniform distribution!
  */
-const getRandomInt = (min: number, max: number): number => {
+export const getRandomInt = (min: number, max: number): number => {
   const minVal = Math.ceil(min)
   const maxVal = Math.floor(max)
   return Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal
 }
 
-export {
-  immutableNestedSort,
-  immutableSortTracks,
-  immutableRemove,
-  formatDuration,
-  getRandomInt,
+export function arrayMoveMutable(array: unknown[], fromIndex: number, toIndex: number): void {
+  const startIndex = fromIndex < 0 ? array.length + fromIndex : fromIndex
+
+  if (startIndex >= 0 && startIndex < array.length) {
+    const endIndex = toIndex < 0 ? array.length + toIndex : toIndex
+
+    const [item] = array.splice(fromIndex, 1)
+    array.splice(endIndex, 0, item)
+  }
+}
+
+export function arrayMoveImmutable<ValueType>(
+  array: readonly ValueType[],
+  fromIndex: number,
+  toIndex: number
+): ValueType[] {
+  const newArray = [...array]
+  arrayMoveMutable(newArray, fromIndex, toIndex)
+  return newArray
 }

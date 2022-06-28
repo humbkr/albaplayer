@@ -1,8 +1,5 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  Menu as ContextMenu, Item, Submenu, Separator,
-} from 'react-contexify'
+import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
   addPlaylist,
@@ -10,22 +7,27 @@ import {
   playPlaylistAfterCurrent,
 } from 'modules/player/store'
 import { addPlaylist as addPlaylistToPlaylist } from 'modules/playlist/store'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { EditPlaylistContext } from '../scenes/Playlists'
 
 const PlaylistContextMenu = () => {
-  const playlists = useSelector((state: RootState) => Object.values(state.playlist.playlists))
-  const dispatch = useDispatch()
+  const playlists = useAppSelector((state) =>
+    Object.values(state.playlist.playlists)
+  )
+  const dispatch = useAppDispatch()
 
   // @ts-ignore
   const playlistsItems = playlists.map((item: Playlist) => (
     <Item
       key={item.id}
-      onClick={(menuItem: any) => dispatch(
-        addPlaylistToPlaylist({
-          playlistId: item.id,
-          playlistToAddId: menuItem.props.data.id,
-        })
-      )}
+      onClick={(menuItem: any) =>
+        dispatch(
+          addPlaylistToPlaylist({
+            playlistId: item.id,
+            playlistToAddId: menuItem.props.data.id,
+          })
+        )
+      }
     >
       {item.title}
     </Item>
@@ -33,9 +35,11 @@ const PlaylistContextMenu = () => {
   playlistsItems.push(
     <Item
       key="new"
-      onClick={(menuItem: any) => dispatch(
-        addPlaylistToPlaylist({ playlistToAddId: menuItem.props.data.id })
-      )}
+      onClick={(menuItem: any) =>
+        dispatch(
+          addPlaylistToPlaylist({ playlistToAddId: menuItem.props.data.id })
+        )
+      }
     >
       + Duplicate playlist
     </Item>
@@ -46,17 +50,23 @@ const PlaylistContextMenu = () => {
       {(value: any) => (
         <ContextMenu id="playlist-context-menu">
           <Item
-            onClick={(menuItem: any) => dispatch(playPlaylist(menuItem.props.data.id))}
+            onClick={(menuItem: any) =>
+              dispatch(playPlaylist(menuItem.props.data.id))
+            }
           >
             Play now
           </Item>
           <Item
-            onClick={(menuItem: any) => dispatch(playPlaylistAfterCurrent(menuItem.props.data.id))}
+            onClick={(menuItem: any) =>
+              dispatch(playPlaylistAfterCurrent(menuItem.props.data.id))
+            }
           >
             Play after current track
           </Item>
           <Item
-            onClick={(menuItem: any) => dispatch(addPlaylist(menuItem.props.data.id))}
+            onClick={(menuItem: any) =>
+              dispatch(addPlaylist(menuItem.props.data.id))
+            }
           >
             Add to queue
           </Item>

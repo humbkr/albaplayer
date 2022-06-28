@@ -1,44 +1,42 @@
-import React, { FunctionComponent, Ref, useState } from 'react'
+import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { addTrack, playTrack } from 'modules/player/store'
-import LibraryBrowserList from './LibraryBrowserList'
-import TrackTeaser from './TrackTeaser'
-import LibraryBrowserListHeader from './LibraryBrowserListHeader'
-import TrackContextMenu from './TrackContextMenu'
-import LibraryBrowserPane from './LibraryBrowserPane'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
+import VirtualList from 'common/components/virtualLists/VirtualList'
 import {
   getTracksList,
   libraryBrowserSortTracks,
   libraryBrowserSelectTrack,
 } from '../store'
+import TrackTeaser from './TrackTeaser'
+import LibraryBrowserListHeader from './LibraryBrowserListHeader'
+import TrackContextMenu from './TrackContextMenu'
+import LibraryBrowserPane from './LibraryBrowserPane'
 
-interface Props {
-  switchPaneHandler: (e: React.KeyboardEvent) => void
+type Props = {
+  switchPaneHandler: (e: KeyboardEvent) => void
 }
 
-interface InternalProps extends Props {
+type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const TracksPaneContainer: FunctionComponent<InternalProps> = ({
+const TracksPaneContainer = ({
   switchPaneHandler,
   forwardedRef,
-}) => {
+}: InternalProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
-  const tracks = useSelector((state: RootState) => getTracksList(state))
-  const orderBy = useSelector(
-    (state: RootState) => state.libraryBrowser.sortTracks
+  const tracks = useAppSelector((state) => getTracksList(state))
+  const orderBy = useAppSelector((state) => state.libraryBrowser.sortTracks)
+  const currentPosition = useAppSelector(
+    (state) => state.libraryBrowser.currentPositionTracks
   )
-  const currentPosition = useSelector(
-    (state: RootState) => state.libraryBrowser.currentPositionTracks
+  const currentTrack = useAppSelector(
+    (state) => state.libraryBrowser.selectedTracks
   )
-  const currentTrack = useSelector(
-    (state: RootState) => state.libraryBrowser.selectedTracks
-  )
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const orderByOptions: { value: TracksSortOptions; label: string }[] = [
     { value: 'title', label: 'title' },
@@ -66,8 +64,8 @@ const TracksPaneContainer: FunctionComponent<InternalProps> = ({
     dispatch(addTrack(trackId))
   }
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 13) {
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.code === 'Enter') {
       setModalIsOpen(true)
     } else {
       switchPaneHandler(e)
@@ -84,7 +82,7 @@ const TracksPaneContainer: FunctionComponent<InternalProps> = ({
           onChange={onSortChangeHandler}
         />
         {tracks.length > 1 && (
-          <LibraryBrowserList
+          <VirtualList
             ref={forwardedRef}
             items={tracks}
             itemDisplay={TrackTeaser}

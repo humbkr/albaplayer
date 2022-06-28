@@ -45,6 +45,7 @@ const mockLibraryState: LibraryStateType = {
     1: {
       id: '1',
       title: 'Track 1 on album 1 from artist 1',
+      src: '/stream/1',
       number: 1,
       disc: '',
       duration: 123,
@@ -55,6 +56,7 @@ const mockLibraryState: LibraryStateType = {
     2: {
       id: '2',
       title: 'Track 1 on album 2 from artist 2',
+      src: '/stream/2',
       number: 1,
       disc: '',
       duration: 124,
@@ -65,6 +67,7 @@ const mockLibraryState: LibraryStateType = {
     3: {
       id: '3',
       title: 'Same track name on different albums',
+      src: '/stream/3',
       number: 2,
       disc: '',
       duration: 124,
@@ -75,6 +78,7 @@ const mockLibraryState: LibraryStateType = {
     4: {
       id: '4',
       title: 'Same track name on different albums',
+      src: '/stream/4',
       number: 1,
       disc: '',
       duration: 124,
@@ -85,6 +89,7 @@ const mockLibraryState: LibraryStateType = {
     5: {
       id: '5',
       title: 'Same track name on same album from different artist',
+      src: '/stream/5',
       number: 2,
       disc: '',
       duration: 124,
@@ -95,6 +100,7 @@ const mockLibraryState: LibraryStateType = {
     6: {
       id: '6',
       title: 'Same track name on same album from different artist',
+      src: '/stream/6',
       number: 3,
       disc: '',
       duration: 124,
@@ -105,6 +111,7 @@ const mockLibraryState: LibraryStateType = {
     7: {
       id: '7',
       title: 'Same track name on same album from same artist',
+      src: '/stream/7',
       number: 1,
       disc: '',
       duration: 124,
@@ -115,6 +122,7 @@ const mockLibraryState: LibraryStateType = {
     8: {
       id: '8',
       title: 'Same track name on same album from same artist',
+      src: '/stream/8',
       number: 2,
       disc: '',
       duration: 125,
@@ -125,6 +133,7 @@ const mockLibraryState: LibraryStateType = {
     9: {
       id: '9',
       title: 'Exact same track',
+      src: '/stream/9',
       number: 1,
       disc: '',
       duration: 124,
@@ -135,6 +144,7 @@ const mockLibraryState: LibraryStateType = {
     10: {
       id: '10',
       title: 'Exact same track',
+      src: '/stream/10',
       number: 1,
       disc: '',
       duration: 124,
@@ -145,6 +155,7 @@ const mockLibraryState: LibraryStateType = {
     11: {
       id: '11',
       title: 'Unique trackTitle match no ids',
+      src: '/stream/11',
       number: 1,
       disc: '',
       duration: 124,
@@ -153,6 +164,7 @@ const mockLibraryState: LibraryStateType = {
     12: {
       id: '12',
       title: 'Unique trackTitle and albumTitle match no artist id',
+      src: '/stream/12',
       number: 1,
       disc: '',
       duration: 124,
@@ -162,6 +174,7 @@ const mockLibraryState: LibraryStateType = {
     13: {
       id: '13',
       title: 'Unique trackTitle and albumTitle match no artist id',
+      src: '/stream/13',
       number: 1,
       disc: '',
       duration: 124,
@@ -177,6 +190,7 @@ describe('playlistCare', () => {
       const toSearch: Track = {
         id: '23',
         title: 'Track 1 on album 2 from artist 2',
+        src: '/stream/23',
         number: 1,
         disc: '',
         duration: 124,
@@ -203,6 +217,7 @@ describe('playlistCare', () => {
       const toSearch2: Track = {
         id: '23',
         title: 'Unique trackTitle match no ids',
+        src: '/stream/23',
         number: 15,
         disc: '',
         duration: 124,
@@ -229,6 +244,7 @@ describe('playlistCare', () => {
       const toSearch: Track = {
         id: '31',
         title: 'Same track name on different albums',
+        src: '/stream/31',
         number: 2,
         disc: '',
         duration: 124,
@@ -255,6 +271,7 @@ describe('playlistCare', () => {
       const toSearch2: Track = {
         id: '31',
         title: 'Unique trackTitle and albumTitle match no artist id',
+        src: '/stream/31',
         number: 2,
         disc: '',
         duration: 124,
@@ -279,10 +296,12 @@ describe('playlistCare', () => {
       expect(result2.length).toBe(1)
     })
 
+    // eslint-disable-next-line max-len
     it('should find only one track when only one track is a match with track title, album title, and artist name', () => {
       const toSearch: Track = {
         id: '51',
         title: 'Same track name on same album from different artist',
+        src: '/stream/51',
         number: 2,
         disc: '',
         duration: 124,
@@ -311,6 +330,7 @@ describe('playlistCare', () => {
       const toSearch: Track = {
         id: '91',
         title: 'Exact same track',
+        src: '/stream/91',
         number: 1,
         disc: '',
         duration: 124,
@@ -339,6 +359,7 @@ describe('playlistCare', () => {
       const toSearch: Track = {
         id: '91',
         title: 'Exact same track',
+        src: '/stream/91',
         number: 1,
         disc: '',
         duration: 124,
@@ -363,6 +384,7 @@ describe('playlistCare', () => {
       const toSearch: Track = {
         id: '91',
         title: 'Exact same track',
+        src: '/stream/91',
         number: 1,
         disc: '',
         duration: 124,
@@ -380,6 +402,7 @@ describe('playlistCare', () => {
       const toSearch: Track = {
         id: '97',
         title: 'Non existent track',
+        src: '/stream/97',
         number: 1,
         disc: '',
         duration: 124,

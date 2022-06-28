@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import SidebarNavLink from './SidebarNavLink'
 import Player from '../../modules/player/components/Player'
+import SidebarNavLink from './SidebarNavLink'
 
 const Sidebar = () => (
   <Wrapper>

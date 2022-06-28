@@ -1,8 +1,15 @@
 .git
 .idea
+/client/build
+/client/coverage
+/client/node_modules
 /server/test
 /server/tmp
 /server/app.log
 /server/pkged.go
 /server/build
 !/server/build/prod.alba.yml
+/server/alba.db
+/server/alba.yml
+/server/app.log
+/server/albaplayer

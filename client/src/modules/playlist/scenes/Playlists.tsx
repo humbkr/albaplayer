@@ -3,8 +3,7 @@ import styled from 'styled-components'
 // eslint-disable-next-line import/no-cycle
 import PlaylistDetailPane from 'modules/playlist/components/PlaylistDetailsPane'
 // eslint-disable-next-line import/no-cycle
-import { useDispatch, useSelector } from 'react-redux'
-// eslint-disable-next-line import/no-cycle
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import PlaylistListPane from '../components/PlaylistListPane'
 import PlaylistAddPopup from '../components/PlaylistAddPopup'
 import {
@@ -21,35 +20,33 @@ const Playlists = () => {
   const [modalPlaylistIsOpen, setModalPlaylistIsOpen] = useState(false)
   const [modalPlaylistMode, setModalPlaylistMode] = useState('add')
 
-  const selected = useSelector(
-    (state: RootState) => state.playlist.currentPlaylist.playlist
+  const selected = useAppSelector(
+    (state) => state.playlist.currentPlaylist.playlist
   )
-  const currentPane = useSelector(
-    (state: RootState) => state.playlist.currentPane
-  )
+  const currentPane = useAppSelector((state) => state.playlist.currentPane)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const playlistListPane = useRef<HTMLDivElement>(null)
   const playlistDetailPane = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Give focus to the search bar.
+    // Give focus to the playlist list pane.
     // @ts-ignore
-    playlistListPane.current.children[0].focus()
+    playlistListPane.current?.children[0].focus()
   }, [])
 
-  const handleSwitchPaneList = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 39) {
+  const handleSwitchPaneList = (e: KeyboardEvent) => {
+    if (e.code === 'ArrowRight') {
       // @ts-ignore
-      playlistDetailPane.current.children[0].focus()
+      playlistDetailPane.current?.children[0].focus()
     }
   }
 
-  const handleSwitchPaneDetails = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 37) {
+  const handleSwitchPaneDetails = (e: KeyboardEvent) => {
+    if (e.code === 'ArrowLeft') {
       // @ts-ignore
-      playlistListPane.current.children[0].focus()
+      playlistListPane.current?.children[0].focus()
     }
   }
 

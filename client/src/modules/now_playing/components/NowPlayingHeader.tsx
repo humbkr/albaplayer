@@ -1,15 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
 import { formatDuration } from 'common/utils/utils'
 import ActionButtonCircle from 'common/components/ActionButtonCircle'
 import { constants } from 'api'
 import SearchLink from 'modules/browser/components/SearchLink'
+import { useAppSelector } from 'store/hooks'
 
 const SEARCH_ENGINE_URL = 'https://www.google.fr/search?q='
 
-interface TrackInfo {
+type TrackInfo = {
   title: string
   artist: string
   album: string
@@ -27,21 +27,21 @@ enum WebSearchType {
 function getTrackInfoForDisplay(track: Track): TrackInfo | null {
   return track
     ? {
-      title: track?.title ?? 'Unknown title',
-      artist: track?.artist?.name ?? 'Unknown artist',
-      album: track?.album?.title ?? 'Unknown album',
-      number: track?.number ? track.number.toString() : '',
-      disc: track?.disc ?? '',
-      duration: track?.duration ? formatDuration(track.duration) : '',
-      cover: track?.cover ? constants.BACKEND_BASE_URL + track.cover : '',
-    }
+        title: track?.title ?? 'Unknown title',
+        artist: track?.artist?.name ?? 'Unknown artist',
+        album: track?.album?.title ?? 'Unknown album',
+        number: track?.number ? track.number.toString() : '',
+        disc: track?.disc ?? '',
+        duration: track?.duration ? formatDuration(track.duration) : '',
+        cover: track?.cover ? constants.BACKEND_BASE_URL + track.cover : '',
+      }
     : null
 }
 
 const NowPlayingHeader: React.FC<{
   pinned?: boolean
 }> = ({ pinned = false }) => {
-  const track = useSelector((state: RootState) => state.player.track)
+  const track = useAppSelector((state) => state.player.track)
 
   const handleWebSearch = (what: WebSearchType) => {
     if (track) {
@@ -129,8 +129,9 @@ export default NowPlayingHeader
 const Wrapper = styled.div<{ pinned: boolean }>`
   padding: 0 50px;
 
-  ${({ pinned, theme }) => pinned
-    && `
+  ${({ pinned, theme }) =>
+    pinned &&
+    `
     background-color: ${theme.backgroundColor};
     padding: 10px;
     margin-left: ${theme.sidebar.width};
@@ -149,8 +150,9 @@ const NowPlaying = styled.div<{ pinned: boolean }>`
   background-color: ${(props) => props.theme.nowPlaying.backgroundColor};
   display: flex;
 
-  ${({ pinned }) => pinned
-    && `
+  ${({ pinned }) =>
+    pinned &&
+    `
     padding: 0;
   `}
 `
@@ -183,8 +185,9 @@ const CoverInfo = styled.div<{ pinned: boolean }>`
   background-size: 100% 100%;
   flex-shrink: 0;
 
-  ${({ pinned }) => pinned
-    && `
+  ${({ pinned }) =>
+    pinned &&
+    `
     width: 100px;
     height: 100px;
     padding: 5px;
@@ -210,8 +213,9 @@ const SongInfo = styled.div<{ pinned?: boolean }>`
     transition: flex-grow 0.4s ease;
   }
 
-  ${({ pinned }) => pinned
-    && `
+  ${({ pinned }) =>
+    pinned &&
+    `
     width: 100%;
     flex-direction: row;
     justify-content: space-between;
@@ -227,8 +231,9 @@ const SongInfo = styled.div<{ pinned?: boolean }>`
 const SongInfoPart2 = styled.div<{ pinned: boolean }>`
   padding: 15px 0 5px;
 
-  ${({ pinned }) => pinned
-    && `
+  ${({ pinned }) =>
+    pinned &&
+    `
     padding: 0;
     
     > :first-child {
@@ -239,8 +244,9 @@ const SongInfoPart2 = styled.div<{ pinned: boolean }>`
 const Title = styled.h2<{ pinned: boolean }>`
   margin-bottom: 5px;
 
-  ${({ pinned }) => pinned
-    && `
+  ${({ pinned }) =>
+    pinned &&
+    `
     font-size: 1.1em;
   `}
 `
@@ -248,8 +254,9 @@ const Artist = styled.h3<{ pinned: boolean }>`
   font-weight: normal;
   font-size: 1.2em;
 
-  ${({ pinned }) => pinned
-    && `
+  ${({ pinned }) =>
+    pinned &&
+    `
      font-size: 1em;
   `}
 `
@@ -274,8 +281,9 @@ const SongActions = styled.div<{ pinned: boolean }>`
     margin-right: 20px;
   }
 
-  ${({ pinned }) => pinned
-    && `
+  ${({ pinned }) =>
+    pinned &&
+    `
     flex-grow: 0;
     flex-shrink: 0;
     display: block;

@@ -1,5 +1,5 @@
 import React from 'react'
-import { StaticRouter } from 'react-router'
+import { BrowserRouter } from 'react-router-dom'
 import { render } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
@@ -21,9 +21,9 @@ describe('dashboard - Dashboard scene', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <StaticRouter>
+          <BrowserRouter>
             <Dashboard />
-          </StaticRouter>
+          </BrowserRouter>
         </ThemeProvider>
       </ReduxProvider>
     )

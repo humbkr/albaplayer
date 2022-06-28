@@ -1,4 +1,4 @@
-// / <reference types="react-scripts" />
+/// <reference types="react-scripts" />
 declare module '*.png'
 declare module '*.eot'
 declare module '*.woff2'

@@ -1,5 +1,5 @@
 ## Client build phase
-FROM node:14 as build_client
+FROM node:16 as build_client
 
 ADD client /app
 WORKDIR /app
@@ -8,7 +8,7 @@ RUN yarn install
 RUN yarn build
 
 ## Server build phase
-FROM golang:1.16 AS build_server
+FROM golang:1.18 AS build_server
 
 # Install GCC for target architecture.
 RUN dpkg --add-architecture amd64 \
@@ -23,6 +23,7 @@ COPY --from=build_client /app/build/ /app/web/
 
 # Install pkger command line tools.
 RUN go get github.com/markbates/pkger/cmd/pkger
+RUN go install github.com/markbates/pkger/cmd/pkger
 
 # Install dependencies
 RUN go mod download
@@ -37,9 +38,7 @@ RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=x86_64-linux-gnu-gcc go build -a -o
 RUN cp /app/build/prod.alba.yml /generated/alba.yml
 
 ## Final image
-FROM frolvlad/alpine-glibc
-RUN apk add --no-cache \
-    ca-certificates
+FROM debian
 
 COPY --from=build_server /generated/ /app/
 RUN chmod +x /app/alba

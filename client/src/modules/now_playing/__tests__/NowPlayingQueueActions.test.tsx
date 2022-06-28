@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import userEvent from '@testing-library/user-event'
 import { ThemeProvider } from 'styled-components'
+import themeDefault from 'themes/default'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import NowPlayingQueueActions from '../components/NowPlayingQueueActions'
-import themeDefault from '../../../themes/default'
 
 const store = makeMockStore({
   playlist: {
@@ -40,7 +40,7 @@ describe('QueueActionsMoreContextMenu', () => {
     expect(screen.getByText('Clear')).toBeInTheDocument()
   })
 
-  it('dispatches correct actions when pressing Clear button', () => {
+  it('dispatches correct actions when pressing Clear button', async () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
@@ -49,7 +49,7 @@ describe('QueueActionsMoreContextMenu', () => {
       </ReduxProvider>
     )
 
-    userEvent.click(screen.getByText('Clear'))
+    await userEvent.click(screen.getByText('Clear'))
     expect(store.dispatch).toHaveBeenCalledWith({
       payload: undefined,
       type: 'queue/queueClear',

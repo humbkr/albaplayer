@@ -1,44 +1,42 @@
-import React, { FunctionComponent, Ref, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { playArtist, addArtist } from 'modules/player/store'
-import LibraryBrowserList from 'modules/browser/components/LibraryBrowserList'
+import VirtualList from 'common/components/virtualLists/VirtualList'
 import ArtistContextMenu from 'modules/browser/components/ArtistContextMenu'
 import {
   getArtistsList,
   libraryBrowserSortArtists,
   selectArtist,
 } from 'modules/browser/store'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import ArtistTeaser from './ArtistTeaser'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 
-interface Props {
-  switchPaneHandler: (e: React.KeyboardEvent) => void
+type Props = {
+  switchPaneHandler: (e: KeyboardEvent) => void
 }
 
-interface InternalProps extends Props {
+type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const ArtistsPaneContainer: FunctionComponent<InternalProps> = ({
+const ArtistsPaneContainer = ({
   switchPaneHandler,
   forwardedRef,
-}) => {
+}: InternalProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
-  const artists = useSelector((state: RootState) => getArtistsList(state))
-  const orderBy = useSelector(
-    (state: RootState) => state.libraryBrowser.sortArtists
+  const artists = useAppSelector((state) => getArtistsList(state))
+  const orderBy = useAppSelector((state) => state.libraryBrowser.sortArtists)
+  const currentPosition = useAppSelector(
+    (state) => state.libraryBrowser.currentPositionArtists
   )
-  const currentPosition = useSelector(
-    (state: RootState) => state.libraryBrowser.currentPositionArtists
+  const currentArtist = useAppSelector(
+    (state) => state.libraryBrowser.selectedArtists
   )
-  const currentArtist = useSelector(
-    (state: RootState) => state.libraryBrowser.selectedArtists
-  )
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const orderByOptions: { value: ArtistsSortOptions; label: string }[] = [
     { value: 'name', label: 'name' },
@@ -63,8 +61,8 @@ const ArtistsPaneContainer: FunctionComponent<InternalProps> = ({
     dispatch(addArtist(artistId))
   }
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 13) {
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.code === 'Enter') {
       setModalIsOpen(true)
     } else {
       switchPaneHandler(e)
@@ -80,7 +78,7 @@ const ArtistsPaneContainer: FunctionComponent<InternalProps> = ({
           orderByOptions={orderByOptions}
           onChange={onSortChangeHandler}
         />
-        <LibraryBrowserList
+        <VirtualList
           ref={forwardedRef}
           items={artists}
           itemDisplay={ArtistTeaser}

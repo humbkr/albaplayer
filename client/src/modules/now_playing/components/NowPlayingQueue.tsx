@@ -1,15 +1,19 @@
-import React, { FunctionComponent } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React from 'react'
 import styled, { withTheme } from 'styled-components'
 import { queueReplace, queueSetCurrent } from 'modules/player/store'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import NowPlayingQueueHeader from './NowPlayingQueueHeader'
 import NowPlayingQueueList from './NowPlayingQueueList'
 import NowPlayingQueueActions from './NowPlayingQueueActions'
 import QueueItemContextMenu from './QueueItemContextMenu'
 
-const NowPlayingQueue: FunctionComponent<{ theme: AppTheme }> = ({ theme }) => {
-  const { items, current } = useSelector((state: RootState) => state.queue)
-  const dispatch = useDispatch()
+type Props = {
+  theme: AppTheme
+}
+
+const NowPlayingQueue = ({ theme }: Props) => {
+  const { items, current } = useAppSelector((state) => state.queue)
+  const dispatch = useAppDispatch()
 
   // Add a position info to each playlist item.
   const itemsForDisplay: QueueItemDisplay[] = items.map(

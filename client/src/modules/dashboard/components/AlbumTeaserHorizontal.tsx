@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { useDispatch } from 'react-redux'
 import dayjs from 'dayjs'
 import { contextMenu } from 'react-contexify'
+import { useAppDispatch } from 'store/hooks'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import { playAlbum } from '../../player/store'
 import Cover from '../../../common/components/Cover'
@@ -13,7 +13,7 @@ const AlbumTeaserHorizontal: React.FC<{
   selected: boolean
   setSelected: (albumId: string) => void
 }> = ({ album, selected, setSelected }) => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const [mouseHover, setMouseHover] = useState(false)
 
@@ -92,7 +92,8 @@ const Wrapper = styled.div<{ visible: boolean }>`
   width: 100%;
   margin-right: 20px;
   transition: background-color linear 0.15s;
-  background-color: ${(props) => (props.visible ? props.theme.sidebar.background : 'transparent')};
+  background-color: ${(props) =>
+    props.visible ? props.theme.sidebar.background : 'transparent'};
 `
 const CoverWrapper = styled.div`
   flex-shrink: 0;
@@ -102,7 +103,8 @@ const CoverWrapper = styled.div`
 `
 const ActionOverlay = styled.div<{ visible: boolean }>`
   position: absolute;
-  background-color: ${(props) => (props.visible ? 'rgba(25,25,34,.3)' : 'transparent')};
+  background-color: ${(props) =>
+    props.visible ? 'rgba(25,25,34,.3)' : 'transparent'};
   top: 0;
   left: 0;
   width: 100%;
@@ -118,7 +120,7 @@ const ActionButton = styled(ActionButtonIcon)`
   color: #fff;
 
   i {
-    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
   :hover {

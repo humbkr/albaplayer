@@ -51,7 +51,7 @@ describe('QueueActionsMoreContextMenu', () => {
     expect(screen.getByText('Add to playlist...')).toBeInTheDocument()
   })
 
-  it('dispatches the correct actions when pressing on a playlist name', () => {
+  it('dispatches the correct actions when pressing on a playlist name', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -60,13 +60,13 @@ describe('QueueActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-queueactionsmoremenu'))
-    userEvent.click(screen.getByText('Playlist one'))
+    await userEvent.click(screen.getByText('Playlist one'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
   })
 
-  it('dispatches the correct actions when pressing Create new playlist', () => {
+  it('dispatches the correct actions when pressing Create new playlist', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -75,7 +75,7 @@ describe('QueueActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-queueactionsmoremenu'))
-    userEvent.click(screen.getByText('+ Create new playlist'))
+    await userEvent.click(screen.getByText('+ Create new playlist'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))

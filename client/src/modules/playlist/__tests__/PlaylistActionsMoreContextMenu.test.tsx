@@ -7,6 +7,7 @@ import PlaylistActionsMoreContextMenu from '../components/PlaylistActionsMoreCon
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 
 jest.mock('react-modal', () => {
+  // eslint-disable-next-line jest/no-mocks-import
   const TestReactModal = require('../../../../__mocks__/react-modal')
   return TestReactModal.default
 })
@@ -72,7 +73,7 @@ describe('PlaylistActionsMoreContextMenu', () => {
     expect(screen.getByText('Fix dead tracks...')).toBeInTheDocument()
   })
 
-  it('dispatches the correct actions when pressing "Play after current track"', () => {
+  it('dispatches the correct actions when pressing "Play after current track"', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -81,13 +82,13 @@ describe('PlaylistActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistactionsmoremenu'))
-    userEvent.click(screen.getByText('Play after current track'))
+    await userEvent.click(screen.getByText('Play after current track'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
   })
 
-  it('dispatches the correct actions when pressing on a playlist name', () => {
+  it('dispatches the correct actions when pressing on a playlist name', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -96,13 +97,13 @@ describe('PlaylistActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistactionsmoremenu'))
-    userEvent.click(screen.getByText('Playlist one'))
+    await userEvent.click(screen.getByText('Playlist one'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
   })
 
-  it('dispatches the correct actions when pressing on Create new playlist', () => {
+  it('dispatches the correct actions when pressing on Create new playlist', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -111,13 +112,13 @@ describe('PlaylistActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistactionsmoremenu'))
-    userEvent.click(screen.getByText('+ Duplicate playlist'))
+    await userEvent.click(screen.getByText('+ Duplicate playlist'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
   })
 
-  it('dispatches the correct actions when pressing on "Fix dead tracks..."', () => {
+  it('dispatches the correct actions when pressing on "Fix dead tracks..."', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -126,7 +127,7 @@ describe('PlaylistActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistactionsmoremenu'))
-    userEvent.click(screen.getByText('Fix dead tracks...'))
+    await userEvent.click(screen.getByText('Fix dead tracks...'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith({
@@ -135,7 +136,7 @@ describe('PlaylistActionsMoreContextMenu', () => {
     })
   })
 
-  it('dispatches the correct actions when pressing on "Delete playlist"', () => {
+  it('dispatches the correct actions when pressing on "Delete playlist"', async () => {
     render(
       <ReduxProvider store={store}>
         <MockComponent />
@@ -146,7 +147,7 @@ describe('PlaylistActionsMoreContextMenu', () => {
     window.confirm = jest.fn().mockImplementation(() => true)
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistactionsmoremenu'))
-    userEvent.click(screen.getByText('Delete playlist'))
+    await userEvent.click(screen.getByText('Delete playlist'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith({

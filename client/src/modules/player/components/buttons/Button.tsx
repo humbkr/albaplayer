@@ -1,15 +1,13 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
-const Button: FunctionComponent<{
-  onClick: (e: React.KeyboardEvent) => void
-}> = ({ onClick, children }) => (
-  <ControlButton
-    // @ts-ignore
-    onClick={onClick}
-  >
-    {children}
-  </ControlButton>
+type Props = {
+  onClick: (e: React.MouseEvent) => void
+  children: React.ReactNode
+}
+
+const Button = ({ onClick, children }: Props) => (
+  <ControlButton onClick={onClick}>{children}</ControlButton>
 )
 
 export default Button

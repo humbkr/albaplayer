@@ -1,11 +1,13 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { ThunkAction } from 'redux-thunk'
-import { Action } from '@reduxjs/toolkit'
-import { PersistedState } from 'redux-persist'
+import { Action, ThunkAction } from '@reduxjs/toolkit'
+import store from 'store/store'
 
 export declare global {
-  type RootState = PersistedState &
-    StateType<ReturnType<typeof import('./rootReducer').default>>
-  type AppDispatch = typeof import('./store').default.dispatch
-  type AppThunk = ThunkAction<void, RootState, unknown, Action<string>>
+  type AppDispatch = typeof store.dispatch
+  type RootState = ReturnType<typeof store.getState>
+  type AppThunk<ReturnType = void> = ThunkAction<
+    ReturnType,
+    RootState,
+    unknown,
+    Action<string>
+  >
 }

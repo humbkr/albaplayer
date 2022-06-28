@@ -10,6 +10,7 @@ interface IProps {
   onRequestClose(): void
   parentSelector: any
   onAfterOpen(): void
+  children?: React.ReactNode
 }
 
 export default class MockReactModal extends React.Component<IProps, any> {

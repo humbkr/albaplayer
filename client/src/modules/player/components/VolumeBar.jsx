@@ -2,9 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const VolumeBar = (
-  {
-    width, height, barThickness, handlerWidth, translate, onClick, children,
-  },
+  { width, height, barThickness, handlerWidth, translate, onClick, children },
   { color }
 ) => {
   const diff = (height - barThickness) / 2

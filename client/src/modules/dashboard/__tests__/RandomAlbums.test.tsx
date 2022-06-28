@@ -1,5 +1,5 @@
 import React from 'react'
-import { StaticRouter } from 'react-router'
+import { BrowserRouter } from 'react-router-dom'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
@@ -100,9 +100,9 @@ describe('dashboard - RandomAlbums', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <StaticRouter>
+          <BrowserRouter>
             <RandomAlbums />
-          </StaticRouter>
+          </BrowserRouter>
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -115,9 +115,9 @@ describe('dashboard - RandomAlbums', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <StaticRouter>
+          <BrowserRouter>
             <RandomAlbums />
-          </StaticRouter>
+          </BrowserRouter>
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -135,9 +135,9 @@ describe('dashboard - RandomAlbums', () => {
     render(
       <ReduxProvider store={customStore}>
         <ThemeProvider theme={themeDefault}>
-          <StaticRouter>
+          <BrowserRouter>
             <RandomAlbums />
-          </StaticRouter>
+          </BrowserRouter>
         </ThemeProvider>
       </ReduxProvider>
     )

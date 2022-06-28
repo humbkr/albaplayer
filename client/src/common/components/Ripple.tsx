@@ -1,8 +1,12 @@
-import React, { FunctionComponent, useRef } from 'react'
+import React, { useRef } from 'react'
 import ReactDOM from 'react-dom'
 import styled, { keyframes } from 'styled-components'
 
-const Ripple: FunctionComponent = (props) => {
+type Props = {
+  children: React.ReactNode
+}
+
+const Ripple = (props: Props) => {
   const ripple = useRef<HTMLElement | null>(null)
   const rippleContainer = useRef<HTMLElement | null>(null)
 
@@ -68,8 +72,9 @@ const Ripple: FunctionComponent = (props) => {
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       // @ts-ignore
-      ref={rippleContainer}
       onClick={doTheRipple}
+      // @ts-ignore
+      ref={rippleContainer}
     >
       {props.children}
       <span ref={ripple} />

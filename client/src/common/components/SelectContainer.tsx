@@ -1,21 +1,21 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import selectArrowLight from '../assets/images/select-arrow-light.svg'
 import selectArrowDark from '../assets/images/select-arrow-dark.svg'
 
-export interface Option {
+export type Option = {
   value: string
   label: string
 }
 
-const SelectContainer: FunctionComponent<{
+type Props = {
   value: string
   onChangeHandler: (event: React.MouseEvent<HTMLSelectElement>) => void
   options: Array<Option>
   tabIndex?: string
-}> = ({
-  value, onChangeHandler, options, tabIndex,
-}) => {
+}
+
+const SelectContainer = ({ value, onChangeHandler, options, tabIndex }: Props) => {
   const optionsHtml = options.map((option: Option) => (
     <option key={option.value} value={option.value}>
       {option.label}
@@ -51,7 +51,8 @@ const Select = styled.select<any>`
   appearance: none;
   border: 0;
   background-color: transparent;
-  background-image: url(${(props) => (props.theme.isDark ? selectArrowLight : selectArrowDark)});
+  background-image: url(${(props) =>
+    props.theme.isDark ? selectArrowLight : selectArrowDark});
   background-repeat: no-repeat, repeat;
   background-position: right 0.3rem top 52%, 0 0;
   background-size: 0.65em auto, 100%;

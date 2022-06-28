@@ -1,6 +1,4 @@
-import ApolloClient from 'apollo-client'
-import { HttpLink } from 'apollo-link-http'
-import { InMemoryCache } from 'apollo-cache-inmemory'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import constants from './constants'
 
 const API_URL = `${constants.BACKEND_BASE_URL}/graphql`

@@ -2,6 +2,9 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom/extend-expect'
-import 'jest-extended'
+import '@testing-library/jest-dom'
 import 'jest-styled-components'
+
+// @ts-ignore
+import * as matchers from 'jest-extended'
+expect.extend(matchers)

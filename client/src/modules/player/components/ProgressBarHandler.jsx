@@ -2,9 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const progressBarHandler = (
-  {
-    width, height, translate, visibility, onMouseDown,
-  },
+  { width, height, translate, visibility, onMouseDown },
   { color }
 ) => (
   <g

@@ -1,12 +1,15 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { NavLink } from 'react-router-dom'
 import Icon from 'common/components/Icon'
 
-const SidebarNavLink: FunctionComponent<{
+type Props = {
   to: string
   icon?: string
-}> = ({ to, icon, children }) => (
+  children?: React.ReactNode
+}
+
+const SidebarNavLink = ({ to, icon, children }: Props) => (
   <SidebarNavLinkWrapper to={to}>
     {icon && <Icon>{icon}</Icon>}
     <span>{children}</span>

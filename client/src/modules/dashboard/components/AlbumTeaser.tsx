@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { useDispatch } from 'react-redux'
 import { contextMenu } from 'react-contexify'
+import { useAppDispatch } from 'store/hooks'
 import { playAlbum } from '../../player/store'
 import ActionButtonCircle from '../../../common/components/ActionButtonCircle'
 import Cover from '../../../common/components/Cover'
@@ -12,7 +12,7 @@ const AlbumTeaser: React.FC<{
   selected: boolean
   setSelected: (albumId: string) => void
 }> = ({ album, selected, setSelected }) => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const [mouseHover, setMouseHover] = useState(false)
 
@@ -92,7 +92,8 @@ const CoverWrapper = styled.div`
 `
 const Overlay = styled.div<{ visible: boolean }>`
   position: absolute;
-  background-color: ${(props) => (props.visible ? 'rgba(25,25,34,.3)' : 'transparent')};
+  background-color: ${(props) =>
+    props.visible ? 'rgba(25,25,34,.3)' : 'transparent'};
   top: 0;
   left: 0;
   width: 100%;

@@ -1,15 +1,15 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import SelectContainer, { Option } from 'common/components/SelectContainer'
 
-const LibraryBrowserListHeader: FunctionComponent<{
+type Props = {
   orderByOptions: Option[]
   orderBy: string
   title?: string
   onChange: (event: React.MouseEvent<HTMLSelectElement>) => void
-}> = ({
-  orderByOptions, orderBy, title = '', onChange,
-}) => (
+}
+
+const LibraryBrowserListHeader = ({ orderByOptions, orderBy, title = '', onChange }: Props) => (
   <LibraryBrowserListHeaderWrapper>
     <ContentWrapper>
       <h2>{title}</h2>

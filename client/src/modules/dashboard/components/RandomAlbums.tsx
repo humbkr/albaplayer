@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import AlbumTeaser from 'modules/dashboard/components/AlbumTeaser'
-import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import { getRandomAlbums } from '../store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
 const RandomAlbums: React.FC = () => {
-  const randomAlbums = useSelector(
-    (state: RootState) => state.dashboard.randomAlbums
-  )
-  const dispatch = useDispatch()
+  const randomAlbums = useAppSelector((state) => state.dashboard.randomAlbums)
+  const dispatch = useAppDispatch()
   const [selectedAlbum, setSelectedAlbum] = useState<string | undefined>(
     undefined
   )

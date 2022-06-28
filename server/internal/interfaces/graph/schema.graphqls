@@ -1,0 +1,67 @@
+type Artist {
+  id: ID!
+  name: String!
+  albums: [Album]
+  dateAdded: Int
+}
+
+type Album {
+  id: ID!
+  title: String!
+  year: String
+  artist: Artist
+  cover: String
+  tracks: [Track]
+  dateAdded: Int
+}
+
+type Track {
+  id: ID!
+  title: String!
+  # Path on filesystem
+  src: String!
+  artist: Artist
+  album: Album
+  # Disc number
+  disc: String
+  # Position on disc
+  number: Int
+  # Duration in seconds
+  duration: Int
+  cover: String
+  dateAdded: Int
+}
+
+type Variable {
+  key: String
+  value: String
+}
+
+type Settings {
+  libraryPath: String
+  coversPreferredSource: String
+  disableLibrarySettings: Boolean
+  version: String
+}
+
+type LibraryUpdateState {
+  tracksNumber: Int
+  albumsNumber: Int
+  artistsNumber: Int
+}
+
+type Query {
+  album(id: ID!): Album
+  albums: [Album]
+  artist(id: ID!): Artist
+  artists: [Artist]
+  track(id: ID!): Track
+  tracks: [Track]
+  settings: Settings
+  variable(key: String!): Variable
+}
+
+type Mutation {
+  updateLibrary: LibraryUpdateState
+  eraseLibrary: LibraryUpdateState
+}

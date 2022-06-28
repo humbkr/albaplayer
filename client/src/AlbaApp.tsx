@@ -1,21 +1,18 @@
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components'
 import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import Sidebar from 'common/components/Sidebar'
 import MainPanel from 'common/components/MainPanel'
-import { initLibrary } from './modules/library/store'
-import MaterialIconsWoff2 from './common/assets/fonts/MaterialIcons-Regular.woff2'
-import MaterialIconsWoff from './common/assets/fonts/MaterialIcons-Regular.woff'
-import MaterialIconsTtf from './common/assets/fonts/MaterialIcons-Regular.ttf'
-import MaterialIconsSvg from './common/assets/fonts/MaterialIcons-Regular.svg'
-import getTheme from './themes'
+import { initLibrary } from 'modules/library/store'
+import MaterialIconsWoff2 from 'common/assets/fonts/MaterialIcons-Regular.woff2'
+import MaterialIconsWoff from 'common/assets/fonts/MaterialIcons-Regular.woff'
+import MaterialIconsTtf from 'common/assets/fonts/MaterialIcons-Regular.ttf'
+import MaterialIconsSvg from 'common/assets/fonts/MaterialIcons-Regular.svg'
+import getTheme from 'themes'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 
 function AlbaApp() {
-  const currentThemeName = useSelector(
-    (state: RootState) => state.settings.theme
-  )
-  const dispatch = useDispatch()
+  const currentThemeName = useAppSelector((state) => state.settings.theme)
+  const dispatch = useAppDispatch()
 
   const theme = getTheme(currentThemeName)
 
@@ -34,9 +31,7 @@ function AlbaApp() {
   )
 }
 
-// Need to use withRouter here or the views in MainPanel won't change.
-// https://github.com/ReactTraining/react-router/issues/4671
-export default withRouter(AlbaApp)
+export default AlbaApp
 
 // Global styles used by the styled components.
 const GlobalStyle = createGlobalStyle<{ theme: AppTheme }>`

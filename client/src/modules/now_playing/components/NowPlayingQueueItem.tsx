@@ -1,21 +1,22 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { MenuProvider as ContextMenuProvider } from 'react-contexify'
-import { useDispatch, useSelector } from 'react-redux'
+import { contextMenu } from 'react-contexify'
 import ActionButtonIcon from 'common/components/ActionButtonIcon'
 import {
   playerTogglePlayPause,
   queueRemoveTrack,
   setItemFromQueue,
 } from 'modules/player/store'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 
-const NowPlayingQueueItem: FunctionComponent<{
+type Props = {
   item: QueueItemDisplay
   currentIndex: number
-  style: {}
-}> = ({ item, currentIndex, style }) => {
-  const isPlaying = useSelector((state: RootState) => state.player.playing)
-  const dispatch = useDispatch()
+}
+
+const NowPlayingQueueItem = ({ item, currentIndex }: Props) => {
+  const isPlaying = useAppSelector((state) => state.player.playing)
+  const dispatch = useAppDispatch()
 
   const handlePlayBackButton = () => {
     const isCurrent = currentIndex + 1 === item.position
@@ -36,26 +37,35 @@ const NowPlayingQueueItem: FunctionComponent<{
     dispatch(queueRemoveTrack(item.position - 1))
   }
 
+  const onRightClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    contextMenu.show({
+      id: 'queue-item-context-menu',
+      event: e,
+      props: {
+        data: item,
+      },
+    })
+  }
+
   const isCurrent = currentIndex + 1 === item.position
   const playbackButtonIcon = isCurrent && isPlaying ? 'pause' : 'play_arrow'
 
   return (
-    <ContextMenuProvider style={style} id="queue-item-context-menu" data={item}>
-      <QueueItemWrapper isCurrent={isCurrent}>
-        <QueueItemFirstColumn>
-          <QueueItemPosition>{item.position}</QueueItemPosition>
-          <QueueActionButtonIcon
-            icon={playbackButtonIcon}
-            onClick={handlePlayBackButton}
-          />
-        </QueueItemFirstColumn>
-        <div>{item.track.title}</div>
-        <QueueItemInfo>{item.track.artist?.name}</QueueItemInfo>
-        <QueueItemActions>
-          <ActionButtonIcon icon="delete" onClick={handleRemoveTrack} />
-        </QueueItemActions>
-      </QueueItemWrapper>
-    </ContextMenuProvider>
+    <QueueItemWrapper isCurrent={isCurrent} onContextMenu={onRightClick}>
+      <QueueItemFirstColumn>
+        <QueueItemPosition>{item.position}</QueueItemPosition>
+        <QueueActionButtonIcon
+          icon={playbackButtonIcon}
+          onClick={handlePlayBackButton}
+        />
+      </QueueItemFirstColumn>
+      <div>{item.track.title}</div>
+      <QueueItemInfo>{item.track.artist?.name}</QueueItemInfo>
+      <QueueItemActions>
+        <ActionButtonIcon icon="delete" onClick={handleRemoveTrack} />
+      </QueueItemActions>
+    </QueueItemWrapper>
   )
 }
 
@@ -80,9 +90,9 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   display: grid;
   grid-template-columns: 60px 40% auto 44px;
   height: ${(props) => props.theme.itemHeight};
+  color: ${(props) => props.theme.textPrimaryColor};
   border-bottom: 1px solid ${(props) => props.theme.separatorColor};
   ${(props) => (props.isCurrent ? 'font-weight: bold' : '')};
-  background-color: ${(props) => props.theme.backgroundColor};
 
   > * {
     align-self: center;

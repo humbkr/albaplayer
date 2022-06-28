@@ -2,8 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
-import { Router } from 'react-router'
-import { createMemoryHistory } from 'history'
+import { BrowserRouter as Router } from 'react-router-dom'
 import AlbumTeaserHorizontal from '../components/AlbumTeaserHorizontal'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import themeDefault from '../../../themes/default'
@@ -33,14 +32,11 @@ const album: Album = {
   },
 }
 
-// Required to mock useLocation, useHistory, and other react-router functionalities.
-const history = createMemoryHistory()
-
 describe('dashboard - AlbumTeaserHorizontal', () => {
   it('should render correctly', () => {
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaserHorizontal
               album={album}
@@ -63,7 +59,7 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
   it('should display an overlay if mouse is over', () => {
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaserHorizontal
               album={album}
@@ -101,7 +97,7 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
 
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaserHorizontal
               album={album}
@@ -127,7 +123,7 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
 
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaserHorizontal
               album={album}
@@ -152,7 +148,7 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
   it('should play the album if user clicks on the play button', () => {
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaserHorizontal
               album={album}
@@ -174,7 +170,7 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
 
     render(
       <ReduxProvider store={store}>
-        <Router history={history}>
+        <Router>
           <ThemeProvider theme={themeDefault}>
             <AlbumTeaserHorizontal
               album={customAlbum}

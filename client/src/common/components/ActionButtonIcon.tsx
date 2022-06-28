@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled, { withTheme } from 'styled-components'
 import Icon from 'common/components/Icon'
 
-const ActionButtonIcon: FunctionComponent<{
+type Props = {
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void
   icon: string
   theme: AppTheme
@@ -10,18 +10,21 @@ const ActionButtonIcon: FunctionComponent<{
   disabled?: boolean
   size?: number
   testId?: string
-}> = ({
+}
+
+const ActionButtonIcon = ({
   onClick,
   icon,
   theme,
   className = '',
   disabled = false,
-  size = null,
+  size,
   testId = '',
-}) => (
+}: Props) => (
   <Wrapper
     className={className}
     disabled={disabled}
+    // @ts-ignore
     onClick={onClick}
     data-testid={testId}
   >

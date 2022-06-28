@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import Icon from 'common/components/Icon'
 
@@ -8,10 +8,12 @@ enum MessageType {
   'error' = 'error',
 }
 
-const Message: FunctionComponent<{ type: MessageType }> = ({
-  type,
-  children,
-}) => {
+type Props = {
+  type: MessageType
+  children?: React.ReactNode
+}
+
+const Message = ({ type, children }: Props) => {
   let Picto
   switch (type) {
     case MessageType.info:

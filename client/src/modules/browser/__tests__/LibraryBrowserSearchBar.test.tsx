@@ -24,11 +24,11 @@ describe('LibraryBrowserSearchBar', () => {
       </ReduxProvider>
     )
 
-    expect(screen.getByTestId('search-filter-all-active'))
-    expect(screen.getByTestId('search-filter-artist'))
-    expect(screen.getByTestId('search-filter-album'))
-    expect(screen.getByTestId('search-filter-track'))
-    expect(screen.getByPlaceholderText('Search'))
+    expect(screen.getByTestId('search-filter-all-active')).toBeInTheDocument()
+    expect(screen.getByTestId('search-filter-artist')).toBeInTheDocument()
+    expect(screen.getByTestId('search-filter-album')).toBeInTheDocument()
+    expect(screen.getByTestId('search-filter-track')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Search')).toBeInTheDocument()
   })
 
   it('displays with default values when set', () => {
@@ -57,7 +57,7 @@ describe('LibraryBrowserSearchBar', () => {
     expect(
       screen.queryByTestId('search-filter-all-active')
     ).not.toBeInTheDocument()
-    expect(screen.getByTestId('search-filter-artist-active'))
+    expect(screen.getByTestId('search-filter-artist-active')).toBeInTheDocument()
     expect(
       screen.queryByTestId('search-filter-album-active')
     ).not.toBeInTheDocument()
@@ -66,7 +66,7 @@ describe('LibraryBrowserSearchBar', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('changes the filter to artists when pressing the corresponding button', () => {
+  it('changes the filter to artists when pressing the corresponding button', async () => {
     const store = makeMockStore({
       libraryBrowser: browserInitialState,
       search: {
@@ -83,8 +83,8 @@ describe('LibraryBrowserSearchBar', () => {
       </ReduxProvider>
     )
 
-    expect(screen.queryByTestId('search-filter-artist'))
-    userEvent.click(screen.getByTestId('search-filter-artist'))
+    expect(screen.getByTestId('search-filter-artist')).toBeInTheDocument()
+    await userEvent.click(screen.getByTestId('search-filter-artist'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
@@ -101,12 +101,12 @@ describe('LibraryBrowserSearchBar', () => {
       </ReduxProvider>
     )
 
-    expect(screen.queryByTestId('search-filter-album'))
-    userEvent.click(screen.getByTestId('search-filter-album'))
+    expect(screen.getByTestId('search-filter-album')).toBeInTheDocument()
+    await userEvent.click(screen.getByTestId('search-filter-album'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
-  it('changes the filter to tracks when pressing the corresponding button', () => {
+  it('changes the filter to tracks when pressing the corresponding button', async () => {
     const store = makeMockStore({
       libraryBrowser: browserInitialState,
       search: {
@@ -123,8 +123,8 @@ describe('LibraryBrowserSearchBar', () => {
       </ReduxProvider>
     )
 
-    expect(screen.queryByTestId('search-filter-track'))
-    userEvent.click(screen.getByTestId('search-filter-track'))
+    expect(screen.getByTestId('search-filter-track')).toBeInTheDocument()
+    await userEvent.click(screen.getByTestId('search-filter-track'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
@@ -147,8 +147,8 @@ describe('LibraryBrowserSearchBar', () => {
       </ReduxProvider>
     )
 
-    expect(screen.queryByTestId('search-filter-all'))
-    userEvent.click(screen.getByTestId('search-filter-all'))
+    expect(screen.getByTestId('search-filter-all')).toBeInTheDocument()
+    await userEvent.click(screen.getByTestId('search-filter-all'))
     expect(store.dispatch).toHaveBeenCalled()
   })
 
@@ -165,7 +165,7 @@ describe('LibraryBrowserSearchBar', () => {
       </ReduxProvider>
     )
 
-    userEvent.type(screen.getByTestId('search-input'), 'all them witches')
+    await userEvent.type(screen.getByTestId('search-input'), 'all them witches')
     expect(screen.getByTestId('search-input') as HTMLInputElement).toHaveValue(
       'all them witches'
     )

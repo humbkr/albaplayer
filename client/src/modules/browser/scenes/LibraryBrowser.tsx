@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from 'react'
 import styled from 'styled-components'
-import { useDispatch } from 'react-redux'
 import TracksPaneContainer from 'modules/browser/components/TracksPaneContainer'
 import ArtistsPaneContainer from 'modules/browser/components/ArtistsPaneContainer'
 import AlbumsPaneContainer from 'modules/browser/components/AlbumsPaneContainer'
 import LibraryBrowserSearchBar from 'modules/browser/components/LibraryBrowserSearchBar'
 import { libraryBrowserInit } from 'modules/browser/store'
+import { useAppDispatch } from 'store/hooks'
 
 /**
  * Library browser screen.
@@ -16,13 +16,12 @@ import { libraryBrowserInit } from 'modules/browser/store'
 const LibraryBrowser: React.FC = () => {
   // Used to focus the search input at mount.
   const searchBar = useRef<HTMLInputElement>(null)
-  // These refs are forwarded to the underlying react-virtualized
   // List components of each pane.
   const artistsPane = useRef<HTMLDivElement>(null)
   const albumsPane = useRef<HTMLDivElement>(null)
   const tracksPane = useRef<HTMLDivElement>(null)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     dispatch(libraryBrowserInit())
@@ -32,27 +31,27 @@ const LibraryBrowser: React.FC = () => {
     searchBar.current.focus()
   }, [dispatch])
 
-  const handleSwitchPaneArtists = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 39) {
+  const handleSwitchPaneArtists = (e: KeyboardEvent) => {
+    if (e.code === 'ArrowRight') {
       // @ts-ignore
-      albumsPane.current.children[0].focus()
+      albumsPane.current?.children[0].focus()
     }
   }
 
-  const handleSwitchPaneAlbums = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 37) {
+  const handleSwitchPaneAlbums = (e: KeyboardEvent) => {
+    if (e.code === 'ArrowLeft') {
       // @ts-ignore
-      artistsPane.current.children[0].focus()
-    } else if (e.keyCode === 39 && tracksPane.current) {
+      artistsPane.current?.children[0].focus()
+    } else if (e.code === 'ArrowRight' && tracksPane.current) {
       // @ts-ignore
       tracksPane.current.children[0].focus()
     }
   }
 
-  const handleSwitchPaneTracks = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 37) {
+  const handleSwitchPaneTracks = (e: KeyboardEvent) => {
+    if (e.code === 'ArrowLeft') {
       // @ts-ignore
-      albumsPane.current.children[0].focus()
+      albumsPane.current?.children[0].focus()
     }
   }
 

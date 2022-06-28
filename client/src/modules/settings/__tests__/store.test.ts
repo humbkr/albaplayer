@@ -2,7 +2,7 @@ import configureMockStore from 'redux-mock-store'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import thunk from 'redux-thunk'
 import { api, apolloClient } from 'api'
-import { ApolloQueryResult } from 'apollo-client'
+import { ApolloQueryResult } from '@apollo/client'
 import settingsSlice, {
   initialState,
   setTheme,
@@ -15,15 +15,16 @@ import { fetchLibrary, initLibrary } from '../../library/store'
 
 jest.mock('api')
 
-api.scanLibrary = jest.fn().mockImplementation(
-  () => new Promise<void>((resolve) => resolve())
-)
+api.scanLibrary = jest
+  .fn()
+  .mockImplementation(() => new Promise<void>((resolve) => resolve()))
 
 const mockStore = configureMockStore([thunk])
-const makeMockStore = (customState: any = {}) => mockStore({
-  ...initialState,
-  ...customState,
-})
+const makeMockStore = (customState: any = {}) =>
+  mockStore({
+    ...initialState,
+    ...customState,
+  })
 
 describe('settings (redux)', () => {
   describe('reducers', () => {
@@ -299,9 +300,10 @@ describe('settings (redux)', () => {
         },
       }
       api.getSettings = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve) => {
-          resolve(response)
-        })
+        () =>
+          new Promise((resolve) => {
+            resolve(response)
+          })
       )
 
       // @ts-ignore
@@ -320,9 +322,10 @@ describe('settings (redux)', () => {
         message: 'It failed.',
       }
       api.getSettings = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve, reject) => {
-          reject(response)
-        })
+        () =>
+          new Promise((resolve, reject) => {
+            reject(response)
+          })
       )
       api.processApiError = jest
         .fn()
@@ -343,21 +346,22 @@ describe('settings (redux)', () => {
       const store = makeMockStore()
 
       api.scanLibrary = jest.fn().mockImplementationOnce(
-        () => new Promise<ApolloQueryResult<{ scanLibrary: null }>>((resolve) => {
-          resolve({
-            data: {
-              scanLibrary: null,
-            },
-            loading: false,
-            networkStatus: 7,
-            stale: false,
+        () =>
+          new Promise<ApolloQueryResult<{ scanLibrary: null }>>((resolve) => {
+            resolve({
+              data: {
+                scanLibrary: null,
+              },
+              loading: false,
+              networkStatus: 7,
+            })
           })
-        })
       )
       apolloClient.resetStore = jest.fn().mockImplementationOnce(
-        () => new Promise<void>((resolve) => {
-          resolve()
-        })
+        () =>
+          new Promise<void>((resolve) => {
+            resolve()
+          })
       )
 
       // @ts-ignore
@@ -378,9 +382,10 @@ describe('settings (redux)', () => {
         message: 'It failed.',
       }
       api.scanLibrary = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve, reject) => {
-          reject(response)
-        })
+        () =>
+          new Promise((resolve, reject) => {
+            reject(response)
+          })
       )
       api.processApiError = jest
         .fn()
@@ -399,21 +404,22 @@ describe('settings (redux)', () => {
   describe('eraseLibrary thunk', () => {
     it('should dispatch correct actions on success', async () => {
       api.emptyLibrary = jest.fn().mockImplementationOnce(
-        () => new Promise<ApolloQueryResult<{ eraseLibrary: null }>>((resolve) => {
-          resolve({
-            data: {
-              eraseLibrary: null,
-            },
-            loading: false,
-            networkStatus: 7,
-            stale: false,
+        () =>
+          new Promise<ApolloQueryResult<{ eraseLibrary: null }>>((resolve) => {
+            resolve({
+              data: {
+                eraseLibrary: null,
+              },
+              loading: false,
+              networkStatus: 7,
+            })
           })
-        })
       )
       apolloClient.resetStore = jest.fn().mockImplementationOnce(
-        () => new Promise<void>((resolve) => {
-          resolve()
-        })
+        () =>
+          new Promise<void>((resolve) => {
+            resolve()
+          })
       )
 
       const store = makeMockStore()
@@ -437,9 +443,10 @@ describe('settings (redux)', () => {
         message: 'It failed.',
       }
       api.emptyLibrary = jest.fn().mockImplementationOnce(
-        () => new Promise((resolve, reject) => {
-          reject(response)
-        })
+        () =>
+          new Promise((resolve, reject) => {
+            reject(response)
+          })
       )
       api.processApiError = jest
         .fn()
