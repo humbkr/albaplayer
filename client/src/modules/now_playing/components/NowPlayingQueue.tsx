@@ -1,6 +1,6 @@
 import React from 'react'
 import styled, { withTheme } from 'styled-components'
-import { queueReplace, queueSetCurrent } from 'modules/player/store'
+import { queueReplace, queueSetCurrent } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import NowPlayingQueueHeader from './NowPlayingQueueHeader'
 import NowPlayingQueueList from './NowPlayingQueueList'

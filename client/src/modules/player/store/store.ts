@@ -1,10 +1,10 @@
 import { api } from 'api'
 import { immutableSortTracks } from 'common/utils/utils'
-import { LibraryStateType } from '../library/store'
-import { PlaylistsStateType } from '../playlist/store'
-import playerSlice from './player.redux'
-import queueSlice from './queue.redux'
-import { PlayerPlaybackMode } from './utils'
+import playerSlice from 'modules/player/store/player.store'
+import queueSlice from 'modules/player/store/queue.store'
+import { LibraryStateType } from 'modules/library/store'
+import { PlaylistsStateType } from 'modules/playlist/store'
+import { PlayerPlaybackMode } from 'modules/player/utils'
 
 const reducers = { player: playerSlice.reducer, queue: queueSlice.reducer }
 export default reducers
@@ -212,7 +212,7 @@ export const addPlaylist =
 export const setNextTrack =
   (endOfTrack: boolean): AppThunk =>
   (dispatch, getState) => {
-    const state = getState()
+    const state = getState() as RootState
 
     let nextTrackId = '0'
     let newQueuePosition = 0
@@ -227,13 +227,6 @@ export const setNextTrack =
         // No track to play, do nothing.
         return null
       }
-    } else if (
-      state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ONE
-    ) {
-      // Play the same track again.
-      // TODO: Create an action to reset the current track and avoid refetching info we already have.
-      newQueuePosition = state.queue.current
-      nextTrackId = state.queue.items[newQueuePosition].track.id
     } else if (state.player.shuffle) {
       // Get the next track to play.
       // TODO: shuffle functionality is currently shit.
@@ -266,13 +259,7 @@ export const setNextTrack =
       dispatch(playerSetTrack(response.data.track))
       dispatch(queueSetCurrent(newQueuePosition))
 
-      if (
-        state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL ||
-        state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ONE
-      ) {
-        // Need this to reset the audio player.
-        dispatch(playerSetProgress(0))
-        dispatch(playerTogglePlayPause(false))
+      if (state.player.playing || endOfTrack) {
         dispatch(playerTogglePlayPause(true))
       }
     })
@@ -293,12 +280,8 @@ export const setPreviousTrack = (): AppThunk => (dispatch, getState) => {
     // Do nothing.
     return null
   }
-  if (state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ONE) {
-    // Play the same track again.
-    // TODO: Maybe create an action to reset the current track.
-    newQueuePosition = state.queue.current
-    prevTrackId = state.queue.items[newQueuePosition].track.id
-  } else if (state.player.shuffle) {
+
+  if (state.player.shuffle) {
     // TODO: shuffle functionality is currently shit.
     newQueuePosition = Math.floor(Math.random() * state.queue.items.length)
     prevTrackId = state.queue.items[newQueuePosition].track.id
@@ -336,7 +319,7 @@ export const getTracksFromAlbum = (
   return filteredTracks.map((track) => ({
     ...track,
     artist: track.artistId ? library.artists[track.artistId] : undefined,
-    album: track.albumId ? library.albums[track.albumId] : undefined,
+    album: library.albums[track.albumId as string],
   }))
 }
 
@@ -351,7 +334,7 @@ export const getTracksFromArtist = (
 
   return filteredTracks.map((track) => ({
     ...track,
-    artist: track.artistId ? library.artists[track.artistId] : undefined,
+    artist: library.artists[track.artistId as string],
     album: track.albumId ? library.albums[track.albumId] : undefined,
   }))
 }

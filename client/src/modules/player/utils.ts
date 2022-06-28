@@ -5,7 +5,7 @@ export enum PlayerPlaybackMode {
 }
 
 /**
- * Computes the next / previous position in an list of consecutive integers
+ * Computes the next / previous position in a list of consecutive integers
  * when looping.
  *
  * @param currentValue integer

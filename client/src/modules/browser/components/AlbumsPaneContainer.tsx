@@ -1,7 +1,7 @@
 import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
-import { addAlbum, playAlbum } from 'modules/player/store'
+import { addAlbum, playAlbum } from 'modules/player/store/store'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import AlbumTeaser from 'modules/browser/components/AlbumTeaser'
 import {

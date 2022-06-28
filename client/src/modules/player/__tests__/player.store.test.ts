@@ -1,4 +1,6 @@
-import playerSlice, { playerInitialState } from '../player.redux'
+import playerSlice, {
+  playerInitialState,
+} from 'modules/player/store/player.store'
 import { libraryInitialState, LibraryStateType } from '../../library/store'
 import { PlayerPlaybackMode } from '../utils'
 

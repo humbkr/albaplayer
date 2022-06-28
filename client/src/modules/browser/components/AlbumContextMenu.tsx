@@ -5,7 +5,7 @@ import {
   addAlbum,
   playAlbum,
   playAlbumAfterCurrent,
-} from 'modules/player/store'
+} from 'modules/player/store/store'
 import {
   playlistsSelector,
   addAlbum as addAlbumToPlaylist,

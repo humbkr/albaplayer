@@ -5,7 +5,7 @@ import {
   addPlaylist,
   playPlaylist,
   playPlaylistAfterCurrent,
-} from 'modules/player/store'
+} from 'modules/player/store/store'
 import { addPlaylist as addPlaylistToPlaylist } from 'modules/playlist/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { EditPlaylistContext } from '../scenes/Playlists'

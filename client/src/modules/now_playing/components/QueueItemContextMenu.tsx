@@ -5,7 +5,7 @@ import {
   setItemFromQueue,
   playerTogglePlayPause,
   queueRemoveTrack,
-} from 'modules/player/store'
+} from 'modules/player/store/store'
 import {
   playlistsSelector,
   addTrack as addTrackToPlaylist,
@@ -38,10 +38,7 @@ const QueueItemContextMenu = () => {
     dispatch(playerTogglePlayPause(true))
   }
 
-  const handleAddTrackToPlaylist = (
-    menuItem: any,
-    playlist: Playlist
-  ) => {
+  const handleAddTrackToPlaylist = (menuItem: any, playlist: Playlist) => {
     dispatch(
       addTrackToPlaylist({
         playlistId: playlist.id,
@@ -54,9 +51,7 @@ const QueueItemContextMenu = () => {
     <Item
       key={item.id}
       // @ts-ignore
-      onClick={(menuItem) =>
-        handleAddTrackToPlaylist(menuItem, item)
-      }
+      onClick={(menuItem) => handleAddTrackToPlaylist(menuItem, item)}
     >
       {item.title}
     </Item>

@@ -6,7 +6,7 @@ import {
   playerTogglePlayPause,
   queueRemoveTrack,
   setItemFromQueue,
-} from 'modules/player/store'
+} from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 
 type Props = {

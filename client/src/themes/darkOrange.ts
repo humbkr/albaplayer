@@ -1,4 +1,4 @@
-const themeDark = {
+const themeDark: AppTheme = {
   // Type of theme.
   isDark: true,
 
@@ -56,14 +56,14 @@ const themeDark = {
 
   player: {
     buttons: {
-      color: '#eeeeee',
+      color: '#fff',
+      colorHover: '#fff',
+      colorDisabled: '#fff',
       colorEnabled: '#f97c4b',
     },
-    // TODO use this
     timeline: {
-      color: '#ffffff',
-      colorElapsed: '#ffffff',
-      colorHandle: '#ffffff',
+      color: '#747474',
+      colorElapsed: '#fff',
     },
   },
 

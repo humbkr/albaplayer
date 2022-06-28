@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import ActionButton from 'common/components/ActionButton'
-import { queueClear } from 'modules/player/store'
+import { queueClear } from 'modules/player/store/store'
 import { contextMenu } from 'react-contexify'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'

@@ -1,7 +1,7 @@
 import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
-import { addTrack, playTrack } from 'modules/player/store'
+import { addTrack, playTrack } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import {
