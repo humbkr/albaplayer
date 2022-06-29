@@ -18,15 +18,20 @@ jobs:
           echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Generate build files
-        uses: thatisuday/go-cross-build@v1
+      - name: Build executables
+        uses: crazy-max/ghaction-xgo@v2
         with:
-          platforms: 'linux/amd64, darwin/amd64, darwin/arm64, windows/amd64'
-          package: 'server'
-          name: 'albaplayer'
-          compress: 'false'
-          dest: 'build/dist'
+          xgo_version: latest
+          go_version: 1.18
+          dest: build/dist
+          prefix: albaplayer
+          targets: windows/amd64,linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
+          v: true
+          x: true
+          race: false
+          ldflags: -s -w
+          buildmode: default
+          working_dir: server
       - name: Generate version file
         env:
           SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
