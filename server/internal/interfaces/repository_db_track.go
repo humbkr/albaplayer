@@ -141,10 +141,10 @@ func (tr TrackDbRepository) Count() (count int, err error) {
 
 // Transactional functions
 
-// getTrackByNameTransaction fetches a track from the database using a transaction.
-func getTrackByNameTransaction(dbTransaction *sql.Tx, name string) (entity domain.Track, err error) {
-	query := selectTrackQuery + " WHERE title = ?"
-	rows, err := dbTransaction.Query(query, name)
+// getTrackByPathTransaction fetches a track from the database using a transaction.
+func getTrackByPathTransaction(dbTransaction *sql.Tx, path string) (entity domain.Track, err error) {
+	query := selectTrackQuery + " WHERE path = ?"
+	rows, err := dbTransaction.Query(query, path)
 	entities, err := processTrackRows(rows, err)
 	if err != nil || len(entities) == 0 {
 		return entity, errors.New("no track found")

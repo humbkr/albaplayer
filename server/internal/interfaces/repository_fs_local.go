@@ -115,6 +115,10 @@ func scanDirectory(path string, variousArtistsId int, dbTransaction *sql.Tx) (er
 			if err == nil {
 				// Add metadata info to the list of media files, sorting by albums.
 				if len(metadata.Album) > 0 {
+					if metadata.Album == "Master of Puppets" {
+						log.Println("Found")
+					}
+
 					mediaFiles[metadata.Album] = append(mediaFiles[metadata.Album], metadata)
 				} else {
 					mediaFiles[business.LibraryDefaultAlbum] = append(mediaFiles[business.LibraryDefaultAlbum], metadata)
@@ -148,7 +152,7 @@ func processMediaFiles(mediaFiles map[string][]mediaMetadata, cover string, vari
 			}
 		}
 
-		// If there is only one album in the directory and we found a valid cover file, in this same directory,
+		// If there is only one album in the directory and we found a valid cover file in this same directory,
 		// we can directly add the cover to the database.
 		// If there are multiple albums in the directory, we will use track info to try to get a cover.
 		var albumCoverId int
@@ -255,7 +259,7 @@ func processArtist(dbTransaction *sql.Tx, metadata *mediaMetadata) (id int, err 
 func processAlbum(dbTransaction *sql.Tx, metadata *mediaMetadata, artistId int, coverId int) (id int, err error) {
 	if metadata.Album != "" {
 		// See if the album exists and if so instantiate it with existing data.
-		album, _ := getAlbumByNameTransaction(dbTransaction, metadata.Album)
+		album, _ := getAlbumByNameAndArtistTransaction(dbTransaction, metadata.Album, artistId)
 
 		album.Title = metadata.Album
 		album.ArtistId = artistId
@@ -278,7 +282,7 @@ func processAlbum(dbTransaction *sql.Tx, metadata *mediaMetadata, artistId int, 
 // Returns a track id.
 func processTrack(dbTransaction *sql.Tx, metadata *mediaMetadata, artistId int, albumId int, coverId int) (id int, err error) {
 	// See if the track exists and if so instantiate it with existing data.
-	track, _ := getTrackByNameTransaction(dbTransaction, metadata.Title)
+	track, _ := getTrackByPathTransaction(dbTransaction, metadata.Path)
 
 	track.ArtistId = artistId
 	track.AlbumId = albumId

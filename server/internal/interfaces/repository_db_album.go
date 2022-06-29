@@ -185,10 +185,10 @@ func (ar AlbumDbRepository) populateTracks(album *domain.Album) {
 
 // Transactional functions
 
-// getAlbumByNameTransaction fetches an album from the database using a transaction.
-func getAlbumByNameTransaction(dbTransaction *sql.Tx, name string) (entity domain.Album, err error) {
-	query := selectAlbumQuery + " WHERE title = ?"
-	rows, err := dbTransaction.Query(query, name)
+// getAlbumByNameAndArtistTransaction fetches an album from the database using a transaction.
+func getAlbumByNameAndArtistTransaction(dbTransaction *sql.Tx, name string, artistId int) (entity domain.Album, err error) {
+	query := selectAlbumQuery + " WHERE title = ? AND artist_id = ?"
+	rows, err := dbTransaction.Query(query, name, artistId)
 	entities, err := processAlbumRows(rows, err)
 	if err != nil || len(entities) == 0 {
 		return entity, errors.New("no album found")
