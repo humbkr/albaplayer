@@ -155,3 +155,22 @@ type MediaFileRepository interface {
 	RemoveCoverFile(file *domain.Cover, directory string) error
 	DeleteCovers() error
 }
+
+type UserRepository interface {
+	// Get retrieves an entity from a datasource.
+	Get(id int) (entity User, err error)
+
+	// GetAll retrieves all entities from the datasource.
+	// If no entities found, returns an empty collection without error.
+	GetAll() (entities []User, err error)
+
+	// Save saves an entity to a datasource.
+	Save(entity *User) (err error)
+
+	// Delete deletes an entity from a datasource.
+	// Does not return an error if the entity doesn't exist on the datasource or no entity id is given.
+	Delete(entity *User) (err error)
+
+	// Exists tests if an entity exists in datasource.
+	Exists(id int) bool
+}

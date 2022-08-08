@@ -27,6 +27,8 @@ const TestArtistsFile = TestDataDir + "artists.csv"
 const TestAlbumsFile = TestDataDir + "albums.csv"
 const TestTracksFile = TestDataDir + "tracks.csv"
 const TestCoversFile = TestDataDir + "covers.csv"
+const TestRolesFile = TestDataDir + "roles.csv"
+const TestUsersFile = TestDataDir + "users.csv"
 const TestFSLibDir = TestDataDir + "mp3"
 const TestFSEmptyLibDir = TestDataDir + "empty_library"
 
@@ -47,6 +49,11 @@ func clearTestDataSource(ds *sql.DB) error {
 	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'artists'")
 	_, err = ds.Exec("DELETE FROM variables")
 	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'variables'")
+	_, err = ds.Exec("DELETE FROM users_roles")
+	_, err = ds.Exec("DELETE FROM users")
+	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'users'")
+	_, err = ds.Exec("DELETE FROM roles")
+	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'roles'")
 
 	return err
 }
@@ -177,6 +184,53 @@ func initTestDataSource(ds *sql.DB) (err error) {
 
 	// Variables
 	ds.Exec("INSERT INTO variables(key, value) VALUES('var_key', 'var_value')")
+
+	// Users.
+	file, errOpen = os.OpenFile(TestUsersFile, os.O_RDONLY, 0666)
+	if errOpen != nil {
+		fmt.Println(errOpen)
+	}
+
+	r = csv.NewReader(file)
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Insert the row in database.
+		ds.Exec("INSERT INTO users(id, name, email, password, created_at) VALUES(?, ?, ?, ?, ?)", record[0], record[1], record[2], record[3], record[4])
+	}
+	file.Close()
+
+	// Users.
+	file, errOpen = os.OpenFile(TestRolesFile, os.O_RDONLY, 0666)
+	if errOpen != nil {
+		fmt.Println(errOpen)
+	}
+
+	r = csv.NewReader(file)
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Insert the row in database.
+		ds.Exec("INSERT INTO roles(id, name) VALUES(?, ?)", record[0], record[1])
+	}
+	file.Close()
+
+	// Users <> Roles
+	ds.Exec("INSERT INTO users_roles(id, name) VALUES(1, 1)")
+	ds.Exec("INSERT INTO users_roles(id, name) VALUES(2, 2)")
+	ds.Exec("INSERT INTO users_roles(id, name) VALUES(3, 3)")
 
 	return nil
 }
