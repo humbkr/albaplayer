@@ -15,6 +15,13 @@ type Settings struct {
 	Version                *string `json:"version"`
 }
 
+type UserInput struct {
+	Name     string    `json:"name"`
+	Email    *string   `json:"email"`
+	Password *string   `json:"password"`
+	Roles    []*string `json:"roles"`
+}
+
 type Variable struct {
 	Key   *string `json:"key"`
 	Value *string `json:"value"`

@@ -46,3 +46,43 @@ func convertVariable(variable business.InternalVariable) model.Variable {
 		Value: &variable.Value,
 	}
 }
+
+func convertUser(user business.User) model.User {
+	var roles []*string
+	for _, role := range user.Roles {
+		roleAsString := business.GetRoleAsString(role)
+		roles = append(roles, &roleAsString)
+	}
+
+	return model.User{
+		ID:        user.Id,
+		Name:      user.Name,
+		Email:     &user.Email,
+		Password:  &user.Password,
+		DateAdded: &user.DateAdded,
+		Roles:     roles,
+	}
+}
+
+func processUserRoles(inputRoles []*string) (roles []business.Role) {
+	// If no roles have been given, set default.
+	if inputRoles == nil || len(inputRoles) < 1 {
+		roles = []business.Role{business.ROLE_LISTENER}
+	} else {
+		for _, v := range inputRoles {
+			roles = append(roles, business.GetRoleFromString(*v))
+		}
+	}
+
+	// Deduplicate roles.
+	allKeys := make(map[business.Role]bool)
+	var list []business.Role
+	for _, item := range roles {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+
+	return list
+}
