@@ -13,7 +13,8 @@ type CoverRepoTestSuite struct {
 	CoverRepository CoverDbRepository
 }
 
-/**
+/*
+*
 Go testing framework entry point.
 */
 func TestCoverRepoTestSuite(t *testing.T) {
@@ -50,7 +51,7 @@ func (suite *CoverRepoTestSuite) TestGet() {
 	assert.Equal(suite.T(), "/fake/path/to/88affd1fe3b0f3624550b36963b76f65.jpg", cover.Path)
 	assert.Equal(suite.T(), "88affd1fe3b0f3624550b36963b76f65", cover.Hash)
 
-	// Test to get a non existing artist.
+	// Test to get a non-existing cover.
 	cover, err = suite.CoverRepository.Get(99)
 	assert.NotNil(suite.T(), err)
 }
@@ -85,7 +86,7 @@ func (suite *CoverRepoTestSuite) TestSave() {
 	assert.Equal(suite.T(), "/fake/path/to/22affd1fe3b0f3624550b36963b76f22.jpg", updatedCover.Path)
 	assert.Equal(suite.T(), "22affd1fe3b0f3624550b36963b76f22", updatedCover.Hash)
 
-	// Test to insert a new cover with a prepopulated Id (= update a non existant cover).
+	// Test to insert a new cover with a prepopulated Id (= update a non-existing cover).
 	// Note: it seems gorp.Dbmap.Update() fails silently.
 	newCoverWithId := &domain.Cover{
 		Id:   55,

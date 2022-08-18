@@ -11,16 +11,15 @@ type UserDbRepository struct {
 	AppContext *AppContext
 }
 
-const selectUserQuery = "SELECT u.id, u.name, u.email, u.password, u.created_at, r.name AS role " +
+const selectUserQuery = "SELECT u.id, u.name, u.email, u.password, u.config, u.created_at, ur.role_name AS role " +
 	"FROM users u " +
-	"JOIN users_roles ur ON u.id = ur.user_id " +
-	"JOIN roles r ON ur.role_id = r.id"
-const updateUserQuery = "UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?"
-const insertUserQuery = "INSERT INTO users(name, email, password, created_at) VALUES(?, ?, ?, ?)"
+	"JOIN users_roles ur ON u.id = ur.user_id"
+const updateUserQuery = "UPDATE users SET name = ?, email = ?, password = ?, config = ? WHERE id = ?"
+const insertUserQuery = "INSERT INTO users(name, email, password, config, created_at) VALUES(?, ?, ?, ?, ?)"
 
 // Get fetches a user from the database.
 func (r UserDbRepository) Get(id int) (entity business.User, err error) {
-	query := selectUserQuery + " WHERE id = ?"
+	query := selectUserQuery + " WHERE u.id = ?"
 	rows, err := r.AppContext.DB.Query(query, id)
 	entities, err := processUserRows(rows, err)
 	if err != nil || len(entities) == 0 {
@@ -49,31 +48,73 @@ func (r UserDbRepository) Save(entity *business.User) (err error) {
 
 	if entity.Id != 0 {
 		// Update.
-		stmt, err = r.AppContext.DB.Prepare(updateUserQuery)
+		dbTransaction, _ := r.AppContext.DB.Begin()
+
+		// Reset all the users roles.
+		_, err = dbTransaction.Exec("DELETE FROM users_roles WHERE user_id = ?", entity.Id)
 		if err != nil {
+			dbTransaction.Rollback()
 			return
 		}
 
-		_, err = stmt.Exec(entity.Name, entity.Email, entity.Password, entity.Id)
+		// Update user.
+		stmt, err = dbTransaction.Prepare(updateUserQuery)
+		if err != nil {
+			dbTransaction.Rollback()
+			return
+		}
+
+		_, err = stmt.Exec(entity.Name, entity.Email, entity.Password, entity.Data, entity.Id)
+		if err != nil {
+			dbTransaction.Rollback()
+			return
+		}
+
+		// Update roles.
+		for _, v := range entity.Roles {
+			_, err = dbTransaction.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(?, ?)", entity.Id, v)
+			if err != nil {
+				dbTransaction.Rollback()
+				return
+			}
+		}
+
+		dbTransaction.Commit()
 	} else {
 		// Insert new entity.
+		dbTransaction, _ := r.AppContext.DB.Begin()
+
+		// Create user.
 		entity.DateAdded = time.Now().Unix()
-		stmt, err = r.AppContext.DB.Prepare(insertUserQuery)
+		stmt, err = dbTransaction.Prepare(insertUserQuery)
 		if err != nil {
+			dbTransaction.Rollback()
 			return
 		}
 
-		res, err := stmt.Exec(entity.Name, entity.Email, entity.Password, entity.DateAdded)
+		res, err := stmt.Exec(entity.Name, entity.Email, entity.Password, entity.Data, entity.DateAdded)
 		if err != nil {
+			dbTransaction.Rollback()
 			return err
 		}
 
 		// Get generated entity id.
 		lastId, err := res.LastInsertId()
 		if err != nil {
+			dbTransaction.Rollback()
 			return err
 		}
 
+		// Add user roles.
+		for _, v := range entity.Roles {
+			_, err = dbTransaction.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(?, ?)", lastId, v)
+			if err != nil {
+				dbTransaction.Rollback()
+				return err
+			}
+		}
+
+		dbTransaction.Commit()
 		entity.Id = int(lastId)
 	}
 
@@ -117,6 +158,7 @@ func processUserRows(rows *sql.Rows, error error) (entities []business.User, err
 			&entity.Name,
 			&entity.Email,
 			&entity.Password,
+			&entity.Data,
 			&entity.DateAdded,
 			&role,
 		)
@@ -137,7 +179,9 @@ func processUserRows(rows *sql.Rows, error error) (entities []business.User, err
 	}
 
 	// Add last processed album.
-	entities = append(entities, currentEntity)
+	if currentEntity.Id != 0 {
+		entities = append(entities, currentEntity)
+	}
 
 	return
 }

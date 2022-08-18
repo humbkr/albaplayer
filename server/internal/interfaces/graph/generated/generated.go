@@ -72,7 +72,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateUser    func(childComplexity int, input model.UserInput) int
-		DeleteUser    func(childComplexity int, input int) int
+		DeleteUser    func(childComplexity int, id int) int
 		EraseLibrary  func(childComplexity int) int
 		UpdateLibrary func(childComplexity int) int
 		UpdateUser    func(childComplexity int, id int, input model.UserInput) int
@@ -112,6 +112,7 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
+		Data      func(childComplexity int) int
 		DateAdded func(childComplexity int) int
 		Email     func(childComplexity int) int
 		ID        func(childComplexity int) int
@@ -139,7 +140,7 @@ type MutationResolver interface {
 	EraseLibrary(ctx context.Context) (*model.LibraryUpdateState, error)
 	CreateUser(ctx context.Context, input model.UserInput) (*model.User, error)
 	UpdateUser(ctx context.Context, id int, input model.UserInput) (*model.User, error)
-	DeleteUser(ctx context.Context, input int) (bool, error)
+	DeleteUser(ctx context.Context, id int) (bool, error)
 }
 type QueryResolver interface {
 	Album(ctx context.Context, id int) (*model.Album, error)
@@ -296,7 +297,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteUser(childComplexity, args["input"].(int)), true
+		return e.complexity.Mutation.DeleteUser(childComplexity, args["id"].(int)), true
 
 	case "Mutation.eraseLibrary":
 		if e.complexity.Mutation.EraseLibrary == nil {
@@ -517,6 +518,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Track.Title(childComplexity), true
 
+	case "User.data":
+		if e.complexity.User.Data == nil {
+			break
+		}
+
+		return e.complexity.User.Data(childComplexity), true
+
 	case "User.dateAdded":
 		if e.complexity.User.DateAdded == nil {
 			break
@@ -686,6 +694,7 @@ type User {
   name: String!
   email: String
   password: String
+  data: String
   dateAdded: Int
   roles: [String]
 }
@@ -720,6 +729,7 @@ input UserInput {
   name: String!
   email: String
   password: String
+  data: String
   roles: [String]
 }
 
@@ -728,7 +738,7 @@ type Mutation {
   eraseLibrary: LibraryUpdateState
   createUser(input: UserInput!): User!
   updateUser(id: ID!, input: UserInput!): User!
-  deleteUser(input: ID!): Boolean!
+  deleteUser(id: ID!): Boolean!
 }
 `, BuiltIn: false},
 }
@@ -757,14 +767,14 @@ func (ec *executionContext) field_Mutation_deleteUser_args(ctx context.Context, 
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 		arg0, err = ec.unmarshalNID2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -1699,6 +1709,8 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 				return ec.fieldContext_User_email(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
+			case "data":
+				return ec.fieldContext_User_data(ctx, field)
 			case "dateAdded":
 				return ec.fieldContext_User_dateAdded(ctx, field)
 			case "roles":
@@ -1768,6 +1780,8 @@ func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context
 				return ec.fieldContext_User_email(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
+			case "data":
+				return ec.fieldContext_User_data(ctx, field)
 			case "dateAdded":
 				return ec.fieldContext_User_dateAdded(ctx, field)
 			case "roles":
@@ -1804,7 +1818,7 @@ func (ec *executionContext) _Mutation_deleteUser(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteUser(rctx, fc.Args["input"].(int))
+		return ec.resolvers.Mutation().DeleteUser(rctx, fc.Args["id"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2373,6 +2387,8 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 				return ec.fieldContext_User_email(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
+			case "data":
+				return ec.fieldContext_User_data(ctx, field)
 			case "dateAdded":
 				return ec.fieldContext_User_dateAdded(ctx, field)
 			case "roles":
@@ -2439,6 +2455,8 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 				return ec.fieldContext_User_email(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
+			case "data":
+				return ec.fieldContext_User_data(ctx, field)
 			case "dateAdded":
 				return ec.fieldContext_User_dateAdded(ctx, field)
 			case "roles":
@@ -3346,6 +3364,47 @@ func (ec *executionContext) _User_password(ctx context.Context, field graphql.Co
 }
 
 func (ec *executionContext) fieldContext_User_password(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_data(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_data(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_data(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
@@ -5328,6 +5387,14 @@ func (ec *executionContext) unmarshalInputUserInput(ctx context.Context, obj int
 			if err != nil {
 				return it, err
 			}
+		case "data":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
+			it.Data, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "roles":
 			var err error
 
@@ -6034,6 +6101,10 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		case "password":
 
 			out.Values[i] = ec._User_password(ctx, field, obj)
+
+		case "data":
+
+			out.Values[i] = ec._User_data(ctx, field, obj)
 
 		case "dateAdded":
 

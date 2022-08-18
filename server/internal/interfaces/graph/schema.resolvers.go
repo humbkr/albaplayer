@@ -134,9 +134,9 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input model.U
 	return &updatedUser, nil
 }
 
-func (r *mutationResolver) DeleteUser(ctx context.Context, input int) (bool, error) {
+func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (bool, error) {
 	dbUser := business.User{
-		Id: input,
+		Id: id,
 	}
 
 	err := r.UsersInteractor.DeleteUser(&dbUser)

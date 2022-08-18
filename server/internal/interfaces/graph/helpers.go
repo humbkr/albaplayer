@@ -59,6 +59,7 @@ func convertUser(user business.User) model.User {
 		Name:      user.Name,
 		Email:     &user.Email,
 		Password:  &user.Password,
+		Data:      &user.Data,
 		DateAdded: &user.DateAdded,
 		Roles:     roles,
 	}

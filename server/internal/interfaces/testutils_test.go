@@ -202,35 +202,14 @@ func initTestDataSource(ds *sql.DB) (err error) {
 		}
 
 		// Insert the row in database.
-		ds.Exec("INSERT INTO users(id, name, email, password, created_at) VALUES(?, ?, ?, ?, ?)", record[0], record[1], record[2], record[3], record[4])
-	}
-	file.Close()
-
-	// Users.
-	file, errOpen = os.OpenFile(TestRolesFile, os.O_RDONLY, 0666)
-	if errOpen != nil {
-		fmt.Println(errOpen)
-	}
-
-	r = csv.NewReader(file)
-	for {
-		record, err := r.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// Insert the row in database.
-		ds.Exec("INSERT INTO roles(id, name) VALUES(?, ?)", record[0], record[1])
+		ds.Exec("INSERT INTO users(id, name, email, password, config, created_at) VALUES(?, ?, ?, ?, ?, ?)", record[0], record[1], record[2], record[3], record[4], record[5])
 	}
 	file.Close()
 
 	// Users <> Roles
-	ds.Exec("INSERT INTO users_roles(id, name) VALUES(1, 1)")
-	ds.Exec("INSERT INTO users_roles(id, name) VALUES(2, 2)")
-	ds.Exec("INSERT INTO users_roles(id, name) VALUES(3, 3)")
+	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(1, 'owner')")
+	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(2, 'admin')")
+	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(3, 'listener')")
 
 	return nil
 }

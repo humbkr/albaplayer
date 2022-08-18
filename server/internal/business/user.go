@@ -5,6 +5,7 @@ type User struct {
 	Name      string `db:"name"`
 	Email     string `db:"email"`
 	Password  string `db:"password"`
+	Data      string `db:"config"`
 	DateAdded int64  `db:"created_at"`
 	Roles     []Role `db:"-"`
 }
