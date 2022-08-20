@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -97,12 +98,16 @@ func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpda
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput) (*model.User, error) {
 	dbUser := business.User{
-		Name:     input.Name,
+		Name:     *input.Name,
 		Email:    *input.Email,
 		Password: *input.Password,
 	}
 
 	dbUser.Roles = processUserRoles(input.Roles)
+
+	if dbUser.Name == "" || dbUser.Email == "" || dbUser.Password == "" || len(dbUser.Roles) < 1 {
+		return nil, errors.New("the following fields are mandatory: name, email, password, roles")
+	}
 
 	err := r.UsersInteractor.SaveUser(&dbUser)
 	if err != nil {
@@ -115,16 +120,32 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input model.UserInput) (*model.User, error) {
-	dbUser := business.User{
-		Id:       id,
-		Name:     input.Name,
-		Email:    *input.Email,
-		Password: *input.Password,
+	dbUser, err := r.UsersInteractor.GetUser(id)
+	if err != nil {
+		return nil, errors.New("user not found")
 	}
 
-	dbUser.Roles = processUserRoles(input.Roles)
+	if *input.Name != "" {
+		dbUser.Name = *input.Name
+	}
 
-	err := r.UsersInteractor.SaveUser(&dbUser)
+	if *input.Email != "" {
+		dbUser.Email = *input.Email
+	}
+
+	if *input.Password != "" {
+		dbUser.Password = *input.Password
+	}
+
+	if *input.Data != "" {
+		dbUser.Data = *input.Data
+	}
+
+	if input.Roles != nil && len(input.Roles) > 0 {
+		dbUser.Roles = processUserRoles(input.Roles)
+	}
+
+	err = r.UsersInteractor.SaveUser(&dbUser)
 	if err != nil {
 		return nil, err
 	}
