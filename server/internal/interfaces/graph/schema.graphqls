@@ -74,7 +74,7 @@ type Query {
 }
 
 input UserInput {
-  name: String!
+  name: String
   email: String
   password: String
   data: String
