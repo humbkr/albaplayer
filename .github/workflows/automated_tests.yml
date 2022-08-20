@@ -1,0 +1,33 @@
+name: Automated tests
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+
+      - name: Build backend
+        run: cd server && go build -v ./...
+
+      - name: Test backend
+        run: cd server && go test -v ./...
+
+      - name: Install frontend dependencies
+        run: cd client && yarn install
+
+      - name: Test frontend
+        run: cd client && yarn test --watchAll=false

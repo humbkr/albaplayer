@@ -15,7 +15,8 @@ type ArtistRepoTestSuite struct {
 	ArtistRepository ArtistDbRepository
 }
 
-/**
+/*
+*
 Go testing framework entry point.
 */
 func TestArtistRepoTestSuite(t *testing.T) {

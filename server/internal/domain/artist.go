@@ -1,8 +1,8 @@
 package domain
 
 type Artist struct {
-	Id   	  int     `db:"id"`
-	Name 	  string  `db:"name"` // Mandatory.
+	Id        int     `db:"id"`
+	Name      string  `db:"name"` // Mandatory.
 	DateAdded int64   `db:"created_at"`
-	Albums 	  []Album  `db:"-"`
+	Albums    []Album `db:"-"`
 }

@@ -10,7 +10,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "alba",
 	Short: "Alba is a music library web player.",
-	Long: `Alba is a music library web player.`,
+	Long:  `Alba is a music library web player.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Use 'alba serve' to serve the application")
 	},

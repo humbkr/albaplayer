@@ -13,7 +13,8 @@ type ArtistInteractorTestSuite struct {
 	Library *LibraryInteractor
 }
 
-/**
+/*
+*
 Go testing framework entry point.
 */
 func TestArtistRepoTestSuite(t *testing.T) {
@@ -267,7 +268,8 @@ type TrackInteractorTestSuite struct {
 	Library *LibraryInteractor
 }
 
-/**
+/*
+*
 Go testing framework entry point.
 */
 func TestTrackRepoTestSuite(t *testing.T) {

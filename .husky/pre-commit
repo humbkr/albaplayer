@@ -3,3 +3,6 @@
 
 cd client
 yarn lint-staged
+
+cd ../server
+gofmt -w .

@@ -55,7 +55,8 @@
     "coverage": "react-scripts test --coverage --watchAll=false",
     "lint:prettier": "prettier './src/**/*.{js,jsx,ts,tsx}'",
     "lint:eslint": "eslint src/",
-    "lint:tsc": "tsc --noEmit"
+    "lint:tsc": "tsc --noEmit",
+    "lint:all": "eslint src/ && tsc --noEmit"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json}": [
