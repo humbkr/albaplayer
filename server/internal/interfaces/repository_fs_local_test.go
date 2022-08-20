@@ -3,6 +3,7 @@ package interfaces
 import (
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/humbkr/albaplayer/internal/domain"
+	"github.com/humbkr/albaplayer/internal/utils"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -27,7 +28,7 @@ func TestLocalFSRepoTestSuite(t *testing.T) {
 }
 
 func (suite *LocalFSRepoTestSuite) SetupSuite() {
-	coversDir := os.TempDir() + "covers"
+	coversDir := utils.GetOSTempDir() + "covers"
 	if _, err := os.Stat(coversDir); os.IsNotExist(err) {
 		_ = os.Mkdir(coversDir, 0755)
 	}
@@ -57,7 +58,7 @@ func (suite *LocalFSRepoTestSuite) SetupSuite() {
 }
 
 func (suite *LocalFSRepoTestSuite) TearDownSuite() {
-	coversDir := os.TempDir() + string(os.PathSeparator) + "covers"
+	coversDir := utils.GetOSTempDir() + "covers"
 	if _, err := os.Stat(coversDir); err == nil {
 		_ = os.Remove(coversDir)
 	}

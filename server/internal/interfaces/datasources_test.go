@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"os"
+	"github.com/humbkr/albaplayer/internal/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,7 +19,7 @@ func TestDatasourcesTestSuite(t *testing.T) {
 
 func (suite *DatasourcesTestSuite) TestInitAlbaDatasource() {
 	// Rewrite datasource config for test.
-	testDataSourceFile := os.TempDir() + "testDataSource.db"
+	testDataSourceFile := utils.GetOSTempDir() + "testDataSource.db"
 
 	// Test creating the datasource.
 	ds, err := InitAlbaDatasource("sqlite3", testDataSourceFile)

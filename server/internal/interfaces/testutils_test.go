@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/humbkr/albaplayer/internal/domain"
+	"github.com/humbkr/albaplayer/internal/utils"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/mock"
 	"io"
@@ -34,8 +35,9 @@ const TestFSEmptyLibDir = TestDataDir + "empty_library"
 
 // Initialises the application test datasource.
 func createTestDatasource() (ds *sql.DB, err error) {
-	log.Println("Create test db: " + os.TempDir() + TestDatasourceFile)
-	return InitAlbaDatasource("sqlite3", os.TempDir()+TestDatasourceFile)
+	tempDir := utils.GetOSTempDir()
+	log.Println("Create test db: " + tempDir + TestDatasourceFile)
+	return InitAlbaDatasource("sqlite3", tempDir+TestDatasourceFile)
 }
 
 func clearTestDataSource(ds *sql.DB) error {
@@ -69,8 +71,7 @@ func closeTestDataSource(ds *sql.DB) error {
 	if err != nil {
 		return err
 	}
-
-	return os.Remove(os.TempDir() + TestDatasourceFile)
+	return os.Remove(utils.GetOSTempDir() + TestDatasourceFile)
 }
 
 // Populate the database with test data from csv.
