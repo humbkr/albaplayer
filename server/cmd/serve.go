@@ -2,13 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/humbkr/albaplayer/internal"
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph"
-	"github.com/humbkr/albaplayer/internal/interfaces/graph/generated"
-	"github.com/humbkr/albaplayer/internal/version"
 	"io"
 	"log"
 	"mime"
@@ -31,26 +28,21 @@ var serveCmd = &cobra.Command{
 	Short: "Serve app on the specified port",
 	Long:  `Launch all services, create all endpoints, and serve UI web app.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		libraryInteractor := internal.InitApp()
+		libraryInteractor, usersInteractor := internal.InitApp()
 		settingsInteractor := business.ClientSettingsInteractor{}
 
-		// Create the graphql handler
-		graphQLHandler := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
-			Library:        &libraryInteractor,
-			ClientSettings: &settingsInteractor,
-			Version:        version.Version,
-		}}))
+		initialData := graph.GraphQLServerInitialData{
+			LibraryInteractor:  &libraryInteractor,
+			SettingsInteractor: &settingsInteractor,
+			UsersInteractor:    &usersInteractor,
+		}
 
-		// Create graphql data loaders for performance
-		dataLoaders := graph.NewDataLoaders(&libraryInteractor)
-
-		// Wrap the graphql handler with middleware to inject data loaders
-		dataloaderHandler := graph.Middleware(dataLoaders, graphQLHandler)
+		graphQLHandler := graph.InitGraphQLServer(initialData)
 
 		mux := http.NewServeMux()
 
 		// Serve the GraphQL endpoint at `/graphql`.
-		mux.Handle("/graphql", dataloaderHandler)
+		mux.Handle("/graphql", graphQLHandler)
 
 		if viper.GetBool("DevMode.Enabled") {
 			// Serve graphiql.

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph/generated"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph/model"
 )
@@ -94,6 +95,54 @@ func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpda
 	return &updateLibraryState, nil
 }
 
+func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput) (*model.User, error) {
+	dbUser := business.User{
+		Name:     input.Name,
+		Email:    *input.Email,
+		Password: *input.Password,
+	}
+
+	dbUser.Roles = processUserRoles(input.Roles)
+
+	err := r.UsersInteractor.SaveUser(&dbUser)
+	if err != nil {
+		return nil, err
+	}
+
+	createdUser := convertUser(dbUser)
+
+	return &createdUser, nil
+}
+
+func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input model.UserInput) (*model.User, error) {
+	dbUser := business.User{
+		Id:       id,
+		Name:     input.Name,
+		Email:    *input.Email,
+		Password: *input.Password,
+	}
+
+	dbUser.Roles = processUserRoles(input.Roles)
+
+	err := r.UsersInteractor.SaveUser(&dbUser)
+	if err != nil {
+		return nil, err
+	}
+
+	updatedUser := convertUser(dbUser)
+
+	return &updatedUser, nil
+}
+
+func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (bool, error) {
+	dbUser := business.User{
+		Id: id,
+	}
+
+	err := r.UsersInteractor.DeleteUser(&dbUser)
+	return err != nil, err
+}
+
 func (r *queryResolver) Album(ctx context.Context, id int) (*model.Album, error) {
 	return GetAlbum(ctx, id)
 }
@@ -175,6 +224,31 @@ func (r *queryResolver) Variable(ctx context.Context, key string) (*model.Variab
 	}
 
 	return &result, err
+}
+
+func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
+	var result model.User
+	user, err := r.UsersInteractor.UserRepository.Get(id)
+
+	if err == nil {
+		result = convertUser(user)
+	}
+
+	return &result, err
+}
+
+func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	var result []*model.User
+	users, err := r.UsersInteractor.UserRepository.GetAll()
+
+	if err == nil {
+		for _, user := range users {
+			gqlUser := convertUser(user)
+			result = append(result, &gqlUser)
+		}
+	}
+
+	return result, err
 }
 
 func (r *trackResolver) Src(ctx context.Context, obj *model.Track) (string, error) {

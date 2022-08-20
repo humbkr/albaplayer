@@ -51,4 +51,8 @@ INSERT INTO tracks (id, title, album_id, artist_id, cover_id, disc, number, dura
 SELECT id, title, album_id, artist_id, cover_id, disc, number, duration, genre, path
 FROM _tracks_old;
 
+DROP TABLE _artists_old;
+DROP TABLE _albums_old;
+DROP TABLE _tracks_old;
+
 PRAGMA foreign_keys=on;

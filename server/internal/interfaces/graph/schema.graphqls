@@ -37,6 +37,16 @@ type Variable {
   value: String
 }
 
+type User {
+  id: ID!
+  name: String!
+  email: String
+  password: String
+  data: String
+  dateAdded: Int
+  roles: [String]
+}
+
 type Settings {
   libraryPath: String
   coversPreferredSource: String
@@ -59,9 +69,22 @@ type Query {
   tracks: [Track]
   settings: Settings
   variable(key: String!): Variable
+  user(id: ID!): User
+  users: [User]
+}
+
+input UserInput {
+  name: String!
+  email: String
+  password: String
+  data: String
+  roles: [String]
 }
 
 type Mutation {
   updateLibrary: LibraryUpdateState
   eraseLibrary: LibraryUpdateState
+  createUser(input: UserInput!): User!
+  updateUser(id: ID!, input: UserInput!): User!
+  deleteUser(id: ID!): Boolean!
 }

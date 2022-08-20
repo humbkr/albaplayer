@@ -1,0 +1,4 @@
+id,name,email,password,config,created_at
+1,"Humbkr","humbkr@gmail.com","passwordHash","testdata",1660466379
+2,"Admin","admin@test.com.com","passwordHash","testdata",1660466380
+3,"Listener","listener@test.com.com","passwordHash","testdata",1660466381

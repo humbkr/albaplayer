@@ -33,10 +33,5 @@ func InitAlbaDatasource(dbDriver string, dbFile string) (ds *sql.DB, err error) 
 	}
 	log.Printf("Applied %d migrations\n", n)
 
-	//if viper.GetBool("DevMode.Enabled") {
-	//	// Log SQL queries
-	//	dbmap.TraceOn("[gorp]", log.New(os.Stdout, "GORP:", log.Lmicroseconds))
-	//}
-
 	return db, nil
 }

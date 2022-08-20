@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"math/rand"
 	"strconv"
+	"time"
 )
 
 /*
@@ -558,3 +559,74 @@ func (m *InternalVariableRepositoryMock) Get(key string) (variable InternalVaria
 func (m *InternalVariableRepositoryMock) Save(variable *InternalVariable) (err error)   { return }
 func (m *InternalVariableRepositoryMock) Delete(variable *InternalVariable) (err error) { return }
 func (m *InternalVariableRepositoryMock) Exists(key string) bool                        { return true }
+
+func createMockUsersInteractor() *UsersInteractor {
+	interactor := new(UsersInteractor)
+	interactor.UserRepository = new(UserRepositoryMock)
+
+	return interactor
+}
+
+// Mock for user repository.
+type UserRepositoryMock struct {
+	mock.Mock
+}
+
+// Returns a valid response for any id inferior or equals to 10, else an error.
+func (m *UserRepositoryMock) Get(id int) (entity User, err error) {
+	if id <= 10 {
+		// Return a valid user.
+		entity.Id = id
+		entity.Name = "User #" + strconv.Itoa(id)
+		entity.Email = "user" + strconv.Itoa(id) + "@test.com"
+		entity.Password = "encoded_password"
+		entity.DateAdded = time.Now().Unix()
+		entity.Roles = []Role{ROLE_ADMIN, ROLE_LISTENER}
+
+		return
+	}
+
+	// Else return an error.
+	err = errors.New("not found")
+	return
+}
+
+// Returns 3 users.
+func (m *UserRepositoryMock) GetAll() (entities []User, err error) {
+	for i := 1; i < 4; i++ {
+		artist := User{
+			Id:        i,
+			Name:      "User #" + strconv.Itoa(i),
+			Email:     "user" + strconv.Itoa(i) + "@test.com",
+			Password:  "encoded_password",
+			DateAdded: time.Now().Unix(),
+			Roles:     []Role{ROLE_ADMIN, ROLE_LISTENER},
+		}
+
+		entities = append(entities, artist)
+	}
+
+	return
+}
+
+// Never fails.
+func (m *UserRepositoryMock) Save(entity *User) (err error) {
+	if entity.Id != 0 {
+		// This is an update, do nothing.
+		return
+	}
+
+	// Else this is a new entity, fill the Id.
+	entity.Id = rand.Intn(50)
+	return
+}
+
+// Never fails.
+func (m *UserRepositoryMock) Delete(entity *User) (err error) {
+	return
+}
+
+// Returns true if id == 1, else false.
+func (m *UserRepositoryMock) Exists(id int) bool {
+	return id == 1
+}
