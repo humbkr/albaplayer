@@ -630,3 +630,21 @@ func (m *UserRepositoryMock) Delete(entity *User) (err error) {
 func (m *UserRepositoryMock) Exists(id int) bool {
 	return id == 1
 }
+
+// Returns a user if username = username and passwordHash = password, else fails.
+func (m *UserRepositoryMock) Login(username string, passwordHash string) (entity User, err error) {
+	if username == "username" && passwordHash == "password" {
+		user := User{
+			Id:        1,
+			Name:      "User #1",
+			Email:     "user1@test.com",
+			Password:  "encoded_password",
+			DateAdded: time.Now().Unix(),
+			Roles:     []Role{ROLE_ADMIN, ROLE_LISTENER},
+		}
+
+		return user, nil
+	}
+
+	return User{}, errors.New("unable to login")
+}

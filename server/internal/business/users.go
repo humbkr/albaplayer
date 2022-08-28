@@ -61,6 +61,11 @@ func (interactor *UsersInteractor) UserExists(entityId int) bool {
 	return interactor.UserRepository.Exists(entityId)
 }
 
+// UserLogin retrieves a user entity using its username and hashed password.
+func (interactor *UsersInteractor) UserLogin(username string, password string) (User, error) {
+	return interactor.UserRepository.Login(username, password)
+}
+
 // canDeleteUser checks if a user has the permissions to delete another one.
 func canDeleteUser(actionOriginUser User, userToBeDeleted User) (bool, error) {
 	// If we cannot check permissions, abort.

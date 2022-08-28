@@ -5,6 +5,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/humbkr/albaplayer/internal"
 	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/interfaces/auth"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph"
 	"io"
 	"log"
@@ -41,8 +42,10 @@ var serveCmd = &cobra.Command{
 
 		mux := http.NewServeMux()
 
-		// Serve the GraphQL endpoint at `/graphql`.
-		mux.Handle("/graphql", graphQLHandler)
+		authMiddleware := auth.AuthMiddleware()
+
+		// Serve the GraphQL endpoint.
+		mux.Handle("/graphql", authMiddleware(graphQLHandler))
 
 		if viper.GetBool("DevMode.Enabled") {
 			// Serve graphiql.
@@ -50,14 +53,18 @@ var serveCmd = &cobra.Command{
 		}
 
 		// Serve media files streaming endpoint.
-		// Makes the server handle cross-domain requests.
 		mediaFilesHandler := interfaces.NewMediaStreamHandler(&libraryInteractor)
 		mux.Handle("/stream/", http.StripPrefix("/stream/", mediaFilesHandler))
 
 		// Serve media files streaming endpoint.
-		// Makes the server handle cross-domain requests.
 		coverFilesHandler := interfaces.NewCoverStreamHandler(&libraryInteractor)
 		mux.Handle("/covers/", http.StripPrefix("/covers/", coverFilesHandler))
+
+		// Serve auth endpoints
+		auth := &auth.AuthHandlers{UserInteractor: &usersInteractor}
+		mux.HandleFunc("/login", auth.Login)
+		mux.HandleFunc("/logout", auth.Logout)
+		mux.HandleFunc("/refresh-token", auth.RefreshToken)
 
 		// Serve SPA.
 		fileServer := http.FileServer(pkger.Dir("/web"))

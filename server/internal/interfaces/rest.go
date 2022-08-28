@@ -1,7 +1,6 @@
 package interfaces
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -17,18 +16,18 @@ func NewMediaStreamHandler(ci *business.LibraryInteractor) *mediaStreamHandler {
 	return &mediaStreamHandler{Interactor: ci}
 }
 
-// Streams a file located on disk from a track id.
+// ServeHTTP streams a file located on disk from a track id.
 func (h mediaStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	trackId, err := strconv.Atoi(r.URL.Path)
 	if err != nil {
-		fmt.Fprint(w, "Invalid id")
+		http.Error(w, "Invalid id", http.StatusBadRequest)
 		return
 	}
 
 	// Try to find a corresponding track.
 	track, err := h.Interactor.TrackRepository.Get(trackId)
 	if err != nil {
-		fmt.Fprint(w, "Track not found")
+		http.Error(w, "Track not found", http.StatusNotFound)
 		return
 	}
 
@@ -44,18 +43,18 @@ func NewCoverStreamHandler(ci *business.LibraryInteractor) *coverStreamHandler {
 	return &coverStreamHandler{Interactor: ci}
 }
 
-// Streams a file located on disk from a track id.
+// ServeHTTP streams a file located on disk from a track id.
 func (h coverStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	coverId, err := strconv.Atoi(r.URL.Path)
 	if err != nil {
-		fmt.Fprint(w, "Invalid id")
+		http.Error(w, "Invalid id", http.StatusBadRequest)
 		return
 	}
 
 	// Try to find a cover.
 	cover, err := h.Interactor.CoverRepository.Get(coverId)
 	if err != nil {
-		fmt.Fprint(w, "Cover not found")
+		http.Error(w, "Cover not found", http.StatusNotFound)
 		return
 	}
 
