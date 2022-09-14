@@ -8,7 +8,7 @@ import {
   playTrack,
   playPlaylist,
   addPlaylist,
-} from 'modules/player/store'
+} from 'modules/player/store/store'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 import {
   playlistRemoveTrack,

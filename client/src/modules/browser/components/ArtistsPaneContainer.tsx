@@ -1,7 +1,7 @@
 import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
 import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
-import { playArtist, addArtist } from 'modules/player/store'
+import { playArtist, addArtist } from 'modules/player/store/store'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import ArtistContextMenu from 'modules/browser/components/ArtistContextMenu'
 import {

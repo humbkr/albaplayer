@@ -1,27 +1,29 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { setCycleNumPos, PlayerPlaybackMode } from './utils'
+import { setCycleNumPos, PlayerPlaybackMode } from 'modules/player/utils'
 
 export type PlayerStateType = {
   // Controls and audio state.
   playing: boolean
+  loading: boolean
+  duration: number
+  progress: number
   repeat: PlayerPlaybackMode
   shuffle: boolean
   volume: number
   volumeMuted: number
-  duration: number
-  progress: number
   // Track currently loaded in audio.
   track?: Track
 }
 
 export const playerInitialState: PlayerStateType = {
   playing: false,
+  loading: false,
+  duration: 0,
+  progress: 0,
   repeat: PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT,
   shuffle: false,
   volume: 1,
   volumeMuted: 1,
-  duration: 0,
-  progress: 0,
   track: undefined,
 }
 
@@ -29,7 +31,7 @@ const playerSlice = createSlice({
   name: 'player',
   initialState: playerInitialState,
   reducers: {
-    playerTogglePlayPause(state, action: PayloadAction<boolean>) {
+    playerTogglePlayPause(state, action: PayloadAction<boolean | undefined>) {
       if (state.track || action.payload !== undefined) {
         state.playing =
           action.payload === undefined ? !state.playing : action.payload

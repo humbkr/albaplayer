@@ -10,7 +10,7 @@ import {
   PlaylistPane,
 } from 'modules/playlist/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
-import { playPlaylistAfterCurrent } from 'modules/player/store'
+import { playPlaylistAfterCurrent } from 'modules/player/store/store'
 import { EditPlaylistContext } from '../scenes/Playlists'
 
 interface MenuItemEventHandlerPlaylist extends MenuItemEventHandler {

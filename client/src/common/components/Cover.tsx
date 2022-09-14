@@ -9,11 +9,11 @@ const Cover: React.FC<{
   <div>
     <DefaultCover src={coverPlaceholder} data-testid="cover-default" />
     {src && (
-      <RealCoverWrapper
-        cover={APIConstants.BACKEND_BASE_URL + src}
-        data-testid="cover-image"
-      >
-        <RealCover src={APIConstants.BACKEND_BASE_URL + src} />
+      <RealCoverWrapper cover={APIConstants.BACKEND_BASE_URL + src}>
+        <RealCover
+          src={APIConstants.BACKEND_BASE_URL + src}
+          data-testid="cover-image"
+        />
       </RealCoverWrapper>
     )}
   </div>

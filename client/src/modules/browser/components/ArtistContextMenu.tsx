@@ -5,7 +5,7 @@ import {
   addArtist,
   playArtist,
   playArtistAfterCurrent,
-} from 'modules/player/store'
+} from 'modules/player/store/store'
 import {
   playlistsSelector,
   addArtist as addArtistToPlaylist,

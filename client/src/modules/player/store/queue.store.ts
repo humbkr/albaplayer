@@ -23,6 +23,8 @@ const queueSlice = createSlice({
       const itemIndex = action.payload
 
       let nextCurrent = state.current
+      // When removing a track before the current one playing or being the current
+      // one playing, shift back the current track being played to match the new queue.
       if (nextCurrent && itemIndex <= nextCurrent) {
         nextCurrent -= 1
       }

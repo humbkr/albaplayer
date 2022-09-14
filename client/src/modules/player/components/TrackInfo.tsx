@@ -15,7 +15,7 @@ const TrackInfo: React.FC<{
 
   return (
     <Ripple>
-      <TrackInfoWrapper onClick={() => onClick()}>
+      <TrackInfoWrapper onClick={onClick} data-testid="player-track-info">
         <Overlay />
         <Cover src={trackCover} />
         {track && (

@@ -1,4 +1,4 @@
-const themeDark = {
+const themeDark: AppTheme = {
   // Type of theme.
   isDark: true,
 
@@ -7,7 +7,7 @@ const themeDark = {
 
   backgroundColor: '#323638',
   separatorColor: '#292c2f',
-  textPrimaryColor: '#eeeeee',
+  textPrimaryColor: '#eee',
   textSecondaryColor: '#92929d',
 
   highlight: '#202124',
@@ -29,7 +29,7 @@ const themeDark = {
   },
 
   inputs: {
-    backgroundColor: '#eeeeee',
+    backgroundColor: '#eee',
   },
 
   messages: {
@@ -56,20 +56,20 @@ const themeDark = {
 
   player: {
     buttons: {
-      color: '#eeeeee',
+      color: '#fff',
+      colorHover: '#fff',
+      colorDisabled: '#fff',
       colorEnabled: '#f97c4b',
     },
-    // TODO use this
     timeline: {
-      color: '#ffffff',
-      colorElapsed: '#ffffff',
-      colorHandle: '#ffffff',
+      color: '#747474',
+      colorElapsed: '#fff',
     },
   },
 
   nowPlaying: {
     backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    textPrimaryColor: '#eeeeee',
+    textPrimaryColor: '#eee',
     textSecondaryColor: '#92929d',
   },
 }

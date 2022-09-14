@@ -5,7 +5,7 @@ import {
   addTrack,
   playTrack,
   playTrackAfterCurrent,
-} from 'modules/player/store'
+} from 'modules/player/store/store'
 import {
   playlistsSelector,
   playlistRemoveTrack,
