@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import styled, { withTheme } from 'styled-components'
 import Modal from 'react-modal'
+import { useTranslation } from 'react-i18next'
 
 // http://reactcommunity.org/react-modal/accessibility/
 Modal.setAppElement('#root')
@@ -24,6 +25,7 @@ function KeyboardNavPlayPopup({
   handleAddToQueue,
   theme,
 }: Props) {
+  const { t } = useTranslation()
   const modalRef = useRef(null)
 
   const afterOpenModal = () => {
@@ -76,11 +78,12 @@ function KeyboardNavPlayPopup({
         onKeyDown={handleKeyDown}
       >
         <div>
-          Press <Action>Enter</Action> again to add to the current playlist
+          {t('common.press')} <Action>{t('common.enter')}</Action>{' '}
+          {t('browser.actions.pressToAddToPlaylist')}
         </div>
         <div>
-          Press <Action>Space</Action> to replace playlist with current
-          selection
+          {t('common.press')} <Action>{t('common.space')}</Action>{' '}
+          {t('browser.actions.pressToReplacePlaylist')}
         </div>
       </ModalContent>
     </Modal>

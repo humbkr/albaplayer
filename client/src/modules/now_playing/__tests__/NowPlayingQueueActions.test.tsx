@@ -37,7 +37,7 @@ describe('QueueActionsMoreContextMenu', () => {
     )
 
     expect(screen.getByTestId('queue-actions-more')).toBeInTheDocument()
-    expect(screen.getByText('Clear')).toBeInTheDocument()
+    expect(screen.getByText('common.clear')).toBeInTheDocument()
   })
 
   it('dispatches correct actions when pressing Clear button', async () => {
@@ -49,7 +49,7 @@ describe('QueueActionsMoreContextMenu', () => {
       </ReduxProvider>
     )
 
-    await userEvent.click(screen.getByText('Clear'))
+    await userEvent.click(screen.getByText('common.clear'))
     expect(store.dispatch).toHaveBeenCalledWith({
       payload: undefined,
       type: 'queue/queueClear',

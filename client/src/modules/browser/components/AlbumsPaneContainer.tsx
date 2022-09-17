@@ -10,6 +10,7 @@ import {
   selectAlbum,
 } from 'modules/browser/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import AlbumContextMenu from './AlbumContextMenu'
@@ -28,6 +29,8 @@ const AlbumsPaneContainer = ({
 }: InternalProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
+  const { t } = useTranslation()
+
   const albums = useAppSelector((state) => getAlbumsList(state))
   const orderBy = useAppSelector((state) => state.libraryBrowser.sortAlbums)
   const currentPosition = useAppSelector(
@@ -39,9 +42,9 @@ const AlbumsPaneContainer = ({
   const dispatch = useAppDispatch()
 
   const orderByOptions: { value: AlbumsSortOptions; label: string }[] = [
-    { value: 'title', label: 'title' },
-    { value: 'year', label: 'year' },
-    { value: 'artistName', label: 'artist' },
+    { value: 'title', label: t('browser.albums.sort.title') },
+    { value: 'year', label: t('browser.albums.sort.year') },
+    { value: 'artistName', label: t('browser.albums.sort.artist') },
   ]
 
   // Change event handler for LibraryBrowserListHeader.
@@ -75,7 +78,7 @@ const AlbumsPaneContainer = ({
     <AlbumsPaneWrapper>
       <LibraryBrowserPane>
         <LibraryBrowserListHeader
-          title="Albums"
+          title={t('browser.albums.title')}
           orderBy={orderBy}
           orderByOptions={orderByOptions}
           onChange={onSortChangeHandler}

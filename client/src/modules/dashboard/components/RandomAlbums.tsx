@@ -3,11 +3,14 @@ import styled from 'styled-components'
 import AlbumTeaser from 'modules/dashboard/components/AlbumTeaser'
 import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import { getRandomAlbums } from '../store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
 const RandomAlbums: React.FC = () => {
+  const { t } = useTranslation()
+
   const randomAlbums = useAppSelector((state) => state.dashboard.randomAlbums)
   const dispatch = useAppDispatch()
   const [selectedAlbum, setSelectedAlbum] = useState<string | undefined>(
@@ -23,7 +26,7 @@ const RandomAlbums: React.FC = () => {
   return (
     <Wrapper>
       <Header>
-        <h2>Random albums</h2>
+        <h2>{t('dashboard.randomAlbums')}</h2>
         <ActionButtonIcon
           icon="refresh"
           onClick={() => dispatch(getRandomAlbums())}
@@ -33,8 +36,8 @@ const RandomAlbums: React.FC = () => {
       {randomAlbums.length === 0 && (
         <EmptyState>
           <p>
-            No album found in the library.{' '}
-            <TextLink to="/settings">Scan library</TextLink>
+            {t('dashboard.noAlbumsFound')}{' '}
+            <TextLink to="/settings">{t('dashboard.scanLibrary')}</TextLink>
           </p>
         </EmptyState>
       )}

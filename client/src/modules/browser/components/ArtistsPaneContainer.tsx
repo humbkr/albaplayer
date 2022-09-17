@@ -10,6 +10,7 @@ import {
   selectArtist,
 } from 'modules/browser/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import ArtistTeaser from './ArtistTeaser'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
@@ -28,6 +29,8 @@ const ArtistsPaneContainer = ({
 }: InternalProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
+  const { t } = useTranslation()
+
   const artists = useAppSelector((state) => getArtistsList(state))
   const orderBy = useAppSelector((state) => state.libraryBrowser.sortArtists)
   const currentPosition = useAppSelector(
@@ -39,7 +42,7 @@ const ArtistsPaneContainer = ({
   const dispatch = useAppDispatch()
 
   const orderByOptions: { value: ArtistsSortOptions; label: string }[] = [
-    { value: 'name', label: 'name' },
+    { value: 'name', label: t('browser.artists.sort.name') },
   ]
 
   // Change event handler for LibraryBrowserListHeader.
@@ -73,7 +76,7 @@ const ArtistsPaneContainer = ({
     <ArtistsPaneWrapper>
       <LibraryBrowserPane>
         <LibraryBrowserListHeader
-          title="Artists"
+          title={t('browser.artists.title')}
           orderBy={orderBy}
           orderByOptions={orderByOptions}
           onChange={onSortChangeHandler}

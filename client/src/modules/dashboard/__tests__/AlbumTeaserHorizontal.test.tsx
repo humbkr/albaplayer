@@ -115,7 +115,7 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
 
     fireEvent.contextMenu(screen.getByTestId('album-teaser-horizontal'))
     expect(setSelected).toHaveBeenCalledTimes(1)
-    expect(screen.getByText('Play now')).toBeInTheDocument()
+    expect(screen.getByText('player.actions.playNow')).toBeInTheDocument()
   })
 
   it('should display a limited actions menu on right-click', () => {
@@ -141,8 +141,8 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
 
     fireEvent.click(screen.getByTestId('album-teaser-horizontal-more-button'))
     expect(setSelected).toHaveBeenCalledTimes(1)
-    expect(screen.queryByText('Play now')).not.toBeInTheDocument()
-    expect(screen.getByText('Add to queue')).toBeInTheDocument()
+    expect(screen.queryByText('player.actions.playNow')).not.toBeInTheDocument()
+    expect(screen.getByText('player.actions.addToQueue')).toBeInTheDocument()
   })
 
   it('should play the album if user clicks on the play button', () => {
@@ -182,6 +182,6 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
       </ReduxProvider>
     )
 
-    expect(screen.getByText('Unknown artist')).toBeInTheDocument()
+    expect(screen.getByText('library.unknownArtist')).toBeInTheDocument()
   })
 })

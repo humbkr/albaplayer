@@ -6,6 +6,7 @@ import ActionButtonCircle from 'common/components/ActionButtonCircle'
 import { constants } from 'api'
 import SearchLink from 'modules/browser/components/SearchLink'
 import { useAppSelector } from 'store/hooks'
+import { TFunction, useTranslation } from 'react-i18next'
 
 const SEARCH_ENGINE_URL = 'https://www.google.fr/search?q='
 
@@ -24,12 +25,15 @@ enum WebSearchType {
   lyrics = 'lyrics',
 }
 
-function getTrackInfoForDisplay(track: Track): TrackInfo | null {
+function getTrackInfoForDisplay(
+  track: Track,
+  t: TFunction<'translation', undefined>
+): TrackInfo | null {
   return track
     ? {
-        title: track?.title ?? 'Unknown title',
-        artist: track?.artist?.name ?? 'Unknown artist',
-        album: track?.album?.title ?? 'Unknown album',
+        title: track?.title ?? t('library.unknownTitle'),
+        artist: track?.artist?.name ?? t('library.unknownArtist'),
+        album: track?.album?.title ?? t('library.unknownAlbum'),
         number: track?.number ? track.number.toString() : '',
         disc: track?.disc ?? '',
         duration: track?.duration ? formatDuration(track.duration) : '',
@@ -41,6 +45,8 @@ function getTrackInfoForDisplay(track: Track): TrackInfo | null {
 const NowPlayingHeader: React.FC<{
   pinned?: boolean
 }> = ({ pinned = false }) => {
+  const { t } = useTranslation()
+
   const track = useAppSelector((state) => state.player.track)
 
   const handleWebSearch = (what: WebSearchType) => {
@@ -56,7 +62,7 @@ const NowPlayingHeader: React.FC<{
     }
   }
 
-  const trackInfo = getTrackInfoForDisplay(track)
+  const trackInfo = getTrackInfoForDisplay(track, t)
 
   let trackAlbumInfo = ''
   if (trackInfo) {
@@ -115,7 +121,7 @@ const NowPlayingHeader: React.FC<{
           )}
           {!track && (
             <SongInfo>
-              <h2>No song currently playing</h2>
+              <h2>{t('player.noTrackPlaying')}</h2>
             </SongInfo>
           )}
         </NowPlaying>

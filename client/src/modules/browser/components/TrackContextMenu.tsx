@@ -11,9 +11,12 @@ import {
   addTrack as addTrackToPlaylist,
 } from 'modules/playlist/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import { search, setSearchFilter } from '../store'
 
 const TrackContextMenu = () => {
+  const { t } = useTranslation()
+
   const playlists = useAppSelector((state) => playlistsSelector(state))
   const dispatch = useAppDispatch()
 
@@ -49,7 +52,7 @@ const TrackContextMenu = () => {
         dispatch(addTrackToPlaylist({ trackId: menuItem.props.data.id }))
       }
     >
-      + Create new playlist
+      {t('playlists.actions.createNewPlaylist')}
     </Item>
   )
 
@@ -58,28 +61,30 @@ const TrackContextMenu = () => {
       <Item
         onClick={(menuItem: any) => dispatch(playTrack(menuItem.props.data.id))}
       >
-        Play now
+        {t('player.actions.playNow')}
       </Item>
       <Item
         onClick={(menuItem: any) =>
           dispatch(playTrackAfterCurrent(menuItem.props.data.id))
         }
       >
-        Play after current track
+        {t('player.actions.playAfter')}
       </Item>
       <Item
         onClick={(menuItem: any) => dispatch(addTrack(menuItem.props.data.id))}
       >
-        Add to queue
+        {t('player.actions.addToQueue')}
       </Item>
       <Separator />
-      <Submenu label="Add to playlist...">{playlistsItems}</Submenu>
+      <Submenu label={t('playlists.actions.addToPlaylist')}>
+        {playlistsItems}
+      </Submenu>
       <Separator />
       <Item onClick={(menuItem: any) => findAllByArtist(menuItem)}>
-        Find all by the artist
+        {t('browser.actions.findAllByArtist')}
       </Item>
       <Item onClick={(menuItem: any) => findAllByAlbum(menuItem)}>
-        Find all on album
+        {t('browser.actions.findAllOnAlbum')}
       </Item>
     </ContextMenu>
   )

@@ -4,6 +4,7 @@ import AlbumTeaserHorizontal from 'modules/dashboard/components/AlbumTeaserHoriz
 import { Link } from 'react-router-dom'
 import { immutableNestedSort } from 'common/utils/utils'
 import { useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import { LibraryStateType } from '../../library/store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
@@ -24,6 +25,8 @@ export const getRecentlyAddedAlbums = (
 }
 
 const RecentlyAddedAlbums: React.FC = () => {
+  const { t } = useTranslation()
+
   const library = useAppSelector((state) => state.library)
 
   const [albums, setAlbums] = useState<Album[]>([])
@@ -38,14 +41,14 @@ const RecentlyAddedAlbums: React.FC = () => {
   return (
     <Wrapper>
       <Header>
-        <h2>Recently added</h2>
+        <h2>{t('dashboard.recentlyAdded')}</h2>
       </Header>
       <AlbumsList>
         {albums.length === 0 && (
           <EmptyState>
             <p>
-              No album found in the library.{' '}
-              <TextLink to="/settings">Scan library</TextLink>
+              {t('dashboard.noAlbumsFound')}{' '}
+              <TextLink to="/settings">{t('dashboard.scanLibrary')}</TextLink>
             </p>
           </EmptyState>
         )}
@@ -78,13 +81,13 @@ const Wrapper = styled.div`
   color: ${(props) => props.theme.textPrimaryColor};
 `
 const Header = styled.div`
-  padding: 0px 20px;
+  padding: 0 20px;
   height: ${(props) => props.theme.itemHeight};
   display: flex;
   align-items: center;
 `
 const AlbumsList = styled.div`
-  padding: 0px 20px;
+  padding: 0 20px;
 `
 const Cell = styled.div`
   display: inline-flex;

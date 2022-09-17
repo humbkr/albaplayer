@@ -107,7 +107,7 @@ describe('dashboard - RandomAlbums', () => {
       </ReduxProvider>
     )
 
-    expect(screen.getByText('Random albums')).toBeInTheDocument()
+    expect(screen.getByText('dashboard.randomAlbums')).toBeInTheDocument()
     expect(screen.getAllByTestId('album-teaser')).toBeArrayOfSize(4)
   })
 
@@ -142,9 +142,7 @@ describe('dashboard - RandomAlbums', () => {
       </ReduxProvider>
     )
 
-    expect(
-      screen.getByText('No album found in the library.')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Scan library')).toBeInTheDocument()
+    expect(screen.getByText('dashboard.noAlbumsFound')).toBeInTheDocument()
+    expect(screen.getByText('dashboard.scanLibrary')).toBeInTheDocument()
   })
 })

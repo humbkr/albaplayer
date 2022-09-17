@@ -1,17 +1,22 @@
 import React from 'react'
 import styled from 'styled-components'
 import ActionButtonIcon from 'common/components/ActionButtonIcon'
+import { useTranslation } from 'react-i18next'
 
 const PlaylistListHeader: React.FC<{
   onAddClick: () => void
-}> = ({ onAddClick }: { onAddClick: () => void }) => (
-  <Wrapper>
-    <h2>Playlists</h2>
-    <Actions>
-      <ActionButtonIcon icon="add" onClick={onAddClick} />
-    </Actions>
-  </Wrapper>
-)
+}> = ({ onAddClick }: { onAddClick: () => void }) => {
+  const { t } = useTranslation()
+
+  return (
+    <Wrapper>
+      <h2>{t('playlists.title')}</h2>
+      <Actions>
+        <ActionButtonIcon icon="add" onClick={onAddClick} />
+      </Actions>
+    </Wrapper>
+  )
+}
 
 export default PlaylistListHeader
 

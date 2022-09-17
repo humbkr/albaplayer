@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { contextMenu } from 'react-contexify'
 import { useAppDispatch } from 'store/hooks'
 import { playAlbum } from 'modules/player/store/store'
+import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
@@ -13,6 +14,8 @@ const AlbumTeaserHorizontal: React.FC<{
   selected: boolean
   setSelected: (albumId: string) => void
 }> = ({ album, selected, setSelected }) => {
+  const { t } = useTranslation()
+
   const dispatch = useAppDispatch()
 
   const [mouseHover, setMouseHover] = useState(false)
@@ -64,7 +67,7 @@ const AlbumTeaserHorizontal: React.FC<{
             <Artist>
               <SearchLink
                 type="artist"
-                searchString={album.artist?.name || 'Unknown artist'}
+                searchString={album.artist?.name || t('library.unknownArtist')}
               />
             </Artist>
           </MainInfo>

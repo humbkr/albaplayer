@@ -12,9 +12,12 @@ import {
 } from 'modules/settings/store'
 import SelectList from 'modules/settings/components/SelectList'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import info from '../../../../package.json'
 
 function Settings() {
+  const { t } = useTranslation()
+
   const artistsNumber = useAppSelector(
     (state) => Object.keys(state.library.artists).length
   )
@@ -44,15 +47,17 @@ function Settings() {
     dispatch(initSettings())
   }, [dispatch])
 
-  // @ts-ignore
   return (
     <SettingsScreenWrapper>
-      <h1>Settings</h1>
+      <h1>{t('settings.title')}</h1>
       <Paragraph data-testid="settings-library">
-        <h2>Library</h2>
+        <h2>{t('settings.library.title')}</h2>
         <p>
-          There are currently {artistsNumber} artists, {albumsNumber} albums and{' '}
-          {tracksNumber} tracks in the library.
+          {t('settings.library.stats', {
+            nbArtists: artistsNumber,
+            nbAlbums: albumsNumber,
+            nbTracks: tracksNumber,
+          })}
         </p>
         {!libraryIsUpdating && (
           <ActionButtons>
@@ -62,27 +67,25 @@ function Settings() {
               disabled={librarySettings.disableLibrarySettings}
               onClick={() => dispatch(updateLibrary())}
             >
-              Update library
+              {t('settings.library.updateButton')}
             </ActionButton>
             <ActionButton
               testId="settings-library-erase"
               disabled={librarySettings.disableLibrarySettings}
               onClick={() => {
-                if (
-                  window.confirm('Are you sure you wish to empty the library?')
-                ) {
+                if (window.confirm(t('settings.library.clearButton'))) {
                   dispatch(eraseLibrary())
                 }
               }}
             >
-              Empty library
+              {t('settings.library.clearButton')}
             </ActionButton>
           </ActionButtons>
         )}
         {libraryIsUpdating && (
           <ActionWaiting data-testid="settings-library-updating">
             <Loading />
-            <p>Library is updating. This could take several minutes.</p>
+            <p>{t('settings.library.updateInProgress')}</p>
           </ActionWaiting>
         )}
         {libraryError && (
@@ -92,7 +95,7 @@ function Settings() {
         )}
       </Paragraph>
       <Paragraph data-testid="settings-theme">
-        <h2>Theme</h2>
+        <h2>{t('settings.appearance.theme')}</h2>
         <SelectList
           testId="settings-theme-select"
           options={themeOptions}
@@ -103,7 +106,7 @@ function Settings() {
         />
       </Paragraph>
       <VersionNumber data-testid="settings-version">
-        {`Version: ${info.version}`}
+        {t('settings.version', { version: info.version })}
       </VersionNumber>
     </SettingsScreenWrapper>
   )

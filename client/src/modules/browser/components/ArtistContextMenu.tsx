@@ -11,8 +11,11 @@ import {
   addArtist as addArtistToPlaylist,
 } from 'modules/playlist/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 
 const ArtistContextMenu = () => {
+  const { t } = useTranslation()
+
   const playlists = useAppSelector((state) => playlistsSelector(state))
   const dispatch = useAppDispatch()
 
@@ -38,7 +41,7 @@ const ArtistContextMenu = () => {
         dispatch(addArtistToPlaylist({ artistId: menuItem.props.data.id }))
       }
     >
-      + Create new playlist
+      {t('playlists.actions.createNewPlaylist')}
     </Item>
   )
 
@@ -49,22 +52,24 @@ const ArtistContextMenu = () => {
           dispatch(playArtist(menuItem.props.data.id))
         }
       >
-        Play now
+        {t('player.actions.playNow')}
       </Item>
       <Item
         onClick={(menuItem: any) =>
           dispatch(playArtistAfterCurrent(menuItem.props.data.id))
         }
       >
-        Play after current track
+        {t('player.actions.playAfter')}
       </Item>
       <Item
         onClick={(menuItem: any) => dispatch(addArtist(menuItem.props.data.id))}
       >
-        Add to queue
+        {t('player.actions.addToQueue')}
       </Item>
       <Separator />
-      <Submenu label="Add to playlist...">{playlistsItems}</Submenu>
+      <Submenu label={t('playlists.actions.addToPlaylist')}>
+        {playlistsItems}
+      </Submenu>
     </ContextMenu>
   )
 }

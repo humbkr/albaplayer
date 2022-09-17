@@ -59,14 +59,14 @@ describe('Settings scene', () => {
     expect(screen.getByTestId('settings-library')).not.toBeNull()
     expect(
       screen.getByText(
-        'There are currently 2 artists, 4 albums and 6 tracks in the library.'
+        'settings.library.stats {"nbArtists":2,"nbAlbums":4,"nbTracks":6}'
       )
     ).not.toBeNull()
     expect(screen.queryByTestId('settings-library-updating')).toBeNull()
     expect(screen.getByTestId('settings-theme')).not.toBeNull()
     expect(screen.getByTestId('settings-version')).not.toBeNull()
 
-    const regex = new RegExp(`Version: ${info.version}`)
+    const regex = new RegExp(`settings.version {"version":"${info.version}"}`)
     expect(screen.getByText(regex)).toBeInTheDocument()
   })
 
