@@ -52,6 +52,7 @@ const AlbumTeaserHorizontal: React.FC<{
           data-testid="album-teaser-horizontal-overlay"
         >
           <ActionButton
+            visible={mouseHover || selected}
             icon="play_arrow"
             size={40}
             onClick={() => dispatch(playAlbum(album.id))}
@@ -77,6 +78,7 @@ const AlbumTeaserHorizontal: React.FC<{
         </Left>
         <SecondaryActions visible={mouseHover || selected}>
           <ActionButton
+            visible={mouseHover || selected}
             icon="more_horiz"
             size={25}
             onClick={handleMoreActionsPress}
@@ -94,9 +96,11 @@ const Wrapper = styled.div<{ visible: boolean }>`
   display: flex;
   width: 100%;
   margin-right: 20px;
-  transition: background-color linear 0.15s;
+  transition: background-color linear 0.15s, color linear 0.15s;
   background-color: ${(props) =>
-    props.visible ? props.theme.sidebar.background : 'transparent'};
+    props.visible ? props.theme.dashboard.backgroundColor : 'transparent'};
+  color: ${(props) =>
+    props.visible ? props.theme.dashboard.textPrimaryColor : 'inherit'};
 `
 const CoverWrapper = styled.div`
   flex-shrink: 0;
@@ -112,18 +116,22 @@ const ActionOverlay = styled.div<{ visible: boolean }>`
   left: 0;
   width: 100%;
   height: 100%;
-  color: #fff;
+  color: ${(props) => props.theme.dashboard.textPrimaryColor};
   display: flex;
   justify-content: center;
   align-items: center;
   transition: background-color linear 0.15s;
   z-index: 50;
 `
-const ActionButton = styled(ActionButtonIcon)`
-  color: #fff;
+const ActionButton = styled(ActionButtonIcon)<{ visible: boolean }>`
+  color: ${(props) =>
+    props.visible ? props.theme.dashboard.textPrimaryColor : 'transparent'};
+  transition: color linear 0.15s;
 
   i {
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-shadow: ${(props) =>
+      props.visible ? '0 0 10px rgba(0, 0, 0, 0.5)' : 'none'};
+    transition: text-shadow linear 0.15s;
   }
 
   :hover {
@@ -152,7 +160,7 @@ const Artist = styled.div`
 `
 const DateAdded = styled.div`
   font-size: 0.7em;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.dashboard.textSecondaryColor};
 `
 const SecondaryActions = styled.div<{ visible: boolean }>`
   opacity: ${(props) => (props.visible ? 1 : 0)};

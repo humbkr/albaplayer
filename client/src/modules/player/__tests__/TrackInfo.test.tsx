@@ -61,8 +61,8 @@ describe('TrackInfo', () => {
       </ReduxProvider>
     )
 
-    expect(screen.getByText('Unknown title')).toBeInTheDocument()
-    expect(screen.getByText('Unknown artist')).toBeInTheDocument()
+    expect(screen.getByText('library.unknownTitle')).toBeInTheDocument()
+    expect(screen.getByText('library.unknownArtist')).toBeInTheDocument()
     expect(screen.queryByTestId('cover-image')).not.toBeInTheDocument()
   })
 
