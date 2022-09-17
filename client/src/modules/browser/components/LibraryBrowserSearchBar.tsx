@@ -3,11 +3,14 @@ import styled from 'styled-components'
 import { DebounceInput } from 'react-debounce-input'
 import { search, setSearchFilter } from 'modules/browser/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 
 const LibraryBrowserSearchBar: React.FC<{
   forwardedRef: Ref<HTMLElement>
 }> = ({ forwardedRef }) => {
+  const { t } = useTranslation()
+
   const searchState = useAppSelector((state) => state.libraryBrowser.search)
 
   const dispatch = useAppDispatch()
@@ -68,7 +71,7 @@ const LibraryBrowserSearchBar: React.FC<{
           id="search-input"
           data-testid="search-input"
           value={searchState.term}
-          placeholder="Search"
+          placeholder={t('common.search')}
           autoComplete="off"
         />
       </SearchBarInputWrapper>

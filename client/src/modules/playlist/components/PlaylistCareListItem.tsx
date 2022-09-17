@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useTranslation } from 'react-i18next'
 import Icon from '../../../common/components/Icon'
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
 }
 
 const PlaylistCareListItem = ({ item, selected = false }: Props) => {
+  const { t } = useTranslation()
   const { track, position } = item
 
   return (
@@ -28,12 +30,14 @@ const PlaylistCareListItem = ({ item, selected = false }: Props) => {
       <Result>
         {item.processed && item.similarTracks.length !== 1 && (
           <NotFound>
-            not found<Icon>close</Icon>
+            {t('playlist.care.notFound')}
+            <Icon>close</Icon>
           </NotFound>
         )}
         {item.processed && item.similarTracks.length === 1 && (
           <Found>
-            found<Icon>done</Icon>
+            {t('playlist.care.found')}
+            <Icon>done</Icon>
           </Found>
         )}
       </Result>

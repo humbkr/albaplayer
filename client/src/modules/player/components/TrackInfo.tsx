@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import Ripple from 'common/components/Ripple'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
+import { useTranslation } from 'react-i18next'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
 
@@ -9,8 +10,10 @@ const TrackInfo: React.FC<{
   track: Track
   onClick: () => void
 }> = ({ track, onClick }) => {
-  const trackTitle = track?.title || 'Unknown title'
-  const trackArtist = track?.artist?.name || 'Unknown artist'
+  const { t } = useTranslation()
+
+  const trackTitle = track?.title || t('library.unknownTitle')
+  const trackArtist = track?.artist?.name || t('library.unknownArtist')
   const trackCover = track?.cover || undefined
 
   return (

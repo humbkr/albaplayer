@@ -7,10 +7,13 @@ import Icon from 'common/components/Icon'
 import ActionButton from 'common/components/ActionButton'
 import Loading from 'common/components/Loading'
 import { LibraryStateType } from 'modules/library/store'
+import { useTranslation } from 'react-i18next'
 import { findSimilarTracks } from '../utils/playlistCare'
 import { PlaylistPane, playlistUpdateItems, playlistChangePane } from '../store'
 
 const PlaylistsCarePane = () => {
+  const { t } = useTranslation()
+
   const library: LibraryStateType = useAppSelector((state) => state.library)
   const playlist: Playlist = useAppSelector(
     (state) => state.playlist.currentPlaylist.playlist
@@ -78,15 +81,13 @@ const PlaylistsCarePane = () => {
       </Header>
       <Main>
         <Description>
-          <Strong>Experimental:</Strong> fix a playlist that has become
-          desynchronised from the library, for example after having cleaned up
-          the library an rebuilt it. This will try to find your tracks again and
-          update the playlist.
+          <Strong>{t('playlists.care.experimental')}:</Strong>{' '}
+          {t('playlists.care.description')}
         </Description>
         <ActionsWrapper>
           <Actions>
             <ActionButton raised onClick={processTracks} disabled={processing}>
-              Start
+              {t('playlists.care.start')}
             </ActionButton>
             {processing && <Loading />}
             {(processing || processed) && (

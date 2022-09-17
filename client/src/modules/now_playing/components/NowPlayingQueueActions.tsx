@@ -4,10 +4,13 @@ import ActionButton from 'common/components/ActionButton'
 import { queueClear } from 'modules/player/store/store'
 import { contextMenu } from 'react-contexify'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import QueueActionsMoreContextMenu from './QueueActionsMoreContextMenu'
 
 const NowPlayingQueueActions = () => {
+  const { t } = useTranslation()
+
   const { items } = useAppSelector((state) => state.queue)
   const dispatch = useAppDispatch()
 
@@ -25,7 +28,7 @@ const NowPlayingQueueActions = () => {
   return (
     <QueueActionsWrapper>
       <ActionButton onClick={() => dispatch(queueClear())} icon="close">
-        Clear
+        {t('common.clear')}
       </ActionButton>
       <QueueActionButton
         icon="more_horiz"

@@ -12,14 +12,17 @@ import {
 } from 'modules/playlist/store'
 import { useNavigate } from 'react-router'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import { search, setSearchFilter } from '../../browser/store'
 
 const QueueItemContextMenu = () => {
+  const { t } = useTranslation()
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
   const playlists: Playlist[] = useAppSelector((state) =>
     playlistsSelector(state)
   )
-  const dispatch = useAppDispatch()
-  const navigate = useNavigate()
 
   const findAllByArtist = (menuItem: any) => {
     dispatch(setSearchFilter('artist'))
@@ -63,7 +66,7 @@ const QueueItemContextMenu = () => {
         dispatch(addTrackToPlaylist({ trackId: menuItem.props.data.track.id }))
       }
     >
-      + Create new playlist
+      {t('playlists.actions.createNewPlaylist')}
     </Item>
   )
 
@@ -75,7 +78,7 @@ const QueueItemContextMenu = () => {
           handlePlayTrack(menuItem.props.data.position - 1)
         }
       >
-        Play track
+        {t('player.queueActions.playTrack')}
       </Item>
       <Item
         // @ts-ignore
@@ -83,16 +86,18 @@ const QueueItemContextMenu = () => {
           dispatch(queueRemoveTrack(menuItem.props.data.position - 1))
         }
       >
-        Remove track from queue
+        {t('player.queueActions.removeTrack')}
       </Item>
       <Separator />
-      <Submenu label="Add to playlist...">{playlistsItems}</Submenu>
+      <Submenu label={t('playlists.actions.addToPlaylist')}>
+        {playlistsItems}
+      </Submenu>
       <Separator />
       <Item onClick={(menuItem: any) => findAllByArtist(menuItem)}>
-        Find all by the artist
+        {t('browser.actions.findAllByArtist')}
       </Item>
       <Item onClick={(menuItem: any) => findAllByAlbum(menuItem)}>
-        Find all on album
+        {t('browser.actions.findAllOnAlbum')}
       </Item>
     </ContextMenu>
   )

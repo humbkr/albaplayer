@@ -11,6 +11,7 @@ import {
 } from 'modules/playlist/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { playPlaylistAfterCurrent } from 'modules/player/store/store'
+import { useTranslation } from 'react-i18next'
 import { EditPlaylistContext } from '../scenes/Playlists'
 
 interface MenuItemEventHandlerPlaylist extends MenuItemEventHandler {
@@ -20,6 +21,8 @@ interface MenuItemEventHandlerPlaylist extends MenuItemEventHandler {
 }
 
 const PlaylistActionsMoreContextMenu: React.FC = () => {
+  const { t } = useTranslation()
+
   const playlists = useAppSelector((state) => playlistsSelector(state))
 
   const dispatch = useAppDispatch()
@@ -48,7 +51,7 @@ const PlaylistActionsMoreContextMenu: React.FC = () => {
         )
       }
     >
-      + Duplicate playlist
+      {t('playlists.actions.duplicatePlaylist')}
     </Item>
   )
 
@@ -61,28 +64,32 @@ const PlaylistActionsMoreContextMenu: React.FC = () => {
               dispatch(playPlaylistAfterCurrent(menuItem.props.playlist.id))
             }
           >
-            Play after current track
+            {t('player.actions.playAfter')}
           </Item>
           <Separator />
-          <Submenu label="Add to playlist...">{playlistsItems}</Submenu>
+          <Submenu label={t('playlists.actions.addToPlaylist')}>
+            {playlistsItems}
+          </Submenu>
           <Separator />
-          <Item onClick={() => value('edit')}>Edit playlist</Item>
+          <Item onClick={() => value('edit')}>
+            {t('playlists.actions.editPlaylist')}
+          </Item>
           <Item
             // @ts-ignore
             onClick={(menuItem: MenuItemEventHandlerPlaylist) => {
               if (
                 // eslint-disable-next-line no-alert
-                window.confirm('Are you sure you wish to delete this playlist?')
+                window.confirm(t('playlists.deleteConfirm'))
               ) {
                 dispatch(playlistDeletePlaylist(menuItem.props.playlist))
               }
             }}
           >
-            Delete playlist
+            {t('playlists.actions.deletePlaylist')}
           </Item>
           <Separator />
           <Item onClick={() => dispatch(playlistChangePane(PlaylistPane.Fix))}>
-            Fix dead tracks...
+            {t('playlists.care.fixDeadTracks')}
           </Item>
         </ContextMenu>
       )}

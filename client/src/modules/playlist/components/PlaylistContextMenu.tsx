@@ -8,9 +8,12 @@ import {
 } from 'modules/player/store/store'
 import { addPlaylist as addPlaylistToPlaylist } from 'modules/playlist/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import { EditPlaylistContext } from '../scenes/Playlists'
 
 const PlaylistContextMenu = () => {
+  const { t } = useTranslation()
+
   const playlists = useAppSelector((state) =>
     Object.values(state.playlist.playlists)
   )
@@ -41,7 +44,7 @@ const PlaylistContextMenu = () => {
         )
       }
     >
-      + Duplicate playlist
+      {t('playlists.actions.duplicatePlaylist')}
     </Item>
   )
 
@@ -54,26 +57,30 @@ const PlaylistContextMenu = () => {
               dispatch(playPlaylist(menuItem.props.data.id))
             }
           >
-            Play now
+            {t('player.actions.playNow')}
           </Item>
           <Item
             onClick={(menuItem: any) =>
               dispatch(playPlaylistAfterCurrent(menuItem.props.data.id))
             }
           >
-            Play after current track
+            {t('player.actions.playAfter')}
           </Item>
           <Item
             onClick={(menuItem: any) =>
               dispatch(addPlaylist(menuItem.props.data.id))
             }
           >
-            Add to queue
+            {t('player.actions.addToQueue')}
           </Item>
           <Separator />
-          <Submenu label="Add to playlist...">{playlistsItems}</Submenu>
+          <Submenu label={t('playlists.actions.addToPlaylist')}>
+            {playlistsItems}
+          </Submenu>
           <Separator />
-          <Item onClick={() => value('edit')}>Edit playlist</Item>
+          <Item onClick={() => value('edit')}>
+            {t('playlists.actions.editPlaylist')}
+          </Item>
         </ContextMenu>
       )}
     </EditPlaylistContext.Consumer>

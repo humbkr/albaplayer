@@ -11,6 +11,7 @@ import {
   addAlbum as addAlbumToPlaylist,
 } from 'modules/playlist/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 
 const ConditionalItem: React.FC<any> = ({ children, ...props }) => {
   if (!props.propsFromTrigger.displayAllActions) {
@@ -25,6 +26,8 @@ const AlbumMoreActionsContextMenu: React.FC<{
   menuId: string
   onHidden: () => void
 }> = ({ menuId, onHidden }) => {
+  const { t } = useTranslation()
+
   const playlists = useAppSelector((state) => playlistsSelector(state))
   const dispatch = useAppDispatch()
 
@@ -50,7 +53,7 @@ const AlbumMoreActionsContextMenu: React.FC<{
         dispatch(addAlbumToPlaylist({ albumId: menuItem.props.album.id }))
       }
     >
-      + Create new playlist
+      {t('playlists.actions.createNewPlaylist')}
     </Item>
   )
 
@@ -61,22 +64,24 @@ const AlbumMoreActionsContextMenu: React.FC<{
           dispatch(playAlbum(menuItem.props.album.id))
         }
       >
-        Play now
+        {t('player.actions.playNow')}
       </ConditionalItem>
       <Item
         onClick={(menuItem: any) =>
           dispatch(playAlbumAfterCurrent(menuItem.props.album.id))
         }
       >
-        Play after current track
+        {t('player.actions.playAfter')}
       </Item>
       <Item
         onClick={(menuItem: any) => dispatch(addAlbum(menuItem.props.album.id))}
       >
-        Add to queue
+        {t('player.actions.addToQueue')}
       </Item>
       <Separator />
-      <Submenu label="Add to playlist...">{playlistsItems}</Submenu>
+      <Submenu label={t('playlists.actions.addToPlaylist')}>
+        {playlistsItems}
+      </Submenu>
     </ContextMenu>
   )
 }

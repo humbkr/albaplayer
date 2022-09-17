@@ -13,9 +13,12 @@ import {
 } from 'modules/playlist/store'
 import { useNavigate } from 'react-router'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import { search, setSearchFilter } from '../../browser/store'
 
 const PlaylistTrackContextMenu = () => {
+  const { t } = useTranslation()
+
   const playlists = useAppSelector((state) => playlistsSelector(state))
   const currentPlaylist = useAppSelector(
     (state) => state.playlist.currentPlaylist.playlist
@@ -58,7 +61,7 @@ const PlaylistTrackContextMenu = () => {
         dispatch(addTrackToPlaylist({ trackId: menuItem.props.data.id }))
       }
     >
-      + Create new playlist
+      {t('playlists.actions.createNewPlaylist')}
     </Item>
   )
 
@@ -69,24 +72,26 @@ const PlaylistTrackContextMenu = () => {
           dispatch(playTrack(menuItem.props.data.track.id))
         }
       >
-        Play now
+        {t('player.actions.playNow')}
       </Item>
       <Item
         onClick={(menuItem: any) =>
           dispatch(playTrackAfterCurrent(menuItem.props.data.track.id))
         }
       >
-        Play after current track
+        {t('player.actions.playAfter')}
       </Item>
       <Item
         onClick={(menuItem: any) =>
           dispatch(addTrack(menuItem.props.data.track.id))
         }
       >
-        Add to queue
+        {t('player.actions.addToQueue')}
       </Item>
       <Separator />
-      <Submenu label="Add to playlist...">{playlistsItems}</Submenu>
+      <Submenu label={t('playlists.actions.addToPlaylist')}>
+        {playlistsItems}
+      </Submenu>
       <Separator />
       <Item
         onClick={(menuItem: any) =>
@@ -98,14 +103,14 @@ const PlaylistTrackContextMenu = () => {
           )
         }
       >
-        Remove from playlist
+        {t('playlists.actions.removeFromPlaylist')}
       </Item>
       <Separator />
       <Item onClick={(menuItem: any) => findAllByArtist(menuItem)}>
-        Find all by the artist
+        {t('library.actions.findAllByArtist')}
       </Item>
       <Item onClick={(menuItem: any) => findAllByAlbum(menuItem)}>
-        Find all on album
+        {t('library.actions.findAllOnAlbum')}
       </Item>
     </ContextMenu>
   )

@@ -1,32 +1,37 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useTranslation } from 'react-i18next'
 import Player from 'modules/player/components/Player'
 import SidebarNavLink from './SidebarNavLink'
 
-const Sidebar = () => (
-  <Wrapper>
-    <Player />
-    <MainMenu>
-      <SidebarNavLink to="/queue" icon="play_circle_outline">
-        Now playing
-      </SidebarNavLink>
-      <SidebarNavLink to="/library" icon="library_music">
-        Library browser
-      </SidebarNavLink>
-      <SidebarNavLink to="/playlists" icon="view_list">
-        Playlists
-      </SidebarNavLink>
-      <SidebarNavLink to="/inspiration" icon="lightbulb_outline">
-        Inspiration
-      </SidebarNavLink>
-    </MainMenu>
-    <SettingsMenu>
-      <SidebarNavLink to="/settings" icon="settings">
-        Settings
-      </SidebarNavLink>
-    </SettingsMenu>
-  </Wrapper>
-)
+const Sidebar = () => {
+  const { t } = useTranslation()
+
+  return (
+    <Wrapper>
+      <Player />
+      <MainMenu>
+        <SidebarNavLink to="/queue" icon="play_circle_outline">
+          {t('sidebar.navigation.nowPlaying')}
+        </SidebarNavLink>
+        <SidebarNavLink to="/library" icon="library_music">
+          {t('sidebar.navigation.libraryBrowser')}
+        </SidebarNavLink>
+        <SidebarNavLink to="/playlists" icon="view_list">
+          {t('sidebar.navigation.playlists')}
+        </SidebarNavLink>
+        <SidebarNavLink to="/inspiration" icon="lightbulb_outline">
+          {t('sidebar.navigation.inspiration')}
+        </SidebarNavLink>
+      </MainMenu>
+      <SettingsMenu>
+        <SidebarNavLink to="/settings" icon="settings">
+          {t('sidebar.navigation.settings')}
+        </SidebarNavLink>
+      </SettingsMenu>
+    </Wrapper>
+  )
+}
 
 export default Sidebar
 

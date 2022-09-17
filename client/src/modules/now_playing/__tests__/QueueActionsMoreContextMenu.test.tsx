@@ -48,7 +48,9 @@ describe('QueueActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-queueactionsmoremenu'))
-    expect(screen.getByText('Add to playlist...')).toBeInTheDocument()
+    expect(
+      screen.getByText('playlists.actions.addToPlaylist')
+    ).toBeInTheDocument()
   })
 
   it('dispatches the correct actions when pressing on a playlist name', async () => {
@@ -75,7 +77,9 @@ describe('QueueActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-queueactionsmoremenu'))
-    await userEvent.click(screen.getByText('+ Create new playlist'))
+    await userEvent.click(
+      screen.getByText('playlists.actions.createNewPlaylist')
+    )
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))

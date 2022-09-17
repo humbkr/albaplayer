@@ -75,7 +75,7 @@ describe('dashboard - RecentlyAddedAlbums', () => {
       </ReduxProvider>
     )
 
-    expect(screen.getByText('Recently added')).toBeInTheDocument()
+    expect(screen.getByText('dashboard.recentlyAdded')).toBeInTheDocument()
   })
 
   it('should render correctly when no albums in the library', () => {
@@ -95,9 +95,7 @@ describe('dashboard - RecentlyAddedAlbums', () => {
       </ReduxProvider>
     )
 
-    expect(
-      screen.getByText('No album found in the library.')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Scan library')).toBeInTheDocument()
+    expect(screen.getByText('dashboard.noAlbumsFound')).toBeInTheDocument()
+    expect(screen.getByText('dashboard.scanLibrary')).toBeInTheDocument()
   })
 })

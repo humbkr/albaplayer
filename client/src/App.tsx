@@ -7,6 +7,8 @@ import apolloClient from './api/apollo'
 import store, { persistor } from './store/store'
 import AlbaApp from './AlbaApp'
 
+import 'i18n/i18n'
+
 function App() {
   return (
     <ReduxProvider store={store}>

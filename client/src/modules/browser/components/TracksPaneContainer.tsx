@@ -4,6 +4,7 @@ import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { addTrack, playTrack } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import VirtualList from 'common/components/virtualLists/VirtualList'
+import { useTranslation } from 'react-i18next'
 import {
   getTracksList,
   libraryBrowserSortTracks,
@@ -28,6 +29,8 @@ const TracksPaneContainer = ({
 }: InternalProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
+  const { t } = useTranslation()
+
   const tracks = useAppSelector((state) => getTracksList(state))
   const orderBy = useAppSelector((state) => state.libraryBrowser.sortTracks)
   const currentPosition = useAppSelector(
@@ -39,10 +42,10 @@ const TracksPaneContainer = ({
   const dispatch = useAppDispatch()
 
   const orderByOptions: { value: TracksSortOptions; label: string }[] = [
-    { value: 'title', label: 'title' },
-    { value: 'number', label: 'track number' },
-    { value: 'album', label: 'album' },
-    { value: 'artistId', label: 'artist' },
+    { value: 'title', label: t('browser.tracks.sort.title') },
+    { value: 'number', label: t('browser.tracks.sort.number') },
+    { value: 'album', label: t('browser.tracks.sort.album') },
+    { value: 'artistId', label: t('browser.tracks.sort.artist') },
   ]
 
   // Change event handler for LibraryBrowserListHeader.
@@ -76,7 +79,7 @@ const TracksPaneContainer = ({
     <TracksPaneWrapper>
       <LibraryBrowserPane>
         <LibraryBrowserListHeader
-          title="Tracks"
+          title={t('browser.tracks.title')}
           orderBy={orderBy}
           orderByOptions={orderByOptions}
           onChange={onSortChangeHandler}
@@ -91,7 +94,9 @@ const TracksPaneContainer = ({
             onKeyDown={onKeyDown}
           />
         )}
-        {tracks.length === 1 && <NoTracks>Select an artist or album</NoTracks>}
+        {tracks.length === 1 && (
+          <NoTracks>{t('browser.tracks.selectAnArtistOrAlbum')}</NoTracks>
+        )}
         <TrackContextMenu />
         <KeyboardNavPlayPopup
           id="tracks-nav-modal"

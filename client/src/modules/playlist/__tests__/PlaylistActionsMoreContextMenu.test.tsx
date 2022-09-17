@@ -66,11 +66,17 @@ describe('PlaylistActionsMoreContextMenu', () => {
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistactionsmoremenu'))
 
-    expect(screen.getByText('Play after current track')).toBeInTheDocument()
-    expect(screen.getByText('Add to playlist...')).toBeInTheDocument()
-    expect(screen.getByText('Edit playlist')).toBeInTheDocument()
-    expect(screen.getByText('Delete playlist')).toBeInTheDocument()
-    expect(screen.getByText('Fix dead tracks...')).toBeInTheDocument()
+    expect(screen.getByText('player.actions.playAfter')).toBeInTheDocument()
+    expect(
+      screen.getByText('playlists.actions.addToPlaylist')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('playlists.actions.editPlaylist')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('playlists.actions.deletePlaylist')
+    ).toBeInTheDocument()
+    expect(screen.getByText('playlists.care.fixDeadTracks')).toBeInTheDocument()
   })
 
   it('dispatches the correct actions when pressing "Play after current track"', async () => {
@@ -82,7 +88,7 @@ describe('PlaylistActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistactionsmoremenu'))
-    await userEvent.click(screen.getByText('Play after current track'))
+    await userEvent.click(screen.getByText('player.actions.playAfter'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
@@ -112,7 +118,9 @@ describe('PlaylistActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistactionsmoremenu'))
-    await userEvent.click(screen.getByText('+ Duplicate playlist'))
+    await userEvent.click(
+      screen.getByText('playlists.actions.duplicatePlaylist')
+    )
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function))
@@ -127,7 +135,7 @@ describe('PlaylistActionsMoreContextMenu', () => {
     )
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistactionsmoremenu'))
-    await userEvent.click(screen.getByText('Fix dead tracks...'))
+    await userEvent.click(screen.getByText('playlists.care.fixDeadTracks'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith({
@@ -147,7 +155,7 @@ describe('PlaylistActionsMoreContextMenu', () => {
     window.confirm = jest.fn().mockImplementation(() => true)
 
     fireEvent.contextMenu(screen.getByTestId('test-playlistactionsmoremenu'))
-    await userEvent.click(screen.getByText('Delete playlist'))
+    await userEvent.click(screen.getByText('playlists.actions.deletePlaylist'))
 
     expect(store.dispatch).toHaveBeenCalledTimes(1)
     expect(store.dispatch).toHaveBeenCalledWith({

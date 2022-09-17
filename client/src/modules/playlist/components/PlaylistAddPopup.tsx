@@ -5,6 +5,7 @@ import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik'
 import dayjs from 'dayjs'
 import { getRandomInt } from 'common/utils/utils'
 import ActionButton from 'common/components/ActionButton'
+import { useTranslation } from 'react-i18next'
 
 // http://reactcommunity.org/react-modal/accessibility/
 Modal.setAppElement('#root')
@@ -30,6 +31,7 @@ const PlaylistAddPopup = ({
   onCreatePlaylist,
   onEditPlaylist,
 }: Props) => {
+  const { t } = useTranslation()
   const titleField = useRef<HTMLInputElement>(null)
 
   const afterOpenModal = () => {
@@ -95,8 +97,8 @@ const PlaylistAddPopup = ({
         tabIndex={0}
       >
         <Title>
-          {mode === 'edit' && 'Edit playlist'}
-          {mode !== 'edit' && 'Create a new playlist'}
+          {mode === 'edit' && t('playlists.actions.editPlaylist')}
+          {mode !== 'edit' && t('playlists.actions.createANewPlaylist')}
         </Title>
         <Formik
           initialValues={{
@@ -106,7 +108,7 @@ const PlaylistAddPopup = ({
             const errors: FormikErrors<any> = {}
 
             if (!values.title) {
-              errors.title = 'This field is required.'
+              errors.title = t('common.forms.requiredField')
             }
             return errors
           }}
@@ -122,7 +124,7 @@ const PlaylistAddPopup = ({
         >
           {({ isSubmitting, handleSubmit }) => (
             <Form>
-              <Label htmlFor="title">Title: </Label>
+              <Label htmlFor="title">{t('common.title')}: </Label>
               <FormField
                 autoComplete="off"
                 type="text"
@@ -144,10 +146,12 @@ const PlaylistAddPopup = ({
                   disabled={isSubmitting}
                   type="submit"
                 >
-                  {mode === 'edit' && 'Edit'}
-                  {mode !== 'edit' && 'Create'}
+                  {mode === 'edit' && t('common.edit')}
+                  {mode !== 'edit' && t('common.create')}
                 </ActionButton>
-                <ActionButton onClick={onClose}>Cancel</ActionButton>
+                <ActionButton onClick={onClose}>
+                  {t('common.cancel')}
+                </ActionButton>
               </Actions>
             </Form>
           )}

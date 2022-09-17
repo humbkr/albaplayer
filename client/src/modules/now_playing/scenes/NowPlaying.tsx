@@ -8,7 +8,7 @@ const NowPlaying = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setHeaderIsPinned(window.pageYOffset > 210)
+      setHeaderIsPinned(window.scrollY > 210)
     }
 
     window.addEventListener('scroll', handleScroll)

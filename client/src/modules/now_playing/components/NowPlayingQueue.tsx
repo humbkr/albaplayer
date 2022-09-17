@@ -2,6 +2,7 @@ import React from 'react'
 import styled, { withTheme } from 'styled-components'
 import { queueReplace, queueSetCurrent } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useTranslation } from 'react-i18next'
 import NowPlayingQueueHeader from './NowPlayingQueueHeader'
 import NowPlayingQueueList from './NowPlayingQueueList'
 import NowPlayingQueueActions from './NowPlayingQueueActions'
@@ -12,6 +13,8 @@ type Props = {
 }
 
 const NowPlayingQueue = ({ theme }: Props) => {
+  const { t } = useTranslation()
+
   const { items, current } = useAppSelector((state) => state.queue)
   const dispatch = useAppDispatch()
 
@@ -34,7 +37,7 @@ const NowPlayingQueue = ({ theme }: Props) => {
   return (
     <>
       <Header>
-        <QueueTitle>Queue</QueueTitle>
+        <QueueTitle>{t('player.queue')}</QueueTitle>
         <NowPlayingQueueActions />
       </Header>
       <NowPlayingQueueHeader />

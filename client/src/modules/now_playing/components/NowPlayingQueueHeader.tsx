@@ -1,13 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useTranslation } from 'react-i18next'
 
-const NowPlayingQueueHeader = () => (
-  <QueueHeaderRow>
-    <TrackPosition>#</TrackPosition>
-    <div>track</div>
-    <div>artist</div>
-  </QueueHeaderRow>
-)
+const NowPlayingQueueHeader = () => {
+  const { t } = useTranslation()
+
+  return (
+    <QueueHeaderRow>
+      <TrackPosition>#</TrackPosition>
+      <div>{t('player.queueHeader.track')}</div>
+      <div>{t('player.queueHeader.artist')}</div>
+    </QueueHeaderRow>
+  )
+}
 
 export default NowPlayingQueueHeader
 

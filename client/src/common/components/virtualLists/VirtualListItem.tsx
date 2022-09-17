@@ -10,7 +10,6 @@ const VirtualListItem = styled.div<{
       ? `border-bottom: 1px solid ${props.theme.separatorColor}`
       : ''};
 
-  // The items MUST ALWAYS have a fixed height for the list to work.
   height: ${(props) => props.theme.itemHeight};
   overflow: hidden;
 
