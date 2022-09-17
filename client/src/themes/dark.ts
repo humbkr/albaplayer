@@ -72,6 +72,12 @@ const themeDark: AppTheme = {
     textPrimaryColor: '#eee',
     textSecondaryColor: '#92929d',
   },
+
+  dashboard: {
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    textPrimaryColor: '#ffffff',
+    textSecondaryColor: '#92929d',
+  },
 }
 
 export default themeDark
