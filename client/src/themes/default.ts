@@ -26,6 +26,7 @@ const themeDefault: AppTheme = {
     color: '#009688',
     colorHover: '#00bdab',
     colorDisabled: '#b2b2b2',
+    colorLight: '#fff',
   },
 
   inputs: {

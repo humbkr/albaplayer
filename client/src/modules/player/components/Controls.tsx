@@ -78,7 +78,11 @@ function Controls({
         <ControlButton
           onClick={skipToPrevious}
           size={30}
-          disabled={!hasTrack || !hasPreviousTrack}
+          disabled={
+            !hasTrack ||
+            (!hasPreviousTrack &&
+              repeat !== PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL)
+          }
           testId={'previous-button'}
         >
           <PreviousIcon />
@@ -94,7 +98,11 @@ function Controls({
         <ControlButton
           onClick={onSkipToNext}
           size={30}
-          disabled={!hasTrack || !hasNextTrack}
+          disabled={
+            !hasTrack ||
+            (!hasNextTrack &&
+              repeat !== PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL)
+          }
           testId={'next-button'}
         >
           <NextIcon />

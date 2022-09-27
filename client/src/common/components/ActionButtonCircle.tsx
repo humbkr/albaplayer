@@ -14,7 +14,7 @@ type Props = {
 const ActionButtonCircle = ({
   size = 50,
   borderWidth = 1,
-  color = '#fff',
+  color,
   icon = '',
   backgroundColor = 'transparent',
   onClick,
@@ -25,59 +25,32 @@ const ActionButtonCircle = ({
     onClick={onClick}
     color={color}
     data-testid={testId}
+    size={size}
   >
-    <svg
-      width={size + borderWidth}
-      height={size + borderWidth}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g>
-        <circle
-          cx="50%"
-          cy="50%"
-          r={size / 2}
-          strokeWidth={borderWidth}
-          fill={backgroundColor}
-        />
-        <text
-          x="50%"
-          y="50%"
-          textAnchor="middle"
-          alignmentBaseline="middle"
-          dy=".5em"
-        >
-          {icon}
-        </text>
-      </g>
-    </svg>
+    {icon}
   </ActionButtonCircleWrapper>
 )
 
 export default ActionButtonCircle
 
-const ActionButtonCircleWrapper = styled.button`
-  display: inline-block;
+const ActionButtonCircleWrapper = styled.button<{
+  size: number
+  color?: string
+}>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  border: none;
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  border: 1px solid ${(props) => props.color};
+  width: ${(props) => props.size}px;
+  height: ${(props) => props.size}px;
+  color: ${(props) => props.color || props.theme.buttons.colorLight};
 
-  svg {
-    transition: 0.2s ease-out;
-
-    circle {
-      transition: 0.2s ease-out;
-      stroke: ${(props) => props.color};
-    }
-
-    fill: ${(props) => props.color};
-
-    :hover {
-      circle {
-        stroke: ${(props) => props.theme.buttons.colorHover};
-      }
-
-      fill: ${(props) => props.theme.buttons.colorHover};
-    }
+  &:hover {
+    border: 1px solid ${(props) => props.theme.buttons.colorHover};
+    color: ${(props) => props.theme.buttons.colorHover};
   }
 
   // For icon.
@@ -85,7 +58,7 @@ const ActionButtonCircleWrapper = styled.button`
   font-weight: normal;
   font-style: normal;
   font-size: 28px;
-  display: inline-block;
+  //display: inline-block;
   line-height: 1;
   text-transform: none;
   letter-spacing: normal;

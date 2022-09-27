@@ -26,6 +26,7 @@ const themeDark: AppTheme = {
     color: '#019a8b',
     colorHover: '#00bdab',
     colorDisabled: '#b2b2b2',
+    colorLight: '#eeeeee',
   },
 
   inputs: {
@@ -56,10 +57,10 @@ const themeDark: AppTheme = {
 
   player: {
     buttons: {
-      color: '#fff',
-      colorHover: '#fff',
-      colorDisabled: '#fff',
-      colorEnabled: '#f97c4b',
+      color: '#eee',
+      colorHover: '#00bdab',
+      colorDisabled: '#92929d',
+      colorEnabled: '#00bdab',
     },
     timeline: {
       color: '#747474',
