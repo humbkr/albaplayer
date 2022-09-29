@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/interfaces/auth"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph/generated"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph/model"
 )
@@ -101,10 +102,17 @@ func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpda
 }
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput) (*model.User, error) {
+	hashedPassword, _ := auth.HashPassword(*input.Password)
+
+	user := auth.GetUserFromContext(ctx)
+	if !business.UserHasRole(*user, business.ROLE_ADMIN) {
+		return nil, errors.New("unauthorized operation")
+	}
+
 	dbUser := business.User{
 		Name:     *input.Name,
 		Email:    *input.Email,
-		Password: *input.Password,
+		Password: hashedPassword,
 	}
 
 	dbUser.Roles = processUserRoles(input.Roles)
@@ -118,30 +126,35 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput
 		return nil, err
 	}
 
-	createdUser := convertUser(dbUser)
+	createdUser := convertUser(dbUser, false)
 
 	return &createdUser, nil
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input model.UserInput) (*model.User, error) {
+	user := auth.GetUserFromContext(ctx)
+	if user.Id != id && !business.UserHasRole(*user, business.ROLE_ADMIN) {
+		return nil, errors.New("unauthorized operation")
+	}
+
 	dbUser, err := r.UsersInteractor.GetUser(id)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
 
-	if *input.Name != "" {
+	if input.Name != nil && *input.Name != "" {
 		dbUser.Name = *input.Name
 	}
 
-	if *input.Email != "" {
+	if input.Email != nil && *input.Email != "" {
 		dbUser.Email = *input.Email
 	}
 
-	if *input.Password != "" {
+	if input.Password != nil && *input.Password != "" {
 		dbUser.Password = *input.Password
 	}
 
-	if *input.Data != "" {
+	if input.Data != nil && *input.Data != "" {
 		dbUser.Data = *input.Data
 	}
 
@@ -154,12 +167,17 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input model.U
 		return nil, err
 	}
 
-	updatedUser := convertUser(dbUser)
+	updatedUser := convertUser(dbUser, false)
 
 	return &updatedUser, nil
 }
 
 func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (bool, error) {
+	user := auth.GetUserFromContext(ctx)
+	if user.Id != id && !business.UserHasRole(*user, business.ROLE_ADMIN) {
+		return false, errors.New("unauthorized operation")
+	}
+
 	dbUser := business.User{
 		Id: id,
 	}
@@ -237,6 +255,7 @@ func (r *queryResolver) Settings(ctx context.Context) (*model.Settings, error) {
 		CoversPreferredSource:  &settings.CoversPreferredSource,
 		DisableLibrarySettings: &settings.DisableLibraryConfiguration,
 		Version:                &r.Version,
+		AuthEnabled:            &settings.AuthEnabled,
 	}, nil
 }
 
@@ -252,23 +271,28 @@ func (r *queryResolver) Variable(ctx context.Context, key string) (*model.Variab
 }
 
 func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+	basicInfoOnly := currentUser.Id != id && !business.UserHasRole(*currentUser, business.ROLE_ADMIN)
+
 	var result model.User
 	user, err := r.UsersInteractor.UserRepository.Get(id)
 
 	if err == nil {
-		result = convertUser(user)
+		result = convertUser(user, basicInfoOnly)
 	}
 
 	return &result, err
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+
 	var result []*model.User
 	users, err := r.UsersInteractor.UserRepository.GetAll()
 
 	if err == nil {
 		for _, user := range users {
-			gqlUser := convertUser(user)
+			gqlUser := convertUser(user, !business.UserHasRole(*currentUser, business.ROLE_ADMIN))
 			result = append(result, &gqlUser)
 		}
 	}

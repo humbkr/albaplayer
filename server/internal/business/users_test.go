@@ -83,6 +83,33 @@ func (suite *UsersInteractorTestSuite) TestSaveUser() {
 
 	errNoTitle := suite.UsersInteractor.SaveUser(newEntityEmpty)
 	assert.NotNil(suite.T(), errNoTitle)
+
+	// Test to insert an entity without password.
+	newEntityNoPassword := &User{
+		Name: "Test",
+	}
+
+	errNoPassword := suite.UsersInteractor.SaveUser(newEntityNoPassword)
+	assert.NotNil(suite.T(), errNoPassword)
+
+	// Test to insert an entity without roles.
+	newEntityNoRoles := &User{
+		Name:     "Test",
+		Password: "password",
+	}
+
+	errNoRoles := suite.UsersInteractor.SaveUser(newEntityNoRoles)
+	assert.NotNil(suite.T(), errNoRoles)
+
+	// Test to insert an entity with the same username as another one.
+	newEntityDuplicate := &User{
+		Name:     "User #2",
+		Password: "password",
+		Roles:    []Role{ROLE_LISTENER},
+	}
+
+	errDuplicate := suite.UsersInteractor.SaveUser(newEntityDuplicate)
+	assert.NotNil(suite.T(), errDuplicate)
 }
 
 func (suite *UsersInteractorTestSuite) TestDeleteUser() {
@@ -100,4 +127,69 @@ func (suite *UsersInteractorTestSuite) TestDeleteUser() {
 	entityNoId := &User{}
 	errNoId := suite.UsersInteractor.DeleteUser(entityNoId)
 	assert.NotNil(suite.T(), errNoId)
+}
+
+func (suite *UsersInteractorTestSuite) TestUserExists() {
+	// Exists.
+	exists := suite.UsersInteractor.UserExists(1)
+	assert.True(suite.T(), exists)
+
+	// Does not exist.
+	exists = suite.UsersInteractor.UserExists(2)
+	assert.False(suite.T(), exists)
+}
+
+func (suite *UsersInteractorTestSuite) TestGetFromUsername() {
+	// Exists.
+	user, err := suite.UsersInteractor.UserGetFromUsername("username")
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), 1, user.Id)
+
+	// Does not exist.
+	_, errNoUser := suite.UsersInteractor.UserGetFromUsername("doesnotexist")
+	assert.NotNil(suite.T(), errNoUser)
+}
+
+func (suite *UsersInteractorTestSuite) TestUserHasRole() {
+	user := &User{Id: 1, Roles: []Role{ROLE_OWNER, ROLE_ADMIN}}
+	assert.True(suite.T(), UserHasRole(*user, ROLE_OWNER))
+	assert.True(suite.T(), UserHasRole(*user, ROLE_ADMIN))
+	assert.False(suite.T(), UserHasRole(*user, ROLE_LISTENER))
+}
+
+func (suite *UsersInteractorTestSuite) TestCanDeleteUser() {
+	// Everything ok.
+	actionUser := &User{Id: 1, Roles: []Role{ROLE_OWNER}}
+	userToDelete := &User{Id: 2, Roles: []Role{ROLE_LISTENER}}
+	canDelete, err := canDeleteUser(*actionUser, *userToDelete)
+	assert.Nil(suite.T(), err)
+	assert.True(suite.T(), canDelete)
+
+	// Cannot delete because action user has no role.
+	actionUser = &User{Id: 1}
+	userToDelete = &User{Id: 2, Roles: []Role{ROLE_LISTENER}}
+	canDelete, err = canDeleteUser(*actionUser, *userToDelete)
+	assert.NotNil(suite.T(), err)
+	assert.False(suite.T(), canDelete)
+
+	// Cannot delete because user to delete has no role.
+	actionUser = &User{Id: 1, Roles: []Role{ROLE_OWNER}}
+	userToDelete = &User{Id: 2}
+	canDelete, err = canDeleteUser(*actionUser, *userToDelete)
+	assert.NotNil(suite.T(), err)
+	assert.False(suite.T(), canDelete)
+
+	// Cannot delete because user to delete has role OWNER.
+	actionUser = &User{Id: 1, Roles: []Role{ROLE_OWNER}}
+	userToDelete = &User{Id: 2, Roles: []Role{ROLE_OWNER}}
+	canDelete, err = canDeleteUser(*actionUser, *userToDelete)
+	assert.NotNil(suite.T(), err)
+	assert.False(suite.T(), canDelete)
+
+	// Cannot delete because user to delete has role ADMIN and action user has role LISTENER.
+	actionUser = &User{Id: 1, Roles: []Role{ROLE_LISTENER}}
+	userToDelete = &User{Id: 2, Roles: []Role{ROLE_ADMIN}}
+	canDelete, err = canDeleteUser(*actionUser, *userToDelete)
+	assert.NotNil(suite.T(), err)
+	assert.False(suite.T(), canDelete)
 }

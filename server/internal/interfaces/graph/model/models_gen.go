@@ -13,6 +13,7 @@ type Settings struct {
 	CoversPreferredSource  *string `json:"coversPreferredSource"`
 	DisableLibrarySettings *bool   `json:"disableLibrarySettings"`
 	Version                *string `json:"version"`
+	AuthEnabled            *bool   `json:"authEnabled"`
 }
 
 type UserInput struct {

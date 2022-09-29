@@ -41,7 +41,6 @@ type User {
   id: ID!
   name: String!
   email: String
-  password: String
   data: String
   dateAdded: Int
   roles: [String]
@@ -52,6 +51,7 @@ type Settings {
   coversPreferredSource: String
   disableLibrarySettings: Boolean
   version: String
+  authEnabled: Boolean
 }
 
 type LibraryUpdateState {

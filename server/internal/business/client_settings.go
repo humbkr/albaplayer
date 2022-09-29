@@ -11,6 +11,7 @@ type ClientSettings struct {
 	LibraryPath                 string
 	CoversPreferredSource       string
 	DisableLibraryConfiguration bool
+	AuthEnabled                 bool
 }
 
 type ClientSettingsInteractor struct{}
@@ -21,6 +22,7 @@ func (si *ClientSettingsInteractor) GetSettings() ClientSettings {
 	settings.DisableLibraryConfiguration = viper.GetBool("ClientSettings.DisableLibraryConfiguration")
 	settings.LibraryPath = viper.GetString("Library.Path")
 	settings.CoversPreferredSource = viper.GetString("Covers.PreferredSource")
+	settings.AuthEnabled = viper.GetBool("auth.enabled")
 
 	return settings
 }

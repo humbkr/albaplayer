@@ -1,30 +1,26 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"github.com/humbkr/albaplayer/internal/business"
-	"github.com/humbkr/albaplayer/internal/utils"
 	"net/http"
 	"time"
 )
 
-const ACCESS_TOKEN_COOKIE_EXPIRATION = 10 * time.Minute
-const REFRESH_TOKEN_COOKIE_EXPIRATION = 72 * time.Hour
+const ACCESS_TOKEN_EXPIRATION = 10 * time.Minute
+const REFRESH_TOKEN_EXPIRATION = 72 * time.Hour
 
-func loginUser(userInteractor *business.UsersInteractor, username string, password string) (string, error) {
+func loginUser(userInteractor *business.UsersInteractor, username string, password string) (TokenPair, error) {
 	// Check if the user credentials are valid.
-	passwordHash, _ := utils.HashPassword(password)
-	user, err := userInteractor.UserLogin(username, passwordHash)
+	user, err := userInteractor.UserGetFromUsername(username)
+	err = CheckPassword(user.Password, password)
+
 	if err != nil {
-		return "", errors.New("invalid credentials")
+		return TokenPair{}, errors.New("invalid credentials")
 	}
 
-	token, errToken := JWTGenerate(user)
-	if errToken != nil {
-		return "", errToken
-	}
-
-	return token, nil
+	return JWTGenerateTokenPair(user)
 }
 
 func validateCurrentUser(authCookie *http.Cookie) (business.User, error) {
@@ -33,12 +29,10 @@ func validateCurrentUser(authCookie *http.Cookie) (business.User, error) {
 	}
 
 	// Check token is valid.
-	token, _, err := JWTValidate(authCookie.Value)
+	_, claims, err := JWTValidateAccessToken(authCookie.Value)
 	if err != nil {
 		return business.User{}, err
 	}
-
-	claims := token.Claims.(*JwtCustomClaim)
 
 	var userRoles []business.Role
 	for _, v := range claims.Roles {
@@ -56,4 +50,30 @@ func validateCurrentUser(authCookie *http.Cookie) (business.User, error) {
 	}
 
 	return user, nil
+}
+
+func refreshToken(userInteractor *business.UsersInteractor, refreshCookie *http.Cookie) (TokenPair, error) {
+	if refreshCookie == nil {
+		return TokenPair{}, errors.New("no refresh token found")
+	}
+
+	// Check token is valid.
+	userID, err := JWTValidateRefreshToken(refreshCookie.Value)
+	if err != nil {
+		return TokenPair{}, err
+	}
+
+	// Get user from database.
+	user, err := userInteractor.GetUser(userID)
+	if err != nil {
+		return TokenPair{}, errors.New("no corresponding user found")
+	}
+
+	// Regenerate the tokens.
+	return JWTGenerateTokenPair(user)
+}
+
+func GetUserFromContext(ctx context.Context) *business.User {
+	raw, _ := ctx.Value(userCtxKey).(*business.User)
+	return raw
 }

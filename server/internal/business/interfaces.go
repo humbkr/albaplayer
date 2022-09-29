@@ -176,6 +176,6 @@ type UserRepository interface {
 	// Exists tests if an entity exists in datasource.
 	Exists(id int) bool
 
-	// Login retrieves a user entity using its username and hashed password.
-	Login(username string, passwordHash string) (entity User, err error)
+	// GetFromUsername retrieves a user entity using its username (for authentication purpose).
+	GetFromUsername(username string) (entity User, err error)
 }

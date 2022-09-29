@@ -142,9 +142,9 @@ func (suite *UserRepoTestSuite) TestExists() {
 	assert.False(suite.T(), exists)
 }
 
-func (suite *UserRepoTestSuite) TestLogin() {
+func (suite *UserRepoTestSuite) TestGetFromUsername() {
 	// Test user retrieval.
-	user, err := suite.UserRepository.Login("Humbkr", "passwordHash")
+	user, err := suite.UserRepository.GetFromUsername("Humbkr")
 	assert.Nil(suite.T(), err)
 	assert.Equal(suite.T(), 1, user.Id)
 	assert.Equal(suite.T(), "Humbkr", user.Name)
@@ -152,15 +152,7 @@ func (suite *UserRepoTestSuite) TestLogin() {
 	assert.Equal(suite.T(), "passwordHash", user.Password)
 	assert.Equal(suite.T(), "testdata", user.Data)
 
-	// Test with a wrong password.
-	user, err = suite.UserRepository.Login("Humbkr", "fakePassword")
-	assert.NotNil(suite.T(), err)
-
-	// Test with a wrong username.
-	user, err = suite.UserRepository.Login("Fake", "passwordHash")
-	assert.NotNil(suite.T(), err)
-
-	// Test with a wrong username and password.
-	user, err = suite.UserRepository.Login("Fake", "fakePassword")
+	// Test with a non-existent username.
+	user, err = suite.UserRepository.GetFromUsername("Doesnotexists")
 	assert.NotNil(suite.T(), err)
 }

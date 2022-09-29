@@ -141,10 +141,10 @@ func (r UserDbRepository) Exists(id int) bool {
 	return err == nil
 }
 
-// Login retrieves a user entity using its username and hashed password.
-func (r UserDbRepository) Login(username string, passwordHash string) (entity business.User, err error) {
-	query := selectUserQuery + " WHERE u.name = ? AND u.password = ?"
-	rows, err := r.AppContext.DB.Query(query, username, passwordHash)
+// GetFromUsername retrieves a user entity using its username (for authentication purpose).
+func (r UserDbRepository) GetFromUsername(username string) (entity business.User, err error) {
+	query := selectUserQuery + " WHERE u.name = ?"
+	rows, err := r.AppContext.DB.Query(query, username)
 	entities, err := processUserRows(rows, err)
 	if err != nil || len(entities) == 0 {
 		return entity, errors.New("invalid credentials")

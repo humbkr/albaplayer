@@ -8,11 +8,6 @@ import (
 	"net/http"
 )
 
-type credentials struct {
-	username string
-	password string
-}
-
 type AuthHandlers struct {
 	UserInteractor *business.UsersInteractor
 }
@@ -24,38 +19,64 @@ func (h AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	credentials := &credentials{}
-	err := json.NewDecoder(r.Body).Decode(&credentials)
-	if err != nil {
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	credentials := struct {
+		Username string
+		Password string
+	}{}
+	err := decoder.Decode(&credentials)
+	if err != nil || credentials.Username == "" || credentials.Password == "" {
 		http.Error(w, "missing fields: username or password", http.StatusBadRequest)
 		return
 	}
 
-	token, err := loginUser(h.UserInteractor, credentials.username, credentials.password)
+	tokens, err := loginUser(h.UserInteractor, credentials.Username, credentials.Password)
 	if err != nil {
 		http.Error(w, "invalid credentials or user not found", http.StatusForbidden)
 		return
 	}
 
-	accessTokenCookie := &http.Cookie{
-		Name:     "access_token",
-		Value:    token,
-		Path:     "/",
-		HttpOnly: true,
-		MaxAge:   int(ACCESS_TOKEN_COOKIE_EXPIRATION.Seconds()),
-	}
-
-	http.SetCookie(w, accessTokenCookie)
+	addAuthCookiesToResponse(w, tokens)
 }
 
 // Logout allows a user to logout.
 func (h AuthHandlers) Logout(w http.ResponseWriter, r *http.Request) {
-	panic("TODO implement")
+	accessTokenCookie := &http.Cookie{
+		Name:     "access_token",
+		Value:    "",
+		HttpOnly: true,
+		MaxAge:   0,
+	}
+
+	refreshTokenCookie := &http.Cookie{
+		Name:     "refresh_token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   0,
+	}
+
+	http.SetCookie(w, accessTokenCookie)
+	http.SetCookie(w, refreshTokenCookie)
 }
 
 // RefreshToken allows a user to refresh its JWT token.
 func (h AuthHandlers) RefreshToken(w http.ResponseWriter, r *http.Request) {
-	panic("TODO implement")
+	cookie, err := r.Cookie("refresh_token")
+	if err != nil {
+		http.Error(w, "No refresh token found", http.StatusBadRequest)
+		return
+	}
+
+	tokens, errToken := refreshToken(h.UserInteractor, cookie)
+	if errToken != nil {
+		http.Error(w, "Invalid refresh token", http.StatusBadRequest)
+		return
+	}
+
+	addAuthCookiesToResponse(w, tokens)
 }
 
 // A private key for context that only this package can access. This is important
@@ -76,27 +97,46 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 				return
 			}
 
-			cookie, err := r.Cookie("auth-cookie")
-
-			// Allow unauthenticated users in.
-			if err != nil || cookie == nil {
-				next.ServeHTTP(w, r)
+			cookie, err := r.Cookie("access_token")
+			if err != nil {
+				http.Error(w, "No authentication token found", http.StatusUnauthorized)
 				return
 			}
 
 			// Validate and get user.
 			user, err := validateCurrentUser(cookie)
 			if err != nil {
-				http.Error(w, "Authentication failed", http.StatusForbidden)
+				http.Error(w, "Authentication failed", http.StatusUnauthorized)
 				return
 			}
 
 			// Put user in context
-			ctx := context.WithValue(r.Context(), userCtxKey, user)
+			ctx := context.WithValue(r.Context(), userCtxKey, &user)
 
 			// And call the next with our new context.
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func addAuthCookiesToResponse(w http.ResponseWriter, tokens TokenPair) {
+	accessTokenCookie := &http.Cookie{
+		Name:     "access_token",
+		Value:    tokens.access,
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   int(ACCESS_TOKEN_EXPIRATION.Seconds()),
+	}
+
+	refreshTokenCookie := &http.Cookie{
+		Name:     "refresh_token",
+		Value:    tokens.refresh,
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   int(REFRESH_TOKEN_EXPIRATION.Seconds()),
+	}
+
+	http.SetCookie(w, accessTokenCookie)
+	http.SetCookie(w, refreshTokenCookie)
 }

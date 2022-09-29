@@ -47,11 +47,18 @@ func convertVariable(variable business.InternalVariable) model.Variable {
 	}
 }
 
-func convertUser(user business.User) model.User {
+func convertUser(user business.User, basicInfoOnly bool) model.User {
 	var roles []*string
 	for _, role := range user.Roles {
 		roleAsString := business.GetRoleAsString(role)
 		roles = append(roles, &roleAsString)
+	}
+
+	if basicInfoOnly {
+		return model.User{
+			ID:   user.Id,
+			Name: &user.Name,
+		}
 	}
 
 	return model.User{
