@@ -24,8 +24,12 @@ func (r *albumResolver) Artist(ctx context.Context, obj *model.Album) (*model.Ar
 }
 
 func (r *albumResolver) Cover(ctx context.Context, obj *model.Album) (*string, error) {
-	coverEndpoint := "/covers/" + strconv.Itoa(*obj.Cover)
-	return &coverEndpoint, nil
+	if *obj.Cover != 0 {
+		coverEndpoint := "/covers/" + strconv.Itoa(*obj.Cover)
+		return &coverEndpoint, nil
+	}
+
+	return nil, nil
 }
 
 func (r *albumResolver) Tracks(ctx context.Context, obj *model.Album) ([]*model.Track, error) {
@@ -295,8 +299,12 @@ func (r *trackResolver) Album(ctx context.Context, obj *model.Track) (*model.Alb
 }
 
 func (r *trackResolver) Cover(ctx context.Context, obj *model.Track) (*string, error) {
-	coverEndpoint := "/covers/" + strconv.Itoa(*obj.Cover)
-	return &coverEndpoint, nil
+	if *obj.Cover != 0 {
+		coverEndpoint := "/covers/" + strconv.Itoa(*obj.Cover)
+		return &coverEndpoint, nil
+	}
+
+	return nil, nil
 }
 
 // Album returns generated.AlbumResolver implementation.
