@@ -1,6 +1,6 @@
 {
   "name": "albaplayer",
-  "version": "2.1.0-rc1",
+  "version": "2.1.0",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.6.4",

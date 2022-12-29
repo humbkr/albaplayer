@@ -292,7 +292,6 @@ const SongActions = styled.div<{ pinned: boolean }>`
     `
     flex-grow: 0;
     flex-shrink: 0;
-    display: block;
     padding-left: 20px;
   `}
 `
