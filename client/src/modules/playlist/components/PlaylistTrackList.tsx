@@ -9,7 +9,7 @@ import {
   DraggableProvided,
   Droppable,
   DropResult,
-} from '@react-forked/dnd'
+} from '@hello-pangea/dnd'
 import { arrayMoveImmutable } from 'common/utils/utils'
 
 type ItemProps = {
