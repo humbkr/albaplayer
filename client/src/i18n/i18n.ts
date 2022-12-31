@@ -6,6 +6,7 @@ import en from './locale_en'
 i18n.use(initReactI18next).init({
   debug: process.env.REACT_APP_DEBUG_MODE === 'true',
   fallbackLng: 'en',
+  returnNull: false,
   interpolation: {
     escapeValue: false,
   },
