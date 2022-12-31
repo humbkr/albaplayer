@@ -1,10 +1,9 @@
-import React from 'react'
 import styled from 'styled-components'
 import Loading from 'common/components/Loading'
 import { useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 
-const LoadingScreen = () => {
+function LoadingScreen() {
   const { t } = useTranslation()
 
   const isFetching = useAppSelector((state) => state.library.isFetching)

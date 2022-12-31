@@ -1,4 +1,3 @@
-import React from 'react'
 import styled, { css, keyframes } from 'styled-components'
 import Icon from 'common/components/Icon'
 
@@ -6,9 +5,9 @@ type Props = {
   size?: string
 }
 
-const Loading = ({ size = '1.8em' }: Props) => (
-  <LoadingStyled fontSize={size}>camera</LoadingStyled>
-)
+function Loading({ size = '1.8em' }: Props) {
+  return <LoadingStyled fontSize={size}>camera</LoadingStyled>
+}
 
 export default Loading
 

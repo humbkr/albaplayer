@@ -1,4 +1,3 @@
-import React from 'react'
 import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
 import { MenuItemEventHandler } from 'react-contexify/lib/types'
 import 'react-contexify/dist/ReactContexify.min.css'
@@ -20,7 +19,7 @@ interface MenuItemEventHandlerPlaylist extends MenuItemEventHandler {
   }
 }
 
-const PlaylistActionsMoreContextMenu: React.FC = () => {
+function PlaylistActionsMoreContextMenu() {
   const { t } = useTranslation()
 
   const playlists = useAppSelector((state) => playlistsSelector(state))

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import NowPlayingQueue from 'modules/now_playing/components/NowPlayingQueue'
 import NowPlayingHeader from 'modules/now_playing/components/NowPlayingHeader'
 
-const NowPlaying = () => {
+function NowPlaying() {
   const [headerIsPinned, setHeaderIsPinned] = useState(false)
 
   useEffect(() => {

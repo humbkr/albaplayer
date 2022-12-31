@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import AlbumMoreActionsContextMenu from '../components/AlbumMoreActionsContextMenu'
 
-const MockComponent: React.FC = () => {
+function MockComponent() {
   const onRightClick = (e: React.MouseEvent) => {
     e.preventDefault()
     contextMenu.show({
@@ -26,7 +26,7 @@ const MockComponent: React.FC = () => {
   )
 }
 
-const MockComponentLimited: React.FC = () => {
+function MockComponentLimited() {
   const onRightClick = (e: React.MouseEvent) => {
     e.preventDefault()
     contextMenu.show({

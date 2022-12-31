@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import Icon from '../../../common/components/Icon'
@@ -8,7 +7,7 @@ type Props = {
   selected?: boolean
 }
 
-const PlaylistCareListItem = ({ item, selected = false }: Props) => {
+function PlaylistCareListItem({ item, selected = false }: Props) {
   const { t } = useTranslation()
   const { track, position } = item
 

@@ -14,7 +14,7 @@ type Props = StyleProps & {
   children: React.ReactNode
 }
 
-const ControlButton = ({
+function ControlButton({
   onClick,
   active,
   size,
@@ -22,18 +22,20 @@ const ControlButton = ({
   noHoverEffect,
   testId = 'control-button',
   children,
-}: Props) => (
-  <Button
-    onClick={onClick}
-    active={active}
-    size={size}
-    disabled={disabled}
-    noHoverEffect={noHoverEffect}
-    data-testid={testId}
-  >
-    {children}
-  </Button>
-)
+}: Props) {
+  return (
+    <Button
+      onClick={onClick}
+      active={active}
+      size={size}
+      disabled={disabled}
+      noHoverEffect={noHoverEffect}
+      data-testid={testId}
+    >
+      {children}
+    </Button>
+  )
+}
 
 export default ControlButton
 

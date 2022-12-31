@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 // @ts-ignore
 const en: Translation = {
   common: {

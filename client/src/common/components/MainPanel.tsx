@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import { Route, Routes } from 'react-router-dom'
 import LibraryBrowser from 'modules/browser/scenes/LibraryBrowser'
@@ -9,7 +8,7 @@ import Playlists from 'modules/playlist/scenes/Playlists'
 import Dashboard from 'modules/dashboard/scenes/Dashboard'
 import { useAppSelector } from 'store/hooks'
 
-const MainPanel = () => {
+function MainPanel() {
   const isFetching = useAppSelector((state) => state.library.isFetching)
   const isInitialized = useAppSelector((state) => state.library.isInitialized)
 

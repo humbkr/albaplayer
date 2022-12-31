@@ -23,10 +23,10 @@ type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const TracksPaneContainer = ({
+function TracksPaneContainer({
   switchPaneHandler,
   forwardedRef,
-}: InternalProps) => {
+}: InternalProps) {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
   const { t } = useTranslation()

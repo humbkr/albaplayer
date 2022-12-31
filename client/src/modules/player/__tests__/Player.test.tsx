@@ -18,7 +18,6 @@ import {
 } from 'modules/player/store/store'
 import resetAllMocks = jest.resetAllMocks
 import clearAllMocks = jest.clearAllMocks
-import React from 'react'
 
 // Required to test components using react-slider.
 global.ResizeObserver = require('resize-observer-polyfill')

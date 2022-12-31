@@ -7,7 +7,7 @@ type Props = {
   searchString?: string
 }
 
-const SearchLink: React.FC<Props> = ({ type, searchString }) => {
+function SearchLink({ type, searchString }: Props) {
   const { searchForAlbum, searchForArtist } = useSearch()
 
   const onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {

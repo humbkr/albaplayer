@@ -27,12 +27,12 @@ type Props = {
   current: number
 }
 
-const NowPlayingQueueList = ({
+function NowPlayingQueueList({
   items,
   onQueueUpdate,
   current,
   itemHeight,
-}: Props) => {
+}: Props) {
   useEffect(() => {
     // Virtuoso's resize observer can throw this error,
     // which is caught by DnD and aborts dragging.
@@ -77,8 +77,8 @@ const NowPlayingQueueList = ({
 
   const Item = React.useMemo(
     () =>
-      ({ provided, item, isDragging }: ItemProps) =>
-        (
+      function ({ provided, item, isDragging }: ItemProps) {
+        return (
           <div
             {...provided.draggableProps}
             {...provided.dragHandleProps}
@@ -89,21 +89,21 @@ const NowPlayingQueueList = ({
               <NowPlayingQueueItem item={item} currentIndex={current} />
             </DraggableItem>
           </div>
-        ),
+        )
+      },
     [current]
   )
 
   const HeightPreservingItem = React.useMemo(
     () =>
       // @ts-ignore
-      ({ children, ...props }) =>
-        (
-          // The height is necessary to prevent the item container from collapsing,
-          // which confuses Virtuoso measurements.
+      function ({ children, ...props }) {
+        return (
           <div {...props} style={{ height: `${itemHeight}px` }}>
             {children}
           </div>
-        ),
+        )
+      },
     [itemHeight]
   )
 

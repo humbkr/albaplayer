@@ -1,4 +1,3 @@
-import React from 'react'
 import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
@@ -13,7 +12,7 @@ import {
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 
-const ConditionalItem: React.FC<any> = ({ children, ...props }) => {
+function ConditionalItem({ children, ...props }: any) {
   if (!props.propsFromTrigger.displayAllActions) {
     return null
   }
@@ -22,10 +21,12 @@ const ConditionalItem: React.FC<any> = ({ children, ...props }) => {
   return <Item {...props}>{children}</Item>
 }
 
-const AlbumMoreActionsContextMenu: React.FC<{
+type Props = {
   menuId: string
   onHidden: () => void
-}> = ({ menuId, onHidden }) => {
+}
+
+function AlbumMoreActionsContextMenu({ menuId, onHidden }: Props) {
   const { t } = useTranslation()
 
   const playlists = useAppSelector((state) => playlistsSelector(state))

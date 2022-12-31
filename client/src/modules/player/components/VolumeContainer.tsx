@@ -1,4 +1,4 @@
-import React, { FunctionComponent, SVGProps, useState } from 'react'
+import { FunctionComponent, SVGProps, useState } from 'react'
 import ReactSlider from 'react-slider'
 import styled from 'styled-components'
 import { ReactComponent as MuteIcon } from '../assets/mute.svg'

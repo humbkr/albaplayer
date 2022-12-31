@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import { NavLink } from 'react-router-dom'
 import Icon from 'common/components/Icon'
@@ -9,12 +8,14 @@ type Props = {
   children?: React.ReactNode
 }
 
-const SidebarNavLink = ({ to, icon, children }: Props) => (
-  <SidebarNavLinkWrapper to={to}>
-    {icon && <Icon>{icon}</Icon>}
-    <span>{children}</span>
-  </SidebarNavLinkWrapper>
-)
+function SidebarNavLink({ to, icon, children }: Props) {
+  return (
+    <SidebarNavLinkWrapper to={to}>
+      {icon && <Icon>{icon}</Icon>}
+      <span>{children}</span>
+    </SidebarNavLinkWrapper>
+  )
+}
 
 export default SidebarNavLink
 

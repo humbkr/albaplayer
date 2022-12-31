@@ -1,11 +1,12 @@
-import React from 'react'
 import styled from 'styled-components'
 import ActionButtonIcon from 'common/components/ActionButtonIcon'
 import { useTranslation } from 'react-i18next'
 
-const PlaylistListHeader: React.FC<{
+type Props = {
   onAddClick: () => void
-}> = ({ onAddClick }: { onAddClick: () => void }) => {
+}
+
+function PlaylistListHeader({ onAddClick }: Props) {
   const { t } = useTranslation()
 
   return (

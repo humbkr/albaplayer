@@ -8,6 +8,7 @@ module.exports = {
   extends: [
     'react-app',
     'react-app/jest',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -21,6 +22,7 @@ module.exports = {
   root: true,
   rules: {
     '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/semi': 'off',
     'arrow-parens': ['warn', 'always'],
     'arrow-body-style': ['warn'],
     'capitalized-comments': [
@@ -35,6 +37,7 @@ module.exports = {
       'exports': 'always-multiline',
       'functions': 'ignore',
     }],
+    'curly': ['warn', 'all'],
     'import/order': ['warn'],
     'import/no-anonymous-default-export': 'off',
     'import/no-duplicates': 'error',
@@ -47,11 +50,16 @@ module.exports = {
     'no-empty-pattern': ['error'],
     'no-inline-comments': 'warn',
     'no-multi-assign': ['error'],
-    'no-multiple-empty-lines': ['error', { 'max': 2, 'maxEOF': 1 }],
+    'no-multiple-empty-lines': ['error', { 'max': 2, 'maxEOF': 1, 'maxBOF': 0 }],
     'no-nested-ternary': 'error',
+    'no-param-reassign': 'off',
     'no-var': 'error',
     'object-curly-newline': ['warn'],
     'object-curly-spacing': ['warn', 'always'],
+    'react/function-component-definition': [
+      'warn',
+      { namedComponents: 'function-declaration', unnamedComponents: 'function-expression' },
+    ],
     'react-hooks/exhaustive-deps': 'error',
     'semi': ['warn', 'never'],
   },

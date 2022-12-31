@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import AlbumTeaser from 'modules/dashboard/components/AlbumTeaser'
 import { Link } from 'react-router-dom'
@@ -8,7 +8,7 @@ import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import { getRandomAlbums } from '../store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
-const RandomAlbums: React.FC = () => {
+function RandomAlbums() {
   const { t } = useTranslation()
 
   const randomAlbums = useAppSelector((state) => state.dashboard.randomAlbums)

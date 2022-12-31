@@ -11,24 +11,26 @@ type Props = {
   children?: React.ReactNode
 }
 
-const ActionButton = ({
+function ActionButton({
   onClick,
   icon = '',
   raised = false,
   disabled = false,
   testId,
   children,
-}: Props) => (
-  <ActionButtonWrapper
-    raised={raised}
-    disabled={disabled}
-    onClick={onClick}
-    data-testid={testId}
-  >
-    {icon && <Icon>{icon}</Icon>}
-    <span>{children}</span>
-  </ActionButtonWrapper>
-)
+}: Props) {
+  return (
+    <ActionButtonWrapper
+      raised={raised}
+      disabled={disabled}
+      onClick={onClick}
+      data-testid={testId}
+    >
+      {icon && <Icon>{icon}</Icon>}
+      <span>{children}</span>
+    </ActionButtonWrapper>
+  )
+}
 
 export default ActionButton
 

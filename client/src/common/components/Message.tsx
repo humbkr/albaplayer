@@ -13,7 +13,7 @@ type Props = {
   children?: React.ReactNode
 }
 
-const Message = ({ type, children }: Props) => {
+function Message({ type, children }: Props) {
   let Picto
   switch (type) {
     case MessageType.info:

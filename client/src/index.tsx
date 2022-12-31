@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
@@ -7,7 +6,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 // TODO: reactivate strict mode when https://github.com/react-forked/dnd/issues/293 is available.
 root.render(
   // <React.StrictMode>
-    <App />
+  <App />
   // </React.StrictMode>
 )
 

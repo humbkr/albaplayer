@@ -10,7 +10,12 @@ type Props = {
   onContextMenu: (p: { scrollToRow: number }) => void
 }
 
-const PlaylistItem = ({ item, handleRemoveTrack, onContextMenu, selected = false }: Props) => {
+function PlaylistItem({
+  item,
+  handleRemoveTrack,
+  onContextMenu,
+  selected = false,
+}: Props) {
   const { track, position } = item
 
   const onRightClick = (e: React.MouseEvent) => {

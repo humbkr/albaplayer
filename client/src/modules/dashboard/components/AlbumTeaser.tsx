@@ -8,11 +8,13 @@ import ActionButtonCircle from '../../../common/components/ActionButtonCircle'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
 
-const AlbumTeaser: React.FC<{
+type Props = {
   album: Album
   selected: boolean
   setSelected: (albumId: string) => void
-}> = ({ album, selected, setSelected }) => {
+}
+
+function AlbumTeaser({ album, selected, setSelected }: Props) {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
 

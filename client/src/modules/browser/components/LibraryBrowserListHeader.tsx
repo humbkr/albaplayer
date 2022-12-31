@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import SelectContainer, { Option } from 'common/components/SelectContainer'
 
@@ -9,19 +8,26 @@ type Props = {
   onChange: (event: React.MouseEvent<HTMLSelectElement>) => void
 }
 
-const LibraryBrowserListHeader = ({ orderByOptions, orderBy, title = '', onChange }: Props) => (
-  <LibraryBrowserListHeaderWrapper>
-    <ContentWrapper>
-      <h2>{title}</h2>
-      <SelectContainer
-        tabIndex="-1"
-        options={orderByOptions}
-        value={orderBy}
-        onChangeHandler={onChange}
-      />
-    </ContentWrapper>
-  </LibraryBrowserListHeaderWrapper>
-)
+function LibraryBrowserListHeader({
+  orderByOptions,
+  orderBy,
+  title = '',
+  onChange,
+}: Props) {
+  return (
+    <LibraryBrowserListHeaderWrapper>
+      <ContentWrapper>
+        <h2>{title}</h2>
+        <SelectContainer
+          tabIndex="-1"
+          options={orderByOptions}
+          value={orderBy}
+          onChangeHandler={onChange}
+        />
+      </ContentWrapper>
+    </LibraryBrowserListHeaderWrapper>
+  )
+}
 
 export default LibraryBrowserListHeader
 

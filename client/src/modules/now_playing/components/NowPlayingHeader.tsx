@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
 import { formatDuration } from 'common/utils/utils'
@@ -43,9 +42,11 @@ function getTrackInfoForDisplay(
     : null
 }
 
-const NowPlayingHeader: React.FC<{
+type Props = {
   pinned?: boolean
-}> = ({ pinned = false }) => {
+}
+
+function NowPlayingHeader({ pinned = false }: Props) {
   const { t } = useTranslation()
 
   const track = useAppSelector((state) => state.player.track)

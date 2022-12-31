@@ -1,4 +1,3 @@
-import React from 'react'
 import { Menu as ContextMenu, Item, Separator, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
@@ -15,7 +14,7 @@ import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import { search, setSearchFilter } from '../../browser/store'
 
-const QueueItemContextMenu = () => {
+function QueueItemContextMenu() {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()

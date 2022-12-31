@@ -12,7 +12,7 @@ jest.mock('react-modal', () => {
   return TestReactModal.default
 })
 
-const MockComponent: React.FC = () => {
+function MockComponent() {
   const onRightClick = (e: React.MouseEvent) => {
     e.preventDefault()
     contextMenu.show({

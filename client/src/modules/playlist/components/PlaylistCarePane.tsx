@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import PlaylistCareListItem from 'modules/playlist/components/PlaylistCareListItem'
@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { findSimilarTracks } from '../utils/playlistCare'
 import { PlaylistPane, playlistUpdateItems, playlistChangePane } from '../store'
 
-const PlaylistsCarePane = () => {
+function PlaylistsCarePane() {
   const { t } = useTranslation()
 
   const library: LibraryStateType = useAppSelector((state) => state.library)

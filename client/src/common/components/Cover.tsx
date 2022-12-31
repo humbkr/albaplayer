@@ -1,23 +1,26 @@
-import React from 'react'
 import styled from 'styled-components'
 import coverPlaceholder from '../assets/images/cover_placeholder.png'
 import { constants as APIConstants } from '../../api'
 
-const Cover: React.FC<{
+type Props = {
   src?: string
-}> = ({ src }) => (
-  <div>
-    <DefaultCover src={coverPlaceholder} data-testid="cover-default" />
-    {src && (
-      <RealCoverWrapper cover={APIConstants.BACKEND_BASE_URL + src}>
-        <RealCover
-          src={APIConstants.BACKEND_BASE_URL + src}
-          data-testid="cover-image"
-        />
-      </RealCoverWrapper>
-    )}
-  </div>
-)
+}
+
+function Cover({ src }: Props) {
+  return (
+    <div>
+      <DefaultCover src={coverPlaceholder} data-testid="cover-default" />
+      {src && (
+        <RealCoverWrapper cover={APIConstants.BACKEND_BASE_URL + src}>
+          <RealCover
+            src={APIConstants.BACKEND_BASE_URL + src}
+            data-testid="cover-image"
+          />
+        </RealCoverWrapper>
+      )}
+    </div>
+  )
+}
 
 export default Cover
 

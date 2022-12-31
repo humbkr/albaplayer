@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import TracksPaneContainer from 'modules/browser/components/TracksPaneContainer'
 import ArtistsPaneContainer from 'modules/browser/components/ArtistsPaneContainer'
@@ -13,7 +13,7 @@ import { useAppDispatch } from 'store/hooks'
  * Handles the switch between artists / albums / tracks pane using
  * left and right arrows.
  */
-const LibraryBrowser: React.FC = () => {
+function LibraryBrowser() {
   // Used to focus the search input at mount.
   const searchBar = useRef<HTMLInputElement>(null)
   // List components of each pane.

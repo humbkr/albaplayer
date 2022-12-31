@@ -1,11 +1,10 @@
-import React from 'react'
 import { Menu as ContextMenu, Item, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import { playlistsSelector, addCurrentQueue } from 'modules/playlist/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 
-const QueueActionsMoreContextMenu: React.FC = () => {
+function QueueActionsMoreContextMenu() {
   const { t } = useTranslation()
 
   const playlists = useAppSelector((state) => playlistsSelector(state))

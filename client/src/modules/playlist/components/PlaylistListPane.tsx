@@ -22,11 +22,11 @@ type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const PlaylistListPane = ({
+function PlaylistListPane({
   switchPaneHandler,
   openPlaylistModal,
   forwardedRef,
-}: InternalProps) => {
+}: InternalProps) {
   const [modalPlayerIsOpen, setModalPlayerIsOpen] = useState(false)
 
   const selected = useAppSelector(

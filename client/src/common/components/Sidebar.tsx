@@ -1,10 +1,9 @@
-import React from 'react'
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import Player from 'modules/player/components/Player'
 import SidebarNavLink from './SidebarNavLink'
 
-const Sidebar = () => {
+function Sidebar() {
   const { t } = useTranslation()
 
   return (

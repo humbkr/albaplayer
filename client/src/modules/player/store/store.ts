@@ -26,9 +26,8 @@ export const {
   queueAddTracksAfterCurrent,
 } = queueSlice.actions
 
-export const setItemFromQueue =
-  (itemPosition: number): AppThunk =>
-  (dispatch, getState) => {
+export const setItemFromQueue = (itemPosition: number): AppThunk =>
+  function (dispatch, getState) {
     const state = getState()
 
     if (
@@ -209,9 +208,8 @@ export const addPlaylist =
  * Selects the next track to play from the queue, get its info,
  * and dispatch required actions.
  */
-export const setNextTrack =
-  (endOfTrack: boolean): AppThunk =>
-  (dispatch, getState) => {
+export const setNextTrack = (endOfTrack: boolean): AppThunk =>
+  function (dispatch, getState) {
     const state = getState() as RootState
 
     let nextTrackId = '0'
@@ -269,44 +267,45 @@ export const setNextTrack =
  * Selects the previous track to play from the queue, get its info,
  * and dispatch required actions.
  */
-export const setPreviousTrack = (): AppThunk => (dispatch, getState) => {
-  const state = getState()
+export const setPreviousTrack = (): AppThunk =>
+  function (dispatch, getState) {
+    const state = getState()
 
-  let prevTrackId = '0'
-  let newQueuePosition = 0
+    let prevTrackId = '0'
+    let newQueuePosition = 0
 
-  // Get trackId of the previous track in playlist.
-  if (!state.player.track) {
-    // Do nothing.
-    return null
+    // Get trackId of the previous track in playlist.
+    if (!state.player.track) {
+      // Do nothing.
+      return null
+    }
+
+    if (state.player.shuffle) {
+      // TODO: shuffle functionality is currently shit.
+      newQueuePosition = Math.floor(Math.random() * state.queue.items.length)
+      prevTrackId = state.queue.items[newQueuePosition].track.id
+    } else if (state.queue.current - 1 >= 0) {
+      // Get previous song in queue.
+      newQueuePosition = state.queue.current - 1
+      prevTrackId = state.queue.items[newQueuePosition].track.id
+    } else if (
+      state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL
+    ) {
+      // Beginning of the queue.
+      // Loop back to the last track of the queue.
+      newQueuePosition = state.queue.items.length - 1
+      prevTrackId = state.queue.items[newQueuePosition].track.id
+    } else {
+      // No further track to play, do nothing.
+      return null
+    }
+
+    // Make API call to get the track full info.
+    return api.getFullTrackInfo(prevTrackId).then((response) => {
+      dispatch(playerSetTrack(response.data.track))
+      dispatch(queueSetCurrent(newQueuePosition))
+    })
   }
-
-  if (state.player.shuffle) {
-    // TODO: shuffle functionality is currently shit.
-    newQueuePosition = Math.floor(Math.random() * state.queue.items.length)
-    prevTrackId = state.queue.items[newQueuePosition].track.id
-  } else if (state.queue.current - 1 >= 0) {
-    // Get previous song in queue.
-    newQueuePosition = state.queue.current - 1
-    prevTrackId = state.queue.items[newQueuePosition].track.id
-  } else if (
-    state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL
-  ) {
-    // Beginning of the queue.
-    // Loop back to the last track of the queue.
-    newQueuePosition = state.queue.items.length - 1
-    prevTrackId = state.queue.items[newQueuePosition].track.id
-  } else {
-    // No further track to play, do nothing.
-    return null
-  }
-
-  // Make API call to get the track full info.
-  return api.getFullTrackInfo(prevTrackId).then((response) => {
-    dispatch(playerSetTrack(response.data.track))
-    dispatch(queueSetCurrent(newQueuePosition))
-  })
-}
 
 export const getTracksFromAlbum = (
   id: string,
