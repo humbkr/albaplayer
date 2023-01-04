@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import AlbumTeaserHorizontal from 'modules/dashboard/components/AlbumTeaserHorizontal'
 import { Link } from 'react-router-dom'
@@ -24,7 +24,7 @@ export const getRecentlyAddedAlbums = (
   }))
 }
 
-const RecentlyAddedAlbums: React.FC = () => {
+function RecentlyAddedAlbums() {
   const { t } = useTranslation()
 
   const library = useAppSelector((state) => state.library)

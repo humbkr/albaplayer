@@ -9,11 +9,13 @@ import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
 
-const AlbumTeaserHorizontal: React.FC<{
+type Props = {
   album: Album
   selected: boolean
   setSelected: (albumId: string) => void
-}> = ({ album, selected, setSelected }) => {
+}
+
+function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
   const { t } = useTranslation()
 
   const dispatch = useAppDispatch()

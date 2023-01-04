@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import styled, { withTheme } from 'styled-components'
 import Modal from 'react-modal'
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik'
@@ -21,7 +21,7 @@ type Props = {
   onEditPlaylist: (playlist: Playlist) => void
 }
 
-const PlaylistAddPopup = ({
+function PlaylistAddPopup({
   id,
   isOpen,
   onClose,
@@ -30,7 +30,7 @@ const PlaylistAddPopup = ({
   theme,
   onCreatePlaylist,
   onEditPlaylist,
-}: Props) => {
+}: Props) {
   const { t } = useTranslation()
   const titleField = useRef<HTMLInputElement>(null)
 

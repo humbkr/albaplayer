@@ -11,7 +11,7 @@ type Props = {
   testId?: string
 }
 
-const ActionButtonCircle = ({
+function ActionButtonCircle({
   size = 50,
   borderWidth = 1,
   color,
@@ -19,17 +19,19 @@ const ActionButtonCircle = ({
   backgroundColor = 'transparent',
   onClick,
   testId,
-}: Props) => (
-  <ActionButtonCircleWrapper
-    // @ts-ignore
-    onClick={onClick}
-    color={color}
-    data-testid={testId}
-    size={size}
-  >
-    {icon}
-  </ActionButtonCircleWrapper>
-)
+}: Props) {
+  return (
+    <ActionButtonCircleWrapper
+      // @ts-ignore
+      onClick={onClick}
+      color={color}
+      data-testid={testId}
+      size={size}
+    >
+      {icon}
+    </ActionButtonCircleWrapper>
+  )
+}
 
 export default ActionButtonCircle
 

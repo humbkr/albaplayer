@@ -14,7 +14,7 @@ type Props = {
   currentIndex: number
 }
 
-const NowPlayingQueueItem = ({ item, currentIndex }: Props) => {
+function NowPlayingQueueItem({ item, currentIndex }: Props) {
   const isPlaying = useAppSelector((state) => state.player.playing)
   const dispatch = useAppDispatch()
 

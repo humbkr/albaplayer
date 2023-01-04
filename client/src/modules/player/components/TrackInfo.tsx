@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import Ripple from 'common/components/Ripple'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
@@ -6,10 +5,12 @@ import { useTranslation } from 'react-i18next'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
 
-const TrackInfo: React.FC<{
+type Props = {
   track: Track
   onClick: () => void
-}> = ({ track, onClick }) => {
+}
+
+function TrackInfo({ track, onClick }: Props) {
   const { t } = useTranslation()
 
   const trackTitle = track?.title || t('library.unknownTitle')

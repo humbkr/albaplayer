@@ -1,5 +1,5 @@
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import Sidebar from 'common/components/Sidebar'
 import MainPanel from 'common/components/MainPanel'
 import { initLibrary } from 'modules/library/store'

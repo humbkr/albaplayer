@@ -23,7 +23,7 @@ type InternalProps = Props & {
   forwardedRef: Ref<HTMLDivElement>
 }
 
-const VirtualList = ({
+function VirtualList({
   theme,
   items,
   itemDisplay,
@@ -31,7 +31,7 @@ const VirtualList = ({
   onItemClick,
   onKeyDown,
   forwardedRef,
-}: InternalProps) => {
+}: InternalProps) {
   const ref = React.useRef<VirtuosoHandle | null>(null)
   const listRef = React.useRef(null)
 

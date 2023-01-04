@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
-import React from 'react'
+
 import { ThemeProvider } from 'styled-components'
 import themeDefault from 'themes/default'
 import userEvent from '@testing-library/user-event'

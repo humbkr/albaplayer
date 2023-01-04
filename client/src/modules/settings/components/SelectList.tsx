@@ -16,7 +16,13 @@ type Props = {
   testId?: string
 }
 
-const SelectList = ({ value, onChangeHandler, options, testId, tabIndex = '' }: Props) => {
+function SelectList({
+  value,
+  onChangeHandler,
+  options,
+  testId,
+  tabIndex = '',
+}: Props) {
   const optionsHtml = options.map((option) => (
     <option key={option.value} value={option.value}>
       {option.label}

@@ -1,14 +1,15 @@
-import React from 'react'
 import styled from 'styled-components'
 import RandomAlbums from '../components/RandomAlbums'
 import RecentlyAddedAlbums from '../components/RecentlyAddedAlbums'
 
-const Dashboard = () => (
-  <Wrapper>
-    <RandomAlbums />
-    <RecentlyAddedAlbums />
-  </Wrapper>
-)
+function Dashboard() {
+  return (
+    <Wrapper>
+      <RandomAlbums />
+      <RecentlyAddedAlbums />
+    </Wrapper>
+  )
+}
 
 export default Dashboard
 

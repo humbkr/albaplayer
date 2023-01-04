@@ -6,9 +6,11 @@ import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 
-const LibraryBrowserSearchBar: React.FC<{
+type Props = {
   forwardedRef: Ref<HTMLElement>
-}> = ({ forwardedRef }) => {
+}
+
+function LibraryBrowserSearchBar({ forwardedRef }: Props) {
   const { t } = useTranslation()
 
   const searchState = useAppSelector((state) => state.libraryBrowser.search)

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { render, fireEvent, screen } from '@testing-library/react'
 // eslint-disable-next-line import/no-extraneous-dependencies

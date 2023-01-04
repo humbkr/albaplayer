@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
 import QueueActionsMoreContextMenu from './QueueActionsMoreContextMenu'
 
-const NowPlayingQueueActions = () => {
+function NowPlayingQueueActions() {
   const { t } = useTranslation()
 
   const { items } = useAppSelector((state) => state.queue)

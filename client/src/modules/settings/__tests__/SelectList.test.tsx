@@ -1,4 +1,3 @@
-import React from 'react'
 import { render, fireEvent, screen } from '@testing-library/react'
 import { ThemeProvider } from 'styled-components'
 import themeDefault from '../../../themes/default'

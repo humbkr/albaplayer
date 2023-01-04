@@ -1,4 +1,3 @@
-import React from 'react'
 import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
@@ -16,7 +15,7 @@ import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import { search, setSearchFilter } from '../../browser/store'
 
-const PlaylistTrackContextMenu = () => {
+function PlaylistTrackContextMenu() {
   const { t } = useTranslation()
 
   const playlists = useAppSelector((state) => playlistsSelector(state))

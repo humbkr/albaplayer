@@ -80,7 +80,10 @@ export const immutableNestedSort = (
 /**
  * Sort function specifically designed for tracks list.
  */
-export const immutableSortTracks = (items: Array<any>, prop: string): Array<any> => {
+export const immutableSortTracks = (
+  items: Array<any>,
+  prop: string
+): Array<any> => {
   let result = 0
 
   return [...items].sort((propA, propB) => {
@@ -127,7 +130,11 @@ export const getRandomInt = (min: number, max: number): number => {
   return Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal
 }
 
-export function arrayMoveMutable(array: unknown[], fromIndex: number, toIndex: number): void {
+export function arrayMoveMutable(
+  array: unknown[],
+  fromIndex: number,
+  toIndex: number
+): void {
   const startIndex = fromIndex < 0 ? array.length + fromIndex : fromIndex
 
   if (startIndex >= 0 && startIndex < array.length) {

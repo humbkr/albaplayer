@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import styled, { withTheme } from 'styled-components'
 import Modal from 'react-modal'
 import { useTranslation } from 'react-i18next'

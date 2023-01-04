@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event'
 import TrackContextMenu from '../components/TrackContextMenu'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 
-const MockComponent: React.FC = () => {
+function MockComponent() {
   const onRightClick = (e: React.MouseEvent) => {
     e.preventDefault()
     contextMenu.show({

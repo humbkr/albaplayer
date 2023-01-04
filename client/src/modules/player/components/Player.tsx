@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import TrackInfo from 'modules/player/components/TrackInfo'
 import Controls from 'modules/player/components/Controls'

@@ -12,7 +12,7 @@ type Props = {
   testId?: string
 }
 
-const ActionButtonIcon = ({
+function ActionButtonIcon({
   onClick,
   icon,
   theme,
@@ -20,17 +20,19 @@ const ActionButtonIcon = ({
   disabled = false,
   size,
   testId = '',
-}: Props) => (
-  <Wrapper
-    className={className}
-    disabled={disabled}
-    // @ts-ignore
-    onClick={onClick}
-    data-testid={testId}
-  >
-    <Icon size={size || theme.buttons.iconSize}>{icon}</Icon>
-  </Wrapper>
-)
+}: Props) {
+  return (
+    <Wrapper
+      className={className}
+      disabled={disabled}
+      // @ts-ignore
+      onClick={onClick}
+      data-testid={testId}
+    >
+      <Icon size={size || theme.buttons.iconSize}>{icon}</Icon>
+    </Wrapper>
+  )
+}
 
 export default withTheme(ActionButtonIcon)
 

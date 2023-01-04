@@ -1,8 +1,9 @@
+import { libraryInitialState, LibraryStateType } from 'modules/library/store'
 import {
-  libraryInitialState,
-  LibraryStateType,
-} from 'modules/library/store'
-import { arrayMoveImmutable, arrayMoveMutable, immutableSortTracks } from '../utils/utils'
+  arrayMoveImmutable,
+  arrayMoveMutable,
+  immutableSortTracks,
+} from '../utils/utils'
 
 const mockLibraryState: LibraryStateType = {
   ...libraryInitialState,

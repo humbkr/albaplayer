@@ -1,4 +1,3 @@
-import React from 'react'
 import styled, { withTheme } from 'styled-components'
 import { queueReplace, queueSetCurrent } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
@@ -12,7 +11,7 @@ type Props = {
   theme: AppTheme
 }
 
-const NowPlayingQueue = ({ theme }: Props) => {
+function NowPlayingQueue({ theme }: Props) {
   const { t } = useTranslation()
 
   const { items, current } = useAppSelector((state) => state.queue)

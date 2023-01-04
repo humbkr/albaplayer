@@ -9,7 +9,7 @@ import {
   DraggableProvided,
   Droppable,
   DropResult,
-} from '@react-forked/dnd'
+} from '@hello-pangea/dnd'
 import { arrayMoveImmutable } from 'common/utils/utils'
 
 type ItemProps = {
@@ -35,7 +35,7 @@ type InternalProps = Props & {
 }
 
 // Final list element.
-const PlaylistTrackList = ({
+function PlaylistTrackList({
   items,
   playlistId,
   currentPosition,
@@ -45,7 +45,7 @@ const PlaylistTrackList = ({
   onItemClick,
   onTrackListUpdate,
   theme,
-}: InternalProps) => {
+}: InternalProps) {
   useEffect(() => {
     // Virtuoso's resize observer can throw this error,
     // which is caught by DnD and aborts dragging.
@@ -87,7 +87,7 @@ const PlaylistTrackList = ({
 
   const Item = React.useMemo(
     () =>
-      ({ provided, item, index, isDragging }: ItemProps) => {
+      function ({ provided, item, index, isDragging }: ItemProps) {
         const selected = index === currentPosition
 
         return (
@@ -123,14 +123,13 @@ const PlaylistTrackList = ({
   const HeightPreservingItem = React.useMemo(
     () =>
       // @ts-ignore
-      ({ children, ...props }) =>
-        (
-          // The height is necessary to prevent the item container from collapsing,
-          // which confuses Virtuoso measurements.
+      function ({ children, ...props }) {
+        return (
           <div {...props} style={{ height: theme.itemHeight }}>
             {children}
           </div>
-        ),
+        )
+      },
     [theme.itemHeight]
   )
 

@@ -7,7 +7,7 @@ import {
   DropResult,
   Droppable,
   Draggable,
-} from '@react-forked/dnd'
+} from '@hello-pangea/dnd'
 import styled from 'styled-components'
 import { arrayMoveImmutable } from 'common/utils/utils'
 
@@ -27,14 +27,19 @@ type Props = {
   current: number
 }
 
-const NowPlayingQueueList = ({ items, onQueueUpdate, current, itemHeight }: Props) => {
+function NowPlayingQueueList({
+  items,
+  onQueueUpdate,
+  current,
+  itemHeight,
+}: Props) {
   useEffect(() => {
     // Virtuoso's resize observer can throw this error,
     // which is caught by DnD and aborts dragging.
     window.addEventListener('error', (e) => {
       if (
         e.message ===
-        'ResizeObserver loop completed with undelivered notifications.' ||
+          'ResizeObserver loop completed with undelivered notifications.' ||
         e.message === 'ResizeObserver loop limit exceeded'
       ) {
         e.stopImmediatePropagation()
@@ -46,7 +51,10 @@ const NowPlayingQueueList = ({ items, onQueueUpdate, current, itemHeight }: Prop
 
   const onDragEnd = React.useCallback(
     (result: DropResult) => {
-      if (!result.destination || result.source.index === result.destination.index) {
+      if (
+        !result.destination ||
+        result.source.index === result.destination.index
+      ) {
         return
       }
 
@@ -67,29 +75,37 @@ const NowPlayingQueueList = ({ items, onQueueUpdate, current, itemHeight }: Prop
     [current, items, onQueueUpdate]
   )
 
-  const Item = React.useMemo(() => ({ provided, item, isDragging }: ItemProps) => (
-    <div
-      {...provided.draggableProps}
-      {...provided.dragHandleProps}
-      ref={provided.innerRef}
-      style={{ ...provided.draggableProps.style }}
-    >
-      <DraggableItem isDragging={isDragging}>
-        <NowPlayingQueueItem item={item} currentIndex={current} />
-      </DraggableItem>
-    </div>
-  ), [current])
-
-  const HeightPreservingItem = React.useMemo(() =>
-    // @ts-ignore
-   ({ children, ...props }) => (
-    // The height is necessary to prevent the item container from collapsing,
-    // which confuses Virtuoso measurements.
-    <div {...props} style={{ height: `${itemHeight}px` }}>
-      {children}
-    </div>
+  const Item = React.useMemo(
+    () =>
+      function ({ provided, item, isDragging }: ItemProps) {
+        return (
+          <div
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
+            style={{ ...provided.draggableProps.style }}
+          >
+            <DraggableItem isDragging={isDragging}>
+              <NowPlayingQueueItem item={item} currentIndex={current} />
+            </DraggableItem>
+          </div>
+        )
+      },
+    [current]
   )
-  , [itemHeight])
+
+  const HeightPreservingItem = React.useMemo(
+    () =>
+      // @ts-ignore
+      function ({ children, ...props }) {
+        return (
+          <div {...props} style={{ height: `${itemHeight}px` }}>
+            {children}
+          </div>
+        )
+      },
+    [itemHeight]
+  )
 
   return (
     <div
@@ -101,7 +117,11 @@ const NowPlayingQueueList = ({ items, onQueueUpdate, current, itemHeight }: Prop
           droppableId="droppable"
           mode="virtual"
           renderClone={(provided, snapshot, rubric) => (
-            <Item provided={provided} isDragging={snapshot.isDragging} item={items[rubric.source.index]} />
+            <Item
+              provided={provided}
+              isDragging={snapshot.isDragging}
+              item={items[rubric.source.index]}
+            />
           )}
         >
           {(provided) => (
@@ -115,8 +135,18 @@ const NowPlayingQueueList = ({ items, onQueueUpdate, current, itemHeight }: Prop
                 fixedItemHeight={itemHeight}
                 data={items}
                 itemContent={(index, item) => (
-                  <Draggable draggableId={item.track.id} index={index} key={item.track.id}>
-                    {(provided) => <Item provided={provided} item={item} isDragging={false} />}
+                  <Draggable
+                    draggableId={item.track.id}
+                    index={index}
+                    key={item.track.id}
+                  >
+                    {(provided) => (
+                      <Item
+                        provided={provided}
+                        item={item}
+                        isDragging={false}
+                      />
+                    )}
                   </Draggable>
                 )}
               />
@@ -131,5 +161,6 @@ const NowPlayingQueueList = ({ items, onQueueUpdate, current, itemHeight }: Prop
 export default NowPlayingQueueList
 
 const DraggableItem = styled.div<{ isDragging: boolean }>`
-  ${(props) => (props.isDragging ? `background-color: ${props.theme.highlight}` : '')};
+  ${(props) =>
+    props.isDragging ? `background-color: ${props.theme.highlight}` : ''};
 `

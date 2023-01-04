@@ -15,7 +15,7 @@ type Props = {
   tabIndex?: string
 }
 
-const SelectContainer = ({ value, onChangeHandler, options, tabIndex }: Props) => {
+function SelectContainer({ value, onChangeHandler, options, tabIndex }: Props) {
   const optionsHtml = options.map((option: Option) => (
     <option key={option.value} value={option.value}>
       {option.label}

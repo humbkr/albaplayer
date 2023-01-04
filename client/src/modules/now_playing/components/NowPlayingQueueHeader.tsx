@@ -1,8 +1,7 @@
-import React from 'react'
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 
-const NowPlayingQueueHeader = () => {
+function NowPlayingQueueHeader() {
   const { t } = useTranslation()
 
   return (

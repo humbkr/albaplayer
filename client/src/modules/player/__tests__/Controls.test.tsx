@@ -1,4 +1,3 @@
-import React from 'react'
 import { ThemeProvider } from 'styled-components'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -7,9 +6,13 @@ import Controls from 'modules/player/components/Controls'
 import { PlayerPlaybackMode } from 'modules/player/utils'
 
 // We don't need the VolumeContainer for this test.
-jest.mock('modules/player/components/VolumeContainer', () => () => (
-  <div data-testid="volume-container" />
-))
+jest.mock(
+  'modules/player/components/VolumeContainer',
+  () =>
+    function () {
+      return <div data-testid="volume-container" />
+    }
+)
 
 const mockSetVolume = jest.fn()
 const mockSkipToNext = jest.fn()

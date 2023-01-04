@@ -1,4 +1,3 @@
-import React from 'react'
 import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
@@ -13,7 +12,7 @@ import {
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 
-const ArtistContextMenu = () => {
+function ArtistContextMenu() {
   const { t } = useTranslation()
 
   const playlists = useAppSelector((state) => playlistsSelector(state))

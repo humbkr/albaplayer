@@ -9,7 +9,7 @@ type Props = {
   onContextMenu: (itemId: string, index: number) => void
 }
 
-const AlbumTeaser = ({ item, selected = false, index, onContextMenu }: Props) => {
+function AlbumTeaser({ item, selected = false, index, onContextMenu }: Props) {
   const onRightClick = (e: React.MouseEvent) => {
     e.preventDefault()
     onContextMenu(item.id, index)

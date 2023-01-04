@@ -6,7 +6,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const Ripple = (props: Props) => {
+function Ripple(props: Props) {
   const ripple = useRef<HTMLElement | null>(null)
   const rippleContainer = useRef<HTMLElement | null>(null)
 

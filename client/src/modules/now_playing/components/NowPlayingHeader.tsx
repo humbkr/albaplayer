@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
 import { formatDuration } from 'common/utils/utils'
@@ -6,7 +5,8 @@ import ActionButtonCircle from 'common/components/ActionButtonCircle'
 import { constants } from 'api'
 import SearchLink from 'modules/browser/components/SearchLink'
 import { useAppSelector } from 'store/hooks'
-import { TFunction, useTranslation } from 'react-i18next'
+import { TFunction } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 const SEARCH_ENGINE_URL = 'https://www.google.fr/search?q='
 
@@ -42,9 +42,11 @@ function getTrackInfoForDisplay(
     : null
 }
 
-const NowPlayingHeader: React.FC<{
+type Props = {
   pinned?: boolean
-}> = ({ pinned = false }) => {
+}
+
+function NowPlayingHeader({ pinned = false }: Props) {
   const { t } = useTranslation()
 
   const track = useAppSelector((state) => state.player.track)

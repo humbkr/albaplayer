@@ -1,4 +1,4 @@
-import React, { FunctionComponent, SVGProps } from 'react'
+import { FunctionComponent, SVGProps } from 'react'
 import styled from 'styled-components'
 import VolumeContainer from 'modules/player/components/VolumeContainer'
 import { PlayerPlaybackMode } from '../utils'

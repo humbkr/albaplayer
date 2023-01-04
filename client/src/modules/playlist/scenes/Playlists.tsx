@@ -16,7 +16,7 @@ import PlaylistsCarePane from '../components/PlaylistCarePane'
 // Playlist edition must be accessible to the children of this component.
 export const EditPlaylistContext = React.createContext(null)
 
-const Playlists = () => {
+function Playlists() {
   const [modalPlaylistIsOpen, setModalPlaylistIsOpen] = useState(false)
   const [modalPlaylistMode, setModalPlaylistMode] = useState('add')
 
