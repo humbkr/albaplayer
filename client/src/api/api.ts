@@ -1,10 +1,13 @@
 import { ApolloQueryResult, gql } from '@apollo/client'
-import apolloClient from './apollo'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import { graphqlRequestBaseQuery } from '@rtk-query/graphql-request-base-query'
+import constants from 'api/constants'
 import {
   convertAPIAlbumToAppAlbum,
   convertAPIArtistToAppArtist,
   convertAPITrackToAppTrack,
 } from './helpers'
+import apolloClient from './apollo'
 
 type ApiLibraryInitResult = {
   artists?: ApiArtist[]
@@ -21,6 +24,13 @@ type LibraryInitResponse = {
     variable?: Variable
   }
 }
+
+export const graphQLApi = createApi({
+  baseQuery: graphqlRequestBaseQuery({
+    url: `${constants.BACKEND_BASE_URL}/graphql`,
+  }),
+  endpoints: () => ({}),
+})
 
 const getLibrary = async (): Promise<LibraryInitResponse | null> => {
   // Query used to initialise the browser with all the data from the server.

@@ -65,7 +65,7 @@ function RandomAlbums() {
 export default RandomAlbums
 
 const Wrapper = styled.div`
-  max-width: 1060px;
+  max-width: ${(props) => props.theme.contentMaxWidth};
   min-width: 780px;
   margin: 0 auto 30px;
 `

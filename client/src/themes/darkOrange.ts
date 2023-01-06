@@ -5,6 +5,9 @@ const themeDark: AppTheme = {
   // Used for all list items.
   itemHeight: '50px',
 
+  // Max witch for the content area when not full page.
+  contentMaxWidth: '1060px',
+
   backgroundColor: '#323638',
   separatorColor: '#292c2f',
   textPrimaryColor: '#eeeeee',

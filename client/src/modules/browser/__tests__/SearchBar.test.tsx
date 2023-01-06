@@ -1,15 +1,22 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 
 import { ThemeProvider } from 'styled-components'
 import themeDefault from 'themes/default'
 import userEvent from '@testing-library/user-event'
+import { browserInitialState } from 'modules/browser/store'
+import { useNavigate } from 'react-router'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
-import LibraryBrowserSearchBar from '../components/LibraryBrowserSearchBar'
-import { browserInitialState } from '../store'
+import SearchBar from '../components/SearchBar'
 
-describe('LibraryBrowserSearchBar', () => {
-  beforeEach(() => jest.clearAllMocks())
+jest.mock('react-router')
+const useNavigateMock = useNavigate as jest.Mock
+const mockNavigate = jest.fn()
+
+describe('SearchBar', () => {
+  beforeEach(() => {
+    useNavigateMock.mockReturnValue(mockNavigate)
+  })
 
   it('displays without any error', () => {
     const store = makeMockStore({
@@ -19,7 +26,7 @@ describe('LibraryBrowserSearchBar', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <LibraryBrowserSearchBar />
+          <SearchBar />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -46,7 +53,7 @@ describe('LibraryBrowserSearchBar', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <LibraryBrowserSearchBar />
+          <SearchBar />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -80,7 +87,7 @@ describe('LibraryBrowserSearchBar', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <LibraryBrowserSearchBar />
+          <SearchBar />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -98,7 +105,7 @@ describe('LibraryBrowserSearchBar', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <LibraryBrowserSearchBar />
+          <SearchBar />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -120,7 +127,7 @@ describe('LibraryBrowserSearchBar', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <LibraryBrowserSearchBar />
+          <SearchBar />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -144,7 +151,7 @@ describe('LibraryBrowserSearchBar', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <LibraryBrowserSearchBar />
+          <SearchBar />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -162,7 +169,7 @@ describe('LibraryBrowserSearchBar', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <LibraryBrowserSearchBar />
+          <SearchBar />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -171,7 +178,13 @@ describe('LibraryBrowserSearchBar', () => {
     expect(screen.getByTestId('search-input') as HTMLInputElement).toHaveValue(
       'all them witches'
     )
-    // Can't make the simplest things work with react-testing-library, fuck it.
-    // expect(store.dispatch).toHaveBeenCalled()
+
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/library')
+    })
   })
 })

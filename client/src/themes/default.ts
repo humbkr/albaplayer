@@ -5,6 +5,9 @@ const themeDefault: AppTheme = {
   // Used for all list items.
   itemHeight: '50px',
 
+  // Max witch for the content area when not full page.
+  contentMaxWidth: '1060px',
+
   backgroundColor: '#ffffff',
   separatorColor: '#efeff2',
   textPrimaryColor: '#000000',

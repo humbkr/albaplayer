@@ -1,18 +1,20 @@
-import styled, { withTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import { queueReplace, queueSetCurrent } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
+import React from 'react'
 import NowPlayingQueueHeader from './NowPlayingQueueHeader'
 import NowPlayingQueueList from './NowPlayingQueueList'
 import NowPlayingQueueActions from './NowPlayingQueueActions'
 import QueueItemContextMenu from './QueueItemContextMenu'
 
 type Props = {
-  theme: AppTheme
+  contentElement?: HTMLDivElement
 }
 
-function NowPlayingQueue({ theme }: Props) {
+function NowPlayingQueue({ contentElement }: Props) {
   const { t } = useTranslation()
+  const theme = useTheme() as AppTheme
 
   const { items, current } = useAppSelector((state) => state.queue)
   const dispatch = useAppDispatch()
@@ -46,6 +48,7 @@ function NowPlayingQueue({ theme }: Props) {
           itemHeight={parseInt(theme.itemHeight, 0)}
           current={current}
           onQueueUpdate={handleUpdateQueue}
+          contentElement={contentElement}
         />
       )}
       <QueueItemContextMenu />
@@ -53,7 +56,7 @@ function NowPlayingQueue({ theme }: Props) {
   )
 }
 
-export default withTheme(NowPlayingQueue)
+export default NowPlayingQueue
 
 const Header = styled.div`
   display: flex;

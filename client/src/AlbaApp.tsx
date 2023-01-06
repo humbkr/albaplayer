@@ -1,7 +1,5 @@
-import styled, { ThemeProvider, createGlobalStyle } from 'styled-components'
+import { ThemeProvider, createGlobalStyle } from 'styled-components'
 import { useEffect } from 'react'
-import Sidebar from 'common/components/Sidebar'
-import MainPanel from 'common/components/MainPanel'
 import { initLibrary } from 'modules/library/store'
 import MaterialIconsWoff2 from 'common/assets/fonts/MaterialIcons-Regular.woff2'
 import MaterialIconsWoff from 'common/assets/fonts/MaterialIcons-Regular.woff'
@@ -9,6 +7,7 @@ import MaterialIconsTtf from 'common/assets/fonts/MaterialIcons-Regular.ttf'
 import MaterialIconsSvg from 'common/assets/fonts/MaterialIcons-Regular.svg'
 import getTheme from 'themes'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import Layout from 'common/components/Layout'
 
 function AlbaApp() {
   const currentThemeName = useAppSelector((state) => state.settings.theme)
@@ -22,11 +21,8 @@ function AlbaApp() {
 
   return (
     <ThemeProvider theme={theme?.config || null}>
-      <AlbaAppWrapper>
-        <GlobalStyle />
-        <Sidebar />
-        <MainPanel />
-      </AlbaAppWrapper>
+      <GlobalStyle />
+      <Layout />
     </ThemeProvider>
   )
 }
@@ -66,10 +62,4 @@ const GlobalStyle = createGlobalStyle<{ theme: AppTheme }>`
   .react-contexify {
     z-index: 50;
   }
-`
-const AlbaAppWrapper = styled.div`
-  display: table;
-  width: 100%;
-  height: 100vh;
-  color: ${(props) => props.theme.textPrimaryColor};
 `

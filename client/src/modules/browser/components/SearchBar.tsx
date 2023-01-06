@@ -4,14 +4,16 @@ import { DebounceInput } from 'react-debounce-input'
 import { search, setSearchFilter } from 'modules/browser/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
-import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
+import ActionButtonIcon from 'common/components/ActionButtonIcon'
+import { useNavigate } from 'react-router'
 
 type Props = {
   forwardedRef: Ref<HTMLElement>
 }
 
-function LibraryBrowserSearchBar({ forwardedRef }: Props) {
+function SearchBar({ forwardedRef }: Props) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
 
   const searchState = useAppSelector((state) => state.libraryBrowser.search)
 
@@ -23,11 +25,12 @@ function LibraryBrowserSearchBar({ forwardedRef }: Props) {
 
   const runSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(search((event.target as HTMLInputElement).value))
+    navigate('/library')
   }
 
   return (
-    <LibraryBrowserSearchBarWrapper>
-      <FilterButtonWrapper active={searchState.filter === 'all'}>
+    <Container data-testid="search-bar">
+      <FilterButton active={searchState.filter === 'all'}>
         <ActionButtonIconStyled
           onClick={() => changeFilter('all')}
           icon="all_inclusive"
@@ -35,8 +38,8 @@ function LibraryBrowserSearchBar({ forwardedRef }: Props) {
             searchState.filter === 'all' ? '-active' : ''
           }`}
         />
-      </FilterButtonWrapper>
-      <FilterButtonWrapper active={searchState.filter === 'artist'}>
+      </FilterButton>
+      <FilterButton active={searchState.filter === 'artist'}>
         <ActionButtonIconStyled
           onClick={() => changeFilter('artist')}
           icon="person"
@@ -44,8 +47,8 @@ function LibraryBrowserSearchBar({ forwardedRef }: Props) {
             searchState.filter === 'artist' ? '-active' : ''
           }`}
         />
-      </FilterButtonWrapper>
-      <FilterButtonWrapper active={searchState.filter === 'album'}>
+      </FilterButton>
+      <FilterButton active={searchState.filter === 'album'}>
         <ActionButtonIconStyled
           onClick={() => changeFilter('album')}
           icon="album"
@@ -53,8 +56,8 @@ function LibraryBrowserSearchBar({ forwardedRef }: Props) {
             searchState.filter === 'album' ? '-active' : ''
           }`}
         />
-      </FilterButtonWrapper>
-      <FilterButtonWrapper active={searchState.filter === 'track'}>
+      </FilterButton>
+      <FilterButton active={searchState.filter === 'track'}>
         <ActionButtonIconStyled
           onClick={() => changeFilter('track')}
           icon="audiotrack"
@@ -62,9 +65,9 @@ function LibraryBrowserSearchBar({ forwardedRef }: Props) {
             searchState.filter === 'track' ? '-active' : ''
           }`}
         />
-      </FilterButtonWrapper>
-      <SearchBarInputWrapper>
-        <SearchBarInput
+      </FilterButton>
+      <SearchInputWrapper>
+        <SearchInput
           // @ts-ignore
           inputRef={forwardedRef}
           debounceTimeout={300}
@@ -76,23 +79,22 @@ function LibraryBrowserSearchBar({ forwardedRef }: Props) {
           placeholder={t('common.search')}
           autoComplete="off"
         />
-      </SearchBarInputWrapper>
-    </LibraryBrowserSearchBarWrapper>
+      </SearchInputWrapper>
+    </Container>
   )
 }
 
 export default forwardRef<HTMLElement>((props, ref) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <LibraryBrowserSearchBar {...props} forwardedRef={ref} />
+  <SearchBar {...props} forwardedRef={ref} />
 ))
 
-const LibraryBrowserSearchBarWrapper = styled.div`
+const Container = styled.div`
   display: flex;
-  height: ${(props) => props.theme.itemHeight};
+  height: 100%;
   width: 100%;
-  border-bottom: 1px solid ${(props) => props.theme.separatorColor};
 `
-const FilterButtonWrapper = styled.div<{
+const FilterButton = styled.div<{
   active: boolean
 }>`
   display: flex;
@@ -112,7 +114,7 @@ const ActionButtonIconStyled = styled(ActionButtonIcon)`
     border: 1px solid ${(props) => props.theme.highlightFocus};
   }
 `
-const SearchBarInputWrapper = styled.div`
+const SearchInputWrapper = styled.div`
   flex-grow: 1;
   vertical-align: middle;
   padding: 8px;
@@ -122,7 +124,7 @@ const SearchBarInputWrapper = styled.div`
     background-color: ${(props) => props.theme.highlightFocus};
   }
 `
-const SearchBarInput = styled(DebounceInput)<{
+const SearchInput = styled(DebounceInput)<{
   id: string
   autoComplete: string
 }>`

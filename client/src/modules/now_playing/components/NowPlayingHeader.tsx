@@ -88,7 +88,7 @@ function NowPlayingHeader({ pinned = false }: Props) {
   }
 
   return (
-    <Wrapper pinned={pinned}>
+    <Container pinned={pinned}>
       <Background cover={trackInfo?.cover}>
         <NowPlaying pinned={pinned}>
           <CoverInfo pinned={pinned}>
@@ -128,14 +128,15 @@ function NowPlayingHeader({ pinned = false }: Props) {
           )}
         </NowPlaying>
       </Background>
-    </Wrapper>
+    </Container>
   )
 }
 
 export default NowPlayingHeader
 
-const Wrapper = styled.div<{ pinned: boolean }>`
+const Container = styled.div<{ pinned: boolean }>`
   padding: 0 50px;
+  width: 100%;
 
   ${({ pinned, theme }) =>
     pinned &&
@@ -145,7 +146,7 @@ const Wrapper = styled.div<{ pinned: boolean }>`
     margin-left: ${theme.sidebar.width};
     position: fixed;
     z-index: 666;
-    top: 0;
+    top: ${theme.itemHeight};
     left: 0;
     width: calc(100vw - ${theme.sidebar.width});
   `}

@@ -7,7 +7,7 @@ function Sidebar() {
   const { t } = useTranslation()
 
   return (
-    <Wrapper>
+    <Container>
       <Player />
       <MainMenu>
         <SidebarNavLink to="/queue" icon="play_circle_outline">
@@ -28,17 +28,13 @@ function Sidebar() {
           {t('sidebar.navigation.settings')}
         </SidebarNavLink>
       </SettingsMenu>
-    </Wrapper>
+    </Container>
   )
 }
 
 export default Sidebar
 
-const Wrapper = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: ${(props) => props.theme.sidebar.width};
+const Container = styled.div`
   height: 100%;
   background-color: ${(props) => props.theme.sidebar.background};
 `

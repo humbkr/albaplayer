@@ -1,11 +1,14 @@
-import { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, Ref, forwardRef, RefObject } from 'react'
 import styled from 'styled-components'
 import TracksPaneContainer from 'modules/browser/components/TracksPaneContainer'
 import ArtistsPaneContainer from 'modules/browser/components/ArtistsPaneContainer'
 import AlbumsPaneContainer from 'modules/browser/components/AlbumsPaneContainer'
-import LibraryBrowserSearchBar from 'modules/browser/components/LibraryBrowserSearchBar'
 import { libraryBrowserInit } from 'modules/browser/store'
 import { useAppDispatch } from 'store/hooks'
+
+type Props = {
+  forwardedRef: Ref<HTMLElement>
+}
 
 /**
  * Library browser screen.
@@ -13,9 +16,7 @@ import { useAppDispatch } from 'store/hooks'
  * Handles the switch between artists / albums / tracks pane using
  * left and right arrows.
  */
-function LibraryBrowser() {
-  // Used to focus the search input at mount.
-  const searchBar = useRef<HTMLInputElement>(null)
+function LibraryBrowser({ forwardedRef }: Props) {
   // List components of each pane.
   const artistsPane = useRef<HTMLDivElement>(null)
   const albumsPane = useRef<HTMLDivElement>(null)
@@ -25,11 +26,8 @@ function LibraryBrowser() {
 
   useEffect(() => {
     dispatch(libraryBrowserInit())
-
-    // Give focus to the search bar.
-    // @ts-ignore
-    searchBar.current.focus()
-  }, [dispatch])
+    ;(forwardedRef as RefObject<HTMLElement>)?.current?.focus()
+  }, [dispatch, forwardedRef])
 
   const handleSwitchPaneArtists = (e: KeyboardEvent) => {
     if (e.code === 'ArrowRight') {
@@ -56,33 +54,29 @@ function LibraryBrowser() {
   }
 
   return (
-    <LibraryBrowserWrapper>
-      <LibraryBrowserSearchBar ref={searchBar} />
-      <LibraryBrowserListsWrapper>
-        <ArtistsPaneContainer
-          switchPaneHandler={handleSwitchPaneArtists}
-          ref={artistsPane}
-        />
-        <AlbumsPaneContainer
-          switchPaneHandler={handleSwitchPaneAlbums}
-          ref={albumsPane}
-        />
-        <TracksPaneContainer
-          switchPaneHandler={handleSwitchPaneTracks}
-          ref={tracksPane}
-        />
-      </LibraryBrowserListsWrapper>
-    </LibraryBrowserWrapper>
+    <Container>
+      <ArtistsPaneContainer
+        switchPaneHandler={handleSwitchPaneArtists}
+        ref={artistsPane}
+      />
+      <AlbumsPaneContainer
+        switchPaneHandler={handleSwitchPaneAlbums}
+        ref={albumsPane}
+      />
+      <TracksPaneContainer
+        switchPaneHandler={handleSwitchPaneTracks}
+        ref={tracksPane}
+      />
+    </Container>
   )
 }
 
-export default LibraryBrowser
+export default forwardRef<HTMLElement>((props, ref) => (
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  <LibraryBrowser {...props} forwardedRef={ref} />
+))
 
-const LibraryBrowserWrapper = styled.div`
+const Container = styled.div`
   display: flex;
-  flex-direction: column;
   height: 100%;
-`
-const LibraryBrowserListsWrapper = styled.div`
-  flex: 1;
 `

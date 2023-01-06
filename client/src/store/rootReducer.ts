@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import playerReducer from 'modules/player/store/store'
+import { graphQLApi } from 'api/api'
 import libraryReducer from '../modules/library/store'
 import libraryBrowserReducer from '../modules/browser/store'
 import playlistReducer from '../modules/playlist/store'
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   playlist: playlistReducer,
   dashboard: dashboardReducer,
   settings: persistReducer(settingsPersistConfig, settingsReducer),
+  [graphQLApi.reducerPath]: graphQLApi.reducer,
 })
 
 export default rootReducer

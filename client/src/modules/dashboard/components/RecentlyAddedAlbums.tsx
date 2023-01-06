@@ -74,7 +74,7 @@ export default RecentlyAddedAlbums
 
 const Wrapper = styled.div`
   background-color: ${(props) => props.theme.cards.backgroundColor};
-  max-width: 1060px;
+  max-width: ${(props) => props.theme.contentMaxWidth};
   min-width: 780px;
   margin: 0 auto;
   padding-bottom: 10px;

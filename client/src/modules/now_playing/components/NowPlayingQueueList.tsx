@@ -25,13 +25,20 @@ type Props = {
     newCurrentTrackIndex: number
   ) => void
   current: number
+  contentElement?: HTMLDivElement
 }
+
+const DraggableItem = styled.div<{ isDragging: boolean }>`
+  ${(props) =>
+    props.isDragging ? `background-color: ${props.theme.highlight}` : ''};
+`
 
 function NowPlayingQueueList({
   items,
   onQueueUpdate,
   current,
   itemHeight,
+  contentElement,
 }: Props) {
   useEffect(() => {
     // Virtuoso's resize observer can throw this error,
@@ -108,59 +115,47 @@ function NowPlayingQueueList({
   )
 
   return (
-    <div
-      // Important: drag and drop won't work without this.
-      style={{ overflow: 'auto' }}
-    >
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable
-          droppableId="droppable"
-          mode="virtual"
-          renderClone={(provided, snapshot, rubric) => (
-            <Item
-              provided={provided}
-              isDragging={snapshot.isDragging}
-              item={items[rubric.source.index]}
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable
+        droppableId="droppable"
+        mode="virtual"
+        renderClone={(provided, snapshot, rubric) => (
+          <Item
+            provided={provided}
+            isDragging={snapshot.isDragging}
+            item={items[rubric.source.index]}
+          />
+        )}
+      >
+        {(provided) => (
+          <div ref={provided.innerRef}>
+            <Virtuoso
+              style={{ height: '100%' }}
+              useWindowScroll
+              customScrollParent={contentElement}
+              components={{
+                // @ts-ignore
+                Item: HeightPreservingItem,
+              }}
+              fixedItemHeight={itemHeight}
+              data={items}
+              itemContent={(index, item) => (
+                <Draggable
+                  draggableId={item.track.id}
+                  index={index}
+                  key={item.track.id}
+                >
+                  {(provided) => (
+                    <Item provided={provided} item={item} isDragging={false} />
+                  )}
+                </Draggable>
+              )}
             />
-          )}
-        >
-          {(provided) => (
-            <div ref={provided.innerRef}>
-              <Virtuoso
-                useWindowScroll
-                components={{
-                  // @ts-ignore
-                  Item: HeightPreservingItem,
-                }}
-                fixedItemHeight={itemHeight}
-                data={items}
-                itemContent={(index, item) => (
-                  <Draggable
-                    draggableId={item.track.id}
-                    index={index}
-                    key={item.track.id}
-                  >
-                    {(provided) => (
-                      <Item
-                        provided={provided}
-                        item={item}
-                        isDragging={false}
-                      />
-                    )}
-                  </Draggable>
-                )}
-              />
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </div>
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
   )
 }
 
 export default NowPlayingQueueList
-
-const DraggableItem = styled.div<{ isDragging: boolean }>`
-  ${(props) =>
-    props.isDragging ? `background-color: ${props.theme.highlight}` : ''};
-`

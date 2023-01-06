@@ -1,41 +1,46 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import NowPlayingQueue from 'modules/now_playing/components/NowPlayingQueue'
 import NowPlayingHeader from 'modules/now_playing/components/NowPlayingHeader'
+import Scroller from 'common/components/Scroller'
 
 function NowPlaying() {
   const [headerIsPinned, setHeaderIsPinned] = useState(false)
+  const [contentRef, setContentRef] = useState<HTMLDivElement>()
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setHeaderIsPinned(window.scrollY > 210)
+  const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    if (e.currentTarget.scrollTop > 210) {
+      setHeaderIsPinned(true)
+    } else if (e.currentTarget.scrollTop <= 210) {
+      setHeaderIsPinned(false)
     }
-
-    window.addEventListener('scroll', handleScroll)
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-  })
+  }
 
   return (
-    <NowPlayingWrapper>
-      <NowPlayingHeader pinned={headerIsPinned} />
-      <NowPlayingQueueWrapper headerIsPinned={headerIsPinned}>
-        <NowPlayingQueue />
-      </NowPlayingQueueWrapper>
-    </NowPlayingWrapper>
+    <Scroller onScroll={onScroll}>
+      <Container
+        // @ts-ignore
+        ref={setContentRef}
+      >
+        <NowPlayingHeader pinned={headerIsPinned} />
+        <NowPlayingQueueWrapper headerIsPinned={headerIsPinned}>
+          <NowPlayingQueue contentElement={contentRef} />
+        </NowPlayingQueueWrapper>
+      </Container>
+    </Scroller>
   )
 }
 
 export default NowPlaying
 
-const NowPlayingWrapper = styled.div`
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 30px 0;
-  max-width: 1160px;
-  min-width: 800px;
-  margin: 0 auto;
+  max-width: ${(props) => props.theme.contentMaxWidth};
   position: relative;
+  margin: 0 auto;
 `
 const NowPlayingQueueWrapper = styled.div<{ headerIsPinned: boolean }>`
   width: 100%;
