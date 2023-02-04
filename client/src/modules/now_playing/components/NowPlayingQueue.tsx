@@ -14,7 +14,7 @@ type Props = {
 
 function NowPlayingQueue({ contentElement }: Props) {
   const { t } = useTranslation()
-  const theme = useTheme() as AppTheme
+  const theme = useTheme()
 
   const { items, current } = useAppSelector((state) => state.queue)
   const dispatch = useAppDispatch()
@@ -45,7 +45,7 @@ function NowPlayingQueue({ contentElement }: Props) {
       {items.length > 0 && (
         <NowPlayingQueueList
           items={itemsForDisplay}
-          itemHeight={parseInt(theme.itemHeight, 0)}
+          itemHeight={parseInt(theme.layout.itemHeight, 0)}
           current={current}
           onQueueUpdate={handleUpdateQueue}
           contentElement={contentElement}

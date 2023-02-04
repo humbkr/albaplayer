@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import ActionButtonIcon from 'common/components/ActionButtonIcon'
+import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import { useTranslation } from 'react-i18next'
 
 type Props = {
@@ -25,8 +25,8 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: ${(props) => props.theme.itemHeight};
-  color: ${(props) => props.theme.textSecondaryColor};
+  height: ${(props) => props.theme.layout.itemHeight};
+  color: ${(props) => props.theme.colors.textSecondary};
   padding-left: 15px;
 
   > h2 {
@@ -36,7 +36,9 @@ const Wrapper = styled.div`
   }
 `
 const Actions = styled.div`
+  color: ${(props) => props.theme.buttons.backgroundColor};
+  
   :hover {
-    color: ${(props) => props.theme.buttons.colorHover};
+    color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `

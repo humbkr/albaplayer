@@ -29,13 +29,13 @@ function PlaylistCareListItem({ item, selected = false }: Props) {
       <Result>
         {item.processed && item.similarTracks.length !== 1 && (
           <NotFound>
-            {t('playlist.care.notFound')}
+            {t('playlists.care.notFound')}
             <Icon>close</Icon>
           </NotFound>
         )}
         {item.processed && item.similarTracks.length === 1 && (
           <Found>
-            {t('playlist.care.found')}
+            {t('playlists.care.found')}
             <Icon>done</Icon>
           </Found>
         )}
@@ -49,8 +49,8 @@ export default PlaylistCareListItem
 const TrackWrapper = styled.div`
   display: grid;
   grid-template-columns: 60px auto auto 44px;
-  height: ${(props) => props.theme.itemHeight};
-  border-bottom: 1px solid ${(props) => props.theme.separatorColor};
+  height: ${(props) => props.theme.layout.itemHeight};
+  border-bottom: 1px solid ${(props) => props.theme.colors.separator};
 
   > * {
     align-self: center;
@@ -58,17 +58,17 @@ const TrackWrapper = styled.div`
 `
 const TrackFirstColumn = styled.div`
   justify-self: center;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const TrackInfo = styled.div`
   font-size: 0.8em;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const AlbumInfo = styled.span`
   font-style: italic;
 `
 const Result = styled.div`
-  color: ${(props) => props.theme.highlightFocus};
+  color: ${(props) => props.theme.colors.elementHighlightFocus};
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -83,8 +83,8 @@ const Result = styled.div`
   }
 `
 const Found = styled.div`
-  color: ${(props) => props.theme.highlightFocus};
+  color: ${(props) => props.theme.colors.elementHighlightFocus};
 `
 const NotFound = styled.div`
-  color: ${(props) => props.theme.messages.error.color};
+  color: ${(props) => props.theme.colors.error};
 `

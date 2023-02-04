@@ -4,7 +4,7 @@ import { ThemeProvider } from 'styled-components'
 import { BrowserRouter as Router } from 'react-router-dom'
 import AlbumTeaserHorizontal from '../components/AlbumTeaserHorizontal'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
-import themeDefault from '../../../themes/default'
+import themeDefault from 'themes/lightGreen'
 import AlbumMoreActionsContextMenu from '../components/AlbumMoreActionsContextMenu'
 
 const store = makeMockStore({

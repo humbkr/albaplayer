@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
 import { formatDuration } from 'common/utils/utils'
-import ActionButtonCircle from 'common/components/ActionButtonCircle'
+import ActionButtonCircle from 'common/components/buttons/ActionButtonCircle'
 import { constants } from 'api'
 import SearchLink from 'modules/browser/components/SearchLink'
 import { useAppSelector } from 'store/hooks'
@@ -141,14 +141,12 @@ const Container = styled.div<{ pinned: boolean }>`
   ${({ pinned, theme }) =>
     pinned &&
     `
-    background-color: ${theme.backgroundColor};
-    padding: 10px;
-    margin-left: ${theme.sidebar.width};
-    position: fixed;
+    background-color: ${theme.colors.background};
+    padding: 10px 10px 0;
+    position: sticky;
     z-index: 666;
-    top: ${theme.itemHeight};
+    top: 0;
     left: 0;
-    width: calc(100vw - ${theme.sidebar.width});
   `}
 `
 const NowPlaying = styled.div<{ pinned: boolean }>`
@@ -170,6 +168,7 @@ const Background = styled.div<{ cover?: string }>`
   display: block;
   overflow: hidden;
   z-index: 0;
+  border-radius: 3px;
 
   &:before {
     width: 100%;

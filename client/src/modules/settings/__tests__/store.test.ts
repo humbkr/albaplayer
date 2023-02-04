@@ -1,15 +1,14 @@
 import configureMockStore from 'redux-mock-store'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import thunk from 'redux-thunk'
-import { api, apolloClient } from 'api'
-import { ApolloQueryResult } from '@apollo/client'
+import { api } from 'api'
 import settingsSlice, {
-  initialState,
-  setTheme,
-  initSettings,
-  updateLibrary,
   eraseLibrary,
+  initialState,
+  initSettings,
+  setTheme,
   SettingsStateType,
+  updateLibrary,
 } from '../store'
 import { fetchLibrary, initLibrary } from '../../library/store'
 
@@ -347,20 +346,10 @@ describe('settings (redux)', () => {
 
       api.scanLibrary = jest.fn().mockImplementationOnce(
         () =>
-          new Promise<ApolloQueryResult<{ scanLibrary: null }>>((resolve) => {
+          new Promise((resolve) => {
             resolve({
-              data: {
-                scanLibrary: null,
-              },
-              loading: false,
-              networkStatus: 7,
+              data: {},
             })
-          })
-      )
-      apolloClient.resetStore = jest.fn().mockImplementationOnce(
-        () =>
-          new Promise<void>((resolve) => {
-            resolve()
           })
       )
 
@@ -405,20 +394,10 @@ describe('settings (redux)', () => {
     it('should dispatch correct actions on success', async () => {
       api.emptyLibrary = jest.fn().mockImplementationOnce(
         () =>
-          new Promise<ApolloQueryResult<{ eraseLibrary: null }>>((resolve) => {
+          new Promise((resolve) => {
             resolve({
-              data: {
-                eraseLibrary: null,
-              },
-              loading: false,
-              networkStatus: 7,
+              data: {},
             })
-          })
-      )
-      apolloClient.resetStore = jest.fn().mockImplementationOnce(
-        () =>
-          new Promise<void>((resolve) => {
-            resolve()
           })
       )
 

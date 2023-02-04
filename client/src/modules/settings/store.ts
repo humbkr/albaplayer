@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { api, apolloClient } from 'api'
+import { api } from 'api'
 import { initLibrary } from 'modules/library/store'
 
 type Settings = {
@@ -32,8 +32,7 @@ const updateLibrary = createAsyncThunk(
   async (_, thunkAPI) => {
     const response = await api.scanLibrary()
 
-    // TODO: not fan of calling apolloClient here.
-    await apolloClient.resetStore()
+    // TODO: reset rtkQuery cache.
 
     thunkAPI.dispatch(initLibrary(true))
 
@@ -46,8 +45,7 @@ const eraseLibrary = createAsyncThunk(
   async (_, thunkAPI) => {
     const response = await api.emptyLibrary()
 
-    // TODO: not fan of calling apolloClient here.
-    await apolloClient.resetStore()
+    // TODO: reset rtkQuery cache.
 
     thunkAPI.dispatch(initLibrary(true))
 

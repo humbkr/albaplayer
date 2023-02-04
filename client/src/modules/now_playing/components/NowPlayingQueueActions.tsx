@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import ActionButton from 'common/components/ActionButton'
+import ActionButton from 'common/components/buttons/ActionButton'
 import { queueClear } from 'modules/player/store/store'
 import { contextMenu } from 'react-contexify'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
-import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
+import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import QueueActionsMoreContextMenu from './QueueActionsMoreContextMenu'
 
 function NowPlayingQueueActions() {
@@ -50,9 +50,9 @@ const QueueActionsWrapper = styled.div`
 const QueueActionButton = styled(ActionButtonIcon)`
   margin-left: 10px;
   padding: 0;
-  color: ${(props) => props.theme.buttons.color};
+  color: ${(props) => props.theme.buttons.backgroundColor};
 
   :hover {
-    color: ${(props) => props.theme.buttons.colorHover};
+    color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `

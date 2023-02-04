@@ -5,11 +5,15 @@ import (
 	"encoding/json"
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/spf13/viper"
+	"golang.org/x/exp/slices"
+	"log"
 	"net/http"
+	"time"
 )
 
 type AuthHandlers struct {
-	UserInteractor *business.UsersInteractor
+	UserInteractor    *business.UsersInteractor
+	LibraryInteractor *business.LibraryInteractor
 }
 
 // Login allows a user to login.
@@ -32,13 +36,23 @@ func (h AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokens, err := loginUser(h.UserInteractor, credentials.Username, credentials.Password)
+	tokens, user, err := loginUser(h.UserInteractor, credentials.Username, credentials.Password)
 	if err != nil {
 		http.Error(w, "invalid credentials or user not found", http.StatusForbidden)
 		return
 	}
 
 	addAuthCookiesToResponse(w, tokens)
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+
+	user.Password = ""
+	jsonResp, err := json.Marshal(user)
+	if err != nil {
+		log.Fatalf("Unable to marshall user to JSON. Err: %s", err)
+	}
+	w.Write(jsonResp)
 }
 
 // Logout allows a user to logout.
@@ -46,8 +60,11 @@ func (h AuthHandlers) Logout(w http.ResponseWriter, r *http.Request) {
 	accessTokenCookie := &http.Cookie{
 		Name:     "access_token",
 		Value:    "",
+		Path:     "/",
 		HttpOnly: true,
 		MaxAge:   0,
+		Expires:  time.Now(),
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	refreshTokenCookie := &http.Cookie{
@@ -56,6 +73,8 @@ func (h AuthHandlers) Logout(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		HttpOnly: true,
 		MaxAge:   0,
+		Expires:  time.Now(),
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(w, accessTokenCookie)
@@ -77,6 +96,26 @@ func (h AuthHandlers) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	addAuthCookiesToResponse(w, tokens)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// GetAuthConfig returns the auth config.
+func (h AuthHandlers) GetAuthConfig(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+
+	resp := struct {
+		AuthEnabled bool `json:"auth_enabled"`
+	}{
+		AuthEnabled: viper.GetBool("Auth.Enabled"),
+	}
+
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		log.Fatalf("Unable to marshall user to JSON. Err: %s", err)
+	}
+	w.Write(jsonResp)
 }
 
 // A private key for context that only this package can access. This is important
@@ -91,12 +130,6 @@ var userCtxKey = &contextKey{"user"}
 func AuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if viper.GetBool("Auth.Disable") {
-				// Authentication disabled.
-				next.ServeHTTP(w, r)
-				return
-			}
-
 			cookie, err := r.Cookie("access_token")
 			if err != nil {
 				http.Error(w, "No authentication token found", http.StatusUnauthorized)
@@ -120,13 +153,44 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 	}
 }
 
+// NoAuthMiddleware creates a default user that will be used for subsequent operations.
+// if auth is disabled.
+func NoAuthMiddleware() func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defaultUserRoles := viper.GetStringSlice("Users.DefaultUserRoles")
+
+			var roles []business.Role
+			for _, userRole := range defaultUserRoles {
+				role := business.GetRoleFromString(userRole)
+				if !slices.Contains(roles, role) {
+					roles = append(roles, role)
+				}
+			}
+
+			// Put user in context
+			ctx := context.WithValue(r.Context(), userCtxKey, &business.User{
+				Id:            1,
+				Name:          "Default user",
+				Roles:         roles,
+				IsDefaultUser: true,
+			})
+
+			// And call the next with our new context.
+			r = r.WithContext(ctx)
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
 func addAuthCookiesToResponse(w http.ResponseWriter, tokens TokenPair) {
 	accessTokenCookie := &http.Cookie{
 		Name:     "access_token",
 		Value:    tokens.access,
 		Path:     "/",
 		HttpOnly: true,
-		MaxAge:   int(ACCESS_TOKEN_EXPIRATION.Seconds()),
+		Expires:  time.Now().Add(ACCESS_TOKEN_EXPIRATION),
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	refreshTokenCookie := &http.Cookie{
@@ -134,7 +198,8 @@ func addAuthCookiesToResponse(w http.ResponseWriter, tokens TokenPair) {
 		Value:    tokens.refresh,
 		Path:     "/",
 		HttpOnly: true,
-		MaxAge:   int(REFRESH_TOKEN_EXPIRATION.Seconds()),
+		Expires:  time.Now().Add(REFRESH_TOKEN_EXPIRATION),
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(w, accessTokenCookie)

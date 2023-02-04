@@ -62,13 +62,14 @@ func convertUser(user business.User, basicInfoOnly bool) model.User {
 	}
 
 	return model.User{
-		ID:        user.Id,
-		Name:      &user.Name,
-		Email:     &user.Email,
-		Password:  &user.Password,
-		Data:      &user.Data,
-		DateAdded: &user.DateAdded,
-		Roles:     roles,
+		ID:            user.Id,
+		Name:          &user.Name,
+		Email:         &user.Email,
+		Password:      &user.Password,
+		Data:          &user.Data,
+		DateAdded:     &user.DateAdded,
+		Roles:         roles,
+		IsDefaultUser: &user.IsDefaultUser,
 	}
 }
 

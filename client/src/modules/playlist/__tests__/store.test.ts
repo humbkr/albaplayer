@@ -2,21 +2,21 @@ import configureMockStore from 'redux-mock-store'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import thunk from 'redux-thunk'
 import playlistsSlice, {
-  playlistsInitialState,
-  playlistSelectPlaylist,
-  playlistCreatePlaylist,
-  playlistDeletePlaylist,
-  PlaylistsStateType,
-  playlistSelectTrack,
-  playlistRemoveTrack,
-  playlistAddTracks,
-  playlistUpdateItems,
-  playlistUpdateInfo,
-  addTrack,
   addAlbum,
   addArtist,
   addPlaylist,
+  addTrack,
+  playlistAddTracks,
+  playlistCreatePlaylist,
+  playlistDeletePlaylist,
+  playlistRemoveTrack,
+  playlistSelectPlaylist,
+  playlistSelectTrack,
+  playlistsInitialState,
   playlistsSelector,
+  PlaylistsStateType,
+  playlistUpdateInfo,
+  playlistUpdateItems,
 } from '../store'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { libraryInitialState, LibraryStateType } from '../../library/store'
@@ -246,10 +246,7 @@ describe('playlists (redux)', () => {
           temp_001: playlist1,
           temp_002: playlist2,
         },
-        currentPlaylist: {
-          playlist: playlist1,
-          position: 0,
-        },
+        currentPlaylist: playlist1,
       }
 
       // Delete first (current) playlist.
@@ -263,10 +260,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_002: playlist2,
         },
-        currentPlaylist: {
-          playlist: playlist2,
-          position: 0,
-        },
+        currentPlaylist: playlist2,
       })
 
       // Delete the only playlist left in the list.
@@ -275,10 +269,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_002: playlist2,
         },
-        currentPlaylist: {
-          playlist: playlist2,
-          position: 0,
-        },
+        currentPlaylist: playlist2,
       }
 
       expect(
@@ -289,10 +280,7 @@ describe('playlists (redux)', () => {
       ).toEqual({
         ...playlistsInitialState,
         playlists: {},
-        currentPlaylist: {
-          playlist: null,
-          position: 0,
-        },
+        currentPlaylist: null,
       })
     })
 
@@ -322,10 +310,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_001: playlist1,
         },
-        currentPlaylist: {
-          playlist: playlist1,
-          position: 0,
-        },
+        currentPlaylist: playlist1,
       }
 
       expect(
@@ -400,10 +385,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_001: playlist1,
         },
-        currentPlaylist: {
-          playlist: playlist1,
-          position: 0,
-        },
+        currentPlaylist: playlist1,
         currentTrack: {
           id: '1',
           position: 0,
@@ -461,10 +443,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_001: playlist1,
         },
-        currentPlaylist: {
-          playlist: playlist1,
-          position: 0,
-        },
+        currentPlaylist: playlist1,
       }
 
       expect(
@@ -605,10 +584,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_001: playlist1,
         },
-        currentPlaylist: {
-          playlist: playlist1,
-          position: 0,
-        },
+        currentPlaylist: playlist1,
       }
 
       expect(
@@ -674,10 +650,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_001: playlist,
         },
-        currentPlaylist: {
-          playlist,
-          position: 0,
-        },
+        currentPlaylist: playlist,
       }
 
       expect(
@@ -710,10 +683,7 @@ describe('playlists (redux)', () => {
           temp_001: playlist,
           temp_002: playlist2,
         },
-        currentPlaylist: {
-          playlist: playlist2,
-          position: 0,
-        },
+        currentPlaylist: playlist2,
       }
 
       expect(

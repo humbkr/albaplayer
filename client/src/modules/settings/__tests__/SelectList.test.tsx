@@ -1,6 +1,6 @@
 import { render, fireEvent, screen } from '@testing-library/react'
 import { ThemeProvider } from 'styled-components'
-import themeDefault from '../../../themes/default'
+import themeDefault from 'themes/lightGreen'
 import SelectList from '../components/SelectList'
 
 const mockOptions = [

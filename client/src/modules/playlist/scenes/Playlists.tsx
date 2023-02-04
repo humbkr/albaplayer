@@ -3,29 +3,21 @@ import styled from 'styled-components'
 // eslint-disable-next-line import/no-cycle
 import PlaylistDetailPane from 'modules/playlist/components/PlaylistDetailsPane'
 // eslint-disable-next-line import/no-cycle
-import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useAppSelector } from 'store/hooks'
+import PlaylistEditModal from 'modules/playlist/components/PlaylistEditModal'
 import PlaylistListPane from '../components/PlaylistListPane'
-import PlaylistAddPopup from '../components/PlaylistAddPopup'
-import {
-  playlistCreatePlaylist,
-  PlaylistPane,
-  playlistUpdateInfo,
-} from '../store'
+import { PlaylistPane } from '../store'
 import PlaylistsCarePane from '../components/PlaylistCarePane'
 
 // Playlist edition must be accessible to the children of this component.
-export const EditPlaylistContext = React.createContext(null)
+export const EditPlaylistContext = React.createContext<() => void>(() => {})
 
 function Playlists() {
   const [modalPlaylistIsOpen, setModalPlaylistIsOpen] = useState(false)
-  const [modalPlaylistMode, setModalPlaylistMode] = useState('add')
+  const [addNewPlaylist, setAddNewPlaylist] = useState(false)
 
-  const selected = useAppSelector(
-    (state) => state.playlist.currentPlaylist.playlist
-  )
+  const selected = useAppSelector((state) => state.playlist.currentPlaylist)
   const currentPane = useAppSelector((state) => state.playlist.currentPane)
-
-  const dispatch = useAppDispatch()
 
   const playlistListPane = useRef<HTMLDivElement>(null)
   const playlistDetailPane = useRef<HTMLDivElement>(null)
@@ -50,28 +42,27 @@ function Playlists() {
     }
   }
 
-  const handleCreatePlaylist = (playlist: Playlist) => {
-    dispatch(playlistCreatePlaylist(playlist))
-  }
-
-  const handleEditPlaylist = (playlist: Playlist) => {
-    dispatch(playlistUpdateInfo(playlist))
-  }
-
-  const openPlaylistModal = (mode: string = 'add') => {
+  const handleNewPlaylist = () => {
+    setAddNewPlaylist(true)
     setModalPlaylistIsOpen(true)
-    setModalPlaylistMode(mode)
+  }
+
+  const handleEditPlaylist = () => {
+    setAddNewPlaylist(false)
+    setModalPlaylistIsOpen(true)
+  }
+
+  const handleOnModalClose = () => {
+    setAddNewPlaylist(false)
+    setModalPlaylistIsOpen(false)
   }
 
   return (
-    <Wrapper>
-      <EditPlaylistContext.Provider
-        // @ts-ignore
-        value={openPlaylistModal}
-      >
+    <Container>
+      <EditPlaylistContext.Provider value={handleEditPlaylist}>
         <PlaylistListPane
           ref={playlistListPane}
-          openPlaylistModal={openPlaylistModal}
+          openPlaylistModal={handleNewPlaylist}
           switchPaneHandler={handleSwitchPaneList}
         />
         {currentPane === PlaylistPane.Detail && (
@@ -81,23 +72,19 @@ function Playlists() {
           />
         )}
         {currentPane === PlaylistPane.Fix && <PlaylistsCarePane />}
-        <PlaylistAddPopup
-          id="playlist-add-modal"
-          onClose={() => setModalPlaylistIsOpen(false)}
+        <PlaylistEditModal
+          playlist={addNewPlaylist ? undefined : selected}
           isOpen={modalPlaylistIsOpen}
-          mode={modalPlaylistMode}
-          playlist={selected}
-          onCreatePlaylist={handleCreatePlaylist}
-          onEditPlaylist={handleEditPlaylist}
+          onClose={handleOnModalClose}
         />
       </EditPlaylistContext.Provider>
-    </Wrapper>
+    </Container>
   )
 }
 
 export default Playlists
 
-const Wrapper = styled.div`
+const Container = styled.div`
   display: grid;
   grid-template-columns: 34% 66%;
   width: 100%;

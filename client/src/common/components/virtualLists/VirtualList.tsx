@@ -1,5 +1,5 @@
 import React, { ComponentType, Ref } from 'react'
-import styled, { withTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 
@@ -19,12 +19,10 @@ type Props = {
 }
 
 type InternalProps = Props & {
-  theme: AppTheme
   forwardedRef: Ref<HTMLDivElement>
 }
 
 function VirtualList({
-  theme,
   items,
   itemDisplay,
   currentPosition,
@@ -32,6 +30,8 @@ function VirtualList({
   onKeyDown,
   forwardedRef,
 }: InternalProps) {
+  const theme = useTheme()
+
   const ref = React.useRef<VirtuosoHandle | null>(null)
   const listRef = React.useRef(null)
 
@@ -84,7 +84,7 @@ function VirtualList({
         ref={ref}
         scrollerRef={scrollerRef}
         style={{ width: '100%' }}
-        fixedItemHeight={parseInt(theme.itemHeight, 10)}
+        fixedItemHeight={parseInt(theme.layout.itemHeight, 10)}
         data={items}
         itemContent={(index, item) => {
           const selected = index === currentPosition
@@ -112,11 +112,10 @@ function VirtualList({
   )
 }
 
-const ThemedLibraryBrowserList = withTheme(VirtualList)
 
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
-  <ThemedLibraryBrowserList {...props} forwardedRef={ref} />
+  <VirtualList {...props} forwardedRef={ref} />
 ))
 
 const ListWrapper = styled.div`

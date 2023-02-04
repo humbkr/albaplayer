@@ -3,7 +3,7 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import theme from 'themes/default'
+import theme from 'themes/lightGreen'
 import TrackInfo from 'modules/player/components/TrackInfo'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 

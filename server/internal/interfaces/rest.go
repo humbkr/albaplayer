@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -62,4 +64,23 @@ func (h coverStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	http.ServeFile(w, r, filePath)
 	return
+}
+
+func GetAppConfig(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+
+	resp := struct {
+		AuthEnabled                 bool `json:"auth_enabled"`
+		DisableLibraryConfiguration bool `json:"library_configuration_disabled"`
+	}{
+		AuthEnabled:                 viper.GetBool("Users.AuthEnabled"),
+		DisableLibraryConfiguration: viper.GetBool("ClientSettings.DisableLibraryConfiguration"),
+	}
+
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		log.Fatalf("Unable to marshall user to JSON. Err: %s", err)
+	}
+	w.Write(jsonResp)
 }

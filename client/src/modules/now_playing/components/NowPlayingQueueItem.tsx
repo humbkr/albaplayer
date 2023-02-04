@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
-import ActionButtonIcon from 'common/components/ActionButtonIcon'
+import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import {
   playerTogglePlayPause,
   queueRemoveTrack,
@@ -73,25 +73,29 @@ export default NowPlayingQueueItem
 
 const QueueActionButtonIcon = styled(ActionButtonIcon)`
   display: none;
-  color: ${(props) => props.theme.buttons.color};
+  color: ${(props) => props.theme.buttons.backgroundColor};
 
   :hover {
-    color: ${(props) => props.theme.buttons.colorHover};
+    color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `
 const QueueItemActions = styled.div`
   display: none;
   vertical-align: middle;
   text-align: right;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
+
+  :hover {
+    color: ${(props) => props.theme.colors.textPrimary};
+  }
 `
 const QueueItemPosition = styled.div``
 const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   display: grid;
   grid-template-columns: 60px 40% auto 44px;
-  height: ${(props) => props.theme.itemHeight};
-  color: ${(props) => props.theme.textPrimaryColor};
-  border-bottom: 1px solid ${(props) => props.theme.separatorColor};
+  height: ${(props) => props.theme.layout.itemHeight};
+  color: ${(props) => props.theme.colors.textPrimary};
+  border-bottom: 1px solid ${(props) => props.theme.colors.separator};
   ${(props) => (props.isCurrent ? 'font-weight: bold' : '')};
 
   > * {
@@ -99,7 +103,7 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   }
 
   :hover {
-    background-color: ${(props) => props.theme.highlight};
+    background-color: ${(props) => props.theme.colors.elementHighlight};
 
     ${QueueItemPosition} {
       display: none;
@@ -112,7 +116,7 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
 `
 const QueueItemFirstColumn = styled.div`
   justify-self: center;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const QueueItemInfo = styled.div`
   font-weight: normal;

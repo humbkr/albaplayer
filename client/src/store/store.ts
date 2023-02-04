@@ -11,7 +11,7 @@ import {
   createMigrate,
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import { graphQLApi } from 'api/api'
+import { graphqlAPI, restAPI } from 'api/api'
 import { setupListeners } from '@reduxjs/toolkit/query'
 import rootReducer from './rootReducer'
 import migrations from './migrations'
@@ -32,7 +32,7 @@ const persistanceReducer = persistReducer(
   rootReducer
 )
 
-const middleware = [graphQLApi.middleware]
+const middleware = [graphqlAPI.middleware, restAPI.middleware]
 
 const defaultMiddlewareOptions = {
   serializableCheck: debugModeEnabled

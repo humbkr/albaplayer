@@ -11,16 +11,21 @@ import (
 const ACCESS_TOKEN_EXPIRATION = 10 * time.Minute
 const REFRESH_TOKEN_EXPIRATION = 72 * time.Hour
 
-func loginUser(userInteractor *business.UsersInteractor, username string, password string) (TokenPair, error) {
+func loginUser(userInteractor *business.UsersInteractor, username string, password string) (TokenPair, business.User, error) {
 	// Check if the user credentials are valid.
 	user, err := userInteractor.UserGetFromUsername(username)
 	err = CheckPassword(user.Password, password)
 
 	if err != nil {
-		return TokenPair{}, errors.New("invalid credentials")
+		return TokenPair{}, business.User{}, errors.New("invalid credentials")
 	}
 
-	return JWTGenerateTokenPair(user)
+	tokenPair, err := JWTGenerateTokenPair(user)
+	if err != nil {
+		return TokenPair{}, business.User{}, errors.New("invalid credentials")
+	}
+
+	return tokenPair, user, nil
 }
 
 func validateCurrentUser(authCookie *http.Cookie) (business.User, error) {

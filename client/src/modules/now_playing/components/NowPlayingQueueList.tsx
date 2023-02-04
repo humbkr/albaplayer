@@ -30,7 +30,7 @@ type Props = {
 
 const DraggableItem = styled.div<{ isDragging: boolean }>`
   ${(props) =>
-    props.isDragging ? `background-color: ${props.theme.highlight}` : ''};
+    props.isDragging ? `background-color: ${props.theme.colors.elementHighlight}` : ''};
 `
 
 function NowPlayingQueueList({

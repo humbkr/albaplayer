@@ -11,10 +11,10 @@ const LibraryBrowserPane = styled.div`
     // Can't find a way to manage that directly in the
     // VirtualListItem component.
     ${VirtualListItem}.selected {
-      ${(props) => `background-color: ${props.theme.highlightFocus}`};
+      ${(props) => `background-color: ${props.theme.colors.elementHighlightFocus}`};
     }
     ${VirtualListItem} .selected {
-      ${(props) => `color: ${props.theme.textHighlightFocusColor}`};
+      ${(props) => `color: ${props.theme.colors.elementHighlightFocusTextColor}`};
     }
   }
 `

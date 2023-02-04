@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { ThemeProvider } from 'styled-components'
 import userEvent from '@testing-library/user-event'
-import theme from 'themes/default'
+import theme from 'themes/lightGreen'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import Player from 'modules/player/components/Player'
 import { PlayerPlaybackMode } from 'modules/player/utils'

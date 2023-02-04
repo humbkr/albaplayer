@@ -86,7 +86,7 @@ type ComplexityRoot struct {
 		Settings func(childComplexity int) int
 		Track    func(childComplexity int, id int) int
 		Tracks   func(childComplexity int) int
-		User     func(childComplexity int, id int) int
+		User     func(childComplexity int, id *int) int
 		Users    func(childComplexity int) int
 		Variable func(childComplexity int, key string) int
 	}
@@ -113,12 +113,13 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		Data      func(childComplexity int) int
-		DateAdded func(childComplexity int) int
-		Email     func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Name      func(childComplexity int) int
-		Roles     func(childComplexity int) int
+		Data          func(childComplexity int) int
+		DateAdded     func(childComplexity int) int
+		Email         func(childComplexity int) int
+		ID            func(childComplexity int) int
+		IsDefaultUser func(childComplexity int) int
+		Name          func(childComplexity int) int
+		Roles         func(childComplexity int) int
 	}
 
 	Variable struct {
@@ -151,7 +152,7 @@ type QueryResolver interface {
 	Tracks(ctx context.Context) ([]*model.Track, error)
 	Settings(ctx context.Context) (*model.Settings, error)
 	Variable(ctx context.Context, key string) (*model.Variable, error)
-	User(ctx context.Context, id int) (*model.User, error)
+	User(ctx context.Context, id *int) (*model.User, error)
 	Users(ctx context.Context) ([]*model.User, error)
 }
 type TrackResolver interface {
@@ -399,7 +400,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.User(childComplexity, args["id"].(int)), true
+		return e.complexity.Query.User(childComplexity, args["id"].(*int)), true
 
 	case "Query.users":
 		if e.complexity.Query.Users == nil {
@@ -553,6 +554,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.ID(childComplexity), true
 
+	case "User.isDefaultUser":
+		if e.complexity.User.IsDefaultUser == nil {
+			break
+		}
+
+		return e.complexity.User.IsDefaultUser(childComplexity), true
+
 	case "User.name":
 		if e.complexity.User.Name == nil {
 			break
@@ -696,6 +704,7 @@ type User {
   data: String
   dateAdded: Int
   roles: [String]
+  isDefaultUser: Boolean
 }
 
 type Settings {
@@ -721,7 +730,7 @@ type Query {
   tracks: [Track]
   settings: Settings
   variable(key: String!): Variable
-  user(id: ID!): User
+  user(id: ID): User
   users: [User]
 }
 
@@ -729,6 +738,7 @@ input UserInput {
   name: String
   email: String
   password: String
+  currentPassword: String
   data: String
   roles: [String]
 }
@@ -865,10 +875,10 @@ func (ec *executionContext) field_Query_track_args(ctx context.Context, rawArgs 
 func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 *int
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalOID2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1713,6 +1723,8 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 				return ec.fieldContext_User_dateAdded(ctx, field)
 			case "roles":
 				return ec.fieldContext_User_roles(ctx, field)
+			case "isDefaultUser":
+				return ec.fieldContext_User_isDefaultUser(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -1782,6 +1794,8 @@ func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context
 				return ec.fieldContext_User_dateAdded(ctx, field)
 			case "roles":
 				return ec.fieldContext_User_roles(ctx, field)
+			case "isDefaultUser":
+				return ec.fieldContext_User_isDefaultUser(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -2355,7 +2369,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().User(rctx, fc.Args["id"].(int))
+		return ec.resolvers.Query().User(rctx, fc.Args["id"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2389,6 +2403,8 @@ func (ec *executionContext) fieldContext_Query_user(ctx context.Context, field g
 				return ec.fieldContext_User_dateAdded(ctx, field)
 			case "roles":
 				return ec.fieldContext_User_roles(ctx, field)
+			case "isDefaultUser":
+				return ec.fieldContext_User_isDefaultUser(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -2455,6 +2471,8 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 				return ec.fieldContext_User_dateAdded(ctx, field)
 			case "roles":
 				return ec.fieldContext_User_roles(ctx, field)
+			case "isDefaultUser":
+				return ec.fieldContext_User_isDefaultUser(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -3488,6 +3506,47 @@ func (ec *executionContext) fieldContext_User_roles(ctx context.Context, field g
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_isDefaultUser(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_isDefaultUser(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsDefaultUser, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_isDefaultUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5381,6 +5440,14 @@ func (ec *executionContext) unmarshalInputUserInput(ctx context.Context, obj int
 			if err != nil {
 				return it, err
 			}
+		case "currentPassword":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currentPassword"))
+			it.CurrentPassword, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "data":
 			var err error
 
@@ -6107,6 +6174,10 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		case "roles":
 
 			out.Values[i] = ec._User_roles(ctx, field, obj)
+
+		case "isDefaultUser":
+
+			out.Values[i] = ec._User_isDefaultUser(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -6923,6 +6994,22 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	res := graphql.MarshalBoolean(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOID2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalIntID(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOID2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalIntID(*v)
 	return res
 }
 

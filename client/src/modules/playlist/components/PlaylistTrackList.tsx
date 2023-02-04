@@ -1,5 +1,5 @@
 import React, { Ref, useEffect } from 'react'
-import styled, { withTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 import PlaylistItemComponent from 'modules/playlist/components/PlaylistItem'
@@ -30,7 +30,6 @@ type Props = {
 }
 
 type InternalProps = Props & {
-  theme: AppTheme
   forwardedRef: Ref<HTMLDivElement>
 }
 
@@ -44,8 +43,9 @@ function PlaylistTrackList({
   handleRemoveTrack,
   onItemClick,
   onTrackListUpdate,
-  theme,
 }: InternalProps) {
+  const theme = useTheme()
+
   useEffect(() => {
     // Virtuoso's resize observer can throw this error,
     // which is caught by DnD and aborts dragging.
@@ -125,12 +125,12 @@ function PlaylistTrackList({
       // @ts-ignore
       function ({ children, ...props }) {
         return (
-          <div {...props} style={{ height: theme.itemHeight }}>
+          <div {...props} style={{ height: theme.layout.itemHeight }}>
             {children}
           </div>
         )
       },
-    [theme.itemHeight]
+    [theme.layout.itemHeight]
   )
 
   const keyDownCallback = React.useCallback(
@@ -188,7 +188,7 @@ function PlaylistTrackList({
               // @ts-ignore
               scrollerRef={provided.innerRef}
               style={{ width: '100%' }}
-              fixedItemHeight={parseInt(theme.itemHeight, 10)}
+              fixedItemHeight={parseInt(theme.layout.itemHeight, 10)}
               data={items}
               components={{
                 // @ts-ignore
@@ -218,10 +218,8 @@ function PlaylistTrackList({
   )
 }
 
-const ThemedPlaylistTrackList = withTheme(PlaylistTrackList)
-
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  <ThemedPlaylistTrackList {...props} forwardedRef={ref} />
+  <PlaylistTrackList {...props} forwardedRef={ref} />
 ))
 
 const Wrapper = styled.div`
@@ -230,5 +228,5 @@ const Wrapper = styled.div`
 `
 const DraggableItem = styled.div<{ isDragging: boolean }>`
   ${(props) =>
-    props.isDragging ? `background-color: ${props.theme.highlight}` : ''};
+    props.isDragging ? `background-color: ${props.theme.colors.elementHighlight}` : ''};
 `

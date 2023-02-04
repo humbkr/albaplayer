@@ -1,5 +1,7 @@
 import styled from 'styled-components'
-import SelectContainer, { Option } from 'common/components/SelectContainer'
+import SelectContainer, {
+  Option,
+} from 'common/components/forms/SelectContainer'
 
 type Props = {
   orderByOptions: Option[]
@@ -32,8 +34,8 @@ function LibraryBrowserListHeader({
 export default LibraryBrowserListHeader
 
 const LibraryBrowserListHeaderWrapper = styled.div`
-  flex: 0 1 ${(props) => props.theme.itemHeight};
-  color: ${(props) => props.theme.textSecondaryColor};
+  flex: 0 1 ${(props) => props.theme.layout.itemHeight};
+  color: ${(props) => props.theme.colors.textSecondary};
   padding: 0 15px;
 `
 const ContentWrapper = styled.div`

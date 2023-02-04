@@ -1,13 +1,12 @@
 import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
-import ActionButtonIcon from 'common/components/ActionButtonIcon'
-import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
+import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import {
-  addTrack,
-  playTrack,
-  playPlaylist,
   addPlaylist,
+  addTrack,
+  playPlaylist,
+  playTrack,
 } from 'modules/player/store/store'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 import {
@@ -16,6 +15,7 @@ import {
   playlistUpdateItems,
 } from 'modules/playlist/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
 import PlaylistTrackList from './PlaylistTrackList'
 import PlaylistTrackContextMenu from './PlaylistTrackContextMenu'
 import PlaylistActionsMoreContextMenu from './PlaylistActionsMoreContextMenu'
@@ -34,9 +34,7 @@ function PlaylistDetailsPane({
 }: InternalProps) {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
-  const playlist = useAppSelector(
-    (state) => state.playlist.currentPlaylist.playlist
-  )
+  const playlist = useAppSelector((state) => state.playlist.currentPlaylist)
   const currentPosition = useAppSelector(
     (state) => state.playlist.currentTrack.position
   )
@@ -146,7 +144,7 @@ function PlaylistDetailsPane({
           onKeyDown={onKeyDown}
           ref={forwardedRef}
         />
-        <KeyboardNavPlayPopup
+        <KeyboardNavPlayModal
           id="playlist-tracks-nav-modal"
           isOpen={modalIsOpen}
           onClose={() => setModalIsOpen(false)}
@@ -174,10 +172,12 @@ const Wrapper = styled.div`
     // Can't find a way to manage that directly in the
     // VirtualListItem component.
     ${VirtualListItem}.selected {
-      ${(props) => `background-color: ${props.theme.highlightFocus}`};
+      ${(props) =>
+        `background-color: ${props.theme.colors.elementHighlightFocus}`};
     }
     ${VirtualListItem} .selected {
-      ${(props) => `color: ${props.theme.textHighlightFocusColor}`};
+      ${(props) =>
+        `color: ${props.theme.colors.elementHighlightFocusTextColor}`};
     }
   }
 `
@@ -190,17 +190,17 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: ${(props) => props.theme.itemHeight};
-  border-bottom: 1px solid ${(props) => props.theme.separatorColor};
+  height: ${(props) => props.theme.layout.itemHeight};
+  border-bottom: 1px solid ${(props) => props.theme.colors.separator};
 `
 const Actions = styled.div`
   display: inline-block;
 `
 const PlaylistActionButton = styled(ActionButtonIcon)`
-  color: ${(props) => props.theme.buttons.color};
+  color: ${(props) => props.theme.buttons.backgroundColor};
 
   :hover {
-    color: ${(props) => props.theme.buttons.colorHover};
+    color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `
 const Info = styled.div`
@@ -214,5 +214,5 @@ const Subtitle = styled.p`
   font-size: 0.8em;
   margin-top: 2px;
   font-weight: normal;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `

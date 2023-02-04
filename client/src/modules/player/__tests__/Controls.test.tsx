@@ -1,7 +1,7 @@
 import { ThemeProvider } from 'styled-components'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import theme from 'themes/default'
+import theme from 'themes/lightGreen'
 import Controls from 'modules/player/components/Controls'
 import { PlayerPlaybackMode } from 'modules/player/utils'
 

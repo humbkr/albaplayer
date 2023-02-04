@@ -38,7 +38,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 30px 0;
-  max-width: ${(props) => props.theme.contentMaxWidth};
+  max-width: ${(props) => props.theme.layout.contentMaxWidth};
   position: relative;
   margin: 0 auto;
 `
@@ -49,7 +49,7 @@ const NowPlayingQueueWrapper = styled.div<{ headerIsPinned: boolean }>`
   ${({ headerIsPinned }) =>
     headerIsPinned &&
     `
-    padding: 320px 50px 30px;
+    padding: 210px 50px 30px;
   `}
 
   > h2 {

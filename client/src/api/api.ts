@@ -1,20 +1,14 @@
-import { ApolloQueryResult, gql } from '@apollo/client'
-import { createApi } from '@reduxjs/toolkit/query/react'
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { graphqlRequestBaseQuery } from '@rtk-query/graphql-request-base-query'
 import constants from 'api/constants'
+import { ClientError, gql, GraphQLClient } from 'graphql-request'
+import { refreshToken } from 'modules/user/authApi'
+import { logoutUser } from 'modules/user/utils'
 import {
   convertAPIAlbumToAppAlbum,
   convertAPIArtistToAppArtist,
   convertAPITrackToAppTrack,
 } from './helpers'
-import apolloClient from './apollo'
-
-type ApiLibraryInitResult = {
-  artists?: ApiArtist[]
-  albums?: ApiAlbum[]
-  tracks?: ApiTrack[]
-  variable?: ApiVariable
-}
 
 type LibraryInitResponse = {
   data: {
@@ -25,9 +19,120 @@ type LibraryInitResponse = {
   }
 }
 
-export const graphQLApi = createApi({
-  baseQuery: graphqlRequestBaseQuery({
-    url: `${constants.BACKEND_BASE_URL}/graphql`,
+export type GraphQLApiResponse = {
+  status: number
+  data?: any
+  error?: string
+}
+
+// Direct client.
+const graphQLClient = new GraphQLClient(
+  `${constants.BACKEND_BASE_URL}/graphql`,
+  { credentials: 'include' }
+)
+
+export async function request(
+  query: string,
+  variables?: { [key: string]: string }
+): Promise<GraphQLApiResponse> {
+  const response = {
+    status: 200,
+    data: undefined,
+    error: '',
+  }
+
+  try {
+    response.data = await graphQLClient.request(query, variables)
+  } catch (error: any) {
+    if (error.response.status === 401) {
+      // Try to get a new token.
+      const refreshResult = await refreshToken()
+      if (!refreshResult.error) {
+        // New token has been stored, retry the initial query.
+        // @ts-ignore
+        response.data = await graphQLClient.request(query, variables)
+      } else {
+        response.status = refreshResult.status
+        response.error = refreshResult.error
+        await logoutUser()
+      }
+    } else {
+      response.status = error.response.status
+      response.error = JSON.stringify(error, undefined, 2)
+    }
+  }
+
+  return response
+}
+
+// Client for RTK Queries
+const baseQuery = graphqlRequestBaseQuery<
+  Partial<ClientError> & { errorCode: string }
+>({
+  client: graphQLClient,
+  customErrors: ({ name, stack, response }) => {
+    if (!response?.status.toString().startsWith('2')) {
+      // This is a server error, not a GraphQL error.
+      return {
+        name: 'Request or server error',
+        message: response.error,
+        errorCode: response.status.toString(),
+        stack,
+      }
+    }
+
+    if (response?.errors?.length) {
+      const error = response.errors[0]
+
+      return {
+        name,
+        message: error.message,
+        errorCode: (error.extensions?.code as string) || 'unknown_error',
+        stack,
+      }
+    }
+
+    return {
+      name: name,
+      message: 'Unknown error',
+      errorCode: 'unknown_error',
+      stack,
+    }
+  },
+})
+
+const baseQueryWithReauth: (...args: any[]) => Promise<any> = async (
+  ...args: any[]
+) => {
+  // @ts-ignore
+  let result = await baseQuery(...args)
+
+  if (result.error && result.error.errorCode === '401') {
+    // Try to get a new token.
+    const refreshResult = await refreshToken()
+    if (!refreshResult.error) {
+      // New token has been stored, retry the initial query.
+      // @ts-ignore
+      result = await baseQuery(...args)
+    } else {
+      await logoutUser()
+    }
+  }
+
+  return result
+}
+
+export const graphqlAPI = createApi({
+  reducerPath: 'graphqlApi',
+  baseQuery: baseQueryWithReauth,
+  endpoints: () => ({}),
+  tagTypes: ['Auth'],
+})
+
+export const restAPI = createApi({
+  reducerPath: 'restApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${constants.BACKEND_BASE_URL}`,
   }),
   endpoints: () => ({}),
 })
@@ -72,21 +177,20 @@ const getLibrary = async (): Promise<LibraryInitResponse | null> => {
     }
   `
 
-  const response: ApolloQueryResult<ApiLibraryInitResult> =
-    await apolloClient.query({ query: libraryInit })
+  const response = await request(libraryInit)
 
   if (response.data) {
     // Convert API data to app models.
     return {
       data: {
-        artists: response.data.artists?.map(
-          (item) => convertAPIArtistToAppArtist(item) as Artist
+        artists: response.data.artists?.map((item: ApiArtist) =>
+          convertAPIArtistToAppArtist(item)
         ),
-        albums: response.data.albums?.map(
-          (item) => convertAPIAlbumToAppAlbum(item) as Album
+        albums: response.data.albums?.map((item: ApiAlbum) =>
+          convertAPIAlbumToAppAlbum(item)
         ),
-        tracks: response.data.tracks?.map(
-          (item) => convertAPITrackToAppTrack(item) as Track
+        tracks: response.data.tracks?.map((item: ApiTrack) =>
+          convertAPITrackToAppTrack(item)
         ),
         variable: {
           key: 'library_last_updated',
@@ -126,7 +230,7 @@ const getFullTrackInfo = (trackId: string) => {
     }
 `
 
-  return apolloClient.query({ query: fullTrackInfoQuery })
+  return request(fullTrackInfoQuery)
 }
 
 const scanLibrary = () => {
@@ -140,7 +244,7 @@ const scanLibrary = () => {
     }
   `
 
-  return apolloClient.mutate({ mutation: scanLibraryMutation })
+  return graphQLClient.request(scanLibraryMutation)
 }
 
 const emptyLibrary = () => {
@@ -154,7 +258,7 @@ const emptyLibrary = () => {
     }
   `
 
-  return apolloClient.mutate({ mutation: emptyLibraryMutation })
+  return request(emptyLibraryMutation)
 }
 
 const getSettings = () => {
@@ -169,7 +273,7 @@ const getSettings = () => {
     }
   `
 
-  return apolloClient.query({ query: getSettingsQuery })
+  return request(getSettingsQuery)
 }
 
 const getVariable = (key: string) => {
@@ -181,7 +285,7 @@ const getVariable = (key: string) => {
     }
   `
 
-  return apolloClient.query({ query: getVariableQuery })
+  return request(getVariableQuery)
 }
 
 const processApiError = (response: any): string => {

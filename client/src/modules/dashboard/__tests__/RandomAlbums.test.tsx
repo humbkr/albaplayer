@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
-import themeDefault from '../../../themes/default'
+import themeDefault from 'themes/lightGreen'
 import RandomAlbums from '../components/RandomAlbums'
 import { dashboardInitialState } from '../store'
 

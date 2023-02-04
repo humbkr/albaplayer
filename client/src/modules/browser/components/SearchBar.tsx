@@ -4,7 +4,7 @@ import { DebounceInput } from 'react-debounce-input'
 import { search, setSearchFilter } from 'modules/browser/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
-import ActionButtonIcon from 'common/components/ActionButtonIcon'
+import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import { useNavigate } from 'react-router'
 
 type Props = {
@@ -78,6 +78,9 @@ function SearchBar({ forwardedRef }: Props) {
           value={searchState.term}
           placeholder={t('common.search')}
           autoComplete="off"
+          // We need to stop propagation of the keydown event to prevent the space key from
+          // triggering the play/pause action in the player.
+          onKeyDown={(event) => event.stopPropagation()}
         />
       </SearchInputWrapper>
     </Container>
@@ -100,28 +103,33 @@ const FilterButton = styled.div<{
   display: flex;
   justify-content: center;
   align-items: center;
-  width: ${(props) => props.theme.itemHeight};
+  width: ${(props) => props.theme.layout.itemHeight};
   background-color: ${(props) =>
-    props.active ? props.theme.highlightFocus : props.theme.sidebar.background};
-  border-right: 1px solid ${(props) => props.theme.sidebar.separatorColor};
+    props.active
+      ? props.theme.colors.elementHighlightFocus
+      : props.theme.colors.sidebarBackground};
+  border-right: 1px solid ${(props) => props.theme.colors.sidebarSeparator};
+  color: ${(props) =>
+    props.active
+      ? props.theme.colors.sidebarTextPrimaryHover
+      : props.theme.colors.sidebarTextPrimary};
 `
 const ActionButtonIconStyled = styled(ActionButtonIcon)`
   width: 100%;
   height: 100%;
-  color: ${(props) => props.theme.sidebar.textPrimaryColor};
 
   &:focus {
-    border: 1px solid ${(props) => props.theme.highlightFocus};
+    border: 1px solid ${(props) => props.theme.colors.elementHighlightFocus};
   }
 `
 const SearchInputWrapper = styled.div`
   flex-grow: 1;
   vertical-align: middle;
   padding: 8px;
-  background-color: ${(props) => props.theme.sidebar.background};
+  background-color: ${(props) => props.theme.colors.sidebarBackground};
 
   :focus-within {
-    background-color: ${(props) => props.theme.highlightFocus};
+    background-color: ${(props) => props.theme.colors.elementHighlightFocus};
   }
 `
 const SearchInput = styled(DebounceInput)<{
@@ -132,6 +140,7 @@ const SearchInput = styled(DebounceInput)<{
   width: 100%;
   font-size: 1em;
   padding-left: 10px;
-  background-color: ${(props) => props.theme.inputs.backgroundColor};
-  border: 1px solid rgb(211, 211, 211);
+  background-color: ${(props) => props.theme.colors.inputBackground};
+  border: 0;
+  border-radius: 3px;
 `

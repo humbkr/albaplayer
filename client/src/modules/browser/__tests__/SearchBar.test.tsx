@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 
 import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/default'
+import themeDefault from 'themes/lightGreen'
 import userEvent from '@testing-library/user-event'
 import { browserInitialState } from 'modules/browser/store'
 import { useNavigate } from 'react-router'

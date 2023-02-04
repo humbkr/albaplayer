@@ -39,8 +39,8 @@ export default TrackInfo
 
 const TrackInfoWrapper = styled.div`
   position: relative;
-  width: ${(props) => props.theme.sidebar.width};
-  height: ${(props) => props.theme.sidebar.width};
+  width: 100%;
+  aspect-ratio: 1;
   background: url(${coverPlaceholder}) no-repeat;
   background-size: 100% 100%;
   overflow: hidden;

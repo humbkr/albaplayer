@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import ControlButton from 'modules/player/components/ControlButton'
 import userEvent from '@testing-library/user-event'
-import themeDefault from 'themes/default'
+import themeDefault from 'themes/lightGreen'
 import { ThemeProvider } from 'styled-components'
 
 const mockOnClick = jest.fn()

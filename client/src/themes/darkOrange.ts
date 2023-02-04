@@ -1,86 +1,83 @@
-const themeDark: AppTheme = {
+import { DefaultTheme } from 'styled-components'
+
+const colors: ThemeColors = {
+  background: '#323638',
+  separator: '#292c2f',
+  textPrimary: '#eee',
+  textSecondary: '#92929d',
+  elementHighlight: '#202124',
+  elementHighlightFocus: '#e96a38',
+  elementHighlightFocusTextColor: '#a53408',
+  cardLightBackground: '#4c5052',
+  cardDarkBackground: 'rgba(0,0,0,0.65)',
+  cardDarkTextPrimary: '#f3f3f3',
+  cardDarkTextSecondary: '#92929d',
+  disabled: '#b2b2b2',
+  success: '#5caa68',
+  info: '#e96a38',
+  warning: '#dba00b',
+  error: '#cb2a2a',
+  buttonBackground: '#e96a38',
+  buttonBackgroundHover: '#f97c4b',
+  buttonText: '#f3f3f3',
+  inputBackground: '#eee',
+  sidebarBackground: '#2a2a2a',
+  sidebarTextPrimary: '#d9d9d9',
+  sidebarTextPrimaryHover: '#333333',
+  sidebarSeparator: '#3f4248',
+  playerButtonDisabled: '#92929d',
+  playerTimeline: '#747474',
+  playerTimelineElapsed: '#fff',
+}
+
+const themeDark: DefaultTheme = {
+  colors,
+
   // Type of theme.
   isDark: true,
 
-  // Used for all list items.
-  itemHeight: '50px',
-
-  // Max witch for the content area when not full page.
-  contentMaxWidth: '1060px',
-
-  backgroundColor: '#323638',
-  separatorColor: '#292c2f',
-  textPrimaryColor: '#eeeeee',
-  textSecondaryColor: '#92929d',
-
-  highlight: '#202124',
-  highlightFocus: '#e96a38',
-  textHighlightFocusColor: '#a53408',
-
-  cards: {
-    backgroundColor: '#4c5052',
+  layout: {
+    // Used for all list items.
+    itemHeight: '50px',
+    // Max witch for the content area when not full page.
+    contentMaxWidth: '1060px',
+    sidebarWidth: '280px',
   },
 
   buttons: {
     height: '32px',
-    sidePadding: '16px',
-    fontSize: '14px',
+    padding: '0 16px',
+    fontSize: '1em',
     iconSize: 24,
-    color: '#e96a38',
-    colorHover: '#f97c4b',
-    colorDisabled: '#b2b2b2',
-    colorLight: '#eeeeee',
-  },
-
-  inputs: {
-    backgroundColor: '#eeeeee',
-  },
-
-  messages: {
-    info: {
-      color: '#00911b',
-    },
-    warning: {
-      color: '#dba00b',
-    },
-    error: {
-      color: '#cb2a2a',
-    },
-    height: '32px',
-  },
-
-  sidebar: {
-    width: '280px',
-    menuItemHeight: '40px',
-    background: '#2a2a2a',
-    textPrimaryColor: '#d9d9d9',
-    textPrimaryColorHover: '#333333',
-    separatorColor: '#3f4248',
+    color: colors.buttonText,
+    backgroundColor: colors.buttonBackground,
+    backgroundColorHover: colors.buttonBackgroundHover,
+    backgroundColorDisabled: colors.disabled,
   },
 
   player: {
     buttons: {
-      color: '#eeeeee',
-      colorHover: '#f97c4b',
-      colorDisabled: '#92929d',
-      colorEnabled: '#f97c4b',
+      color: colors.sidebarTextPrimary,
+      colorHover: colors.elementHighlightFocus,
+      colorDisabled: colors.playerButtonDisabled,
+      colorEnabled: colors.elementHighlightFocus,
     },
     timeline: {
-      color: '#747474',
-      colorElapsed: '#fff',
+      color: colors.playerButtonDisabled,
+      colorElapsed: colors.playerTimelineElapsed,
     },
   },
 
   nowPlaying: {
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    textPrimaryColor: '#eeeeee',
-    textSecondaryColor: '#92929d',
+    backgroundColor: colors.cardDarkBackground,
+    textPrimaryColor: colors.cardDarkTextPrimary,
+    textSecondaryColor: colors.cardDarkTextSecondary,
   },
 
   dashboard: {
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    textPrimaryColor: '#ffffff',
-    textSecondaryColor: '#92929d',
+    backgroundColor: colors.cardDarkBackground,
+    textPrimaryColor: colors.cardDarkTextPrimary,
+    textSecondaryColor: colors.cardDarkTextSecondary,
   },
 }
 

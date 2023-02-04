@@ -1,4 +1,4 @@
-import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
+import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
   addTrack,
@@ -6,9 +6,9 @@ import {
   playTrackAfterCurrent,
 } from 'modules/player/store/store'
 import {
-  playlistsSelector,
-  playlistRemoveTrack,
   addTrack as addTrackToPlaylist,
+  playlistRemoveTrack,
+  playlistsSelector,
 } from 'modules/playlist/store'
 import { useNavigate } from 'react-router'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
@@ -20,7 +20,7 @@ function PlaylistTrackContextMenu() {
 
   const playlists = useAppSelector((state) => playlistsSelector(state))
   const currentPlaylist = useAppSelector(
-    (state) => state.playlist.currentPlaylist.playlist
+    (state) => state.playlist.currentPlaylist
   )
 
   const dispatch = useAppDispatch()
@@ -106,10 +106,10 @@ function PlaylistTrackContextMenu() {
       </Item>
       <Separator />
       <Item onClick={(menuItem: any) => findAllByArtist(menuItem)}>
-        {t('library.actions.findAllByArtist')}
+        {t('browser.actions.findAllByArtist')}
       </Item>
       <Item onClick={(menuItem: any) => findAllByAlbum(menuItem)}>
-        {t('library.actions.findAllOnAlbum')}
+        {t('browser.actions.findAllOnAlbum')}
       </Item>
     </ContextMenu>
   )

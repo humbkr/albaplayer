@@ -1,7 +1,6 @@
 import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
-import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
-import { playArtist, addArtist } from 'modules/player/store/store'
+import { addArtist, playArtist } from 'modules/player/store/store'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import ArtistContextMenu from 'modules/browser/components/ArtistContextMenu'
 import {
@@ -11,6 +10,7 @@ import {
 } from 'modules/browser/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
+import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
 import ArtistTeaser from './ArtistTeaser'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
@@ -90,7 +90,7 @@ function ArtistsPaneContainer({
           onKeyDown={onKeyDown}
         />
         <ArtistContextMenu />
-        <KeyboardNavPlayPopup
+        <KeyboardNavPlayModal
           id="artists-nav-modal"
           onClose={() => setModalIsOpen(false)}
           isOpen={modalIsOpen}

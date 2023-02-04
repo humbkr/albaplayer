@@ -46,7 +46,7 @@ const AlbumTeaserTitle = styled.h2`
 const AlbumSubInfo = styled.div`
   font-size: 0.8em;
   margin-top: 5px;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const AlbumTeaserArtist = styled.span`
   font-style: italic;
@@ -54,7 +54,7 @@ const AlbumTeaserArtist = styled.span`
 const AlbumTeaserWrapper = styled.div`
   display: table;
   width: 100%;
-  height: ${(props) => props.theme.itemHeight};
+  height: ${(props) => props.theme.layout.itemHeight};
   padding: 0 15px;
   overflow: hidden;
   white-space: nowrap;

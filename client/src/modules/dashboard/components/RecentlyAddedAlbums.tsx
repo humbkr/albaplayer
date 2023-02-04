@@ -73,16 +73,17 @@ function RecentlyAddedAlbums() {
 export default RecentlyAddedAlbums
 
 const Wrapper = styled.div`
-  background-color: ${(props) => props.theme.cards.backgroundColor};
-  max-width: ${(props) => props.theme.contentMaxWidth};
+  background-color: ${(props) => props.theme.colors.cardLightBackground};
+  max-width: ${(props) => props.theme.layout.contentMaxWidth};
   min-width: 780px;
   margin: 0 auto;
   padding-bottom: 10px;
-  color: ${(props) => props.theme.textPrimaryColor};
+  color: ${(props) => props.theme.colors.textPrimary};
+  border-radius: 3px;
 `
 const Header = styled.div`
   padding: 0 20px;
-  height: ${(props) => props.theme.itemHeight};
+  height: ${(props) => props.theme.layout.itemHeight};
   display: flex;
   align-items: center;
 `
@@ -98,10 +99,10 @@ const Cell = styled.div`
 `
 const EmptyState = styled.div`
   padding: 5px 0 10px;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const TextLink = styled(Link)`
-  color: ${(props) => props.theme.highlightFocus};
+  color: ${(props) => props.theme.colors.elementHighlightFocus};
   text-decoration: none;
 
   :hover {

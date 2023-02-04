@@ -48,11 +48,12 @@ const Select = styled.select<any>`
   appearance: none;
   background-color: transparent;
   font-size: 1em;
-  color: ${(props) => props.theme.buttons.color};
-  border: 1px solid ${(props) => props.theme.buttons.color};
-  border-radius: 2px;
+  color: ${(props) => props.theme.buttons.backgroundColor};
+  border: 1px solid ${(props) => props.theme.buttons.backgroundColor};
+  border-radius: 3px;
   padding: 6px ${(props) => props.theme.buttons.sidePadding};
   min-width: 250px;
+  height: ${(props) => props.theme.buttons.height};
   background-image: url(${(props) =>
     props.theme.isDark ? selectArrowLight : selectArrowDark});
   background-repeat: no-repeat, repeat;

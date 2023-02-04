@@ -4,8 +4,8 @@ import { render, fireEvent, screen } from '@testing-library/react'
 import thunk from 'redux-thunk'
 import { ThemeProvider } from 'styled-components'
 import configureMockStore from 'redux-mock-store'
-import themeDefault from 'themes/default'
-import Settings from '../scenes/Settings'
+import themeDefault from 'themes/lightGreen'
+import Preferences from 'modules/settings/scenes/Preferences'
 import info from '../../../../package.json'
 import { initialState } from '../store'
 
@@ -50,7 +50,7 @@ describe('Settings scene', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <Settings />
+          <Preferences />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -82,7 +82,7 @@ describe('Settings scene', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <Settings />
+          <Preferences />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -106,7 +106,7 @@ describe('Settings scene', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <Settings />
+          <Preferences />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -128,7 +128,7 @@ describe('Settings scene', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <Settings />
+          <Preferences />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -158,7 +158,7 @@ describe('Settings scene', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <Settings />
+          <Preferences />
         </ThemeProvider>
       </ReduxProvider>
     )
@@ -187,7 +187,7 @@ describe('Settings scene', () => {
     render(
       <ReduxProvider store={store}>
         <ThemeProvider theme={themeDefault}>
-          <Settings />
+          <Preferences />
         </ThemeProvider>
       </ReduxProvider>
     )

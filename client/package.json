@@ -1,31 +1,35 @@
 {
   "name": "albaplayer",
-  "version": "2.1.0",
+  "version": "2.2.0-rc1",
   "private": true,
   "dependencies": {
-    "@apollo/client": "^3.7.3",
     "@hello-pangea/dnd": "^16.2.0",
+    "@hookform/resolvers": "^2.9.10",
     "@reduxjs/toolkit": "^1.9.1",
     "@rtk-query/graphql-request-base-query": "^2.2.0",
     "dayjs": "^1.11.7",
     "formik": "^2.1.6",
     "graphql": "^16.6.0",
+    "graphql-request": "^5.1.0",
     "i18next": "^22.4.6",
     "react": "^18.2.0",
     "react-contexify": "^4.1.1",
     "react-debounce-input": "^3.3.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.42.1",
     "react-i18next": "^12.1.1",
     "react-modal": "^3.16.1",
     "react-redux": "^8.0.5",
     "react-router": "^6.6.1",
     "react-router-dom": "^6.6.1",
     "react-slider": "^2.0.4",
+    "react-toastify": "^9.1.1",
     "react-virtuoso": "^3.1.5",
     "redux": "^4.2.0",
     "redux-persist": "^6.0.0",
     "reselect": "^4.1.7",
-    "styled-components": "^5.3.6"
+    "styled-components": "^5.3.6",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
@@ -51,8 +55,12 @@
     "react-scripts": "5.0.1",
     "redux-mock-store": "^1.5.4",
     "resize-observer-polyfill": "^1.5.1",
+    "ts-jest": "^29.0.3",
     "typescript": "^4.9.4",
     "web-vitals": "^3.1.0"
+  },
+  "resolutions": {
+    "graphql-request": "5.1.0"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -92,6 +100,9 @@
         "lines": 50,
         "statements": 50
       }
+    },
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/ts-jest"
     }
   }
 }

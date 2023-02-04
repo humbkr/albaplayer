@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import userEvent from '@testing-library/user-event'
 import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/default'
+import themeDefault from 'themes/lightGreen'
 import { makeMockStore } from '../../../../__tests__/test-utils/redux'
 import NowPlayingQueueActions from '../components/NowPlayingQueueActions'
 

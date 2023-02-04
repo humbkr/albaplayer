@@ -5,7 +5,7 @@ import { contextMenu } from 'react-contexify'
 import { useAppDispatch } from 'store/hooks'
 import { playAlbum } from 'modules/player/store/store'
 import { useTranslation } from 'react-i18next'
-import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
+import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
 
@@ -99,6 +99,7 @@ const Wrapper = styled.div<{ visible: boolean }>`
   width: 100%;
   margin-right: 20px;
   transition: background-color linear 0.15s, color linear 0.15s;
+  border-radius: 3px;
   background-color: ${(props) =>
     props.visible ? props.theme.dashboard.backgroundColor : 'transparent'};
   color: ${(props) =>
@@ -137,7 +138,7 @@ const ActionButton = styled(ActionButtonIcon)<{ visible: boolean }>`
   }
 
   :hover {
-    color: ${(props) => props.theme.buttons.colorHover};
+    color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `
 const Info = styled.div`
