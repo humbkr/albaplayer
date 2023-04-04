@@ -41,9 +41,11 @@ function UserActionsMenu() {
   if (user?.isDefaultUser) {
     return (
       <Container data-testid="user-actions-menu-noauth">
-        <UserButton active={false} onClick={goToAdmin}>
-          <Icon>admin_panel_settings</Icon>
-        </UserButton>
+        {userHasRole(user, 'admin') && (
+          <UserButton active={false} onClick={goToAdmin}>
+            <Icon>admin_panel_settings</Icon>
+          </UserButton>
+        )}
         <UserButton active={false} onClick={goToPreferences}>
           <Icon>settings</Icon>
         </UserButton>
@@ -99,6 +101,7 @@ const UserButton = styled.button<{ active: boolean }>`
   padding: 0 5px;
   cursor: pointer;
   height: 100%;
+  transition: background-color 0.15s ease-in-out;
 
   :hover {
     background-color: ${(props) => props.theme.colors.background};

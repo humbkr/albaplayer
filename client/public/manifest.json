@@ -1,12 +1,8 @@
 {
+  "id": "albaplayer",
   "short_name": "Albaplayer",
   "name": "Albaplayer",
   "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
     {
       "src": "android-chrome-192x192.png",
       "sizes": "192x192",
@@ -20,6 +16,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#323638",
+  "background_color": "#323638"
 }
