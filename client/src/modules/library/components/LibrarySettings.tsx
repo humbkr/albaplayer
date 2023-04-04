@@ -96,12 +96,7 @@ const ActionButtons = styled.div`
 const ActionWaiting = styled.div`
   color: ${(props) => props.theme.colors.textSecondary};
   font-style: italic;
-
-  > * {
-    display: inline-block;
-    vertical-align: top;
-    height: 30px;
-    line-height: 30px;
-    margin-right: 5px;
-  }
+  display: flex;
+  align-items: center;
+  gap: 5px;
 `

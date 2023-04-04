@@ -1,6 +1,6 @@
 import styled from 'styled-components'
+import APIConstants from 'api/constants'
 import coverPlaceholder from '../assets/images/cover_placeholder.png'
-import { constants as APIConstants } from '../../api'
 
 type Props = {
   src?: string

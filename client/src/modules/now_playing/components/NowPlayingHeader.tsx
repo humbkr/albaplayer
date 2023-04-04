@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
 import { formatDuration } from 'common/utils/utils'
 import ActionButtonCircle from 'common/components/buttons/ActionButtonCircle'
-import { constants } from 'api'
+import APIConstants from 'api/constants'
 import SearchLink from 'modules/browser/components/SearchLink'
 import { useAppSelector } from 'store/hooks'
 import { TFunction } from 'i18next'
@@ -37,7 +37,7 @@ function getTrackInfoForDisplay(
         number: track?.number ? track.number.toString() : '',
         disc: track?.disc ?? '',
         duration: track?.duration ? formatDuration(track.duration) : '',
-        cover: track?.cover ? constants.BACKEND_BASE_URL + track.cover : '',
+        cover: track?.cover ? APIConstants.BACKEND_BASE_URL + track.cover : '',
       }
     : null
 }

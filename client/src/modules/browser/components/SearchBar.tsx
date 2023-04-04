@@ -68,7 +68,6 @@ function SearchBar({ forwardedRef }: Props) {
       </FilterButton>
       <SearchInputWrapper>
         <SearchInput
-          // @ts-ignore
           inputRef={forwardedRef}
           debounceTimeout={300}
           onChange={runSearch}
@@ -113,6 +112,7 @@ const FilterButton = styled.div<{
     props.active
       ? props.theme.colors.sidebarTextPrimaryHover
       : props.theme.colors.sidebarTextPrimary};
+  transition: background-color 0.15s ease-in-out, color 0.1s ease-in-out;
 `
 const ActionButtonIconStyled = styled(ActionButtonIcon)`
   width: 100%;
@@ -127,6 +127,7 @@ const SearchInputWrapper = styled.div`
   vertical-align: middle;
   padding: 8px;
   background-color: ${(props) => props.theme.colors.sidebarBackground};
+  transition: background-color 0.15s ease-in-out;
 
   :focus-within {
     background-color: ${(props) => props.theme.colors.elementHighlightFocus};

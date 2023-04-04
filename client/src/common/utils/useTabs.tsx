@@ -6,17 +6,23 @@ export type Tab = {
   label: string
 }
 
-export function useTabs(tabs: Tab[], defaultTabId?: string) {
+export function useTabs(
+  tabs: Tab[],
+  defaultTabId?: string,
+  hiddenTabs: string[] = []
+) {
   const [currentTab, setCurrentTab] = useState(defaultTabId || tabs[0].id)
 
   const onSelectTab = (tabId: string) => {
     setCurrentTab(tabId)
   }
 
-  const tabsWithOnClick = tabs.map((tab) => ({
-    ...tab,
-    onClick: onSelectTab,
-  }))
+  const tabsWithOnClick = tabs
+    .filter((tab) => !hiddenTabs?.includes(tab.id))
+    .map((tab) => ({
+      ...tab,
+      onClick: onSelectTab,
+    }))
 
   function TabsComponent() {
     return <Tabs tabs={tabsWithOnClick} activeTabId={currentTab} />

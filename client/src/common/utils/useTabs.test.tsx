@@ -65,4 +65,25 @@ describe('HOOK: useTabs', () => {
 
     expect(result.current.currentTab).toBe('tab2')
   })
+
+  it('should not return hidden tabs', async () => {
+    const tabs = [
+      { id: 'tab1', label: 'Tab 1' },
+      { id: 'tab2', label: 'Tab 2' },
+      { id: 'tab3', label: 'Tab 3' },
+    ]
+
+    const { result } = renderHook(() => useTabs(tabs, undefined, ['tab2']))
+    const { TabsComponent } = result.current
+
+    render(
+      <ThemeProvider theme={themeDefault}>
+        <TabsComponent />
+      </ThemeProvider>
+    )
+
+    expect(screen.getByText('Tab 1')).toBeInTheDocument()
+    expect(screen.getByText('Tab 3')).toBeInTheDocument()
+    expect(screen.queryByText('Tab 2')).not.toBeInTheDocument()
+  })
 })

@@ -1,6 +1,6 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { immutableNestedSort, immutableSortTracks } from 'common/utils/utils'
-import { constants as APIConstants } from 'api'
+import APIConstants from 'api/constants'
 
 export const browserInitialState: BrowserState = {
   artists: [],

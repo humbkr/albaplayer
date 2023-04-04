@@ -8,6 +8,7 @@ import {
   setItemFromQueue,
 } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import AnimatedEQ from 'common/components/AnimatedEQ'
 
 type Props = {
   item: QueueItemDisplay
@@ -54,11 +55,20 @@ function NowPlayingQueueItem({ item, currentIndex }: Props) {
   return (
     <QueueItemWrapper isCurrent={isCurrent} onContextMenu={onRightClick}>
       <QueueItemFirstColumn>
-        <QueueItemPosition>{item.position}</QueueItemPosition>
-        <QueueActionButtonIcon
-          icon={playbackButtonIcon}
-          onClick={handlePlayBackButton}
-        />
+        {(!isPlaying || !isCurrent) && (
+          <QueueItemPosition>{item.position}</QueueItemPosition>
+        )}
+        {isPlaying && isCurrent && (
+          <CurrentPlaying>
+            <AnimatedEQ />
+          </CurrentPlaying>
+        )}
+        <QueueActionButtonIcon>
+          <ActionButtonIcon
+            icon={playbackButtonIcon}
+            onClick={handlePlayBackButton}
+          />
+        </QueueActionButtonIcon>
       </QueueItemFirstColumn>
       <div>{item.track.title}</div>
       <QueueItemInfo>{item.track.artist?.name}</QueueItemInfo>
@@ -71,7 +81,7 @@ function NowPlayingQueueItem({ item, currentIndex }: Props) {
 
 export default NowPlayingQueueItem
 
-const QueueActionButtonIcon = styled(ActionButtonIcon)`
+const QueueActionButtonIcon = styled.div`
   display: none;
   color: ${(props) => props.theme.buttons.backgroundColor};
 
@@ -90,6 +100,7 @@ const QueueItemActions = styled.div`
   }
 `
 const QueueItemPosition = styled.div``
+const CurrentPlaying = styled.div``
 const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   display: grid;
   grid-template-columns: 60px 40% auto 44px;
@@ -104,8 +115,10 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
 
   :hover {
     background-color: ${(props) => props.theme.colors.elementHighlight};
+    cursor: grab;
 
-    ${QueueItemPosition} {
+    ${QueueItemPosition},
+    ${CurrentPlaying} {
       display: none;
     }
 

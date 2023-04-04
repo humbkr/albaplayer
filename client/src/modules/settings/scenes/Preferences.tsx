@@ -1,25 +1,23 @@
-import { useEffect } from 'react'
-import { initSettings } from 'modules/settings/store'
-import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import AppearanceSettings from 'modules/settings/components/AppearanceSettings'
 import ProfileSettingsForm from 'modules/user/components/ProfileSettingsForm'
 import { useTabs } from 'common/utils/useTabs'
-import SettingsPageContainer from 'modules/settings/components/SettingsPage'
+import SettingsPageContainer from 'modules/settings/components/SettingsPageContainer'
+import { useGetAppConfigQuery } from 'modules/settings/api'
 
 function Preferences() {
   const { t } = useTranslation()
 
-  const dispatch = useAppDispatch()
+  const { data: appConfig } = useGetAppConfigQuery()
 
-  useEffect(() => {
-    dispatch(initSettings())
-  }, [dispatch])
-
-  const { TabsComponent, currentTab } = useTabs([
-    { id: 'appearance', label: 'Appearance' },
-    { id: 'profile', label: 'Profile' },
-  ])
+  const { TabsComponent, currentTab } = useTabs(
+    [
+      { id: 'appearance', label: t('settings.appearance.title') },
+      { id: 'profile', label: t('user.profile.title') },
+    ],
+    'appearance',
+    appConfig?.authEnabled === false ? ['profile'] : []
+  )
 
   return (
     <SettingsPageContainer>

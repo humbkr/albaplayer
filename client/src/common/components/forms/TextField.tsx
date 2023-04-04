@@ -25,14 +25,14 @@ function TextField({
       <Input
         type={type}
         id={name}
-        {...register(name, { required })}
+        {...(register ? register(name, { required }) : {})}
         error={error}
         // We need to stop propagation of the keydown event to prevent the space key from
         // triggering the play/pause action in the player.
         onKeyDown={(event) => event.stopPropagation()}
         {...rest}
       />
-      {error && <Error>{error}</Error>}
+      {error && <Error role="alert">{error}</Error>}
     </Container>
   )
 }
