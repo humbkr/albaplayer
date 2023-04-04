@@ -2,11 +2,8 @@ import React from 'react'
 import styled, { useTheme } from 'styled-components'
 import Icon from 'common/components/Icon'
 
-type Props = {
-  onClick?: (...args: any[]) => any
+type Props = React.HTMLProps<HTMLButtonElement> & {
   icon: string
-  className?: string
-  disabled?: boolean
   size?: number
   testId?: string
 }
@@ -14,7 +11,6 @@ type Props = {
 function ActionButtonIcon({
   onClick,
   icon,
-  className = '',
   disabled = false,
   size,
   testId = '',
@@ -22,13 +18,7 @@ function ActionButtonIcon({
   const theme = useTheme()
 
   return (
-    <Wrapper
-      className={className}
-      disabled={disabled}
-      // @ts-ignore
-      onClick={onClick}
-      data-testid={testId}
-    >
+    <Wrapper disabled={disabled} onClick={onClick} data-testid={testId}>
       <Icon size={size || theme.buttons.iconSize}>{icon}</Icon>
     </Wrapper>
   )
@@ -43,9 +33,13 @@ const Wrapper = styled.button`
   text-transform: uppercase;
   text-align: center;
   vertical-align: middle;
-  transition: 0.2s ease-out;
+  transition: 0.15s ease-in-out;
   background-color: transparent;
   color: inherit;
+
+  &:hover {
+    color: ${(props) => props.theme.colors.elementHighlightFocus};
+  }
 
   :disabled {
     cursor: default;

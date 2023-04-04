@@ -25,7 +25,7 @@ function Checkboxes({
 }: Props) {
   return (
     <Fieldset>
-      <Legend>{label}</Legend>
+      <Legend aria-label={label}>{label}</Legend>
       {options.map((option) => (
         <Option key={option.value}>
           <input
@@ -38,7 +38,7 @@ function Checkboxes({
               mandatoryOptions?.includes(option.value) ||
               disabledOptions?.includes(option.value)
             }
-            {...register(name)}
+            {...(register ? register(name) : {})}
           />
           <label htmlFor={option.value} title={option.description}>
             {option.label}
@@ -54,7 +54,7 @@ export default Checkboxes
 const Fieldset = styled.fieldset`
   border: 0;
 `
-const Legend = styled.legend`
+const Legend = styled.label`
   font-size: 0.9rem;
   margin-bottom: 3px;
 `

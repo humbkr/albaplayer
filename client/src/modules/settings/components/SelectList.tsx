@@ -36,6 +36,7 @@ function SelectList({
       value={value}
       onChange={onChangeHandler}
       data-testid={testId || 'select-list'}
+      role="listbox"
     >
       {optionsHtml}
     </Select>

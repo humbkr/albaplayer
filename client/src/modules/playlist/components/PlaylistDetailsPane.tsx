@@ -112,7 +112,7 @@ function PlaylistDetailsPane({
           <Info>
             <Title>{playlist.title}</Title>
             <Subtitle>
-              {playlist.date} - {playlist.items.length} track(s)
+              {playlist.date} - {playlist.items?.length || 0} track(s)
             </Subtitle>
           </Info>
           <Actions>

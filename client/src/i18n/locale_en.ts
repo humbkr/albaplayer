@@ -16,6 +16,7 @@ const en: Translation = {
     search: 'Search',
     clear: 'Clear',
     validate: 'Validate',
+    unknown: 'Unknown',
     errors: {
       unknown: 'An unknown error occurred, please try again later.',
     },
@@ -137,9 +138,13 @@ const en: Translation = {
         'Are you sure you wish to empty the library? This cannot be undone.',
     },
     appearance: {
+      title: 'Appearance',
       theme: 'Theme',
     },
-    version: 'Version: {{version}}',
+    about: {
+      title: 'About',
+      version: 'Version: {{version}}',
+    },
   },
   user: {
     login: {
@@ -169,6 +174,14 @@ const en: Translation = {
     },
     logout: 'Logout',
     usersManagement: {
+      title: 'Users',
+      newUser: 'New user',
+      columns: {
+        id: 'ID',
+        name: 'Name',
+        roles: 'Roles',
+        created: 'Created',
+      },
       confirmDeleteUser: 'Are you sure you wish to delete this user?',
       userCreated: 'User created',
       userDeleted: 'User deleted',

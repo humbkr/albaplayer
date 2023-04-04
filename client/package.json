@@ -1,6 +1,6 @@
 {
   "name": "albaplayer",
-  "version": "2.2.0-rc1",
+  "version": "2.2.0",
   "private": true,
   "dependencies": {
     "@hello-pangea/dnd": "^16.2.0",

@@ -5,7 +5,9 @@ import ActionButton from 'common/components/buttons/ActionButton'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 
 // http://reactcommunity.org/react-modal/accessibility/
-ReactModal.setAppElement('#root')
+if (process.env.NODE_ENV !== 'test') {
+  ReactModal.setAppElement('#root')
+}
 
 type Props = {
   id: string
@@ -74,7 +76,11 @@ function Modal({
             </>
           )}
           {!hideCloseButton && (
-            <ActionButtonIcon onClick={onClose} icon="close" />
+            <ActionButtonIcon
+              onClick={onClose}
+              icon="close"
+              testId="modal-close"
+            />
           )}
         </Header>
         {children}

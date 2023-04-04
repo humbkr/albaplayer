@@ -4,19 +4,19 @@ const LoaderPulse = styled.div<{ size?: number }>`
   height: ${(props) => props.size}px;
   width: ${(props) => props.size}px;
   border-radius: 50%;
-  background: ${(props) => props.theme.colors.buttonText};
-  animation: pulse 1s infinite ease-out;
+  background-color: ${(props) => props.theme.colors.buttonText};
+  animation: customPulse 1s infinite ease-out;
 
-  @keyframes pulse {
-    0%{
+  @keyframes customPulse {
+    0% {
       transform: scale(0.15);
       opacity: 0;
     }
-    50%{
+    50% {
       opacity: 1;
     }
 
-    100%{
+    100% {
       transform: scale(1);
       opacity: 0;
     }
