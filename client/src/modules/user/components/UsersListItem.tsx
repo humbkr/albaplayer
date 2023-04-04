@@ -2,10 +2,11 @@ import styled from 'styled-components'
 import dayjs from 'dayjs'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import React from 'react'
-import { constants } from 'api'
 import { useDeleteUserMutation, useGetUserQuery } from 'modules/user/store/api'
 import { notify } from 'common/utils/notifications'
 import { useTranslation } from 'react-i18next'
+import { USER_ROLE_OWNER } from 'modules/user/constants'
+import APIConstants from 'api/constants'
 
 type Props = {
   user: User
@@ -29,8 +30,11 @@ function UsersListItem({ user, onEditAction }: Props) {
     }
   }
 
-  const canDeleteUser =
-    user.id !== constants.USER_OWNER_ID && user.id !== currentUser?.id
+  const cannotEditUser =
+    user.id === APIConstants.USER_OWNER_ID ||
+    user.id === currentUser?.id ||
+    (user.roles.includes(USER_ROLE_OWNER) &&
+      !currentUser?.roles.includes(USER_ROLE_OWNER))
 
   return (
     <div>
@@ -43,14 +47,13 @@ function UsersListItem({ user, onEditAction }: Props) {
         <div>{user.roles.join(', ')}</div>
         <div>{dayjs(user.dateAdded).format('YYYY-MM-DD HH:mm:ss')}</div>
         <Actions>
-          {user.id !== currentUser?.id && (
-            <Action icon="edit" onClick={() => onEditAction(user)} />
+          {!cannotEditUser && (
+            <>
+              <Action icon="edit" onClick={() => onEditAction(user)} />
+              <Action icon="delete" onClick={handleDeleteUser} />
+            </>
           )}
-          {canDeleteUser ? (
-            <Action icon="delete" onClick={handleDeleteUser} />
-          ) : (
-            <ActionPlaceholder />
-          )}
+          {cannotEditUser && <ActionPlaceholder />}
         </Actions>
       </Line>
     </div>

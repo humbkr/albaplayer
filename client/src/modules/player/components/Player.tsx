@@ -15,16 +15,18 @@ import {
   setPreviousTrack,
 } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
-import { constants as APIConstants } from 'api'
+import APIConstants from 'api/constants'
 import { useInterval } from 'common/utils/useInterval'
 import { playerSelector, queueSelector } from 'modules/player/store/selectors'
 import { PlayerPlaybackMode, setCycleNumPos } from 'modules/player/utils'
+import { useTranslation } from 'react-i18next'
 
 function getListeningVolume(volumeBarValue: number) {
   return volumeBarValue ** 2
 }
 
 function Player() {
+  const { t } = useTranslation()
   const dispatch = useAppDispatch()
 
   const { shuffle, repeat, volume, track, playing, progress, duration } =
@@ -137,9 +139,9 @@ function Player() {
       /* istanbul ignore next */
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-          title: track?.title || 'unknown',
-          artist: track?.artist?.name || 'unknown',
-          album: track?.album?.title || 'unknown',
+          title: track?.title || t('common.unknown'),
+          artist: track?.artist?.name || t('common.unknown'),
+          album: track?.album?.title || t('common.unknown'),
           artwork: [
             {
               src: APIConstants.BACKEND_BASE_URL + track?.cover,
