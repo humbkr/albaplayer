@@ -1,4 +1,4 @@
-import { api } from 'api'
+import libraryAPI from 'modules/library/api'
 import { immutableSortTracks } from 'common/utils/utils'
 import playerSlice from 'modules/player/store/player.store'
 import queueSlice from 'modules/player/store/queue.store'
@@ -38,7 +38,7 @@ export const setItemFromQueue = (itemPosition: number): AppThunk =>
     }
 
     // Make API call to get the track full info.
-    return api
+    return libraryAPI
       .getFullTrackInfo(state.queue.items[itemPosition].track.id)
       .then((response) => {
         dispatch(playerSetTrack(response.data.track))
@@ -253,7 +253,7 @@ export const setNextTrack = (endOfTrack: boolean): AppThunk =>
     }
 
     // Make API call to get the track full info.
-    return api.getFullTrackInfo(nextTrackId).then((response) => {
+    return libraryAPI.getFullTrackInfo(nextTrackId).then((response) => {
       dispatch(playerSetTrack(response.data.track))
       dispatch(queueSetCurrent(newQueuePosition))
 
@@ -301,7 +301,7 @@ export const setPreviousTrack = (): AppThunk =>
     }
 
     // Make API call to get the track full info.
-    return api.getFullTrackInfo(prevTrackId).then((response) => {
+    return libraryAPI.getFullTrackInfo(prevTrackId).then((response) => {
       dispatch(playerSetTrack(response.data.track))
       dispatch(queueSetCurrent(newQueuePosition))
     })

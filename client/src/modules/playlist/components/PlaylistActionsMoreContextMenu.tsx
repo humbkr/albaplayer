@@ -1,12 +1,12 @@
-import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
+import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
 import { MenuItemEventHandler } from 'react-contexify/lib/types'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
-  playlistsSelector,
-  playlistDeletePlaylist,
   addPlaylist as addPlaylistToPlaylist,
   playlistChangePane,
+  playlistDeletePlaylist,
   PlaylistPane,
+  playlistsSelector,
 } from 'modules/playlist/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { playPlaylistAfterCurrent } from 'modules/player/store/store'

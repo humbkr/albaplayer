@@ -68,7 +68,6 @@ function SearchBar({ forwardedRef }: Props) {
       </FilterButton>
       <SearchInputWrapper>
         <SearchInput
-          // @ts-ignore
           inputRef={forwardedRef}
           debounceTimeout={300}
           onChange={runSearch}

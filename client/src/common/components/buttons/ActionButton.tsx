@@ -30,7 +30,7 @@ function ActionButton({
       onClick={onClick}
       data-testid={testId}
     >
-      {loading && <LoaderPulse size={20} />}
+      {loading && <LoaderPulse size={20} data-testid="loader" />}
       {!loading && icon && <Icon>{icon}</Icon>}
       <span>{children}</span>
     </ActionButtonWrapper>

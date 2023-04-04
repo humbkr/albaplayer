@@ -11,5 +11,5 @@ export async function logoutUser() {
 }
 
 export function userHasRole(user?: User, role?: Role) {
-  return role && user?.roles.includes(role)
+  return role && user?.roles?.includes(role)
 }

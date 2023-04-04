@@ -7,7 +7,7 @@ type Props = {
 
 function LoaderPulseLogo({ size = '100px' }: Props = {}) {
   return (
-    <Pulse size={size}>
+    <Pulse size={size} data-testid="app-loader">
       <Logo src={logoIcon} alt="Logo" size={size} />
     </Pulse>
   )
