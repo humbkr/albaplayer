@@ -9,7 +9,7 @@ function Sidebar() {
   return (
     <Container>
       <Player />
-      <MainMenu>
+      <MainMenu data-testid="main-menu">
         <SidebarNavLink to="/queue" icon="play_circle_outline">
           {t('sidebar.navigation.nowPlaying')}
         </SidebarNavLink>

@@ -30,7 +30,7 @@ function ActionButton({
       onClick={onClick}
       data-testid={testId}
     >
-      {loading && <LoaderPulse size={20} />}
+      {loading && <LoaderPulse size={20} data-testid="loader" />}
       {!loading && icon && <Icon>{icon}</Icon>}
       <span>{children}</span>
     </ActionButtonWrapper>
@@ -53,6 +53,7 @@ const ActionButtonWrapper = styled.button<{ raised: boolean }>`
   border-radius: 3px;
   border: 0;
   cursor: pointer;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
 
   ${(props) =>
     props.raised

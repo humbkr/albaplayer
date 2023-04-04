@@ -47,6 +47,7 @@ const AlbumSubInfo = styled.div`
   font-size: 0.8em;
   margin-top: 5px;
   color: ${(props) => props.theme.colors.textSecondary};
+  transition: color 0.15s ease-in-out;
 `
 const AlbumTeaserArtist = styled.span`
   font-style: italic;

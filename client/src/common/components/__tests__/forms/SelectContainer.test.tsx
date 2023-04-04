@@ -1,5 +1,7 @@
 import SelectContainer from 'common/components/forms/SelectContainer'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import { ThemeProvider } from 'styled-components'
+import themeDefault from 'themes/lightGreen'
 
 describe('SelectContainer', () => {
   it('should display correctly', () => {
@@ -10,12 +12,16 @@ describe('SelectContainer', () => {
     ]
 
     render(
-      <SelectContainer
-        value="test"
-        options={options}
-        onChangeHandler={mockOnChange}
-      />
+      <ThemeProvider theme={themeDefault}>
+        <SelectContainer
+          value="test"
+          options={options}
+          onChangeHandler={mockOnChange}
+        />
+      </ThemeProvider>
     )
-    // TODO code tests
+
+    expect(screen.getByText('Test')).toBeInTheDocument()
+    expect(screen.getByText('Test 2')).toBeInTheDocument()
   })
 })

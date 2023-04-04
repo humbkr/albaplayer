@@ -7,8 +7,11 @@ import i18n from 'i18n/i18n'
 import React, { useMemo } from 'react'
 import TextField from 'common/components/forms/TextField'
 import Checkboxes from 'common/components/forms/Checkboxes'
-import apiConstants from 'api/constants'
-import { USER_MIN_PASSWORD_LENGTH } from 'modules/user/constants'
+import {
+  USER_MIN_PASSWORD_LENGTH,
+  USER_ROLE_OWNER,
+} from 'modules/user/constants'
+import { useGetUserQuery } from 'modules/user/store/api'
 
 export type UserEditFormData = {
   username: string
@@ -24,6 +27,7 @@ type Props = {
 
 function UserEditForm({ formRef, user, onSubmit }: Props) {
   const { t } = useTranslation()
+  const { data: currentUser } = useGetUserQuery()
 
   const schema = useMemo(
     () =>
@@ -87,8 +91,9 @@ function UserEditForm({ formRef, user, onSubmit }: Props) {
   ]
 
   const mandatoryOptions = ['role_listener']
-  if (user?.id === apiConstants.USER_OWNER_ID) {
-    mandatoryOptions.push('role_owner')
+  const disabledOptions = []
+  if (!currentUser?.roles.includes(USER_ROLE_OWNER)) {
+    disabledOptions.push('role_owner')
   }
 
   return (
@@ -119,6 +124,7 @@ function UserEditForm({ formRef, user, onSubmit }: Props) {
         label={t('user.usersManagement.form.roles')}
         options={roles}
         mandatoryOptions={mandatoryOptions}
+        disabledOptions={disabledOptions}
         register={register}
       />
     </Form>

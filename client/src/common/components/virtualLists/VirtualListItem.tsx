@@ -12,13 +12,16 @@ const VirtualListItem = styled.div<{
 
   height: ${(props) => props.theme.layout.itemHeight};
   overflow: hidden;
+  transition: background-color 0.15s ease-in-out;
 
   :hover {
     background-color: ${(props) => props.theme.colors.elementHighlight};
   }
 
   ${(props) =>
-    props.selected ? `background-color: ${props.theme.colors.elementHighlight}` : ''};
+    props.selected
+      ? `background-color: ${props.theme.colors.elementHighlight}`
+      : ''};
 
   > * {
     display: block;

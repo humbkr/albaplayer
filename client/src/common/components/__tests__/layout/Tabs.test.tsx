@@ -1,5 +1,7 @@
 import Tabs from 'common/components/layout/Tabs'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import themeDefault from 'themes/lightGreen'
+import { ThemeProvider } from 'styled-components'
 
 describe('Tabs', () => {
   it('displays correctly', () => {
@@ -9,7 +11,13 @@ describe('Tabs', () => {
       { id: 'tab2', label: 'Tab 2', onClick: mockOnClick },
     ]
 
-    render(<Tabs activeTabId="test" tabs={tabs} />)
-    // TODO code tests
+    render(
+      <ThemeProvider theme={themeDefault}>
+        <Tabs activeTabId="test" tabs={tabs} />
+      </ThemeProvider>
+    )
+
+    expect(screen.getByText('Tab 1')).toBeInTheDocument()
+    expect(screen.getByText('Tab 2')).toBeInTheDocument()
   })
 })

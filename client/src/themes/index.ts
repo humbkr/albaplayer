@@ -24,7 +24,7 @@ const themes = {
 }
 
 export default function getTheme(theme: keyof typeof themes): ThemeDefinition {
-  return themes[theme] || themes['default']
+  return themes[theme] || themes.default
 }
 
 export { themes }

@@ -1,8 +1,13 @@
-import { restAPI } from 'api/api'
+import { graphqlAPI, restAPI } from 'api/api'
+import { gql } from 'graphql-request'
 
 type AppConfigResponse = {
   auth_enabled: boolean
   library_configuration_disabled: boolean
+}
+
+type getVariableResponse = {
+  value: string
 }
 
 type AppConfig = {
@@ -24,3 +29,24 @@ const settingsApi = restAPI.injectEndpoints({
 })
 
 export const { useGetAppConfigQuery } = settingsApi
+
+const variableApi = graphqlAPI.injectEndpoints({
+  endpoints: (builder) => ({
+    getVariable: builder.query<string, string>({
+      query: (key) => ({
+        document: gql`
+          query getVariable($key: String!) {
+            variable(key: $key) {
+              value
+            }
+          }
+        `,
+        variables: { key },
+      }),
+      transformResponse: (response: getVariableResponse) => response.value,
+    }),
+  }),
+  overrideExisting: false,
+})
+
+export const { useGetVariableQuery } = variableApi

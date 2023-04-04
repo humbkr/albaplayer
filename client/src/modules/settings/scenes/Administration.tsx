@@ -7,9 +7,10 @@ import { userHasRole } from 'modules/user/utils'
 import { useTabs } from 'common/utils/useTabs'
 import LibrarySettings from 'modules/library/components/LibrarySettings'
 import UsersSettings from 'modules/user/scenes/UsersSettings'
-import SettingsPageContainer from 'modules/settings/components/SettingsPage'
+import SettingsPageContainer from 'modules/settings/components/SettingsPageContainer'
 import { useGetUserQuery } from 'modules/user/store/api'
 import { useGetAppConfigQuery } from 'modules/settings/api'
+import { USER_ROLE_ADMIN } from 'modules/user/constants'
 import info from '../../../../package.json'
 
 function Administration() {
@@ -24,13 +25,17 @@ function Administration() {
     dispatch(initSettings())
   }, [dispatch])
 
-  const { TabsComponent, currentTab } = useTabs([
-    { id: 'library', label: 'Library' },
-    { id: 'users', label: 'Users' },
-    { id: 'about', label: 'About' },
-  ])
+  const { TabsComponent, currentTab } = useTabs(
+    [
+      { id: 'library', label: t('settings.library.title') },
+      { id: 'users', label: t('user.usersManagement.title') },
+      { id: 'about', label: t('settings.about.title') },
+    ],
+    'library',
+    appConfig?.authEnabled === false ? ['users'] : []
+  )
 
-  if (!user || (appConfig?.authEnabled && !userHasRole(user, 'admin'))) {
+  if (!user || !userHasRole(user, USER_ROLE_ADMIN)) {
     return null
   }
 
@@ -42,7 +47,7 @@ function Administration() {
       {currentTab === 'users' && <UsersSettings />}
       {currentTab === 'about' && (
         <VersionNumber data-testid="settings-version">
-          {t('settings.version', { version: info.version })}
+          {t('settings.about.version', { version: info.version })}
         </VersionNumber>
       )}
     </SettingsPageContainer>

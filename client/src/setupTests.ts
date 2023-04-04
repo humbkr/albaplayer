@@ -68,3 +68,15 @@ jest.mock('react-i18next', () => ({
     init: jest.fn(),
   },
 }))
+
+jest.mock('i18n/i18n', () => ({
+  ...jest.requireActual('i18n/i18n'),
+  t: (str: any, params: any) =>
+    `${str}${params ? ` ${JSON.stringify(params)}` : ''}`,
+}))
+
+// React-modal
+jest.mock('react-modal', () => ({
+  ...jest.requireActual('react-modal'),
+  setAppElement: () => {},
+}))

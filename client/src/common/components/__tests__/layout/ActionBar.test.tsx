@@ -7,6 +7,21 @@ import { browserInitialState } from 'modules/browser/store'
 import ActionBar from 'common/components/layout/ActionBar'
 import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
 
+jest.mock(
+  'modules/browser/components/SearchBar',
+  () =>
+    function () {
+      return <div data-testid="search-bar"></div>
+    }
+)
+jest.mock(
+  'modules/user/components/UserActionsMenu',
+  () =>
+    function () {
+      return <div data-testid="user-action-menu"></div>
+    }
+)
+
 jest.mock('react-router')
 const useNavigateMock = useNavigate as jest.Mock
 const mockNavigate = jest.fn()
@@ -30,6 +45,6 @@ describe('ActionBar', () => {
     )
 
     expect(screen.getByTestId('search-bar')).toBeInTheDocument()
-    expect(screen.getByTestId('user-actions-menu-auth')).toBeInTheDocument()
+    expect(screen.getByTestId('user-action-menu')).toBeInTheDocument()
   })
 })

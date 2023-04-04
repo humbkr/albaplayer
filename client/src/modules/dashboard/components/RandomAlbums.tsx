@@ -27,11 +27,13 @@ function RandomAlbums() {
     <Wrapper>
       <Header>
         <h2>{t('dashboard.randomAlbums')}</h2>
-        <RandomizeButton
-          icon="refresh"
-          onClick={() => dispatch(getRandomAlbums())}
-          testId="random-albums-refresh-button"
-        />
+        <RandomizeButton>
+          <ActionButtonIcon
+            icon="refresh"
+            onClick={() => dispatch(getRandomAlbums())}
+            testId="random-albums-refresh-button"
+          />
+        </RandomizeButton>
       </Header>
       {randomAlbums.length === 0 && (
         <EmptyState>
@@ -75,9 +77,9 @@ const Header = styled.div`
   display: flex;
   align-items: center;
 `
-const RandomizeButton = styled(ActionButtonIcon)`
+const RandomizeButton = styled.div`
   color: ${(props) => props.theme.buttons.backgroundColor};
-  
+
   :hover {
     color: ${(props) => props.theme.buttons.backgroundColorHover};
   }

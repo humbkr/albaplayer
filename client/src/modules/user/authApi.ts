@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import constants from 'api/constants'
 import i18n from 'i18n/i18n'
 

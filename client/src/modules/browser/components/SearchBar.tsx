@@ -31,7 +31,7 @@ function SearchBar({ forwardedRef }: Props) {
   return (
     <Container data-testid="search-bar">
       <FilterButton active={searchState.filter === 'all'}>
-        <ActionButtonIconStyled
+        <ActionButtonIcon
           onClick={() => changeFilter('all')}
           icon="all_inclusive"
           testId={`search-filter-all${
@@ -40,7 +40,7 @@ function SearchBar({ forwardedRef }: Props) {
         />
       </FilterButton>
       <FilterButton active={searchState.filter === 'artist'}>
-        <ActionButtonIconStyled
+        <ActionButtonIcon
           onClick={() => changeFilter('artist')}
           icon="person"
           testId={`search-filter-artist${
@@ -49,7 +49,7 @@ function SearchBar({ forwardedRef }: Props) {
         />
       </FilterButton>
       <FilterButton active={searchState.filter === 'album'}>
-        <ActionButtonIconStyled
+        <ActionButtonIcon
           onClick={() => changeFilter('album')}
           icon="album"
           testId={`search-filter-album${
@@ -58,7 +58,7 @@ function SearchBar({ forwardedRef }: Props) {
         />
       </FilterButton>
       <FilterButton active={searchState.filter === 'track'}>
-        <ActionButtonIconStyled
+        <ActionButtonIcon
           onClick={() => changeFilter('track')}
           icon="audiotrack"
           testId={`search-filter-track${
@@ -68,7 +68,6 @@ function SearchBar({ forwardedRef }: Props) {
       </FilterButton>
       <SearchInputWrapper>
         <SearchInput
-          // @ts-ignore
           inputRef={forwardedRef}
           debounceTimeout={300}
           onChange={runSearch}
@@ -113,20 +112,22 @@ const FilterButton = styled.div<{
     props.active
       ? props.theme.colors.sidebarTextPrimaryHover
       : props.theme.colors.sidebarTextPrimary};
-`
-const ActionButtonIconStyled = styled(ActionButtonIcon)`
-  width: 100%;
-  height: 100%;
+  transition: background-color 0.15s ease-in-out, color 0.1s ease-in-out;
 
-  &:focus {
-    border: 1px solid ${(props) => props.theme.colors.elementHighlightFocus};
-  }
+  ${(props) =>
+    props.active &&
+    `
+    > button:hover {
+      color: inherit;
+    }
+  `}
 `
 const SearchInputWrapper = styled.div`
   flex-grow: 1;
   vertical-align: middle;
   padding: 8px;
   background-color: ${(props) => props.theme.colors.sidebarBackground};
+  transition: background-color 0.15s ease-in-out;
 
   :focus-within {
     background-color: ${(props) => props.theme.colors.elementHighlightFocus};

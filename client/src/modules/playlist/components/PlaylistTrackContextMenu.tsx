@@ -57,7 +57,7 @@ function PlaylistTrackContextMenu() {
     <Item
       key="new"
       onClick={(menuItem: any) =>
-        dispatch(addTrackToPlaylist({ trackId: menuItem.props.data.id }))
+        dispatch(addTrackToPlaylist({ trackId: menuItem.props.data.track.id }))
       }
     >
       {t('playlists.actions.createNewPlaylist')}

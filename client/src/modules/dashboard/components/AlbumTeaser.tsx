@@ -109,10 +109,7 @@ const Actions = styled.div`
   bottom: 10px;
   left: 10px;
   height: 37px;
-
-  > * {
-    margin-right: 10px;
-  }
+  gap: 10px;
 `
 const SecondaryActions = styled.div<{ visible: boolean }>`
   opacity: ${(props) => (props.visible ? 1 : 0)};

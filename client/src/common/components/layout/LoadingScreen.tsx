@@ -10,7 +10,7 @@ function LoadingScreen() {
   const initHasFailed = useAppSelector((state) => state.library.initHasFailed)
 
   return (
-    <LoadingScreenWrapper>
+    <LoadingScreenWrapper data-testid="main-loading-screen">
       {isFetching && (
         <LoadingScreenInitProgress>
           <LoaderPulseLogo />
@@ -29,18 +29,21 @@ function LoadingScreen() {
 export default LoadingScreen
 
 const LoadingScreenWrapper = styled.div`
-  display: table;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100vh;
 `
 const LoadingScreenInitProgress = styled.div`
-  display: table-cell;
-  text-align: center;
-  vertical-align: middle;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   > h2 {
     // So the text appears vertically centered.
-    margin-bottom: 75px;
+    margin: 20px 0 75px;
   }
 `
 const LoadingScreenInitFailed = styled.div`

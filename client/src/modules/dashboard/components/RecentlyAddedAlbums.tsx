@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { immutableNestedSort } from 'common/utils/utils'
 import { useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
-import { LibraryStateType } from '../../library/store'
+import { LibraryStateType } from 'modules/library/store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
 export const getRecentlyAddedAlbums = (

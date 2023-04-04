@@ -5,12 +5,19 @@ import React, { useState } from 'react'
 import UsersListItem from 'modules/user/components/UsersListItem'
 import ActionButton from 'common/components/buttons/ActionButton'
 import UserEditModal from 'modules/user/components/UserEditModal'
+import { useTranslation } from 'react-i18next'
+import { useGetAppConfigQuery } from 'modules/settings/api'
 
 function UsersSettings() {
+  const { t } = useTranslation()
+
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [userToEdit, setUserToEdit] = useState<User | undefined>()
 
-  const { data: users } = useGetUsersQuery()
+  const { data: appConfig } = useGetAppConfigQuery()
+  const { data: users } = useGetUsersQuery(undefined, {
+    skip: appConfig?.authEnabled === false,
+  })
 
   const onAddUser = () => {
     setUserToEdit(undefined)
@@ -26,19 +33,23 @@ function UsersSettings() {
     setEditModalOpen(false)
   }
 
+  if (appConfig?.authEnabled === false) {
+    return null
+  }
+
   return (
     <SettingsTabContent>
       <Header>
-        <h2>Users</h2>
+        <h2>{t('user.usersManagement.title')}</h2>
         <ActionButton raised icon="add" onClick={onAddUser}>
-          New user
+          {t('user.usersManagement.newUser')}
         </ActionButton>
       </Header>
       <UsersListHeader>
-        <div>ID</div>
-        <div>Name</div>
-        <div>Roles</div>
-        <div>Created</div>
+        <div>{t('user.usersManagement.columns.id')}</div>
+        <div>{t('user.usersManagement.columns.name')}</div>
+        <div>{t('user.usersManagement.columns.roles')}</div>
+        <div>{t('user.usersManagement.columns.created')}</div>
         <div />
       </UsersListHeader>
       <UsersList>

@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import thunk from 'redux-thunk'
+import { libraryInitialState, LibraryStateType } from 'modules/library/store'
 import playlistsSlice, {
   addAlbum,
   addArtist,
@@ -18,10 +19,13 @@ import playlistsSlice, {
   playlistUpdateInfo,
   playlistUpdateItems,
 } from '../store'
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { libraryInitialState, LibraryStateType } from '../../library/store'
 
-jest.mock('api')
+jest.mock('modules/library/api', () => ({
+  libraryAPI: {
+    getLibrary: jest.fn().mockResolvedValue({}),
+  },
+}))
+
 const mockStore = configureMockStore([thunk])
 const makeMockStore = (customState: any = {}) =>
   mockStore({
@@ -186,17 +190,11 @@ describe('playlists (redux)', () => {
       expect(
         playlistsSlice(testState, {
           type: playlistSelectPlaylist.type,
-          payload: {
-            selectedPlaylist: testState.playlists.temp_001,
-            playlistIndex: 0,
-          },
+          payload: testState.playlists.temp_001,
         })
       ).toEqual({
         ...testState,
-        currentPlaylist: {
-          playlist: testState.playlists.temp_001,
-          position: 0,
-        },
+        currentPlaylist: testState.playlists.temp_001,
       })
     })
 
@@ -218,10 +216,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_1234: newPlaylist,
         },
-        currentPlaylist: {
-          playlist: newPlaylist,
-          position: 0,
-        },
+        currentPlaylist: newPlaylist,
       })
     })
 
@@ -402,10 +397,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_001: playlist1WithoutFirstTracks,
         },
-        currentPlaylist: {
-          playlist: playlist1WithoutFirstTracks,
-          position: 0,
-        },
+        currentPlaylist: playlist1WithoutFirstTracks,
       })
     })
 
@@ -469,20 +461,17 @@ describe('playlists (redux)', () => {
           },
         },
         currentPlaylist: {
-          playlist: {
-            ...playlist1,
-            items: [
-              {
-                track: tracksToAdd[0],
-                position: 1,
-              },
-              {
-                track: tracksToAdd[1],
-                position: 2,
-              },
-            ],
-          },
-          position: 0,
+          ...playlist1,
+          items: [
+            {
+              track: tracksToAdd[0],
+              position: 1,
+            },
+            {
+              track: tracksToAdd[1],
+              position: 2,
+            },
+          ],
         },
       })
     })
@@ -597,10 +586,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_001: playlist1WithNewItems,
         },
-        currentPlaylist: {
-          playlist: playlist1WithNewItems,
-          position: 0,
-        },
+        currentPlaylist: playlist1WithNewItems,
       })
     })
 
@@ -663,10 +649,7 @@ describe('playlists (redux)', () => {
         playlists: {
           temp_001: playlistUpdated,
         },
-        currentPlaylist: {
-          playlist: playlistUpdated,
-          position: 0,
-        },
+        currentPlaylist: playlistUpdated,
       })
 
       // Test playlist is not the current one branch.

@@ -55,7 +55,7 @@ function Login({ onLogin }: Props) {
   }
 
   return (
-    <Container>
+    <Container data-testid="login-page">
       <Content>
         <Logo src={logoIcon} alt="Logo" />
         <LoginForm onSubmit={handleSubmit(onSubmit)}>

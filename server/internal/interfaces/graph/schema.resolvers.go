@@ -8,7 +8,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/spf13/viper"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+	"golang.org/x/exp/slices"
 	"regexp"
 	"strconv"
 	"strings"
@@ -321,11 +323,20 @@ func (r *queryResolver) User(ctx context.Context, id *int) (*model.User, error) 
 	currentUser := auth.GetUserFromContext(ctx)
 
 	if currentUser.IsDefaultUser {
+		defaultUserRoles := viper.GetStringSlice("Users.DefaultUserRoles")
+		var roles []business.Role
+		for _, userRole := range defaultUserRoles {
+			role := business.GetRoleFromString(userRole)
+			if !slices.Contains(roles, role) {
+				roles = append(roles, role)
+			}
+		}
+
 		// We are in auth disabled mode, so we return the default user.
 		defaultUser := business.User{
 			Id:            1,
 			Name:          "Default user",
-			Roles:         []business.Role{"owner", "admin", "listener"},
+			Roles:         roles,
 			IsDefaultUser: true,
 		}
 		result := convertUser(defaultUser, false)

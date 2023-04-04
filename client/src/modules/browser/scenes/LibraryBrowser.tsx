@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, Ref, forwardRef, RefObject } from 'react'
+import React, { forwardRef, Ref, RefObject, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import TracksPaneContainer from 'modules/browser/components/TracksPaneContainer'
 import ArtistsPaneContainer from 'modules/browser/components/ArtistsPaneContainer'

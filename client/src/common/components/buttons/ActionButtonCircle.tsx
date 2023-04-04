@@ -1,11 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 
-type Props = {
+type Props = React.HTMLProps<HTMLButtonElement> & {
   size?: number
   color?: string
   icon?: string
-  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void
   testId?: string
 }
 
@@ -18,7 +17,6 @@ function ActionButtonCircle({
 }: Props) {
   return (
     <ActionButtonCircleWrapper
-      // @ts-ignore
       onClick={onClick}
       color={color}
       data-testid={testId}
@@ -45,6 +43,7 @@ const ActionButtonCircleWrapper = styled.button<{
   width: ${(props) => props.size}px;
   height: ${(props) => props.size}px;
   color: ${(props) => props.color || props.theme.colors.buttonText};
+  transition: 0.15s ease-in-out;
 
   &:hover {
     border: 1px solid ${(props) => props.theme.colors.elementHighlightFocus};

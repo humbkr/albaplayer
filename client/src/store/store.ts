@@ -1,14 +1,16 @@
+/* istanbul ignore file */
+
 import { configureStore } from '@reduxjs/toolkit'
 import {
-  persistStore,
-  persistReducer,
+  createMigrate,
   FLUSH,
-  REHYDRATE,
   PAUSE,
   PERSIST,
+  persistReducer,
+  persistStore,
   PURGE,
   REGISTER,
-  createMigrate,
+  REHYDRATE,
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { graphqlAPI, restAPI } from 'api/api'
