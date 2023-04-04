@@ -1,9 +1,16 @@
 import LoaderPulseLogo from 'common/components/LoaderPulseLogo'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import { ThemeProvider } from 'styled-components'
+import themeDefault from 'themes/lightGreen'
 
 describe('LoaderPulseLogo', () => {
   it('displays correctly', () => {
-    render(<LoaderPulseLogo />)
-    // TODO code tests
+    render(
+      <ThemeProvider theme={themeDefault}>
+        <LoaderPulseLogo />
+      </ThemeProvider>
+    )
+
+    expect(screen.getByAltText('Logo')).toBeInTheDocument()
   })
 })

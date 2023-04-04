@@ -41,9 +41,11 @@ function UserActionsMenu() {
   if (user?.isDefaultUser) {
     return (
       <Container data-testid="user-actions-menu-noauth">
-        <UserButton active={false} onClick={goToAdmin}>
-          <Icon>admin_panel_settings</Icon>
-        </UserButton>
+        {userHasRole(user, 'admin') && (
+          <UserButton active={false} onClick={goToAdmin}>
+            <Icon>admin_panel_settings</Icon>
+          </UserButton>
+        )}
         <UserButton active={false} onClick={goToPreferences}>
           <Icon>settings</Icon>
         </UserButton>

@@ -5,6 +5,12 @@ import {
   immutableSortTracks,
 } from './utils'
 
+jest.mock('modules/library/api', () => ({
+  default: {
+    getLibrary: jest.fn(),
+  },
+}))
+
 const mockLibraryState: LibraryStateType = {
   ...libraryInitialState,
   isInitialized: true,

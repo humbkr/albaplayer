@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { gql } from 'graphql-request'
 import { graphqlAPI } from 'api/api'

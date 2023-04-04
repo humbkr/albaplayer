@@ -10,7 +10,7 @@ function LoadingScreen() {
   const initHasFailed = useAppSelector((state) => state.library.initHasFailed)
 
   return (
-    <LoadingScreenWrapper>
+    <LoadingScreenWrapper data-testid="main-loading-screen">
       {isFetching && (
         <LoadingScreenInitProgress>
           <LoaderPulseLogo />
