@@ -9,7 +9,7 @@ import (
 )
 
 const ACCESS_TOKEN_EXPIRATION = 10 * time.Minute
-const REFRESH_TOKEN_EXPIRATION = 72 * time.Hour
+const REFRESH_TOKEN_EXPIRATION = 168 * time.Hour
 
 func loginUser(userInteractor *business.UsersInteractor, username string, password string) (TokenPair, business.User, error) {
 	// Check if the user credentials are valid.

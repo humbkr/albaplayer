@@ -43,6 +43,17 @@ function Player() {
     await playerRef.current?.pause()
   }, [dispatch])
 
+  const onStop = useCallback(async () => {
+    dispatch(playerTogglePlayPause(false))
+    await playerRef.current?.pause()
+    console.log('stopped by media session')
+    console.log('seekable', playerRef.current?.seekable)
+    console.log('buffered', playerRef.current?.buffered)
+    console.log('error', playerRef.current?.error)
+    console.log('networkState', playerRef.current?.networkState)
+    console.log('readyState', playerRef.current?.readyState)
+  }, [dispatch])
+
   const handleTogglePlayPause = useCallback(async () => {
     if (playing) {
       await onPause()
@@ -136,6 +147,39 @@ function Player() {
       playerRef.current.src = APIConstants.BACKEND_BASE_URL + track.src
       playerRef.current.load()
 
+      playerRef.current.onwaiting = () => {
+        console.log('onwaiting')
+        console.log('seekable', playerRef.current?.seekable)
+        console.log('buffered', playerRef.current?.buffered)
+        console.log('error', playerRef.current?.error)
+        console.log('networkState', playerRef.current?.networkState)
+        console.log('readyState', playerRef.current?.readyState)
+      }
+      playerRef.current.onerror = () => {
+        console.log('onerror')
+        console.log('seekable', playerRef.current?.seekable)
+        console.log('buffered', playerRef.current?.buffered)
+        console.log('error', playerRef.current?.error)
+        console.log('networkState', playerRef.current?.networkState)
+        console.log('readyState', playerRef.current?.readyState)
+      }
+      playerRef.current.oninvalid = () => {
+        console.log('oninvalid')
+        console.log('seekable', playerRef.current?.seekable)
+        console.log('buffered', playerRef.current?.buffered)
+        console.log('error', playerRef.current?.error)
+        console.log('networkState', playerRef.current?.networkState)
+        console.log('readyState', playerRef.current?.readyState)
+      }
+      playerRef.current.onsuspend = () => {
+        console.log('onsuspend')
+        console.log('seekable', playerRef.current?.seekable)
+        console.log('buffered', playerRef.current?.buffered)
+        console.log('error', playerRef.current?.error)
+        console.log('networkState', playerRef.current?.networkState)
+        console.log('readyState', playerRef.current?.readyState)
+      }
+
       /* istanbul ignore next */
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
@@ -166,7 +210,7 @@ function Player() {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.setActionHandler('play', () => onPlay())
       navigator.mediaSession.setActionHandler('pause', () => onPause())
-      navigator.mediaSession.setActionHandler('stop', () => onPause())
+      navigator.mediaSession.setActionHandler('stop', () => onStop())
       navigator.mediaSession.setActionHandler('previoustrack', () =>
         handleSetPreviousTrack()
       )
@@ -185,7 +229,7 @@ function Player() {
         navigator.mediaSession.setActionHandler('nexttrack', null)
       }
     }
-  }, [handleSetNextTrack, handleSetPreviousTrack, onPause, onPlay])
+  }, [handleSetNextTrack, handleSetPreviousTrack, onPause, onPlay, onStop])
 
   // Synchronises the redux progress state to the audioElement one.
   useInterval(
