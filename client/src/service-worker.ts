@@ -82,3 +82,21 @@ self.addEventListener('message', (event) => {
 })
 
 // Any other custom service worker logic can go here.
+// https://jakearchibald.com/2014/offline-cookbook/#network-falling-back-to-cache
+
+// Set the caching strategy to network-first.
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    (async function () {
+      try {
+        // eslint-disable-next-line no-console
+        console.log('Fetching from network', event.request.url)
+        return (await fetch(event.request)) as Response
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log('Fetching from cache', event.request.url)
+        return (await caches.match(event.request)) as Response
+      }
+    })()
+  )
+})
