@@ -54,6 +54,10 @@ jest.mock('modules/player/store/selectors')
 const playerSelectorMock = playerSelector as jest.Mock
 const queueSelectorMock = queueSelector as jest.Mock
 
+jest.mock('api/api', () => ({
+  getAuthAssetURL: jest.fn(),
+}))
+
 describe('Player', () => {
   beforeEach(() => {
     resetAllMocks()

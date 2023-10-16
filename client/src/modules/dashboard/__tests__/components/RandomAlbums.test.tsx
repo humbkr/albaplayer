@@ -5,10 +5,15 @@ import { ThemeProvider } from 'styled-components'
 import themeDefault from 'themes/lightGreen'
 import RandomAlbums from 'modules/dashboard/components/RandomAlbums'
 import { dashboardInitialState } from 'modules/dashboard/store'
+import { getAuthAssetURL } from 'api/api'
 import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
 
 jest.mock('modules/player/store/store', () => ({
   playAlbum: jest.fn(),
+}))
+
+jest.mock('api/api', () => ({
+  getAuthAssetURL: jest.fn(),
 }))
 
 const mockLibrary = {
@@ -99,6 +104,10 @@ const store = makeMockStore({
 })
 
 describe('dashboard - RandomAlbums', () => {
+  beforeEach(() => {
+    ;(getAuthAssetURL as jest.Mock).mockResolvedValue('whatever')
+  })
+
   it('should render correctly', () => {
     render(
       <ReduxProvider store={store}>

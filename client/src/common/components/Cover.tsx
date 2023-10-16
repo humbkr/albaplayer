@@ -1,5 +1,6 @@
 import styled from 'styled-components'
-import APIConstants from 'api/constants'
+import { getAuthAssetURL } from 'api/api'
+import { useEffect, useState } from 'react'
 import coverPlaceholder from '../assets/images/cover_placeholder.png'
 
 type Props = {
@@ -7,15 +8,20 @@ type Props = {
 }
 
 function Cover({ src }: Props) {
+  const [coverURL, setCoverUrl] = useState('')
+
+  useEffect(() => {
+    if (src) {
+      getAuthAssetURL(src).then((url) => setCoverUrl(url))
+    }
+  }, [src])
+
   return (
     <div>
       <DefaultCover src={coverPlaceholder} data-testid="cover-default" />
       {src && (
-        <RealCoverWrapper cover={APIConstants.BACKEND_BASE_URL + src}>
-          <RealCover
-            src={APIConstants.BACKEND_BASE_URL + src}
-            data-testid="cover-image"
-          />
+        <RealCoverWrapper cover={coverURL}>
+          <RealCover src={coverURL} data-testid="cover-image" />
         </RealCoverWrapper>
       )}
     </div>

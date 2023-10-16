@@ -1,14 +1,19 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ThemeProvider } from 'styled-components'
 import { BrowserRouter as Router } from 'react-router-dom'
 import themeDefault from 'themes/lightGreen'
 import AlbumTeaser from 'modules/dashboard/components/AlbumTeaser'
 import AlbumMoreActionsContextMenu from 'modules/dashboard/components/AlbumMoreActionsContextMenu'
+import { getAuthAssetURL } from 'api/api'
 import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
 
 jest.mock('modules/player/store/store', () => ({
   playAlbum: jest.fn(),
+}))
+
+jest.mock('api/api', () => ({
+  getAuthAssetURL: jest.fn(),
 }))
 
 const store = makeMockStore({
@@ -36,7 +41,11 @@ const album: Album = {
 }
 
 describe('dashboard - AlbumTeaser', () => {
-  it('should render correctly', () => {
+  beforeEach(() => {
+    ;(getAuthAssetURL as jest.Mock).mockResolvedValue('whatever')
+  })
+
+  it('should render correctly', async () => {
     render(
       <ReduxProvider store={store}>
         <Router>
@@ -51,14 +60,17 @@ describe('dashboard - AlbumTeaser', () => {
       </ReduxProvider>
     )
 
-    expect(screen.getByText('Test album')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Test album')).toBeInTheDocument()
+    })
+
     expect(screen.getByText('Test artist')).toBeInTheDocument()
     expect(screen.getByTestId('album-teaser-overlay')).toHaveStyle({
       backgroundColor: 'transparent',
     })
   })
 
-  it('should display an overlay if mouse is over', () => {
+  it('should display an overlay if mouse is over', async () => {
     render(
       <ReduxProvider store={store}>
         <Router>
@@ -94,7 +106,7 @@ describe('dashboard - AlbumTeaser', () => {
     })
   })
 
-  it('should display a full actions menu on right-click', () => {
+  it('should display a full actions menu on right-click', async () => {
     const setSelected = jest.fn()
 
     render(
@@ -120,7 +132,7 @@ describe('dashboard - AlbumTeaser', () => {
     expect(screen.getByText('player.actions.playNow')).toBeInTheDocument()
   })
 
-  it('should display a limited actions menu on right-click', () => {
+  it('should display a limited actions menu on right-click', async () => {
     const setSelected = jest.fn()
 
     render(
@@ -147,7 +159,7 @@ describe('dashboard - AlbumTeaser', () => {
     expect(screen.getByText('player.actions.addToQueue')).toBeInTheDocument()
   })
 
-  it('should play the album if user clicks on the play button', () => {
+  it('should play the album if user clicks on the play button', async () => {
     render(
       <ReduxProvider store={store}>
         <Router>
@@ -166,7 +178,7 @@ describe('dashboard - AlbumTeaser', () => {
     expect(store.dispatch).toHaveBeenCalledTimes(1)
   })
 
-  it('should display "Unknown artist" if artist does not have a name', () => {
+  it('should display "Unknown artist" if artist does not have a name', async () => {
     const customAlbum = { ...album }
     delete customAlbum.artist
 

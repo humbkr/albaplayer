@@ -5,10 +5,15 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import AlbumTeaserHorizontal from 'modules/dashboard/components/AlbumTeaserHorizontal'
 import themeDefault from 'themes/lightGreen'
 import AlbumMoreActionsContextMenu from 'modules/dashboard/components/AlbumMoreActionsContextMenu'
+import { getAuthAssetURL } from 'api/api'
 import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
 
 jest.mock('modules/player/store/store', () => ({
   playAlbum: jest.fn(),
+}))
+
+jest.mock('api/api', () => ({
+  getAuthAssetURL: jest.fn(),
 }))
 
 const store = makeMockStore({
@@ -36,6 +41,10 @@ const album: Album = {
 }
 
 describe('dashboard - AlbumTeaserHorizontal', () => {
+  beforeEach(() => {
+    ;(getAuthAssetURL as jest.Mock).mockResolvedValue('whatever')
+  })
+
   it('should render correctly', () => {
     render(
       <ReduxProvider store={store}>

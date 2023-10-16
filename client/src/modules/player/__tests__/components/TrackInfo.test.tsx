@@ -5,13 +5,20 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import theme from 'themes/lightGreen'
 import TrackInfo from 'modules/player/components/TrackInfo'
+import { getAuthAssetURL } from 'api/api'
 import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
 
 const mockOnClick = jest.fn()
 const mockStore = makeMockStore()
 
+jest.mock('api/api', () => ({
+  getAuthAssetURL: jest.fn(),
+}))
+
 describe('TrackInfo', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => {
+    ;(getAuthAssetURL as jest.Mock).mockResolvedValue('whatever')
+  })
 
   it('displays all track info if available', () => {
     const testTrack: Track = {
@@ -37,10 +44,7 @@ describe('TrackInfo', () => {
 
     expect(screen.getByText('Track title')).toBeInTheDocument()
     expect(screen.getByText('Artist name')).toBeInTheDocument()
-    expect(screen.getByTestId('cover-image')).toHaveAttribute(
-      'src',
-      testTrack.cover
-    )
+    expect(screen.getByTestId('cover-image')).toBeInTheDocument()
   })
 
   it('displays default values if track info is not available', () => {

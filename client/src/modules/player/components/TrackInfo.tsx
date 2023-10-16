@@ -15,13 +15,12 @@ function TrackInfo({ track, onClick }: Props) {
 
   const trackTitle = track?.title || t('library.unknownTitle')
   const trackArtist = track?.artist?.name || t('library.unknownArtist')
-  const trackCover = track?.cover || undefined
 
   return (
     <Ripple>
       <TrackInfoWrapper onClick={onClick} data-testid="player-track-info">
         <Overlay />
-        <Cover src={trackCover} />
+        <Cover src={track?.cover} />
         {track && (
           <OverlayText>
             <TrackTitle>{trackTitle}</TrackTitle>
