@@ -1,10 +1,10 @@
 import { useRef } from 'react'
-import styled, { withTheme } from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import Modal from 'react-modal'
 import { Formik, Form, Field, ErrorMessage, FormikErrors } from 'formik'
 import dayjs from 'dayjs'
 import { getRandomInt } from 'common/utils/utils'
-import ActionButton from 'common/components/ActionButton'
+import ActionButton from 'common/components/buttons/ActionButton'
 import { useTranslation } from 'react-i18next'
 
 // http://reactcommunity.org/react-modal/accessibility/
@@ -15,7 +15,6 @@ type Props = {
   isOpen: boolean
   mode: string
   playlist?: Playlist
-  theme: AppTheme
   onClose: () => void
   onCreatePlaylist: (playlist: Playlist) => void
   onEditPlaylist: (playlist: Playlist) => void
@@ -27,11 +26,11 @@ function PlaylistAddPopup({
   onClose,
   mode = 'add',
   playlist,
-  theme,
   onCreatePlaylist,
   onEditPlaylist,
 }: Props) {
   const { t } = useTranslation()
+  const theme = useTheme()
   const titleField = useRef<HTMLInputElement>(null)
 
   const afterOpenModal = () => {
@@ -75,7 +74,7 @@ function PlaylistAddPopup({
       boxShadow: '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
       padding: '20px',
       width: '350px',
-      backgroundColor: theme.backgroundColor,
+      backgroundColor: theme.colors.background,
     },
     overlay: {
       backgroundColor: '',
@@ -137,7 +136,6 @@ function PlaylistAddPopup({
                 }}
               />
               <FormError name="title" component="span" />
-
               <Actions>
                 <ActionButton
                   raised
@@ -161,29 +159,29 @@ function PlaylistAddPopup({
   )
 }
 
-export default withTheme(PlaylistAddPopup)
+export default PlaylistAddPopup
 
 const ModalContent = styled.div`
   > div:first-child {
     margin-bottom: 10px;
   }
-  color: ${(props) => props.theme.textPrimaryColor};
+  color: ${(props) => props.theme.colors.textPrimary};
 `
 const Title = styled.h3`
   margin-bottom: 20px;
 `
 const Label = styled.label`
   display: block;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const FormField = styled(Field)`
   font-size: 1em;
   padding: 5px 10px;
   width: 100%;
-  background-color: ${(props) => props.theme.inputs.backgroundColor};
+  background-color: ${(props) => props.theme.colors.inputBackground};
 `
 const FormError = styled(ErrorMessage)`
-  color: ${(props) => props.theme.messages.error.color};
+  color: ${(props) => props.theme.colors.error};
   font-size: 0.9em;
 `
 const Actions = styled.div`

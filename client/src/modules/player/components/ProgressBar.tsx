@@ -39,7 +39,11 @@ function ProgressBar({ position, duration, seek }: Props) {
 
 export default ProgressBar
 
-const Container = styled.div<{ isMouseHover: boolean }>`
+interface ContainerProps {
+  readonly isMouseHover: boolean;
+}
+
+const Container = styled.div<ContainerProps>`
   width: 100%;
   height: 16px;
   transform: translateY(-9px);

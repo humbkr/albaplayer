@@ -1,6 +1,5 @@
 import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
-import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { addAlbum, playAlbum } from 'modules/player/store/store'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import AlbumTeaser from 'modules/browser/components/AlbumTeaser'
@@ -11,6 +10,7 @@ import {
 } from 'modules/browser/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
+import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import AlbumContextMenu from './AlbumContextMenu'
@@ -92,7 +92,7 @@ function AlbumsPaneContainer({
           onKeyDown={onKeyDown}
         />
         <AlbumContextMenu />
-        <KeyboardNavPlayPopup
+        <KeyboardNavPlayModal
           id="albums-nav-modal"
           onClose={() => setModalIsOpen(false)}
           isOpen={modalIsOpen}
@@ -116,6 +116,6 @@ const AlbumsPaneWrapper = styled.div`
   overflow: hidden;
   width: 33%;
   height: 100%;
-  border-left: 1px solid ${(props) => props.theme.separatorColor};
-  border-right: 1px solid ${(props) => props.theme.separatorColor};
+  border-left: 1px solid ${(props) => props.theme.colors.separator};
+  border-right: 1px solid ${(props) => props.theme.colors.separator};
 `

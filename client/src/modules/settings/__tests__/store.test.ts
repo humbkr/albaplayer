@@ -1,23 +1,24 @@
 import configureMockStore from 'redux-mock-store'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import thunk from 'redux-thunk'
-import { api, apolloClient } from 'api'
-import { ApolloQueryResult } from '@apollo/client'
+import libraryAPI from 'modules/library/api'
+import { processApiError } from 'api/helpers'
+import api from 'api/api'
+import { fetchLibrary, initLibrary } from 'modules/library/store'
 import settingsSlice, {
-  initialState,
-  setTheme,
-  initSettings,
-  updateLibrary,
   eraseLibrary,
+  initialState,
+  initSettings,
+  setTheme,
   SettingsStateType,
+  updateLibrary,
 } from '../store'
-import { fetchLibrary, initLibrary } from '../../library/store'
 
-jest.mock('api')
+jest.mock('api/helpers')
+const processApiErrorMock = processApiError as jest.Mock
 
-api.scanLibrary = jest
-  .fn()
-  .mockImplementation(() => new Promise<void>((resolve) => resolve()))
+jest.mock('modules/library/api', () => ({}))
+jest.mock('api/api', () => ({}))
 
 const mockStore = configureMockStore([thunk])
 const makeMockStore = (customState: any = {}) =>
@@ -106,9 +107,7 @@ describe('settings (redux)', () => {
       })
 
       it('updates state correctly for the rejected action', () => {
-        api.processApiError = jest
-          .fn()
-          .mockImplementationOnce((resp) => resp.message)
+        processApiErrorMock.mockImplementationOnce((resp) => resp.message)
 
         const mockState: SettingsStateType = {
           ...initialState,
@@ -180,9 +179,7 @@ describe('settings (redux)', () => {
       })
 
       it('updates state correctly for the rejected action', () => {
-        api.processApiError = jest
-          .fn()
-          .mockImplementationOnce((resp) => resp.message)
+        processApiErrorMock.mockImplementationOnce((resp) => resp.message)
 
         const mockState: SettingsStateType = {
           ...initialState,
@@ -254,9 +251,7 @@ describe('settings (redux)', () => {
       })
 
       it('updates state correctly for the rejected action', () => {
-        api.processApiError = jest
-          .fn()
-          .mockImplementationOnce((resp) => resp.message)
+        processApiErrorMock.mockImplementationOnce((resp) => resp.message)
 
         const mockState: SettingsStateType = {
           ...initialState,
@@ -327,9 +322,7 @@ describe('settings (redux)', () => {
             reject(response)
           })
       )
-      api.processApiError = jest
-        .fn()
-        .mockImplementationOnce((resp) => resp.message)
+      processApiErrorMock.mockImplementationOnce((resp) => resp.message)
 
       // @ts-ignore
       await store.dispatch(initSettings())
@@ -345,22 +338,20 @@ describe('settings (redux)', () => {
     it('should dispatch correct actions on success', async () => {
       const store = makeMockStore()
 
-      api.scanLibrary = jest.fn().mockImplementationOnce(
+      libraryAPI.scanLibrary = jest.fn().mockImplementationOnce(
         () =>
-          new Promise<ApolloQueryResult<{ scanLibrary: null }>>((resolve) => {
+          new Promise((resolve) => {
             resolve({
-              data: {
-                scanLibrary: null,
-              },
-              loading: false,
-              networkStatus: 7,
+              data: {},
             })
           })
       )
-      apolloClient.resetStore = jest.fn().mockImplementationOnce(
+      libraryAPI.getLibrary = jest.fn().mockImplementationOnce(
         () =>
-          new Promise<void>((resolve) => {
-            resolve()
+          new Promise((resolve) => {
+            resolve({
+              data: {},
+            })
           })
       )
 
@@ -381,15 +372,13 @@ describe('settings (redux)', () => {
       const response = {
         message: 'It failed.',
       }
-      api.scanLibrary = jest.fn().mockImplementationOnce(
+      libraryAPI.scanLibrary = jest.fn().mockImplementationOnce(
         () =>
           new Promise((resolve, reject) => {
             reject(response)
           })
       )
-      api.processApiError = jest
-        .fn()
-        .mockImplementationOnce((resp) => resp.message)
+      processApiErrorMock.mockImplementationOnce((resp) => resp.message)
 
       // @ts-ignore
       await store.dispatch(updateLibrary())
@@ -403,22 +392,12 @@ describe('settings (redux)', () => {
 
   describe('eraseLibrary thunk', () => {
     it('should dispatch correct actions on success', async () => {
-      api.emptyLibrary = jest.fn().mockImplementationOnce(
+      libraryAPI.emptyLibrary = jest.fn().mockImplementationOnce(
         () =>
-          new Promise<ApolloQueryResult<{ eraseLibrary: null }>>((resolve) => {
+          new Promise((resolve) => {
             resolve({
-              data: {
-                eraseLibrary: null,
-              },
-              loading: false,
-              networkStatus: 7,
+              data: {},
             })
-          })
-      )
-      apolloClient.resetStore = jest.fn().mockImplementationOnce(
-        () =>
-          new Promise<void>((resolve) => {
-            resolve()
           })
       )
 
@@ -429,7 +408,7 @@ describe('settings (redux)', () => {
 
       const actual = store.getActions()
 
-      expect(api.emptyLibrary).toHaveBeenCalled()
+      expect(libraryAPI.emptyLibrary).toHaveBeenCalled()
       expect(actual[0].type).toEqual(eraseLibrary.pending.type)
       expect(actual[1].type).toEqual(initLibrary.pending.type)
       expect(actual[2].type).toEqual(fetchLibrary.pending.type)
@@ -442,15 +421,13 @@ describe('settings (redux)', () => {
       const response = {
         message: 'It failed.',
       }
-      api.emptyLibrary = jest.fn().mockImplementationOnce(
+      libraryAPI.emptyLibrary = jest.fn().mockImplementationOnce(
         () =>
           new Promise((resolve, reject) => {
             reject(response)
           })
       )
-      api.processApiError = jest
-        .fn()
-        .mockImplementationOnce((resp) => resp.message)
+      processApiErrorMock.mockImplementationOnce((resp) => resp.message)
 
       // @ts-ignore
       await store.dispatch(eraseLibrary())

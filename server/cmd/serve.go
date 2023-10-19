@@ -5,6 +5,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/humbkr/albaplayer/internal"
 	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/interfaces/auth"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph"
 	"io"
 	"log"
@@ -41,8 +42,14 @@ var serveCmd = &cobra.Command{
 
 		mux := http.NewServeMux()
 
-		// Serve the GraphQL endpoint at `/graphql`.
-		mux.Handle("/graphql", graphQLHandler)
+		var middleware func(http.Handler) http.Handler
+		if viper.GetBool("Users.AuthEnabled") {
+			middleware = auth.AuthMiddleware()
+		} else {
+			middleware = auth.NoAuthMiddleware()
+		}
+
+		mux.Handle("/graphql", middleware(graphQLHandler))
 
 		if viper.GetBool("DevMode.Enabled") {
 			// Serve graphiql.
@@ -50,14 +57,21 @@ var serveCmd = &cobra.Command{
 		}
 
 		// Serve media files streaming endpoint.
-		// Makes the server handle cross-domain requests.
 		mediaFilesHandler := interfaces.NewMediaStreamHandler(&libraryInteractor)
-		mux.Handle("/stream/", http.StripPrefix("/stream/", mediaFilesHandler))
+		mux.Handle("/stream/", http.StripPrefix("/stream/", middleware(mediaFilesHandler)))
 
 		// Serve media files streaming endpoint.
-		// Makes the server handle cross-domain requests.
 		coverFilesHandler := interfaces.NewCoverStreamHandler(&libraryInteractor)
-		mux.Handle("/covers/", http.StripPrefix("/covers/", coverFilesHandler))
+		mux.Handle("/covers/", http.StripPrefix("/covers/", middleware(coverFilesHandler)))
+
+		// Serve auth endpoints
+		auth := &auth.AuthHandlers{UserInteractor: &usersInteractor, LibraryInteractor: &libraryInteractor}
+		mux.HandleFunc("/auth/login", auth.Login)
+		mux.HandleFunc("/auth/logout", auth.Logout)
+		mux.HandleFunc("/auth/refresh-token", auth.RefreshToken)
+
+		// Serve app config.
+		mux.HandleFunc("/config", interfaces.GetAppConfig)
 
 		// Serve SPA.
 		fileServer := http.FileServer(pkger.Dir("/web"))
@@ -91,9 +105,12 @@ var serveCmd = &cobra.Command{
 		})
 
 		// Create the root handler with CORS to make the server handle cross-domain requests.
+		allowedOrigins := viper.GetStringSlice("DevMode.AllowedOrigins")
 		rootHandler := cors.New(cors.Options{
-			AllowCredentials: true,
-			// Enable Debugging for testing.
+			AllowCredentials:   true,
+			AllowedOrigins:     allowedOrigins,
+			AllowedMethods:     []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodPatch, http.MethodPut},
+			AllowedHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 			Debug:              viper.GetBool("DevMode.Enabled"),
 			OptionsPassthrough: false,
 		}).Handler(mux)

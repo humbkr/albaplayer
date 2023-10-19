@@ -47,7 +47,7 @@ const TrackTeaserName = styled.h2`
 const TrackWrapper = styled.div`
   display: table;
   width: 100%;
-  height: ${(props) => props.theme.itemHeight};
+  height: ${(props) => props.theme.layout.itemHeight};
   padding: 0 15px 0 0;
   cursor: pointer;
 `

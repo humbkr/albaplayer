@@ -4,19 +4,19 @@ import { useAppDispatch, useAppSelector } from 'store/hooks'
 import PlaylistCareListItem from 'modules/playlist/components/PlaylistCareListItem'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import Icon from 'common/components/Icon'
-import ActionButton from 'common/components/ActionButton'
-import Loading from 'common/components/Loading'
+import ActionButton from 'common/components/buttons/ActionButton'
 import { LibraryStateType } from 'modules/library/store'
 import { useTranslation } from 'react-i18next'
+import LoaderPulse from 'common/components/LoaderPulse'
 import { findSimilarTracks } from '../utils/playlistCare'
-import { PlaylistPane, playlistUpdateItems, playlistChangePane } from '../store'
+import { playlistChangePane, PlaylistPane, playlistUpdateItems } from '../store'
 
 function PlaylistsCarePane() {
   const { t } = useTranslation()
 
   const library: LibraryStateType = useAppSelector((state) => state.library)
   const playlist: Playlist = useAppSelector(
-    (state) => state.playlist.currentPlaylist.playlist
+    (state) => state.playlist.currentPlaylist
   )
   const dispatch = useAppDispatch()
 
@@ -89,7 +89,7 @@ function PlaylistsCarePane() {
             <ActionButton raised onClick={processTracks} disabled={processing}>
               {t('playlists.care.start')}
             </ActionButton>
-            {processing && <Loading />}
+            {processing && <LoaderPulse />}
             {(processing || processed) && (
               <Counter>
                 {currentProcessedTrack} / {items.length}
@@ -123,29 +123,30 @@ const Wrapper = styled.div`
 const Header = styled.div`
   display: flex;
   align-items: center;
-  height: ${(props) => props.theme.itemHeight};
-  border-bottom: 1px solid ${(props) => props.theme.separatorColor};
+  height: ${(props) => props.theme.layout.itemHeight};
+  border-bottom: 1px solid ${(props) => props.theme.colors.separator};
 
   a {
     text-decoration: none;
-    color: ${(props) => props.theme.textPrimaryColor};
+    color: ${(props) => props.theme.colors.textPrimary};
   }
 `
 const BackButton = styled.button`
   border: 0;
   background-color: transparent;
-
-  :hover {
-    cursor: pointer;
-  }
 `
 const BackButtonIcon = styled(Icon)`
-  height: ${(props) => props.theme.itemHeight};
-  width: ${(props) => props.theme.itemHeight};
+  height: ${(props) => props.theme.layout.itemHeight};
+  width: ${(props) => props.theme.layout.itemHeight};
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${(props) => props.theme.textPrimaryColor};
+  color: ${(props) => props.theme.colors.textPrimary};
+
+  :hover {
+    cursor: pointer;
+    color: ${(props) => props.theme.colors.elementHighlightFocus};
+  }
 `
 const Info = styled.div`
   display: inline-block;
@@ -157,7 +158,7 @@ const Subtitle = styled.p`
   font-size: 0.8em;
   margin-top: 2px;
   font-weight: normal;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const Main = styled.main`
   flex-grow: 1;
@@ -166,11 +167,11 @@ const Main = styled.main`
 `
 const Description = styled.p`
   padding: 15px;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const Strong = styled.span`
   font-weight: bold;
-  color: ${(props) => props.theme.textPrimaryColor};
+  color: ${(props) => props.theme.colors.textPrimary};
 `
 const ActionsWrapper = styled.div`
   padding: 5px 15px 30px;
@@ -187,7 +188,7 @@ const Actions = styled.div`
   }
 `
 const Counter = styled.div`
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const ListWrapper = styled.div`
   flex-grow: 1;

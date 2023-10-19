@@ -41,10 +41,10 @@ type User {
   id: ID!
   name: String!
   email: String
-  password: String
   data: String
   dateAdded: Int
   roles: [String]
+  isDefaultUser: Boolean
 }
 
 type Settings {
@@ -52,6 +52,7 @@ type Settings {
   coversPreferredSource: String
   disableLibrarySettings: Boolean
   version: String
+  authEnabled: Boolean
 }
 
 type LibraryUpdateState {
@@ -69,7 +70,7 @@ type Query {
   tracks: [Track]
   settings: Settings
   variable(key: String!): Variable
-  user(id: ID!): User
+  user(id: ID): User
   users: [User]
 }
 
@@ -77,6 +78,7 @@ input UserInput {
   name: String
   email: String
   password: String
+  currentPassword: String
   data: String
   roles: [String]
 }

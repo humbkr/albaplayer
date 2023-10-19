@@ -27,6 +27,8 @@ func InitApp() (business.LibraryInteractor, business.UsersInteractor) {
 	viper.SetDefault("Server.Https.Enabled", false)
 	viper.SetDefault("Server.Https.CertFile", "")
 	viper.SetDefault("Server.Https.KeyFile", "")
+	// Authentication.
+	viper.SetDefault("Auth.Enabled", true)
 	// Library.
 	viper.SetDefault("Library.Path", "")
 	// Dev mode.

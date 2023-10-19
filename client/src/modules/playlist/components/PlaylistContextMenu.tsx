@@ -1,4 +1,4 @@
-import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
+import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
   addPlaylist,
@@ -49,7 +49,7 @@ function PlaylistContextMenu() {
 
   return (
     <EditPlaylistContext.Consumer>
-      {(value: any) => (
+      {(value: () => void) => (
         <ContextMenu id="playlist-context-menu">
           <Item
             onClick={(menuItem: any) =>
@@ -77,9 +77,7 @@ function PlaylistContextMenu() {
             {playlistsItems}
           </Submenu>
           <Separator />
-          <Item onClick={() => value('edit')}>
-            {t('playlists.actions.editPlaylist')}
-          </Item>
+          <Item onClick={value}>{t('playlists.actions.editPlaylist')}</Item>
         </ContextMenu>
       )}
     </EditPlaylistContext.Consumer>

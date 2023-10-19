@@ -9,10 +9,7 @@ export enum PlaylistPane {
 
 export type PlaylistsStateType = {
   playlists: { [id: string]: Playlist }
-  currentPlaylist: {
-    playlist: Playlist | null
-    position: number
-  }
+  currentPlaylist: Playlist | null
   currentTrack: {
     id: string
     position: number
@@ -22,10 +19,7 @@ export type PlaylistsStateType = {
 
 export const playlistsInitialState: PlaylistsStateType = {
   playlists: {},
-  currentPlaylist: {
-    playlist: null,
-    position: 0,
-  },
+  currentPlaylist: null,
   currentTrack: {
     id: '0',
     position: 0,
@@ -38,10 +32,7 @@ const playlistSlice = createSlice({
   initialState: playlistsInitialState,
   reducers: {
     playlistSelectPlaylist(state, action) {
-      state.currentPlaylist = {
-        playlist: action.payload.selectedPlaylist,
-        position: action.payload.playlistIndex,
-      }
+      state.currentPlaylist = action.payload
       state.currentTrack = {
         id: '0',
         position: 0,
@@ -53,27 +44,18 @@ const playlistSlice = createSlice({
       newList[action.payload.id] = action.payload
 
       state.playlists = newList
-      state.currentPlaylist = {
-        playlist: action.payload,
-        position: Object.values(newList).length - 1,
-      }
+      state.currentPlaylist = action.payload
     },
     playlistDeletePlaylist(state, action: PayloadAction<Playlist>) {
       const newList = { ...state.playlists }
       delete newList[action.payload.id]
 
-      let newCurrentPlaylist = { ...state.currentPlaylist }
-      if (state.currentPlaylist.playlist?.id === action.payload.id) {
+      let newCurrentPlaylist = state.currentPlaylist
+      if (state.currentPlaylist?.id === action.payload.id) {
         // We deleted the current playlist, set current to the first  of
         // the list if there is one.
-        if (Object.values(newList).length > 0) {
-          newCurrentPlaylist = {
-            playlist: Object.values(newList)[0],
-            position: 0,
-          }
-        } else {
-          newCurrentPlaylist = { playlist: null, position: 0 }
-        }
+        newCurrentPlaylist =
+          Object.values(newList).length > 0 ? Object.values(newList)[0] : null
       }
 
       state.playlists = newList
@@ -109,11 +91,8 @@ const playlistSlice = createSlice({
 
       state.playlists = newPlaylists
 
-      if (state.currentPlaylist.playlist) {
-        state.currentPlaylist = {
-          ...state.currentPlaylist,
-          playlist: { ...newPlaylists[state.currentPlaylist.playlist.id] },
-        }
+      if (state.currentPlaylist) {
+        state.currentPlaylist = newPlaylists[state.currentPlaylist.id]
       }
     },
     playlistAddTracks(
@@ -139,12 +118,8 @@ const playlistSlice = createSlice({
       state.playlists = newPlaylists
 
       // Update current playlist if this is the one we are working on.
-      if (state.currentPlaylist.playlist?.id === playlistId) {
-        state.currentPlaylist = {
-          ...state.currentPlaylist,
-          // @ts-ignore
-          playlist: { ...newPlaylists[state.currentPlaylist.playlist.id] },
-        }
+      if (state.currentPlaylist?.id === playlistId) {
+        state.currentPlaylist = newPlaylists[state.currentPlaylist.id]
       }
     },
     playlistUpdateItems(
@@ -165,15 +140,12 @@ const playlistSlice = createSlice({
 
       state.playlists = newPlaylists
 
-      if (state.currentPlaylist.playlist) {
-        const newPlaylist = { ...state.currentPlaylist.playlist }
-        if (action.payload.playlistId === state.currentPlaylist.playlist.id) {
+      if (state.currentPlaylist) {
+        const newPlaylist = state.currentPlaylist
+        if (action.payload.playlistId === state.currentPlaylist.id) {
           newPlaylist.items = reorderedTracks
 
-          state.currentPlaylist = {
-            ...state.currentPlaylist,
-            playlist: newPlaylist,
-          }
+          state.currentPlaylist = newPlaylist
         }
       }
     },
@@ -183,14 +155,11 @@ const playlistSlice = createSlice({
 
       state.playlists = newPlaylists
 
-      if (state.currentPlaylist.playlist) {
-        state.currentPlaylist = {
-          ...state.currentPlaylist,
-          playlist:
-            action.payload.id === state.currentPlaylist.playlist.id
-              ? action.payload
-              : state.currentPlaylist.playlist,
-        }
+      if (state.currentPlaylist) {
+        state.currentPlaylist =
+          action.payload.id === state.currentPlaylist.id
+            ? action.payload
+            : state.currentPlaylist
       }
     },
     playlistChangePane(state, action: PayloadAction<PlaylistPane>) {

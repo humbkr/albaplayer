@@ -1,6 +1,8 @@
 package business
 
-import "github.com/humbkr/albaplayer/internal/domain"
+import (
+	"github.com/humbkr/albaplayer/internal/domain"
+)
 
 type ArtistRepository interface {
 	// Get retrieves an entity from the datasource.
@@ -173,4 +175,7 @@ type UserRepository interface {
 
 	// Exists tests if an entity exists in datasource.
 	Exists(id int) bool
+
+	// GetFromUsername retrieves a user entity using its username (for authentication purpose).
+	GetFromUsername(username string) (entity User, err error)
 }

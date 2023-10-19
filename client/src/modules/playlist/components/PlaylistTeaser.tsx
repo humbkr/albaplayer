@@ -35,8 +35,8 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  height: ${(props) => props.theme.itemHeight};
+  height: ${(props) => props.theme.layout.itemHeight};
   padding-left: 15px;
   cursor: pointer;
-  border-bottom: 1px solid ${(props) => props.theme.separatorColor};
+  border-bottom: 1px solid ${(props) => props.theme.colors.separator};
 `

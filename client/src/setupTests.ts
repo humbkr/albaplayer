@@ -8,6 +8,7 @@ import 'jest-styled-components'
 // @ts-ignore
 import * as matchers from 'jest-extended'
 import React, { ReactNode } from 'react'
+
 expect.extend(matchers)
 
 // React-i18next
@@ -62,4 +63,20 @@ jest.mock('react-i18next', () => ({
     t: (str: any, params: any) =>
       `${str}${params ? ` ${JSON.stringify(params)}` : ''}`,
   }),
+  initReactI18next: {
+    type: '3rdParty',
+    init: jest.fn(),
+  },
+}))
+
+jest.mock('i18n/i18n', () => ({
+  ...jest.requireActual('i18n/i18n'),
+  t: (str: any, params: any) =>
+    `${str}${params ? ` ${JSON.stringify(params)}` : ''}`,
+}))
+
+// React-modal
+jest.mock('react-modal', () => ({
+  ...jest.requireActual('react-modal'),
+  setAppElement: () => {},
 }))

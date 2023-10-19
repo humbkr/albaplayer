@@ -13,14 +13,16 @@ type Settings struct {
 	CoversPreferredSource  *string `json:"coversPreferredSource"`
 	DisableLibrarySettings *bool   `json:"disableLibrarySettings"`
 	Version                *string `json:"version"`
+	AuthEnabled            *bool   `json:"authEnabled"`
 }
 
 type UserInput struct {
-	Name     *string   `json:"name"`
-	Email    *string   `json:"email"`
-	Password *string   `json:"password"`
-	Data     *string   `json:"data"`
-	Roles    []*string `json:"roles"`
+	Name            *string   `json:"name"`
+	Email           *string   `json:"email"`
+	Password        *string   `json:"password"`
+	CurrentPassword *string   `json:"currentPassword"`
+	Data            *string   `json:"data"`
+	Roles           []*string `json:"roles"`
 }
 
 type Variable struct {

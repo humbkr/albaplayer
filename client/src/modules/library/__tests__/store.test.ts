@@ -1,17 +1,21 @@
 import configureMockStore from 'redux-mock-store'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import thunk from 'redux-thunk'
+import libraryAPI from 'modules/library/api'
 import librarySlice, {
+  fetchLibrary,
+  initLibrary,
   libraryInitialState,
   LibraryStateType,
-  initLibrary,
-  fetchLibrary,
   setLastScan,
-  shouldFetchLibrary,
 } from '../store'
-import { api } from '../../../api'
 
-jest.mock('api')
+jest.mock('modules/library/api', () => ({
+  libraryAPI: {
+    getLibrary: jest.fn().mockResolvedValue({}),
+  },
+}))
+
 const mockStore = configureMockStore([thunk])
 const makeMockStore = (customState: any = {}) =>
   mockStore({
@@ -213,7 +217,7 @@ describe('library (redux)', () => {
 
   describe('initLibrary thunk', () => {
     it('should bypass shouldFetchLibrary() when force parameter is set', async () => {
-      api.getLibrary = jest
+      libraryAPI.getLibrary = jest
         .fn()
         .mockReturnValueOnce(new Promise((resolve) => resolve({ data: {} })))
 
@@ -257,7 +261,7 @@ describe('library (redux)', () => {
 
   describe('fetchLibrary thunk', () => {
     it('should dispatch correct actions when api call is successful', async () => {
-      api.getLibrary = jest.fn().mockImplementationOnce(
+      libraryAPI.getLibrary = jest.fn().mockImplementationOnce(
         () =>
           new Promise((resolve) => {
             resolve(response)
@@ -289,7 +293,7 @@ describe('library (redux)', () => {
     })
 
     it('should dispatch correct actions when api call is unsuccessful', async () => {
-      api.getLibrary = jest.fn().mockImplementationOnce(
+      libraryAPI.getLibrary = jest.fn().mockImplementationOnce(
         () =>
           new Promise((_, reject) => {
             reject()
@@ -306,77 +310,6 @@ describe('library (redux)', () => {
       expect(actual.length).toBe(2)
       expect(actual[0].type).toEqual(fetchLibrary.pending.type)
       expect(actual[1].type).toEqual(fetchLibrary.rejected.type)
-    })
-  })
-
-  describe('shouldFetchLibrary utility function', () => {
-    it('should return false if library is already fetching', async () => {
-      const testState: LibraryStateType = {
-        ...libraryInitialState,
-        isFetching: true,
-      }
-
-      expect(await shouldFetchLibrary(testState)).toBeFalse()
-    })
-
-    it('should return true if there is no previous scan date stored', async () => {
-      const testState: LibraryStateType = {
-        ...libraryInitialState,
-      }
-
-      expect(await shouldFetchLibrary(testState)).toBeTrue()
-    })
-
-    it('should return false if remote scan date is before or the same as the local one', async () => {
-      const testState: LibraryStateType = {
-        ...libraryInitialState,
-        lastScan: '20200417130000',
-      }
-
-      api.getVariable = jest.fn().mockImplementationOnce(
-        () =>
-          new Promise((resolve) => {
-            resolve({
-              data: { variable: { value: '20200417130000' } },
-            })
-          })
-      )
-
-      expect(await shouldFetchLibrary(testState)).toBeFalse()
-    })
-
-    it('should return true if remote scan date is after the local one', async () => {
-      const testState: LibraryStateType = {
-        ...libraryInitialState,
-        lastScan: '20200417130000',
-      }
-
-      api.getVariable = jest.fn().mockImplementationOnce(
-        () =>
-          new Promise((resolve) => {
-            resolve({
-              data: { variable: { value: '20200417130001' } },
-            })
-          })
-      )
-
-      expect(await shouldFetchLibrary(testState)).toBeTrue()
-    })
-
-    it('should return true if impossible to get the last remote scan date', async () => {
-      const testState: LibraryStateType = {
-        ...libraryInitialState,
-        lastScan: '20200417130000',
-      }
-
-      api.getVariable = jest.fn().mockImplementationOnce(
-        () =>
-          new Promise((resolve, reject) => {
-            reject()
-          })
-      )
-
-      expect(await shouldFetchLibrary(testState)).toBeTrue()
     })
   })
 })

@@ -7,9 +7,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/99designs/gqlgen/graphql"
+	"github.com/spf13/viper"
+	"github.com/vektah/gqlparser/v2/gqlerror"
+	"golang.org/x/exp/slices"
+	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/interfaces/auth"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph/generated"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph/model"
 )
@@ -81,6 +88,11 @@ func (r *mutationResolver) UpdateLibrary(ctx context.Context) (*model.LibraryUpd
 }
 
 func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpdateState, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+	if !business.UserHasRole(*currentUser, business.ROLE_OWNER) {
+		return nil, errors.New("unauthorized operation")
+	}
+
 	if r.Library.LibraryIsUpdating {
 		return nil, fmt.Errorf("library currently updating")
 	}
@@ -101,15 +113,21 @@ func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpda
 }
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput) (*model.User, error) {
+	hashedPassword, _ := auth.HashPassword(*input.Password)
+
+	user := auth.GetUserFromContext(ctx)
+	if !business.UserHasRole(*user, business.ROLE_ADMIN) {
+		return nil, errors.New("unauthorized operation")
+	}
+
 	dbUser := business.User{
 		Name:     *input.Name,
-		Email:    *input.Email,
-		Password: *input.Password,
+		Password: hashedPassword,
 	}
 
 	dbUser.Roles = processUserRoles(input.Roles)
 
-	if dbUser.Name == "" || dbUser.Email == "" || dbUser.Password == "" || len(dbUser.Roles) < 1 {
+	if dbUser.Name == "" || dbUser.Password == "" || len(dbUser.Roles) < 1 {
 		return nil, errors.New("the following fields are mandatory: name, email, password, roles")
 	}
 
@@ -118,30 +136,49 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput
 		return nil, err
 	}
 
-	createdUser := convertUser(dbUser)
+	createdUser := convertUser(dbUser, false)
 
 	return &createdUser, nil
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input model.UserInput) (*model.User, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+	if currentUser.Id != id && !business.UserHasRole(*currentUser, business.ROLE_ADMIN) {
+		return nil, errors.New("unauthorized operation")
+	}
+	updateOneself := false
+	if currentUser.Id == id {
+		updateOneself = true
+	}
+
+	// Get current user data from DB to update it.
 	dbUser, err := r.UsersInteractor.GetUser(id)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
 
-	if *input.Name != "" {
-		dbUser.Name = *input.Name
+	if input.Name != nil && *input.Name != "" {
+		username := strings.TrimSpace(*input.Name)
+		if hasWhitespace := regexp.MustCompile(`\s`).MatchString(username); hasWhitespace {
+			graphql.AddError(ctx, &gqlerror.Error{
+				Path:    graphql.GetPath(ctx),
+				Message: "No whitespace allowed in username",
+				Extensions: map[string]interface{}{
+					"code": "no_whitespace_allowed",
+				},
+			})
+
+			return nil, nil
+		}
+
+		dbUser.Name = username
 	}
 
-	if *input.Email != "" {
+	if input.Email != nil && *input.Email != "" {
 		dbUser.Email = *input.Email
 	}
 
-	if *input.Password != "" {
-		dbUser.Password = *input.Password
-	}
-
-	if *input.Data != "" {
+	if input.Data != nil && *input.Data != "" {
 		dbUser.Data = *input.Data
 	}
 
@@ -149,23 +186,53 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input model.U
 		dbUser.Roles = processUserRoles(input.Roles)
 	}
 
+	if input.Password != nil && *input.Password != "" {
+		// User is trying to change a password.
+		if updateOneself {
+			// User is trying to change his own password.
+			// Check if current password is correct.
+			err := auth.CheckPassword(dbUser.Password, *input.CurrentPassword)
+			if *input.Password == "" || err != nil {
+				graphql.AddError(ctx, &gqlerror.Error{
+					Path:    graphql.GetPath(ctx),
+					Message: "Invalid current password",
+					Extensions: map[string]interface{}{
+						"code": "invalid_current_password",
+					},
+				})
+
+				return nil, nil
+			}
+		}
+		// Else the action comes from an admin updating another user, so no need to check
+		// current password.
+
+		hashedPassword, _ := auth.HashPassword(*input.Password)
+		dbUser.Password = hashedPassword
+	}
+
 	err = r.UsersInteractor.SaveUser(&dbUser)
 	if err != nil {
 		return nil, err
 	}
 
-	updatedUser := convertUser(dbUser)
+	updatedUser := convertUser(dbUser, false)
 
 	return &updatedUser, nil
 }
 
 func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (bool, error) {
+	user := auth.GetUserFromContext(ctx)
+	if user.Id != id && !business.UserHasRole(*user, business.ROLE_ADMIN) {
+		return false, errors.New("unauthorized operation")
+	}
+
 	dbUser := business.User{
 		Id: id,
 	}
 
 	err := r.UsersInteractor.DeleteUser(&dbUser)
-	return err != nil, err
+	return err == nil, err
 }
 
 func (r *queryResolver) Album(ctx context.Context, id int) (*model.Album, error) {
@@ -237,6 +304,7 @@ func (r *queryResolver) Settings(ctx context.Context) (*model.Settings, error) {
 		CoversPreferredSource:  &settings.CoversPreferredSource,
 		DisableLibrarySettings: &settings.DisableLibraryConfiguration,
 		Version:                &r.Version,
+		AuthEnabled:            &settings.AuthEnabled,
 	}, nil
 }
 
@@ -251,24 +319,63 @@ func (r *queryResolver) Variable(ctx context.Context, key string) (*model.Variab
 	return &result, err
 }
 
-func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
+func (r *queryResolver) User(ctx context.Context, id *int) (*model.User, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+
+	if currentUser.IsDefaultUser {
+		defaultUserRoles := viper.GetStringSlice("Users.DefaultUserRoles")
+		var roles []business.Role
+		for _, userRole := range defaultUserRoles {
+			role := business.GetRoleFromString(userRole)
+			if !slices.Contains(roles, role) {
+				roles = append(roles, role)
+			}
+		}
+
+		// We are in auth disabled mode, so we return the default user.
+		defaultUser := business.User{
+			Id:            1,
+			Name:          "Default user",
+			Roles:         roles,
+			IsDefaultUser: true,
+		}
+		result := convertUser(defaultUser, false)
+
+		return &result, nil
+	}
+
+	basicInfoOnly := true
+	if id == nil || business.UserHasRole(*currentUser, business.ROLE_ADMIN) {
+		basicInfoOnly = false
+	}
+
+	// If no id is provided, return the current user.
+	var userIdToGet int
+	if id == nil {
+		userIdToGet = currentUser.Id
+	} else {
+		userIdToGet = *id
+	}
+
 	var result model.User
-	user, err := r.UsersInteractor.UserRepository.Get(id)
+	user, err := r.UsersInteractor.UserRepository.Get(userIdToGet)
 
 	if err == nil {
-		result = convertUser(user)
+		result = convertUser(user, basicInfoOnly)
 	}
 
 	return &result, err
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+
 	var result []*model.User
 	users, err := r.UsersInteractor.UserRepository.GetAll()
 
 	if err == nil {
 		for _, user := range users {
-			gqlUser := convertUser(user)
+			gqlUser := convertUser(user, !business.UserHasRole(*currentUser, business.ROLE_ADMIN))
 			result = append(result, &gqlUser)
 		}
 	}

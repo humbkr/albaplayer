@@ -40,7 +40,7 @@ export default Message
 export { MessageType }
 
 const MessageWrapper = styled.div<{ type: MessageType }>`
-  color: ${(props) => props.theme.messages[props.type].color};
+  color: ${(props) => props.theme.colors[props.type]};
 
   > * {
     display: inline-block;
@@ -49,7 +49,7 @@ const MessageWrapper = styled.div<{ type: MessageType }>`
   }
 
   > span {
-    height: ${(props) => props.theme.messages.height};
-    line-height: ${(props) => props.theme.messages.height};
+    height: 32px;
+    line-height: 32px;
   }
 `
