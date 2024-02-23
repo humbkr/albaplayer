@@ -12,7 +12,12 @@ export declare global {
   type Playlist = {
     id: string
     title: string
-    date: string
+    dateCreated: number
+    dateModified: number
     items: PlaylistItem[]
+  }
+
+  type Collections = {
+    playlists: Playlist[]
   }
 }

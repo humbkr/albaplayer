@@ -56,7 +56,7 @@ const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
   }
   
   .react-contexify {
-    z-index: 50;
+    z-index: 666;
   }
 
   @keyframes transition-slide-in-right {

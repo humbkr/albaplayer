@@ -8,7 +8,7 @@ RUN yarn install
 RUN yarn build
 
 ## Server build phase
-FROM golang:1.18 AS build_server
+FROM golang:1.22 AS build_server
 
 # Install GCC for target architecture.
 RUN dpkg --add-architecture amd64 \

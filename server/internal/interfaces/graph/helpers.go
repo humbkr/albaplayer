@@ -95,3 +95,14 @@ func processUserRoles(inputRoles []*string) (roles []business.Role) {
 
 	return list
 }
+
+func convertCollection(collection domain.Collection) model.Collection {
+	return model.Collection{
+		ID:        collection.Id,
+		UserId:    collection.UserId,
+		Title:     collection.Title,
+		Type:      collection.Type,
+		Items:     &collection.Items,
+		DateAdded: &collection.Date,
+	}
+}

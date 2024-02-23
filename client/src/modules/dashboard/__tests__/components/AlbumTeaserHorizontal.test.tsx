@@ -4,7 +4,6 @@ import { ThemeProvider } from 'styled-components'
 import { BrowserRouter as Router } from 'react-router-dom'
 import AlbumTeaserHorizontal from 'modules/dashboard/components/AlbumTeaserHorizontal'
 import themeDefault from 'themes/lightGreen'
-import AlbumMoreActionsContextMenu from 'modules/dashboard/components/AlbumMoreActionsContextMenu'
 import { getAuthAssetURL } from 'api/api'
 import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
 
@@ -102,59 +101,6 @@ describe('dashboard - AlbumTeaserHorizontal', () => {
     expect(screen.getByTestId('album-teaser-horizontal-overlay')).toHaveStyle({
       backgroundColor: 'transparent',
     })
-  })
-
-  it('should display a full actions menu on right-click', () => {
-    const setSelected = jest.fn()
-
-    render(
-      <ReduxProvider store={store}>
-        <Router>
-          <ThemeProvider theme={themeDefault}>
-            <AlbumTeaserHorizontal
-              album={album}
-              selected={false}
-              setSelected={setSelected}
-            />
-            <AlbumMoreActionsContextMenu
-              menuId="recent-album-more-actions-context-menu"
-              onHidden={() => {}}
-            />
-          </ThemeProvider>
-        </Router>
-      </ReduxProvider>
-    )
-
-    fireEvent.contextMenu(screen.getByTestId('album-teaser-horizontal'))
-    expect(setSelected).toHaveBeenCalledTimes(1)
-    expect(screen.getByText('player.actions.playNow')).toBeInTheDocument()
-  })
-
-  it('should display a limited actions menu on right-click', () => {
-    const setSelected = jest.fn()
-
-    render(
-      <ReduxProvider store={store}>
-        <Router>
-          <ThemeProvider theme={themeDefault}>
-            <AlbumTeaserHorizontal
-              album={album}
-              selected={false}
-              setSelected={setSelected}
-            />
-            <AlbumMoreActionsContextMenu
-              menuId="recent-album-more-actions-context-menu"
-              onHidden={() => {}}
-            />
-          </ThemeProvider>
-        </Router>
-      </ReduxProvider>
-    )
-
-    fireEvent.click(screen.getByTestId('album-teaser-horizontal-more-button'))
-    expect(setSelected).toHaveBeenCalledTimes(1)
-    expect(screen.queryByText('player.actions.playNow')).not.toBeInTheDocument()
-    expect(screen.getByText('player.actions.addToQueue')).toBeInTheDocument()
   })
 
   it('should play the album if user clicks on the play button', () => {

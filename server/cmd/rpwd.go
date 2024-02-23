@@ -22,7 +22,7 @@ var rpwdCmd = &cobra.Command{
 	Long:  `Reset a user password with a new one.`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		_, usersInteractor := internal.InitApp()
+		_, usersInteractor, _ := internal.InitApp()
 
 		// Find user.
 		userId, err := strconv.Atoi(args[0])

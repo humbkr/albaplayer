@@ -9,11 +9,9 @@ import { queueInitialState } from 'modules/player/store/queue.store'
 import {
   addAlbum,
   addArtist,
-  addPlaylist,
   addTrack,
   getTracksFromAlbum,
   getTracksFromArtist,
-  getTracksFromPlaylist,
   playAlbum,
   playAlbumAfterCurrent,
   playArtist,
@@ -21,8 +19,6 @@ import {
   playerSetProgress,
   playerSetTrack,
   playerTogglePlayPause,
-  playPlaylist,
-  playPlaylistAfterCurrent,
   playTrack,
   playTrackAfterCurrent,
   queueAddTracks,
@@ -33,10 +29,6 @@ import {
   setNextTrack,
   setPreviousTrack,
 } from 'modules/player/store/store'
-import {
-  playlistsInitialState,
-  PlaylistsStateType,
-} from 'modules/playlist/store'
 import { PlayerPlaybackMode, setCycleNumPos } from 'modules/player/utils'
 
 jest.mock('modules/library/api', () => ({
@@ -205,43 +197,6 @@ const mockLibraryState: LibraryStateType = {
       duration: 164,
       cover: '',
       artistId: '4',
-    },
-  },
-}
-
-const mockPlaylistsState: PlaylistsStateType = {
-  ...playlistsInitialState,
-  playlists: {
-    temp_001: {
-      id: 'temp_001',
-      title: 'My playlist',
-      date: '2020-04-13',
-      items: [
-        {
-          track: {
-            ...mockLibraryState.tracks['1'],
-            album: mockLibraryState.albums['1'],
-            artist: mockLibraryState.artists['1'],
-          },
-          position: 1,
-        },
-        {
-          track: {
-            ...mockLibraryState.tracks['2'],
-            album: mockLibraryState.albums['2'],
-            artist: mockLibraryState.artists['2'],
-          },
-          position: 2,
-        },
-        {
-          track: {
-            ...mockLibraryState.tracks['4'],
-            album: mockLibraryState.albums['3'],
-            artist: mockLibraryState.artists['1'],
-          },
-          position: 3,
-        },
-      ],
     },
   },
 }
@@ -546,42 +501,6 @@ describe('player (redux)', () => {
     })
   })
 
-  describe('playPlaylist thunk', () => {
-    it('should dispatch correct actions', async () => {
-      const store = makeMockStore({
-        library: mockLibraryState,
-        playlist: mockPlaylistsState,
-      })
-
-      const expectedTracks = mockPlaylistsState.playlists.temp_001.items.map(
-        (item) => ({
-          ...item.track,
-          artist: item.track.artistId
-            ? mockLibraryState.artists[item.track.artistId]
-            : undefined,
-          album: item.track.albumId
-            ? mockLibraryState.albums[item.track.albumId]
-            : undefined,
-        })
-      )
-
-      const expected = [
-        queueClear(),
-        queueAddTracks(expectedTracks),
-        // SetItemFromQueue(0),
-        playerTogglePlayPause(true),
-      ]
-
-      await store.dispatch(
-        // @ts-ignore
-        playPlaylist('temp_001')
-      )
-
-      const actual = store.getActions()
-      expect(actual).toEqual(expected)
-    })
-  })
-
   describe('playTrackAfterCurrent thunk', () => {
     it('should dispatch correct actions', async () => {
       const store = makeMockStore({
@@ -769,73 +688,6 @@ describe('player (redux)', () => {
     })
   })
 
-  describe('playPlaylistAfterCurrent thunk', () => {
-    it('should dispatch correct actions', async () => {
-      const store = makeMockStore({
-        library: mockLibraryState,
-        playlist: mockPlaylistsState,
-        player: {
-          ...playerInitialState,
-          track: mockLibraryState.tracks['2'],
-        },
-      })
-
-      const expectedTracks = mockPlaylistsState.playlists.temp_001.items.map(
-        (item) => ({
-          ...item.track,
-          artist: item.track.artistId
-            ? mockLibraryState.artists[item.track.artistId]
-            : undefined,
-          album: item.track.albumId
-            ? mockLibraryState.albums[item.track.albumId]
-            : undefined,
-        })
-      )
-
-      const expected = [queueAddTracksAfterCurrent(expectedTracks)]
-
-      await store.dispatch(
-        // @ts-ignore
-        playPlaylistAfterCurrent('temp_001')
-      )
-
-      const actual = store.getActions()
-      expect(actual).toEqual(expected)
-    })
-
-    it('should dispatch correct actions when no track in player', async () => {
-      const store = makeMockStore({
-        library: mockLibraryState,
-        playlist: mockPlaylistsState,
-      })
-
-      const expectedTracks = mockPlaylistsState.playlists.temp_001.items.map(
-        (item) => ({
-          ...item.track,
-          artist: item.track.artistId
-            ? mockLibraryState.artists[item.track.artistId]
-            : undefined,
-          album: item.track.albumId
-            ? mockLibraryState.albums[item.track.albumId]
-            : undefined,
-        })
-      )
-
-      const expected = [
-        queueAddTracksAfterCurrent(expectedTracks),
-        // SetItemFromQueue(0),
-      ]
-
-      await store.dispatch(
-        // @ts-ignore
-        playPlaylistAfterCurrent('temp_001')
-      )
-
-      const actual = store.getActions()
-      expect(actual).toEqual(expected)
-    })
-  })
-
   describe('addTrack thunk', () => {
     it('should dispatch correct actions', () => {
       const store = makeMockStore({
@@ -1014,73 +866,6 @@ describe('player (redux)', () => {
       await store.dispatch(
         // @ts-ignore
         addArtist('2')
-      )
-
-      const actual = store.getActions()
-      expect(actual).toEqual(expected)
-    })
-  })
-
-  describe('addPlaylist thunk', () => {
-    it('should dispatch correct actions', async () => {
-      const store = makeMockStore({
-        library: mockLibraryState,
-        playlist: mockPlaylistsState,
-        player: {
-          ...playerInitialState,
-          track: mockLibraryState.tracks['2'],
-        },
-      })
-
-      const expectedTracks = mockPlaylistsState.playlists.temp_001.items.map(
-        (item) => ({
-          ...item.track,
-          artist: item.track.artistId
-            ? mockLibraryState.artists[item.track.artistId]
-            : undefined,
-          album: item.track.albumId
-            ? mockLibraryState.albums[item.track.albumId]
-            : undefined,
-        })
-      )
-
-      const expected = [queueAddTracks(expectedTracks)]
-
-      await store.dispatch(
-        // @ts-ignore
-        addPlaylist('temp_001')
-      )
-
-      const actual = store.getActions()
-      expect(actual).toEqual(expected)
-    })
-
-    it('should dispatch correct actions when no track in player', async () => {
-      const store = makeMockStore({
-        library: mockLibraryState,
-        playlist: mockPlaylistsState,
-      })
-
-      const expectedTracks = mockPlaylistsState.playlists.temp_001.items.map(
-        (item) => ({
-          ...item.track,
-          artist: item.track.artistId
-            ? mockLibraryState.artists[item.track.artistId]
-            : undefined,
-          album: item.track.albumId
-            ? mockLibraryState.albums[item.track.albumId]
-            : undefined,
-        })
-      )
-
-      const expected = [
-        queueAddTracks(expectedTracks),
-        // SetItemFromQueue(0),
-      ]
-
-      await store.dispatch(
-        // @ts-ignore
-        addPlaylist('temp_001')
       )
 
       const actual = store.getActions()
@@ -1840,91 +1625,6 @@ describe('player (redux)', () => {
 
       expect(retrievedTracksIds).toStrictEqual(expectedTracksIds)
 
-      tracks.forEach((track) => {
-        if (track.artistId) {
-          // eslint-disable-next-line jest/no-conditional-expect
-          expect(track.artist).toBe(mockLibraryState.artists[track.artistId])
-        }
-        if (track.albumId) {
-          // eslint-disable-next-line jest/no-conditional-expect
-          expect(track.album).toBe(mockLibraryState.albums[track.albumId])
-        }
-      })
-    })
-  })
-
-  describe('getTracksFromPlaylist', () => {
-    it('should handle playlists with no tracks', () => {
-      const playlistsStateTest: PlaylistsStateType = {
-        ...playlistsInitialState,
-        playlists: {
-          playlist_01: {
-            id: 'playlist_01',
-            title: 'My playlist',
-            date: '2020-04-14',
-            items: [],
-          },
-        },
-      }
-
-      const tracks = getTracksFromPlaylist(
-        'playlist_01',
-        libraryInitialState,
-        playlistsStateTest
-      )
-
-      expect(tracks).toBeArray()
-      expect(tracks).toBeEmpty()
-    })
-
-    it('should return a playlist tracks, hydrated', () => {
-      const playlistsStateTest: PlaylistsStateType = {
-        ...playlistsInitialState,
-        playlists: {
-          playlist_01: {
-            id: 'playlist_01',
-            title: 'My playlist',
-            date: '2020-04-14',
-            items: [
-              {
-                track: {
-                  id: '1',
-                  title: 'Track 1',
-                  src: '/stream/1',
-                  number: 1,
-                  disc: '',
-                  duration: 123,
-                  cover: '',
-                  albumId: '1',
-                  artistId: '1',
-                },
-                position: 1,
-              },
-              {
-                track: {
-                  id: '2',
-                  title: 'Track 2',
-                  src: '/stream/2',
-                  number: 2,
-                  disc: '',
-                  duration: 124,
-                  cover: '',
-                },
-                position: 2,
-              },
-            ],
-          },
-        },
-      }
-
-      const tracks: Track[] = getTracksFromPlaylist(
-        'playlist_01',
-        mockLibraryState,
-        playlistsStateTest
-      )
-
-      expect(tracks).toBeArray()
-      expect(tracks.length).toBe(2)
       tracks.forEach((track) => {
         if (track.artistId) {
           // eslint-disable-next-line jest/no-conditional-expect

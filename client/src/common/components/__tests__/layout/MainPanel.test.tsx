@@ -21,7 +21,7 @@ jest.mock(
     }
 )
 jest.mock(
-  'modules/playlist/scenes/Playlists',
+  'modules/collections/scenes/Playlists',
   () =>
     function () {
       return <div data-testid="playlists" />

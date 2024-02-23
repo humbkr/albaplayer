@@ -1,6 +1,6 @@
 {
   "name": "albaplayer",
-  "version": "2.2.0",
+  "version": "2.3.0-rc1",
   "private": true,
   "dependencies": {
     "@hello-pangea/dnd": "^16.2.0",
@@ -83,7 +83,7 @@
     "lint:prettier": "prettier --check './src/**/*.{js,jsx,ts,tsx}'",
     "lint:eslint": "eslint src/",
     "lint:tsc": "tsc --noEmit",
-    "lint:all": "prettier --check './src/**/*.{js,jsx,ts,tsx}' && eslint src/ && tsc --noEmit",
+    "lint": "prettier --check './src/**/*.{js,jsx,ts,tsx}' && eslint src/ && tsc --noEmit",
     "lint:fix": "prettier --write './src/**/*.{js,jsx,ts,tsx}' && eslint src/ --fix && tsc --noEmit"
   },
   "browserslist": {

@@ -2,6 +2,13 @@
 
 package model
 
+type CollectionInput struct {
+	UserID *int    `json:"userId"`
+	Title  *string `json:"title"`
+	Type   *string `json:"type"`
+	Items  *string `json:"items"`
+}
+
 type LibraryUpdateState struct {
 	TracksNumber  *int `json:"tracksNumber"`
 	AlbumsNumber  *int `json:"albumsNumber"`

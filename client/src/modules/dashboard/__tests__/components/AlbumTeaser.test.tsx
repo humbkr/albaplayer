@@ -4,7 +4,6 @@ import { ThemeProvider } from 'styled-components'
 import { BrowserRouter as Router } from 'react-router-dom'
 import themeDefault from 'themes/lightGreen'
 import AlbumTeaser from 'modules/dashboard/components/AlbumTeaser'
-import AlbumMoreActionsContextMenu from 'modules/dashboard/components/AlbumMoreActionsContextMenu'
 import { getAuthAssetURL } from 'api/api'
 import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
 
@@ -104,59 +103,6 @@ describe('dashboard - AlbumTeaser', () => {
     expect(screen.getByTestId('album-teaser-overlay')).toHaveStyle({
       backgroundColor: 'transparent',
     })
-  })
-
-  it('should display a full actions menu on right-click', async () => {
-    const setSelected = jest.fn()
-
-    render(
-      <ReduxProvider store={store}>
-        <Router>
-          <ThemeProvider theme={themeDefault}>
-            <AlbumTeaser
-              album={album}
-              selected={false}
-              setSelected={setSelected}
-            />
-            <AlbumMoreActionsContextMenu
-              menuId="random-album-more-actions-context-menu"
-              onHidden={() => {}}
-            />
-          </ThemeProvider>
-        </Router>
-      </ReduxProvider>
-    )
-
-    fireEvent.contextMenu(screen.getByTestId('album-teaser'))
-    expect(setSelected).toHaveBeenCalledTimes(1)
-    expect(screen.getByText('player.actions.playNow')).toBeInTheDocument()
-  })
-
-  it('should display a limited actions menu on right-click', async () => {
-    const setSelected = jest.fn()
-
-    render(
-      <ReduxProvider store={store}>
-        <Router>
-          <ThemeProvider theme={themeDefault}>
-            <AlbumTeaser
-              album={album}
-              selected={false}
-              setSelected={setSelected}
-            />
-            <AlbumMoreActionsContextMenu
-              menuId="random-album-more-actions-context-menu"
-              onHidden={() => {}}
-            />
-          </ThemeProvider>
-        </Router>
-      </ReduxProvider>
-    )
-
-    fireEvent.click(screen.getByTestId('album-teaser-more-button'))
-    expect(setSelected).toHaveBeenCalledTimes(1)
-    expect(screen.queryByText('player.actions.playNow')).not.toBeInTheDocument()
-    expect(screen.getByText('player.actions.addToQueue')).toBeInTheDocument()
   })
 
   it('should play the album if user clicks on the play button', async () => {

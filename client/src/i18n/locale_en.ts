@@ -33,8 +33,8 @@ const en: Translation = {
   player: {
     actions: {
       playNow: 'Play now',
-      playAfter: 'Play after current track',
-      addToQueue: 'Add to queue',
+      playAfter: 'Play next',
+      addToQueue: 'Play last',
     },
     noTrackPlaying: 'No song currently playing',
     queue: 'Queue',
@@ -61,6 +61,7 @@ const en: Translation = {
       removeFromPlaylist: 'Remove from playlist',
       cancel: 'cancel',
     },
+    defaultPlaylistName: 'New playlist',
     deleteConfirm: 'Are you sure you wish to delete this playlist?',
     care: {
       fixDeadTracks: 'Fix dead tracks...',

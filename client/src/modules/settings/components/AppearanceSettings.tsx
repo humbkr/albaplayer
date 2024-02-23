@@ -1,8 +1,6 @@
 import styled from 'styled-components'
 import { themes } from 'themes'
-import {
-  setTheme,
-} from 'modules/settings/store'
+import { setTheme } from 'modules/settings/store'
 import SelectList from 'modules/settings/components/SelectList'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'

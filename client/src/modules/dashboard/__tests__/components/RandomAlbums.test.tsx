@@ -8,6 +8,14 @@ import { dashboardInitialState } from 'modules/dashboard/store'
 import { getAuthAssetURL } from 'api/api'
 import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
 
+jest.mock(
+  '../../components/AlbumMoreActionsContextMenu',
+  () =>
+    function () {
+      return <div>AlbumMoreActionsContextMenu</div>
+    }
+)
+
 jest.mock('modules/player/store/store', () => ({
   playAlbum: jest.fn(),
 }))

@@ -40,7 +40,7 @@ function ProgressBar({ position, duration, seek }: Props) {
 export default ProgressBar
 
 interface ContainerProps {
-  readonly isMouseHover: boolean;
+  readonly isMouseHover: boolean
 }
 
 const Container = styled.div<ContainerProps>`
