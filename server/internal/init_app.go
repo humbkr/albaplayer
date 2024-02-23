@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func InitApp() (business.LibraryInteractor, business.UsersInteractor) {
+func InitApp() (business.LibraryInteractor, business.UsersInteractor, business.InternalVariableInteractor) {
 	// Set default configuration.
 	// Database.
 	viper.SetDefault("DB.Driver", "sqlite3")
@@ -67,11 +67,15 @@ func InitApp() (business.LibraryInteractor, business.UsersInteractor) {
 	libraryInteractor.CoverRepository = interfaces.CoverDbRepository{AppContext: &appContext}
 	libraryInteractor.LibraryRepository = interfaces.LibraryDbRepository{AppContext: &appContext}
 	libraryInteractor.MediaFileRepository = interfaces.LocalFilesystemRepository{AppContext: &appContext}
-	libraryInteractor.InternalVariableRepository = interfaces.InternalVariableDbRepository{AppContext: &appContext}
+	libraryInteractor.CollectionRepository = interfaces.CollectionDbRepository{AppContext: &appContext}
+
+	// Instantiate all we need to work on internal variables.
+	internalVariablesInteractor := business.InternalVariableInteractor{}
+	internalVariablesInteractor.InternalVariableRepository = interfaces.InternalVariableDbRepository{AppContext: &appContext}
 
 	// Instantiate all we need to work on users.
 	usersInteractor := business.UsersInteractor{}
 	usersInteractor.UserRepository = interfaces.UserDbRepository{AppContext: &appContext}
 
-	return libraryInteractor, usersInteractor
+	return libraryInteractor, usersInteractor, internalVariablesInteractor
 }

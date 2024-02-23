@@ -7,18 +7,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/99designs/gqlgen/graphql"
-	"github.com/spf13/viper"
-	"github.com/vektah/gqlparser/v2/gqlerror"
-	"golang.org/x/exp/slices"
 	"regexp"
 	"strconv"
 	"strings"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/domain"
 	"github.com/humbkr/albaplayer/internal/interfaces/auth"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph/generated"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph/model"
+	"github.com/spf13/viper"
+	"github.com/vektah/gqlparser/v2/gqlerror"
+	"golang.org/x/exp/slices"
 )
 
 func (r *albumResolver) Artist(ctx context.Context, obj *model.Album) (*model.Artist, error) {
@@ -41,7 +42,7 @@ func (r *albumResolver) Cover(ctx context.Context, obj *model.Album) (*string, e
 
 func (r *albumResolver) Tracks(ctx context.Context, obj *model.Album) ([]*model.Track, error) {
 	var result []*model.Track
-	tracks, err := r.Library.TrackRepository.GetTracksForAlbum(obj.ID)
+	tracks, err := r.Library.GetTracksForAlbum(obj.ID)
 
 	if err == nil {
 		for _, track := range tracks {
@@ -55,7 +56,7 @@ func (r *albumResolver) Tracks(ctx context.Context, obj *model.Album) ([]*model.
 
 func (r *artistResolver) Albums(ctx context.Context, obj *model.Artist) ([]*model.Album, error) {
 	var result []*model.Album
-	albums, err := r.Library.AlbumRepository.GetAlbumsForArtist(obj.ID, false)
+	albums, err := r.Library.GetAlbumsForArtist(obj.ID, false)
 
 	if err == nil {
 		for _, album := range albums {
@@ -74,9 +75,9 @@ func (r *mutationResolver) UpdateLibrary(ctx context.Context) (*model.LibraryUpd
 
 	r.Library.UpdateLibrary()
 
-	countArtists, _ := r.Library.ArtistRepository.Count()
-	countAlbums, _ := r.Library.AlbumRepository.Count()
-	countTracks, _ := r.Library.TrackRepository.Count()
+	countArtists, _ := r.Library.ArtistsCount()
+	countAlbums, _ := r.Library.AlbumsCount()
+	countTracks, _ := r.Library.TracksCount()
 
 	updateLibraryState := model.LibraryUpdateState{
 		TracksNumber:  &countTracks,
@@ -99,9 +100,9 @@ func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpda
 
 	r.Library.EraseLibrary()
 
-	countArtists, _ := r.Library.ArtistRepository.Count()
-	countAlbums, _ := r.Library.AlbumRepository.Count()
-	countTracks, _ := r.Library.TrackRepository.Count()
+	countArtists, _ := r.Library.ArtistsCount()
+	countAlbums, _ := r.Library.AlbumsCount()
+	countTracks, _ := r.Library.TracksCount()
 
 	updateLibraryState := model.LibraryUpdateState{
 		TracksNumber:  &countTracks,
@@ -235,13 +236,85 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (bool, error)
 	return err == nil, err
 }
 
+func (r *mutationResolver) CreateCollection(ctx context.Context, input model.CollectionInput) (*model.Collection, error) {
+	user := auth.GetUserFromContext(ctx)
+	if user.Id == 0 {
+		return nil, errors.New("unauthorized operation")
+	}
+
+	dbCollection := domain.Collection{
+		UserId: user.Id,
+		Title:  *input.Title,
+		Type:   *input.Type,
+		Items:  *input.Items,
+	}
+
+	err := r.Library.SaveCollection(&dbCollection)
+	if err != nil {
+		return nil, err
+	}
+
+	createdCollection := convertCollection(dbCollection)
+
+	return &createdCollection, nil
+}
+
+func (r *mutationResolver) UpdateCollection(ctx context.Context, id int, input model.CollectionInput) (*model.Collection, error) {
+	user := auth.GetUserFromContext(ctx)
+	if user.Id == 0 {
+		return nil, errors.New("unauthorized operation")
+	}
+
+	// Get current collection data from DB to update it.
+	dbCollection, err := r.Library.GetCollection(id)
+	if err != nil {
+		return nil, errors.New("collection not found")
+	}
+	if user.Id != dbCollection.UserId {
+		return nil, errors.New("unauthorized operation")
+	}
+
+	dbCollection.Title = *input.Title
+	dbCollection.Type = *input.Type
+	dbCollection.Items = *input.Items
+
+	err = r.Library.SaveCollection(&dbCollection)
+	if err != nil {
+		return nil, err
+	}
+
+	createdCollection := convertCollection(dbCollection)
+
+	return &createdCollection, nil
+}
+
+func (r *mutationResolver) DeleteCollection(ctx context.Context, id int) (bool, error) {
+	user := auth.GetUserFromContext(ctx)
+	if user.Id == 0 {
+		return false, errors.New("unauthorized operation")
+	}
+
+	// Get current collection data from DB to check owner.
+	dbCollection, err := r.Library.GetCollection(id)
+	if err != nil {
+		return false, errors.New("collection not found")
+	}
+	if user.Id != dbCollection.UserId {
+		return false, errors.New("unauthorized operation")
+	}
+
+	err = r.Library.DeleteCollection(&dbCollection)
+
+	return err == nil, err
+}
+
 func (r *queryResolver) Album(ctx context.Context, id int) (*model.Album, error) {
 	return GetAlbum(ctx, id)
 }
 
 func (r *queryResolver) Albums(ctx context.Context) ([]*model.Album, error) {
 	var result []*model.Album
-	albums, err := r.Library.AlbumRepository.GetAll(false)
+	albums, err := r.Library.GetAllAlbums(false)
 
 	if err == nil {
 		for _, album := range albums {
@@ -259,7 +332,7 @@ func (r *queryResolver) Artist(ctx context.Context, id int) (*model.Artist, erro
 
 func (r *queryResolver) Artists(ctx context.Context) ([]*model.Artist, error) {
 	var result []*model.Artist
-	artists, err := r.Library.ArtistRepository.GetAll(false)
+	artists, err := r.Library.GetAllArtists(false)
 
 	if err == nil {
 		for _, artist := range artists {
@@ -271,9 +344,52 @@ func (r *queryResolver) Artists(ctx context.Context) ([]*model.Artist, error) {
 	return result, err
 }
 
+func (r *queryResolver) Collection(ctx context.Context, id int) (*model.Collection, error) {
+	var result model.Collection
+	collection, err := r.Library.GetCollection(id)
+
+	if err == nil {
+		result = convertCollection(collection)
+	}
+
+	return &result, err
+}
+
+func (r *queryResolver) Collections(ctx context.Context) ([]*model.Collection, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+
+	var result []*model.Collection
+	collectionTracks, errTracks := r.Library.GetAllCollections("tracks", currentUser.Id)
+	collectionAlbums, errAlbums := r.Library.GetAllCollections("albums", currentUser.Id)
+	collectionArtists, errArtists := r.Library.GetAllCollections("artists", currentUser.Id)
+
+	if errTracks == nil {
+		for _, collection := range collectionTracks {
+			gqlCollection := convertCollection(collection)
+			result = append(result, &gqlCollection)
+		}
+	}
+	if errAlbums == nil {
+		for _, collection := range collectionAlbums {
+			gqlCollection := convertCollection(collection)
+			result = append(result, &gqlCollection)
+		}
+	}
+	if errArtists == nil {
+		for _, collection := range collectionArtists {
+			gqlCollection := convertCollection(collection)
+			result = append(result, &gqlCollection)
+		}
+	}
+
+	err := errors.Join(errTracks, errAlbums, errArtists)
+
+	return result, err
+}
+
 func (r *queryResolver) Track(ctx context.Context, id int) (*model.Track, error) {
 	var result model.Track
-	track, err := r.Library.TrackRepository.Get(id)
+	track, err := r.Library.GetTrack(id)
 
 	if err == nil {
 		result = convertTrack(track)
@@ -284,7 +400,7 @@ func (r *queryResolver) Track(ctx context.Context, id int) (*model.Track, error)
 
 func (r *queryResolver) Tracks(ctx context.Context) ([]*model.Track, error) {
 	var result []*model.Track
-	tracks, err := r.Library.TrackRepository.GetAll()
+	tracks, err := r.Library.GetAllTracks()
 
 	if err == nil {
 		for _, track := range tracks {
@@ -310,7 +426,7 @@ func (r *queryResolver) Settings(ctx context.Context) (*model.Settings, error) {
 
 func (r *queryResolver) Variable(ctx context.Context, key string) (*model.Variable, error) {
 	var result model.Variable
-	variable, err := r.Library.InternalVariableRepository.Get(key)
+	variable, err := r.InternalVariableInteractor.GetInternalVariable(key)
 
 	if err == nil {
 		result = convertVariable(variable)
@@ -358,7 +474,7 @@ func (r *queryResolver) User(ctx context.Context, id *int) (*model.User, error) 
 	}
 
 	var result model.User
-	user, err := r.UsersInteractor.UserRepository.Get(userIdToGet)
+	user, err := r.UsersInteractor.GetUser(userIdToGet)
 
 	if err == nil {
 		result = convertUser(user, basicInfoOnly)
@@ -371,7 +487,7 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	currentUser := auth.GetUserFromContext(ctx)
 
 	var result []*model.User
-	users, err := r.UsersInteractor.UserRepository.GetAll()
+	users, err := r.UsersInteractor.GetAllUsers()
 
 	if err == nil {
 		for _, user := range users {

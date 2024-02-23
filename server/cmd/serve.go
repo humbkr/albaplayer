@@ -29,13 +29,14 @@ var serveCmd = &cobra.Command{
 	Short: "Serve app on the specified port",
 	Long:  `Launch all services, create all endpoints, and serve UI web app.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		libraryInteractor, usersInteractor := internal.InitApp()
+		libraryInteractor, usersInteractor, internalVariablesInteractor := internal.InitApp()
 		settingsInteractor := business.ClientSettingsInteractor{}
 
 		initialData := graph.GraphQLServerInitialData{
-			LibraryInteractor:  &libraryInteractor,
-			SettingsInteractor: &settingsInteractor,
-			UsersInteractor:    &usersInteractor,
+			LibraryInteractor:          &libraryInteractor,
+			SettingsInteractor:         &settingsInteractor,
+			UsersInteractor:            &usersInteractor,
+			InternalVariableInteractor: &internalVariablesInteractor,
 		}
 
 		graphQLHandler := graph.InitGraphQLServer(initialData)
@@ -64,11 +65,13 @@ var serveCmd = &cobra.Command{
 		coverFilesHandler := interfaces.NewCoverStreamHandler(&libraryInteractor)
 		mux.Handle("/covers/", http.StripPrefix("/covers/", middleware(coverFilesHandler)))
 
-		// Serve auth endpoints
-		auth := &auth.AuthHandlers{UserInteractor: &usersInteractor, LibraryInteractor: &libraryInteractor}
-		mux.HandleFunc("/auth/login", auth.Login)
-		mux.HandleFunc("/auth/logout", auth.Logout)
-		mux.HandleFunc("/auth/refresh-token", auth.RefreshToken)
+		if viper.GetBool("Users.AuthEnabled") {
+			// Serve auth endpoints
+			auth := &auth.AuthHandlers{UserInteractor: &usersInteractor, LibraryInteractor: &libraryInteractor}
+			mux.HandleFunc("/auth/login", auth.Login)
+			mux.HandleFunc("/auth/logout", auth.Logout)
+			mux.HandleFunc("/auth/refresh-token", auth.RefreshToken)
+		}
 
 		// Serve app config.
 		mux.HandleFunc("/config", interfaces.GetAppConfig)

@@ -1,21 +1,16 @@
-import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
+import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
-import {
-  addAlbum,
-  playAlbum,
-  playAlbumAfterCurrent,
-} from 'modules/player/store/store'
-import {
-  playlistsSelector,
-  addAlbum as addAlbumToPlaylist,
-} from 'modules/playlist/store'
-import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { addAlbum, playAlbum, playAlbumAfterCurrent } from 'modules/player/store/store'
+import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
+import { useGetCollectionsQuery } from 'modules/collections/services/api'
+import { useAddAlbumToPlaylist } from 'modules/collections/services/services'
 import { search, setSearchFilter } from '../store'
 
 function AlbumContextMenu() {
   const { t } = useTranslation()
-  const playlists = useAppSelector((state) => playlistsSelector(state))
+  const { data: { playlists = [] } = {} } = useGetCollectionsQuery()
+  const addAlbumToPlaylist = useAddAlbumToPlaylist()
   const dispatch = useAppDispatch()
 
   const findAllByArtist = (menuItem: any) => {
@@ -27,12 +22,10 @@ function AlbumContextMenu() {
     <Item
       key={item.id}
       onClick={(menuItem: any) =>
-        dispatch(
-          addAlbumToPlaylist({
-            playlistId: item.id,
-            albumId: menuItem.props.data.id,
-          })
-        )
+        addAlbumToPlaylist({
+          playlistId: item.id,
+          albumId: menuItem.props.data.id,
+        })
       }
     >
       {item.title}
@@ -42,7 +35,7 @@ function AlbumContextMenu() {
     <Item
       key="new"
       onClick={(menuItem: any) =>
-        dispatch(addAlbumToPlaylist({ albumId: menuItem.props.data.id }))
+        addAlbumToPlaylist({ albumId: menuItem.props.data.id })
       }
     >
       {t('playlists.actions.createNewPlaylist')}

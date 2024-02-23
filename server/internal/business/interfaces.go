@@ -129,6 +129,29 @@ type CoverRepository interface {
 	ExistsByHash(hash string) int
 }
 
+type CollectionRepository interface {
+	// Get retrieves an entity from a datasource.
+	Get(id int) (entity domain.Collection, err error)
+
+	// GetAll retrieves all entities from the datasource.
+	// If no entities found, returns an empty collection without error.
+	GetAll(collectionType string, userId int) (entities []domain.Collection, err error)
+
+	// GetMultiple retrieves some entities from the datasource.
+	// Param hydrate: if true also fetch the artist's albums.
+	GetMultiple(ids []int) (entities []domain.Collection, err error)
+
+	// Save saves an entity to a datasource.
+	Save(entity *domain.Collection) (err error)
+
+	// Delete deletes an entity from a datasource.
+	// Does not return an error if the entity doesn't exist on the datasource or no entity id is given.
+	Delete(entity *domain.Collection) (err error)
+
+	// Exists tests if an entity exists in datasource.
+	Exists(id int) bool
+}
+
 type InternalVariableRepository interface {
 	// Get retrieves an entity from a datasource.
 	Get(key string) (entity InternalVariable, err error)

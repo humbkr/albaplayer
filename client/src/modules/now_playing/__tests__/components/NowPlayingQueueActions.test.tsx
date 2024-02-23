@@ -6,6 +6,14 @@ import NowPlayingQueueActions from 'modules/now_playing/components/NowPlayingQue
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { queueClear } from 'modules/player/store/store'
 
+jest.mock(
+  '../../components/QueueActionsMoreContextMenu',
+  () =>
+    function () {
+      return <div>QueueActionsMoreContextMenu</div>
+    }
+)
+
 jest.mock('modules/player/store/store', () => ({
   queueClear: jest.fn(),
 }))
@@ -15,7 +23,7 @@ const useAppSelectorMock = useAppSelector as jest.Mock
 const mockDispatch = jest.fn()
 const useAppDispatchMock = useAppDispatch as jest.Mock
 
-describe('QueueActionsMoreContextMenu', () => {
+describe('NowPlayingQueueActions', () => {
   beforeEach(() => {
     useAppSelectorMock.mockReturnValue([
       {

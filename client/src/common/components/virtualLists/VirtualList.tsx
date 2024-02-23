@@ -112,7 +112,6 @@ function VirtualList({
   )
 }
 
-
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
   // eslint-disable-next-line react/jsx-props-no-spreading
   <VirtualList {...props} forwardedRef={ref} />

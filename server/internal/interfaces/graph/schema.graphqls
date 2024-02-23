@@ -32,6 +32,15 @@ type Track {
   dateAdded: Int
 }
 
+type Collection {
+    id: ID!
+    userId: ID!
+    type: String!
+    title: String!
+    items: String
+    dateAdded: Int
+}
+
 type Variable {
   key: String
   value: String
@@ -66,6 +75,8 @@ type Query {
   albums: [Album]
   artist(id: ID!): Artist
   artists: [Artist]
+  collection(id: ID!): Collection
+  collections: [Collection]
   track(id: ID!): Track
   tracks: [Track]
   settings: Settings
@@ -83,10 +94,20 @@ input UserInput {
   roles: [String]
 }
 
+input CollectionInput {
+    userId: ID
+    title: String
+    type: String
+    items: String
+}
+
 type Mutation {
   updateLibrary: LibraryUpdateState
   eraseLibrary: LibraryUpdateState
   createUser(input: UserInput!): User!
   updateUser(id: ID!, input: UserInput!): User!
   deleteUser(id: ID!): Boolean!
+  createCollection(input: CollectionInput!): Collection!
+  updateCollection(id: ID!, input: CollectionInput!): Collection!
+  deleteCollection(id: ID!): Boolean!
 }

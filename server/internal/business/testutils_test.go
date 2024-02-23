@@ -23,6 +23,7 @@ func createMockLibraryInteractor() *LibraryInteractor {
 	interactor.MediaFileRepository = new(MediaFileRepositoryMock)
 	interactor.LibraryRepository = new(LibraryRepositoryMock)
 	interactor.InternalVariableRepository = new(InternalVariableRepositoryMock)
+	interactor.CollectionRepository = new(CollectionRepositoryMock)
 
 	return interactor
 }
@@ -666,3 +667,75 @@ func (m *UserRepositoryMock) GetFromUsername(username string) (entity User, err 
 
 	return User{}, errors.New("no user found")
 }
+
+/*
+Mock for collection repository.
+*/
+
+type CollectionRepositoryMock struct {
+	mock.Mock
+}
+
+// Returns a valid response for any id inferior or equals to 10, else an error.
+func (m *CollectionRepositoryMock) Get(id int) (entity domain.Collection, err error) {
+	if id <= 10 {
+		// Return a valid collection.
+		entity.Id = id
+		entity.UserId = 1
+		entity.Title = "Collection #" + strconv.Itoa(id)
+		entity.Type = "tracks"
+		entity.Items = "Items for collection #" + strconv.Itoa(id)
+		entity.Date = time.Now().Unix()
+
+		return
+	}
+
+	// Else return an error.
+	err = errors.New("not found")
+	return
+}
+
+// Returns true if id == 1, else false.
+func (m *CollectionRepositoryMock) Exists(id int) bool { return id == 1 }
+
+// Not needed.
+
+// Returns 3 items
+func (m *CollectionRepositoryMock) GetAll(collectionType string, userId int) (entities []domain.Collection, err error) {
+	for i := 1; i < 4; i++ {
+		item := domain.Collection{
+			Id:     i,
+			UserId: 1,
+			Title:  "Collection #" + strconv.Itoa(i),
+			Type:   "tracks",
+			Items:  "Items for collection #" + strconv.Itoa(i),
+			Date:   time.Now().Unix(),
+		}
+
+		entities = append(entities, item)
+	}
+
+	return
+}
+
+// Never fails.
+func (m *CollectionRepositoryMock) Save(entity *domain.Collection) (err error) {
+	if entity.Id != 0 {
+		// This is an update, do nothing.
+		return
+	}
+
+	// Else this is a new entity, fill the Id.
+	entity.Id = rand.Intn(50)
+
+	if entity.UserId == 0 || entity.Type == "" || entity.Title == "" {
+		return errors.New("invalid entity")
+	}
+
+	return
+}
+
+func (m *CollectionRepositoryMock) GetMultiple(ids []int) (entities []domain.Collection, err error) {
+	return
+}
+func (m *CollectionRepositoryMock) Delete(entity *domain.Collection) (err error) { return }

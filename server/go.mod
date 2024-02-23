@@ -1,6 +1,6 @@
 module github.com/humbkr/albaplayer
 
-go 1.18
+go 1.22
 
 require (
 	github.com/99designs/gqlgen v0.17.5

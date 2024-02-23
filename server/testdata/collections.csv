@@ -1,0 +1,4 @@
+id,userId,type,title,items,date
+1,1,"tracks","Playlist user 1 - 1","items playlist 1 - 1",1660466381
+2,1,"tracks","Playlist user 1 - 2","items playlist 1 - 2",1660466381
+3,2,"tracks","Playlist user 2 - 1","items playlist 2 - 1",1660466381

@@ -14,7 +14,6 @@ type ArtistInteractorTestSuite struct {
 }
 
 /*
-*
 Go testing framework entry point.
 */
 func TestArtistRepoTestSuite(t *testing.T) {
@@ -269,7 +268,6 @@ type TrackInteractorTestSuite struct {
 }
 
 /*
-*
 Go testing framework entry point.
 */
 func TestTrackRepoTestSuite(t *testing.T) {
@@ -414,6 +412,12 @@ type CoverInteractorTestSuite struct {
 	Library *LibraryInteractor
 }
 
+type CollectionInteractorTestSuite struct {
+	suite.Suite
+	// LibraryInteractor where is located what to test.
+	Library *LibraryInteractor
+}
+
 /*
 Go testing framework entry point.
 */
@@ -490,6 +494,126 @@ func (suite *CoverInteractorTestSuite) TestDeleteCover() {
 	coverNoId := &domain.Cover{}
 	errNoId := suite.Library.DeleteCover(coverNoId)
 	assert.NotNil(suite.T(), errNoId)
+}
+
+/*
+Go testing framework entry point.
+*/
+func TestCollectionRepoTestSuite(t *testing.T) {
+	suite.Run(t, new(CollectionInteractorTestSuite))
+}
+
+func (suite *CollectionInteractorTestSuite) SetupSuite() {
+	suite.Library = createMockLibraryInteractor()
+}
+
+func (suite *CollectionInteractorTestSuite) TestGetCollection() {
+	// Test collection retrieval.
+	item, err := suite.Library.GetCollection(1)
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), 1, item.Id)
+	assert.NotEmpty(suite.T(), item.UserId)
+	assert.NotEmpty(suite.T(), item.Title)
+	assert.NotEmpty(suite.T(), item.Type)
+	assert.NotEmpty(suite.T(), item.Items)
+	assert.NotEmpty(suite.T(), item.Date)
+
+	// Test to get a non-existing collection.
+	item, err = suite.Library.GetCollection(99)
+	assert.NotNil(suite.T(), err)
+}
+
+func (suite *CollectionInteractorTestSuite) TestGetAllCollections() {
+	items, err := suite.Library.GetAllCollections("tracks", 1)
+	assert.Nil(suite.T(), err)
+	assert.NotEmpty(suite.T(), items)
+	for _, item := range items {
+		assert.NotEmpty(suite.T(), item.Id)
+		assert.NotEmpty(suite.T(), item.UserId)
+		assert.NotEmpty(suite.T(), item.Title)
+		assert.NotEmpty(suite.T(), item.Type)
+		assert.NotEmpty(suite.T(), item.Items)
+		assert.NotEmpty(suite.T(), item.Date)
+	}
+}
+
+func (suite *CollectionInteractorTestSuite) TestSaveCollection() {
+	// Test to save a new item.
+	newItem := &domain.Collection{
+		UserId: 1,
+		Type:   "tracks",
+		Title:  "Insert new collection test",
+		Items:  "A list of items",
+	}
+
+	err := suite.Library.SaveCollection(newItem)
+	assert.Nil(suite.T(), err)
+	assert.NotEmpty(suite.T(), newItem.Id)
+
+	// Test to update the collection with valid data.
+	newItem.Type = "albums"
+	newItem.Title = "Update collection test"
+	newItem.Items = "A new list of items"
+	errUpdate := suite.Library.SaveCollection(newItem)
+	assert.Nil(suite.T(), errUpdate)
+	assert.NotEmpty(suite.T(), newItem.Id)
+
+	// Test to insert a collection without title.
+	newItemNoTitle := &domain.Collection{
+		UserId: 1,
+		Type:   "albums",
+		Items:  "A list of items",
+	}
+
+	errNoTitle := suite.Library.SaveCollection(newItemNoTitle)
+	assert.NotNil(suite.T(), errNoTitle)
+
+	// Test to insert a collection without type.
+	newItemNoType := &domain.Collection{
+		UserId: 1,
+		Title:  "A title",
+		Items:  "A list of items",
+	}
+
+	errNoPath := suite.Library.SaveCollection(newItemNoType)
+	assert.NotNil(suite.T(), errNoPath)
+
+	// Test to insert a collection without user id.
+	newItemNoUserId := &domain.Collection{
+		Type:  "tracks",
+		Title: "A title",
+		Items: "A list of items",
+	}
+
+	errNoUserId := suite.Library.SaveCollection(newItemNoUserId)
+	assert.NotNil(suite.T(), errNoUserId)
+}
+
+func (suite *CollectionInteractorTestSuite) TestDeleteCollection() {
+	// Delete collection.
+	item := &domain.Collection{Id: 1}
+	err := suite.Library.DeleteCollection(item)
+	assert.Nil(suite.T(), err)
+
+	// Delete non existent collection.
+	itemFake := &domain.Collection{Id: 55}
+	errFake := suite.Library.DeleteCollection(itemFake)
+	assert.Nil(suite.T(), errFake)
+
+	// Try to delete a collection which id is not provided.
+	itemNoId := &domain.Collection{}
+	errNoId := suite.Library.DeleteCollection(itemNoId)
+	assert.NotNil(suite.T(), errNoId)
+}
+
+func (suite *CollectionInteractorTestSuite) TestCollectionExists() {
+	// Valid collection.
+	exists := suite.Library.CollectionExists(1)
+	assert.True(suite.T(), exists)
+
+	// Invalid collection.
+	exists = suite.Library.CollectionExists(432)
+	assert.False(suite.T(), exists)
 }
 
 /*

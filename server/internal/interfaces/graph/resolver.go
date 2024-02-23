@@ -9,8 +9,9 @@ import "github.com/humbkr/albaplayer/internal/business"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	Library         *business.LibraryInteractor
-	ClientSettings  *business.ClientSettingsInteractor
-	UsersInteractor *business.UsersInteractor
-	Version         string
+	Library                    *business.LibraryInteractor
+	ClientSettings             *business.ClientSettingsInteractor
+	UsersInteractor            *business.UsersInteractor
+	InternalVariableInteractor *business.InternalVariableInteractor
+	Version                    string
 }
