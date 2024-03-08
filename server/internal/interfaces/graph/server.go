@@ -9,18 +9,20 @@ import (
 )
 
 type GraphQLServerInitialData struct {
-	LibraryInteractor  *business.LibraryInteractor
-	SettingsInteractor *business.ClientSettingsInteractor
-	UsersInteractor    *business.UsersInteractor
+	LibraryInteractor          *business.LibraryInteractor
+	SettingsInteractor         *business.ClientSettingsInteractor
+	UsersInteractor            *business.UsersInteractor
+	InternalVariableInteractor *business.InternalVariableInteractor
 }
 
 func InitGraphQLServer(initialData GraphQLServerInitialData) http.Handler {
 	// Create the graphql handler
 	graphQLHandler := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &Resolver{
-		Library:         initialData.LibraryInteractor,
-		ClientSettings:  initialData.SettingsInteractor,
-		UsersInteractor: initialData.UsersInteractor,
-		Version:         version.Version,
+		Library:                    initialData.LibraryInteractor,
+		ClientSettings:             initialData.SettingsInteractor,
+		UsersInteractor:            initialData.UsersInteractor,
+		InternalVariableInteractor: initialData.InternalVariableInteractor,
+		Version:                    version.Version,
 	}}))
 
 	// Create graphql data loaders for performance

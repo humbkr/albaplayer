@@ -5,7 +5,7 @@ import { contextMenu } from 'react-contexify'
 import { useAppDispatch } from 'store/hooks'
 import { playAlbum } from 'modules/player/store/store'
 import { useTranslation } from 'react-i18next'
-import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
+import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
 
@@ -53,13 +53,14 @@ function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
           visible={mouseHover || selected}
           data-testid="album-teaser-horizontal-overlay"
         >
-          <ActionButton
-            visible={mouseHover || selected}
-            icon="play_arrow"
-            size={40}
-            onClick={() => dispatch(playAlbum(album.id))}
-            testId="album-teaser-horizontal-play-button"
-          />
+          <ActionButton visible={mouseHover || selected}>
+            <ActionButtonIcon
+              icon="play_arrow"
+              size={40}
+              onClick={() => dispatch(playAlbum(album.id))}
+              testId="album-teaser-horizontal-play-button"
+            />
+          </ActionButton>
         </ActionOverlay>
         <Cover src={album.cover} />
       </CoverWrapper>
@@ -79,13 +80,14 @@ function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
           </DateAdded>
         </Left>
         <SecondaryActions visible={mouseHover || selected}>
-          <ActionButton
-            visible={mouseHover || selected}
-            icon="more_horiz"
-            size={25}
-            onClick={handleMoreActionsPress}
-            testId="album-teaser-horizontal-more-button"
-          />
+          <ActionButton visible={mouseHover || selected}>
+            <ActionButtonIcon
+              icon="more_horiz"
+              size={25}
+              onClick={handleMoreActionsPress}
+              testId="album-teaser-horizontal-more-button"
+            />
+          </ActionButton>
         </SecondaryActions>
       </Info>
     </Wrapper>
@@ -99,6 +101,7 @@ const Wrapper = styled.div<{ visible: boolean }>`
   width: 100%;
   margin-right: 20px;
   transition: background-color linear 0.15s, color linear 0.15s;
+  border-radius: 3px;
   background-color: ${(props) =>
     props.visible ? props.theme.dashboard.backgroundColor : 'transparent'};
   color: ${(props) =>
@@ -125,19 +128,19 @@ const ActionOverlay = styled.div<{ visible: boolean }>`
   transition: background-color linear 0.15s;
   z-index: 50;
 `
-const ActionButton = styled(ActionButtonIcon)<{ visible: boolean }>`
+const ActionButton = styled.div<{ visible: boolean }>`
   color: ${(props) =>
     props.visible ? props.theme.dashboard.textPrimaryColor : 'transparent'};
-  transition: color linear 0.15s;
+  transition: color linear 0.1s;
 
   i {
     text-shadow: ${(props) =>
       props.visible ? '0 0 10px rgba(0, 0, 0, 0.5)' : 'none'};
-    transition: text-shadow linear 0.15s;
+    transition: text-shadow linear 0.1s;
   }
 
   :hover {
-    color: ${(props) => props.theme.buttons.colorHover};
+    color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `
 const Info = styled.div`

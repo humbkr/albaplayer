@@ -97,7 +97,7 @@ const VolumeContainerWrapper = styled.div`
   padding: 0 10px;
 `
 const VolumeOverlay = styled.div`
-  background-color: ${(props) => props.theme.sidebar.background};
+  background-color: ${(props) => props.theme.colors.sidebarBackground};
   display: flex;
   align-items: center;
   top: 0;
@@ -125,19 +125,23 @@ const VolumeBarWrapper = styled.div`
 
     .track {
       height: 4px;
-      background-color: ${(props) => props.theme.player.timeline.color};
+      background-color: ${(props) => props.theme.colors.playerButtonDisabled};
     }
 
     .track-0 {
-      background-color: ${(props) => props.theme.player.timeline.colorElapsed};
+      background-color: ${(props) => props.theme.colors.playerTimelineElapsed};
     }
 
     .thumb {
-      background-color: ${(props) => props.theme.player.timeline.colorElapsed};
+      background-color: ${(props) => props.theme.colors.playerTimelineElapsed};
       height: 16px;
       width: 16px;
       border-radius: 50%;
     }
   }
 `
-const VolumeOverlayEnd = styled.div``
+const VolumeOverlayEnd = styled.div`
+  svg polygon {
+    fill: ${(props) => props.theme.colors.sidebarTextPrimary};
+  }
+`

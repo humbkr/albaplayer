@@ -5,10 +5,11 @@ import { contextMenu } from 'react-contexify'
 type Props = {
   item: Track
   index: number
+  selected?: boolean
   onContextMenu: (itemId: string, index: number) => void
 }
 
-function TrackTeaser({ item, index, onContextMenu }: Props) {
+function TrackTeaser({ item, index, selected, onContextMenu }: Props) {
   const onRightClick = (e: React.MouseEvent) => {
     e.preventDefault()
     onContextMenu(item.id, index)
@@ -23,7 +24,9 @@ function TrackTeaser({ item, index, onContextMenu }: Props) {
 
   return (
     <TrackWrapper onContextMenu={onRightClick}>
-      <TrackTeaserNumber>{item.number}</TrackTeaserNumber>
+      <TrackTeaserNumber className={selected ? 'selected' : ''}>
+        {item.number}
+      </TrackTeaserNumber>
       <TrackTeaserName>{item.title}</TrackTeaserName>
     </TrackWrapper>
   )
@@ -37,6 +40,7 @@ const TrackTeaserNumber = styled.div`
   text-align: center;
   vertical-align: middle;
   font-size: 0.8em;
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const TrackTeaserName = styled.h2`
   display: table-cell;
@@ -47,7 +51,7 @@ const TrackTeaserName = styled.h2`
 const TrackWrapper = styled.div`
   display: table;
   width: 100%;
-  height: ${(props) => props.theme.itemHeight};
+  height: ${(props) => props.theme.layout.itemHeight};
   padding: 0 15px 0 0;
   cursor: pointer;
 `

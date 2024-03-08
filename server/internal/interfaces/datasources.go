@@ -10,6 +10,7 @@ import (
 
 // InitAlbaDatasource initialises the application main datasource.
 func InitAlbaDatasource(dbDriver string, dbFile string) (ds *sql.DB, err error) {
+	log.Println("Initialising datasource...")
 	db, err := sql.Open(dbDriver, dbFile)
 	if err != nil {
 		log.Println(err)

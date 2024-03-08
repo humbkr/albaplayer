@@ -1,17 +1,15 @@
-import { Menu as ContextMenu, Item, Separator, Submenu } from 'react-contexify'
+import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
-  setItemFromQueue,
   playerTogglePlayPause,
   queueRemoveTrack,
+  setItemFromQueue,
 } from 'modules/player/store/store'
-import {
-  playlistsSelector,
-  addTrack as addTrackToPlaylist,
-} from 'modules/playlist/store'
 import { useNavigate } from 'react-router'
-import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
+import { useGetCollectionsQuery } from 'modules/collections/services/api'
+import { useAddTrackToPlaylist } from 'modules/collections/services/services'
 import { search, setSearchFilter } from '../../browser/store'
 
 function QueueItemContextMenu() {
@@ -19,9 +17,8 @@ function QueueItemContextMenu() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const playlists: Playlist[] = useAppSelector((state) =>
-    playlistsSelector(state)
-  )
+  const { data: { playlists = [] } = {} } = useGetCollectionsQuery()
+  const addTrackToPlaylist = useAddTrackToPlaylist()
 
   const findAllByArtist = (menuItem: any) => {
     dispatch(setSearchFilter('artist'))
@@ -41,12 +38,10 @@ function QueueItemContextMenu() {
   }
 
   const handleAddTrackToPlaylist = (menuItem: any, playlist: Playlist) => {
-    dispatch(
-      addTrackToPlaylist({
-        playlistId: playlist.id,
-        trackId: menuItem.props.data.track?.id,
-      })
-    )
+    addTrackToPlaylist({
+      playlistId: playlist.id,
+      trackId: menuItem.props.data.track?.id,
+    })
   }
 
   const playlistsItems = playlists.map((item: Playlist) => (

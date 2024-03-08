@@ -20,7 +20,7 @@ var scanCmd = &cobra.Command{
 	Short: "Scan media library folder",
 	Long:  `Scan media library folder specified in alba.yml.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		libraryInteractor, _ := internal.InitApp()
+		libraryInteractor, _, _ := internal.InitApp()
 
 		fmt.Println("Scanning media library, this can take several minutes...")
 

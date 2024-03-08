@@ -1,14 +1,14 @@
 import React, { Ref, useState } from 'react'
 import styled from 'styled-components'
-import KeyboardNavPlayPopup from 'common/components/KeyboardNavPlayPopup'
 import { addTrack, playTrack } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import { useTranslation } from 'react-i18next'
+import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
 import {
   getTracksList,
-  libraryBrowserSortTracks,
   libraryBrowserSelectTrack,
+  libraryBrowserSortTracks,
 } from '../store'
 import TrackTeaser from './TrackTeaser'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
@@ -98,7 +98,7 @@ function TracksPaneContainer({
           <NoTracks>{t('browser.tracks.selectAnArtistOrAlbum')}</NoTracks>
         )}
         <TrackContextMenu />
-        <KeyboardNavPlayPopup
+        <KeyboardNavPlayModal
           id="tracks-nav-modal"
           onClose={() => setModalIsOpen(false)}
           isOpen={modalIsOpen}
@@ -130,5 +130,5 @@ const NoTracks = styled.div`
   flex-direction: column;
   text-align: center;
   font-style: italic;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `

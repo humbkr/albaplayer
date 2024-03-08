@@ -7,11 +7,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
+	"strings"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/domain"
+	"github.com/humbkr/albaplayer/internal/interfaces/auth"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph/generated"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph/model"
+	"github.com/spf13/viper"
+	"github.com/vektah/gqlparser/v2/gqlerror"
+	"golang.org/x/exp/slices"
 )
 
 func (r *albumResolver) Artist(ctx context.Context, obj *model.Album) (*model.Artist, error) {
@@ -34,7 +42,7 @@ func (r *albumResolver) Cover(ctx context.Context, obj *model.Album) (*string, e
 
 func (r *albumResolver) Tracks(ctx context.Context, obj *model.Album) ([]*model.Track, error) {
 	var result []*model.Track
-	tracks, err := r.Library.TrackRepository.GetTracksForAlbum(obj.ID)
+	tracks, err := r.Library.GetTracksForAlbum(obj.ID)
 
 	if err == nil {
 		for _, track := range tracks {
@@ -48,7 +56,7 @@ func (r *albumResolver) Tracks(ctx context.Context, obj *model.Album) ([]*model.
 
 func (r *artistResolver) Albums(ctx context.Context, obj *model.Artist) ([]*model.Album, error) {
 	var result []*model.Album
-	albums, err := r.Library.AlbumRepository.GetAlbumsForArtist(obj.ID, false)
+	albums, err := r.Library.GetAlbumsForArtist(obj.ID, false)
 
 	if err == nil {
 		for _, album := range albums {
@@ -67,9 +75,9 @@ func (r *mutationResolver) UpdateLibrary(ctx context.Context) (*model.LibraryUpd
 
 	r.Library.UpdateLibrary()
 
-	countArtists, _ := r.Library.ArtistRepository.Count()
-	countAlbums, _ := r.Library.AlbumRepository.Count()
-	countTracks, _ := r.Library.TrackRepository.Count()
+	countArtists, _ := r.Library.ArtistsCount()
+	countAlbums, _ := r.Library.AlbumsCount()
+	countTracks, _ := r.Library.TracksCount()
 
 	updateLibraryState := model.LibraryUpdateState{
 		TracksNumber:  &countTracks,
@@ -81,15 +89,20 @@ func (r *mutationResolver) UpdateLibrary(ctx context.Context) (*model.LibraryUpd
 }
 
 func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpdateState, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+	if !business.UserHasRole(*currentUser, business.ROLE_OWNER) {
+		return nil, errors.New("unauthorized operation")
+	}
+
 	if r.Library.LibraryIsUpdating {
 		return nil, fmt.Errorf("library currently updating")
 	}
 
 	r.Library.EraseLibrary()
 
-	countArtists, _ := r.Library.ArtistRepository.Count()
-	countAlbums, _ := r.Library.AlbumRepository.Count()
-	countTracks, _ := r.Library.TrackRepository.Count()
+	countArtists, _ := r.Library.ArtistsCount()
+	countAlbums, _ := r.Library.AlbumsCount()
+	countTracks, _ := r.Library.TracksCount()
 
 	updateLibraryState := model.LibraryUpdateState{
 		TracksNumber:  &countTracks,
@@ -101,15 +114,21 @@ func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpda
 }
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput) (*model.User, error) {
+	hashedPassword, _ := auth.HashPassword(*input.Password)
+
+	user := auth.GetUserFromContext(ctx)
+	if !business.UserHasRole(*user, business.ROLE_ADMIN) {
+		return nil, errors.New("unauthorized operation")
+	}
+
 	dbUser := business.User{
 		Name:     *input.Name,
-		Email:    *input.Email,
-		Password: *input.Password,
+		Password: hashedPassword,
 	}
 
 	dbUser.Roles = processUserRoles(input.Roles)
 
-	if dbUser.Name == "" || dbUser.Email == "" || dbUser.Password == "" || len(dbUser.Roles) < 1 {
+	if dbUser.Name == "" || dbUser.Password == "" || len(dbUser.Roles) < 1 {
 		return nil, errors.New("the following fields are mandatory: name, email, password, roles")
 	}
 
@@ -118,30 +137,49 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.UserInput
 		return nil, err
 	}
 
-	createdUser := convertUser(dbUser)
+	createdUser := convertUser(dbUser, false)
 
 	return &createdUser, nil
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input model.UserInput) (*model.User, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+	if currentUser.Id != id && !business.UserHasRole(*currentUser, business.ROLE_ADMIN) {
+		return nil, errors.New("unauthorized operation")
+	}
+	updateOneself := false
+	if currentUser.Id == id {
+		updateOneself = true
+	}
+
+	// Get current user data from DB to update it.
 	dbUser, err := r.UsersInteractor.GetUser(id)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
 
-	if *input.Name != "" {
-		dbUser.Name = *input.Name
+	if input.Name != nil && *input.Name != "" {
+		username := strings.TrimSpace(*input.Name)
+		if hasWhitespace := regexp.MustCompile(`\s`).MatchString(username); hasWhitespace {
+			graphql.AddError(ctx, &gqlerror.Error{
+				Path:    graphql.GetPath(ctx),
+				Message: "No whitespace allowed in username",
+				Extensions: map[string]interface{}{
+					"code": "no_whitespace_allowed",
+				},
+			})
+
+			return nil, nil
+		}
+
+		dbUser.Name = username
 	}
 
-	if *input.Email != "" {
+	if input.Email != nil && *input.Email != "" {
 		dbUser.Email = *input.Email
 	}
 
-	if *input.Password != "" {
-		dbUser.Password = *input.Password
-	}
-
-	if *input.Data != "" {
+	if input.Data != nil && *input.Data != "" {
 		dbUser.Data = *input.Data
 	}
 
@@ -149,23 +187,125 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input model.U
 		dbUser.Roles = processUserRoles(input.Roles)
 	}
 
+	if input.Password != nil && *input.Password != "" {
+		// User is trying to change a password.
+		if updateOneself {
+			// User is trying to change his own password.
+			// Check if current password is correct.
+			err := auth.CheckPassword(dbUser.Password, *input.CurrentPassword)
+			if *input.Password == "" || err != nil {
+				graphql.AddError(ctx, &gqlerror.Error{
+					Path:    graphql.GetPath(ctx),
+					Message: "Invalid current password",
+					Extensions: map[string]interface{}{
+						"code": "invalid_current_password",
+					},
+				})
+
+				return nil, nil
+			}
+		}
+		// Else the action comes from an admin updating another user, so no need to check
+		// current password.
+
+		hashedPassword, _ := auth.HashPassword(*input.Password)
+		dbUser.Password = hashedPassword
+	}
+
 	err = r.UsersInteractor.SaveUser(&dbUser)
 	if err != nil {
 		return nil, err
 	}
 
-	updatedUser := convertUser(dbUser)
+	updatedUser := convertUser(dbUser, false)
 
 	return &updatedUser, nil
 }
 
 func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (bool, error) {
+	user := auth.GetUserFromContext(ctx)
+	if user.Id != id && !business.UserHasRole(*user, business.ROLE_ADMIN) {
+		return false, errors.New("unauthorized operation")
+	}
+
 	dbUser := business.User{
 		Id: id,
 	}
 
 	err := r.UsersInteractor.DeleteUser(&dbUser)
-	return err != nil, err
+	return err == nil, err
+}
+
+func (r *mutationResolver) CreateCollection(ctx context.Context, input model.CollectionInput) (*model.Collection, error) {
+	user := auth.GetUserFromContext(ctx)
+	if user.Id == 0 {
+		return nil, errors.New("unauthorized operation")
+	}
+
+	dbCollection := domain.Collection{
+		UserId: user.Id,
+		Title:  *input.Title,
+		Type:   *input.Type,
+		Items:  *input.Items,
+	}
+
+	err := r.Library.SaveCollection(&dbCollection)
+	if err != nil {
+		return nil, err
+	}
+
+	createdCollection := convertCollection(dbCollection)
+
+	return &createdCollection, nil
+}
+
+func (r *mutationResolver) UpdateCollection(ctx context.Context, id int, input model.CollectionInput) (*model.Collection, error) {
+	user := auth.GetUserFromContext(ctx)
+	if user.Id == 0 {
+		return nil, errors.New("unauthorized operation")
+	}
+
+	// Get current collection data from DB to update it.
+	dbCollection, err := r.Library.GetCollection(id)
+	if err != nil {
+		return nil, errors.New("collection not found")
+	}
+	if user.Id != dbCollection.UserId {
+		return nil, errors.New("unauthorized operation")
+	}
+
+	dbCollection.Title = *input.Title
+	dbCollection.Type = *input.Type
+	dbCollection.Items = *input.Items
+
+	err = r.Library.SaveCollection(&dbCollection)
+	if err != nil {
+		return nil, err
+	}
+
+	createdCollection := convertCollection(dbCollection)
+
+	return &createdCollection, nil
+}
+
+func (r *mutationResolver) DeleteCollection(ctx context.Context, id int) (bool, error) {
+	user := auth.GetUserFromContext(ctx)
+	if user.Id == 0 {
+		return false, errors.New("unauthorized operation")
+	}
+
+	// Get current collection data from DB to check owner.
+	dbCollection, err := r.Library.GetCollection(id)
+	if err != nil {
+		return false, errors.New("collection not found")
+	}
+	if user.Id != dbCollection.UserId {
+		return false, errors.New("unauthorized operation")
+	}
+
+	err = r.Library.DeleteCollection(&dbCollection)
+
+	return err == nil, err
 }
 
 func (r *queryResolver) Album(ctx context.Context, id int) (*model.Album, error) {
@@ -174,7 +314,7 @@ func (r *queryResolver) Album(ctx context.Context, id int) (*model.Album, error)
 
 func (r *queryResolver) Albums(ctx context.Context) ([]*model.Album, error) {
 	var result []*model.Album
-	albums, err := r.Library.AlbumRepository.GetAll(false)
+	albums, err := r.Library.GetAllAlbums(false)
 
 	if err == nil {
 		for _, album := range albums {
@@ -192,7 +332,7 @@ func (r *queryResolver) Artist(ctx context.Context, id int) (*model.Artist, erro
 
 func (r *queryResolver) Artists(ctx context.Context) ([]*model.Artist, error) {
 	var result []*model.Artist
-	artists, err := r.Library.ArtistRepository.GetAll(false)
+	artists, err := r.Library.GetAllArtists(false)
 
 	if err == nil {
 		for _, artist := range artists {
@@ -204,9 +344,52 @@ func (r *queryResolver) Artists(ctx context.Context) ([]*model.Artist, error) {
 	return result, err
 }
 
+func (r *queryResolver) Collection(ctx context.Context, id int) (*model.Collection, error) {
+	var result model.Collection
+	collection, err := r.Library.GetCollection(id)
+
+	if err == nil {
+		result = convertCollection(collection)
+	}
+
+	return &result, err
+}
+
+func (r *queryResolver) Collections(ctx context.Context) ([]*model.Collection, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+
+	var result []*model.Collection
+	collectionTracks, errTracks := r.Library.GetAllCollections("tracks", currentUser.Id)
+	collectionAlbums, errAlbums := r.Library.GetAllCollections("albums", currentUser.Id)
+	collectionArtists, errArtists := r.Library.GetAllCollections("artists", currentUser.Id)
+
+	if errTracks == nil {
+		for _, collection := range collectionTracks {
+			gqlCollection := convertCollection(collection)
+			result = append(result, &gqlCollection)
+		}
+	}
+	if errAlbums == nil {
+		for _, collection := range collectionAlbums {
+			gqlCollection := convertCollection(collection)
+			result = append(result, &gqlCollection)
+		}
+	}
+	if errArtists == nil {
+		for _, collection := range collectionArtists {
+			gqlCollection := convertCollection(collection)
+			result = append(result, &gqlCollection)
+		}
+	}
+
+	err := errors.Join(errTracks, errAlbums, errArtists)
+
+	return result, err
+}
+
 func (r *queryResolver) Track(ctx context.Context, id int) (*model.Track, error) {
 	var result model.Track
-	track, err := r.Library.TrackRepository.Get(id)
+	track, err := r.Library.GetTrack(id)
 
 	if err == nil {
 		result = convertTrack(track)
@@ -217,7 +400,7 @@ func (r *queryResolver) Track(ctx context.Context, id int) (*model.Track, error)
 
 func (r *queryResolver) Tracks(ctx context.Context) ([]*model.Track, error) {
 	var result []*model.Track
-	tracks, err := r.Library.TrackRepository.GetAll()
+	tracks, err := r.Library.GetAllTracks()
 
 	if err == nil {
 		for _, track := range tracks {
@@ -237,12 +420,13 @@ func (r *queryResolver) Settings(ctx context.Context) (*model.Settings, error) {
 		CoversPreferredSource:  &settings.CoversPreferredSource,
 		DisableLibrarySettings: &settings.DisableLibraryConfiguration,
 		Version:                &r.Version,
+		AuthEnabled:            &settings.AuthEnabled,
 	}, nil
 }
 
 func (r *queryResolver) Variable(ctx context.Context, key string) (*model.Variable, error) {
 	var result model.Variable
-	variable, err := r.Library.InternalVariableRepository.Get(key)
+	variable, err := r.InternalVariableInteractor.GetInternalVariable(key)
 
 	if err == nil {
 		result = convertVariable(variable)
@@ -251,24 +435,63 @@ func (r *queryResolver) Variable(ctx context.Context, key string) (*model.Variab
 	return &result, err
 }
 
-func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
+func (r *queryResolver) User(ctx context.Context, id *int) (*model.User, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+
+	if currentUser.IsDefaultUser {
+		defaultUserRoles := viper.GetStringSlice("Users.DefaultUserRoles")
+		var roles []business.Role
+		for _, userRole := range defaultUserRoles {
+			role := business.GetRoleFromString(userRole)
+			if !slices.Contains(roles, role) {
+				roles = append(roles, role)
+			}
+		}
+
+		// We are in auth disabled mode, so we return the default user.
+		defaultUser := business.User{
+			Id:            1,
+			Name:          "Default user",
+			Roles:         roles,
+			IsDefaultUser: true,
+		}
+		result := convertUser(defaultUser, false)
+
+		return &result, nil
+	}
+
+	basicInfoOnly := true
+	if id == nil || business.UserHasRole(*currentUser, business.ROLE_ADMIN) {
+		basicInfoOnly = false
+	}
+
+	// If no id is provided, return the current user.
+	var userIdToGet int
+	if id == nil {
+		userIdToGet = currentUser.Id
+	} else {
+		userIdToGet = *id
+	}
+
 	var result model.User
-	user, err := r.UsersInteractor.UserRepository.Get(id)
+	user, err := r.UsersInteractor.GetUser(userIdToGet)
 
 	if err == nil {
-		result = convertUser(user)
+		result = convertUser(user, basicInfoOnly)
 	}
 
 	return &result, err
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	currentUser := auth.GetUserFromContext(ctx)
+
 	var result []*model.User
-	users, err := r.UsersInteractor.UserRepository.GetAll()
+	users, err := r.UsersInteractor.GetAllUsers()
 
 	if err == nil {
 		for _, user := range users {
-			gqlUser := convertUser(user)
+			gqlUser := convertUser(user, !business.UserHasRole(*currentUser, business.ROLE_ADMIN))
 			result = append(result, &gqlUser)
 		}
 	}

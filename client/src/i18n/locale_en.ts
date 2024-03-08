@@ -15,6 +15,11 @@ const en: Translation = {
     press: 'Press',
     search: 'Search',
     clear: 'Clear',
+    validate: 'Validate',
+    unknown: 'Unknown',
+    errors: {
+      unknown: 'An unknown error occurred, please try again later.',
+    },
   },
   sidebar: {
     navigation: {
@@ -28,8 +33,8 @@ const en: Translation = {
   player: {
     actions: {
       playNow: 'Play now',
-      playAfter: 'Play after current track',
-      addToQueue: 'Add to queue',
+      playAfter: 'Play next',
+      addToQueue: 'Play last',
     },
     noTrackPlaying: 'No song currently playing',
     queue: 'Queue',
@@ -43,6 +48,9 @@ const en: Translation = {
     },
   },
   playlists: {
+    form: {
+      title: 'Title',
+    },
     actions: {
       addToPlaylist: 'Add to playlist...',
       createNewPlaylist: '+ Create new playlist',
@@ -51,7 +59,9 @@ const en: Translation = {
       editPlaylist: 'Edit playlist',
       deletePlaylist: 'Delete playlist',
       removeFromPlaylist: 'Remove from playlist',
+      cancel: 'cancel',
     },
+    defaultPlaylistName: 'New playlist',
     deleteConfirm: 'Are you sure you wish to delete this playlist?',
     care: {
       fixDeadTracks: 'Fix dead tracks...',
@@ -111,6 +121,12 @@ const en: Translation = {
       'Initialization has failed, check your server is accessible.',
   },
   settings: {
+    administration: {
+      title: 'Administration',
+    },
+    preferences: {
+      title: 'Preferences',
+    },
     title: 'Settings',
     library: {
       title: 'Library',
@@ -123,9 +139,83 @@ const en: Translation = {
         'Are you sure you wish to empty the library? This cannot be undone.',
     },
     appearance: {
+      title: 'Appearance',
       theme: 'Theme',
     },
-    version: 'Version: {{version}}',
+    about: {
+      title: 'About',
+      version: 'Version: {{version}}',
+    },
+  },
+  user: {
+    login: {
+      username: 'Username',
+      password: 'Password',
+      login: 'Login',
+      errors: {
+        invalidCredentials: 'Invalid credentials',
+      },
+    },
+    profile: {
+      title: 'Profile',
+      roles: 'Role(s)',
+      username: 'Username',
+      changePassword: 'Change password',
+      keepPassword: 'Keep password',
+      currentPassword: 'Current password',
+      newPassword: 'New password',
+      submit: 'Update',
+      errors: {
+        passwordMinLength:
+          'Your password must contain at least {{count}} characters',
+        currentPassword: 'Invalid current password',
+        noWhitespace: 'Your username must not contain any whitespace',
+      },
+      profileUpdated: 'Profile updated',
+    },
+    logout: 'Logout',
+    usersManagement: {
+      title: 'Users',
+      newUser: 'New user',
+      columns: {
+        id: 'ID',
+        name: 'Name',
+        roles: 'Roles',
+        created: 'Created',
+      },
+      confirmDeleteUser: 'Are you sure you wish to delete this user?',
+      userCreated: 'User created',
+      userDeleted: 'User deleted',
+      userUpdated: 'User updated',
+      you: 'you',
+      form: {
+        editUser: 'Edit user',
+        editUserCancel: 'cancel',
+        addUser: 'Add new user',
+        username: 'Username',
+        password: 'Password',
+        newPassword: 'New password',
+        roles: 'Role(s)',
+      },
+      errors: {
+        passwordMinLength:
+          'The password must contain at least {{count}} characters',
+      },
+    },
+    roles: {
+      owner: {
+        label: 'Owner',
+        description: 'Can manage global app settings',
+      },
+      admin: {
+        label: 'Admin',
+        description: 'Can manage users and re-scan library',
+      },
+      listener: {
+        label: 'Listener',
+        description: 'Can listen to music and change its profile settings',
+      },
+    },
   },
 }
 

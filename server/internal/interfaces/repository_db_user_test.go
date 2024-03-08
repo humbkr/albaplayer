@@ -141,3 +141,18 @@ func (suite *UserRepoTestSuite) TestExists() {
 	exists = suite.UserRepository.Exists(99)
 	assert.False(suite.T(), exists)
 }
+
+func (suite *UserRepoTestSuite) TestGetFromUsername() {
+	// Test user retrieval.
+	user, err := suite.UserRepository.GetFromUsername("Humbkr")
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), 1, user.Id)
+	assert.Equal(suite.T(), "Humbkr", user.Name)
+	assert.Equal(suite.T(), "humbkr@gmail.com", user.Email)
+	assert.Equal(suite.T(), "passwordHash", user.Password)
+	assert.Equal(suite.T(), "testdata", user.Data)
+
+	// Test with a non-existent username.
+	user, err = suite.UserRepository.GetFromUsername("Doesnotexists")
+	assert.NotNil(suite.T(), err)
+}

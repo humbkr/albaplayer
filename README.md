@@ -84,6 +84,7 @@ You will have to install [Air](https://github.com/cosmtrek/air) to have hot relo
 ```shell
 curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
 ```
+Note: don't forget to add GOPATH/bin to your PATH
 
 Then
 ```shell
