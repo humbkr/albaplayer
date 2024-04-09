@@ -1,21 +1,32 @@
 import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
-import {
-  addArtist,
-  playArtist,
-  playArtistAfterCurrent,
-} from 'modules/player/store/store'
-import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
 import { useAddArtistToPlaylist } from 'modules/collections/services/services'
+import {
+  useAddArtist,
+  usePlayArtist,
+  usePlayArtistAfterCurrent,
+} from 'modules/browser/services'
 
 function ArtistContextMenu() {
   const { t } = useTranslation()
 
   const { data: { playlists = [] } = {} } = useGetCollectionsQuery()
   const addArtistToPlaylist = useAddArtistToPlaylist()
-  const dispatch = useAppDispatch()
+  const playArtist = usePlayArtist()
+  const playArtistAfterCurrent = usePlayArtistAfterCurrent()
+  const addArtist = useAddArtist()
+
+  const playNow = (menuItem: any) => {
+    playArtist(menuItem.props.data.id)
+  }
+  const playAfter = (menuItem: any) => {
+    playArtistAfterCurrent(menuItem.props.data.id)
+  }
+  const playLast = (menuItem: any) => {
+    addArtist(menuItem.props.data.id)
+  }
 
   const playlistsItems = playlists.map((item: Playlist) => (
     <Item
@@ -43,25 +54,9 @@ function ArtistContextMenu() {
 
   return (
     <ContextMenu id="artist-context-menu">
-      <Item
-        onClick={(menuItem: any) =>
-          dispatch(playArtist(menuItem.props.data.id))
-        }
-      >
-        {t('player.actions.playNow')}
-      </Item>
-      <Item
-        onClick={(menuItem: any) =>
-          dispatch(playArtistAfterCurrent(menuItem.props.data.id))
-        }
-      >
-        {t('player.actions.playAfter')}
-      </Item>
-      <Item
-        onClick={(menuItem: any) => dispatch(addArtist(menuItem.props.data.id))}
-      >
-        {t('player.actions.addToQueue')}
-      </Item>
+      <Item onClick={playNow}>{t('player.actions.playNow')}</Item>
+      <Item onClick={playAfter}>{t('player.actions.playAfter')}</Item>
+      <Item onClick={playLast}>{t('player.actions.addToQueue')}</Item>
       <Separator />
       <Submenu label={t('playlists.actions.addToPlaylist')}>
         {playlistsItems}

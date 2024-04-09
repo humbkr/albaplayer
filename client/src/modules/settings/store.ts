@@ -3,6 +3,7 @@ import { initLibrary } from 'modules/library/store'
 import libraryAPI from 'modules/library/api'
 import { processApiError } from 'api/helpers'
 import api from 'api/api'
+import { SETTINGS_BROWSER_ONCLICK } from 'modules/settings/constants'
 
 type Settings = {
   libraryPath: string
@@ -18,6 +19,9 @@ export type SettingsStateType = {
     config: Settings | {}
   }
   theme: string
+  browser: {
+    onClickBehavior: SETTINGS_BROWSER_ONCLICK
+  }
 }
 
 export const initialState: SettingsStateType = {
@@ -27,6 +31,9 @@ export const initialState: SettingsStateType = {
     config: {},
   },
   theme: 'default',
+  browser: {
+    onClickBehavior: SETTINGS_BROWSER_ONCLICK.play,
+  },
 }
 
 const updateLibrary = createAsyncThunk(
@@ -67,6 +74,12 @@ const settingsSlice = createSlice({
   reducers: {
     setTheme(state, action: PayloadAction<string>) {
       state.theme = action.payload
+    },
+    setBrowserSettings(
+      state,
+      action: PayloadAction<Partial<SettingsStateType['browser']>>
+    ) {
+      state.browser = { ...state.browser, ...action.payload }
     },
   },
   extraReducers: (builder) => {
@@ -111,5 +124,5 @@ const settingsSlice = createSlice({
 })
 
 export { initSettings, updateLibrary, eraseLibrary }
-export const { setTheme } = settingsSlice.actions
+export const { setTheme, setBrowserSettings } = settingsSlice.actions
 export default settingsSlice.reducer

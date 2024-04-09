@@ -88,12 +88,14 @@ const en: Translation = {
         year: 'year',
         artist: 'artist',
       },
+      addedToQueue: '{{itemName}} added to queue',
     },
     artists: {
       title: 'Artists',
       sort: {
         name: 'name',
       },
+      addedToQueue: '{{itemName}} added to queue',
     },
     tracks: {
       title: 'Tracks',
@@ -104,6 +106,7 @@ const en: Translation = {
         album: 'album',
         number: 'track number',
       },
+      addedToQueue: '{{itemName}} added to queue',
     },
   },
   dashboard: {

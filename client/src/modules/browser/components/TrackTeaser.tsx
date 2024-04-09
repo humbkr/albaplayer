@@ -1,6 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
+import { useAppSelector } from 'store/hooks'
+import { useAddTrack, usePlayTrack } from 'modules/browser/services'
+import { notify } from 'common/utils/notifications'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   item: Track
@@ -10,6 +14,31 @@ type Props = {
 }
 
 function TrackTeaser({ item, index, selected, onContextMenu }: Props) {
+  const { onClickBehavior } = useAppSelector((state) => state.settings.browser)
+
+  const { t } = useTranslation()
+
+  const playTrack = usePlayTrack()
+  const addTrack = useAddTrack()
+
+  const onDoubleClick = () => {
+    switch (onClickBehavior) {
+      case 'play':
+        playTrack(item.id)
+        break
+      case 'add':
+        addTrack(item.id)
+        notify(
+          t('browser.tracks.addedToQueue', { itemName: item.title }),
+          'info'
+        )
+        break
+      default:
+        // Do nothing.
+        break
+    }
+  }
+
   const onRightClick = (e: React.MouseEvent) => {
     e.preventDefault()
     onContextMenu(item.id, index)
@@ -23,7 +52,7 @@ function TrackTeaser({ item, index, selected, onContextMenu }: Props) {
   }
 
   return (
-    <TrackWrapper onContextMenu={onRightClick}>
+    <TrackWrapper onContextMenu={onRightClick} onDoubleClick={onDoubleClick}>
       <TrackTeaserNumber className={selected ? 'selected' : ''}>
         {item.number}
       </TrackTeaserNumber>
@@ -54,4 +83,5 @@ const TrackWrapper = styled.div`
   height: ${(props) => props.theme.layout.itemHeight};
   padding: 0 15px 0 0;
   cursor: pointer;
+  user-select: none;
 `

@@ -20,14 +20,16 @@ function GlobalSettings() {
   return (
     <Block data-testid="settings-theme">
       <h2>{t('settings.global.theme')}</h2>
-      <SelectList
-        testId="settings-theme-select"
-        options={themeOptions}
-        value={theme}
-        onChangeHandler={(event) =>
-          dispatch(setTheme(event.currentTarget.value))
-        }
-      />
+      <Field>
+        <SelectList
+          testId="settings-theme-select"
+          options={themeOptions}
+          value={theme}
+          onChangeHandler={(event) =>
+            dispatch(setTheme(event.currentTarget.value))
+          }
+        />
+      </Field>
     </Block>
   )
 }
@@ -44,4 +46,7 @@ const Block = styled.div`
   > p {
     margin-bottom: 10px;
   }
+`
+const Field = styled.div`
+  max-width: 300px;
 `

@@ -41,6 +41,7 @@ describe('settings (redux)', () => {
           payload: 'dark',
         })
       ).toEqual({
+        ...initialState,
         library: {
           isUpdating: false,
           error: '',

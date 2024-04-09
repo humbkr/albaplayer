@@ -1,6 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
+import { useAppSelector } from 'store/hooks'
+import { useAddAlbum, usePlayAlbum } from 'modules/browser/services'
+import { notify } from 'common/utils/notifications'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   item: Album
@@ -10,6 +14,31 @@ type Props = {
 }
 
 function AlbumTeaser({ item, selected = false, index, onContextMenu }: Props) {
+  const { onClickBehavior } = useAppSelector((state) => state.settings.browser)
+
+  const { t } = useTranslation()
+
+  const playAlbum = usePlayAlbum()
+  const addAlbum = useAddAlbum()
+
+  const onDoubleClick = () => {
+    switch (onClickBehavior) {
+      case 'play':
+        playAlbum(item.id)
+        break
+      case 'add':
+        addAlbum(item.id)
+        notify(
+          t('browser.albums.addedToQueue', { itemName: item.title }),
+          'info'
+        )
+        break
+      default:
+        // Do nothing.
+        break
+    }
+  }
+
   const onRightClick = (e: React.MouseEvent) => {
     e.preventDefault()
     onContextMenu(item.id, index)
@@ -23,7 +52,10 @@ function AlbumTeaser({ item, selected = false, index, onContextMenu }: Props) {
   }
 
   return (
-    <AlbumTeaserWrapper onContextMenu={onRightClick}>
+    <AlbumTeaserWrapper
+      onContextMenu={onRightClick}
+      onDoubleClick={onDoubleClick}
+    >
       <div>
         <AlbumTeaserTitle>{item.title}</AlbumTeaserTitle>
         <AlbumSubInfo className={selected ? 'selected' : ''}>
@@ -60,6 +92,7 @@ const AlbumTeaserWrapper = styled.div`
   overflow: hidden;
   white-space: nowrap;
   cursor: pointer;
+  user-select: none;
 
   > div {
     display: table-cell;
