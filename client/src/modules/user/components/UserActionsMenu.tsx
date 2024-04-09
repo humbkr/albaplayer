@@ -4,7 +4,8 @@ import styled from 'styled-components'
 import Icon from 'common/components/Icon'
 import { useRef } from 'react'
 import useOnClickOutside from 'common/utils/useOnClickOutside'
-import { logoutUser, userHasRole } from 'modules/user/utils'
+import { userHasRole } from 'modules/user/utils'
+import { logoutUser } from 'modules/user/services'
 import { useNavigate } from 'react-router'
 import ROUTES from 'routing'
 import { useToggle } from 'common/utils/useToggle'
@@ -71,7 +72,7 @@ function UserActionsMenu() {
           {t('settings.preferences.title')} <Icon size={18}>settings</Icon>
         </MenuItem>
         <MenuItem onClick={logOutUser}>
-          {t('user.logout')} <Icon size={18}>logout</Icon>
+          {t('user.logout.label')} <Icon size={18}>logout</Icon>
         </MenuItem>
       </Menu>
     </Container>

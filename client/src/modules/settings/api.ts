@@ -4,6 +4,7 @@ import { gql } from 'graphql-request'
 type AppConfigResponse = {
   auth_enabled: boolean
   library_configuration_disabled: boolean
+  root_user_created: boolean
 }
 
 type getVariableResponse = {
@@ -13,6 +14,7 @@ type getVariableResponse = {
 type AppConfig = {
   authEnabled: boolean
   libraryConfigurationDisabled: boolean
+  rootUserCreated: boolean
 }
 
 const settingsApi = restAPI.injectEndpoints({
@@ -22,6 +24,7 @@ const settingsApi = restAPI.injectEndpoints({
       transformResponse: (response: AppConfigResponse) => ({
         authEnabled: response.auth_enabled,
         libraryConfigurationDisabled: response.library_configuration_disabled,
+        rootUserCreated: response.root_user_created,
       }),
     }),
   }),

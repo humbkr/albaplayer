@@ -3,7 +3,7 @@ import { graphqlRequestBaseQuery } from '@rtk-query/graphql-request-base-query'
 import constants from 'api/constants'
 import { ClientError, gql, GraphQLClient } from 'graphql-request'
 import { refreshToken } from 'modules/user/authApi'
-import { logoutUser } from 'modules/user/utils'
+import { logoutUser } from 'modules/user/services'
 import { processApiError } from './helpers'
 
 export type GraphQLApiResponse = {

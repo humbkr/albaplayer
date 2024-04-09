@@ -11,6 +11,11 @@ import (
 const ACCESS_TOKEN_EXPIRATION = 10 * time.Minute
 const REFRESH_TOKEN_EXPIRATION = 168 * time.Hour
 
+func GetUserFromContext(ctx context.Context) *business.User {
+	raw, _ := ctx.Value(userCtxKey).(*business.User)
+	return raw
+}
+
 func loginUser(userInteractor *business.UsersInteractor, username string, password string) (TokenPair, business.User, error) {
 	// Check if the user credentials are valid.
 	user, err := userInteractor.UserGetFromUsername(username)
@@ -78,7 +83,25 @@ func refreshToken(userInteractor *business.UsersInteractor, refreshCookie *http.
 	return JWTGenerateTokenPair(user)
 }
 
-func GetUserFromContext(ctx context.Context) *business.User {
-	raw, _ := ctx.Value(userCtxKey).(*business.User)
-	return raw
+func createRootUser(userInteractor *business.UsersInteractor, username string, password string) (business.User, error) {
+	// If the root user already exists, return an error.
+	exists := userInteractor.UserExists(1)
+	if exists {
+		return business.User{}, errors.New("root user already exists")
+	}
+
+	// Else create the root user.
+	hashedPassword, _ := HashPassword(password)
+	rootUser := business.User{
+		Name:     username,
+		Password: hashedPassword,
+		Roles:    []business.Role{business.ROLE_ROOT, business.ROLE_ADMIN, business.ROLE_LISTENER},
+	}
+
+	err := userInteractor.SaveUser(&rootUser)
+	if err != nil {
+		return business.User{}, err
+	}
+
+	return rootUser, nil
 }

@@ -27,12 +27,19 @@ func InitApp() (business.LibraryInteractor, business.UsersInteractor, business.I
 	viper.SetDefault("Server.Https.Enabled", false)
 	viper.SetDefault("Server.Https.CertFile", "")
 	viper.SetDefault("Server.Https.KeyFile", "")
-	// Authentication.
-	viper.SetDefault("Auth.Enabled", true)
-	// Library.
-	viper.SetDefault("Library.Path", "")
+	// Users.
+	viper.SetDefault("Users.AuthEnabled", true)
+	viper.SetDefault("Users.JWTSecret", "arandomstring")
+	viper.SetDefault("Users.DefaultUserRoles", []string{"root", "admin", "listener"})
+
 	// Dev mode.
 	viper.SetDefault("DevMode.Enabled", false)
+
+	// Library.
+	viper.SetDefault("Library.Path", "")
+
+	// Client settings.
+	viper.SetDefault("ClientSettings.DisableLibraryConfiguration", false)
 
 	// Load app configuration from file.
 	viper.SetConfigName("alba")
@@ -68,6 +75,7 @@ func InitApp() (business.LibraryInteractor, business.UsersInteractor, business.I
 	libraryInteractor.LibraryRepository = interfaces.LibraryDbRepository{AppContext: &appContext}
 	libraryInteractor.MediaFileRepository = interfaces.LocalFilesystemRepository{AppContext: &appContext}
 	libraryInteractor.CollectionRepository = interfaces.CollectionDbRepository{AppContext: &appContext}
+	libraryInteractor.InternalVariableRepository = interfaces.InternalVariableDbRepository{AppContext: &appContext}
 
 	// Instantiate all we need to work on internal variables.
 	internalVariablesInteractor := business.InternalVariableInteractor{}

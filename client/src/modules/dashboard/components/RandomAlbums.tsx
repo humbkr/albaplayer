@@ -5,6 +5,10 @@ import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
+import { userHasRole } from 'modules/user/utils'
+import { useGetUserQuery } from 'modules/user/store/api'
+import { USER_ROLE_ADMIN } from 'modules/user/constants'
+import routing from 'routing'
 import { getRandomAlbums } from '../store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
@@ -16,6 +20,9 @@ function RandomAlbums() {
   const [selectedAlbum, setSelectedAlbum] = useState<string | undefined>(
     undefined
   )
+
+  const { data: user } = useGetUserQuery()
+  const canScanLibrary = userHasRole(user, USER_ROLE_ADMIN)
 
   useEffect(() => {
     if (randomAlbums.length === 0) {
@@ -39,7 +46,11 @@ function RandomAlbums() {
         <EmptyState>
           <p>
             {t('dashboard.noAlbumsFound')}{' '}
-            <TextLink to="/settings">{t('dashboard.scanLibrary')}</TextLink>
+            {canScanLibrary && (
+              <TextLink to={routing.administration}>
+                {t('dashboard.scanLibrary')}
+              </TextLink>
+            )}
           </p>
         </EmptyState>
       )}

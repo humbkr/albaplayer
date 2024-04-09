@@ -7,6 +7,7 @@ import Login from 'modules/user/scenes/Login'
 import LoaderPulseLogo from 'common/components/LoaderPulseLogo'
 import usePlaybackKeys from 'modules/player/hooks/usePlaybackKeys'
 import useInitApp from 'common/hooks/useInitApp'
+import CreateRootUser from 'modules/user/scenes/CreateRootUser'
 
 function Layout() {
   // Used to handle the search input focus.
@@ -15,7 +16,13 @@ function Layout() {
   // Capture app's global key events.
   usePlaybackKeys()
 
-  const { isLoading, shouldDisplayLogin, onLogin } = useInitApp()
+  const {
+    isLoading,
+    shouldDisplayLogin,
+    shouldDisplayRootCreation,
+    onLogin,
+    onCreateRootUser,
+  } = useInitApp()
 
   if (isLoading) {
     return (
@@ -28,7 +35,10 @@ function Layout() {
   return (
     <AppContainer>
       {shouldDisplayLogin && <Login onLogin={onLogin} />}
-      {!shouldDisplayLogin && (
+      {shouldDisplayRootCreation && (
+        <CreateRootUser onCreateRootUser={onCreateRootUser} />
+      )}
+      {!shouldDisplayLogin && !shouldDisplayRootCreation && (
         <>
           <Left>
             <Sidebar />
@@ -81,7 +91,7 @@ const Top = styled.div`
   width: 100%;
   position: sticky;
   flex-shrink: 0;
-  z-index: 1;
+  z-index: 23;
 `
 const Content = styled.div`
   flex-grow: 1;

@@ -66,16 +66,28 @@ func (h coverStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func GetAppConfig(w http.ResponseWriter, r *http.Request) {
+type appConfigHandler struct {
+	UserInteractor *business.UsersInteractor
+}
+
+func NewAppConfigHandler(ui *business.UsersInteractor) *appConfigHandler {
+	return &appConfigHandler{UserInteractor: ui}
+}
+
+func (a appConfigHandler) GetAppConfig(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
+
+	rootUserExists := a.UserInteractor.UserExists(1)
 
 	resp := struct {
 		AuthEnabled                 bool `json:"auth_enabled"`
 		DisableLibraryConfiguration bool `json:"library_configuration_disabled"`
+		RootUserCreated             bool `json:"root_user_created"`
 	}{
 		AuthEnabled:                 viper.GetBool("Users.AuthEnabled"),
 		DisableLibraryConfiguration: viper.GetBool("ClientSettings.DisableLibraryConfiguration"),
+		RootUserCreated:             rootUserExists,
 	}
 
 	jsonResp, err := json.Marshal(resp)

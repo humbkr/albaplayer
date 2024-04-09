@@ -132,7 +132,7 @@ const en: Translation = {
       title: 'Library',
       stats:
         'There are currently {{nbArtists}} artists, {{nbAlbums}} albums, and {{nbTracks}} tracks in the library.',
-      updateButton: 'Update library',
+      updateButton: 'Scan library',
       updateInProgress: 'Library is updating. This could take several minutes.',
       clearButton: 'Empty library',
       clearConfirm:
@@ -141,6 +141,15 @@ const en: Translation = {
     appearance: {
       title: 'Appearance',
       theme: 'Theme',
+    },
+    libraryBrowser: {
+      title: 'Library browser',
+      clickBehavior: {
+        label: 'On an item double click:',
+        play: 'Replace current playlist and play item',
+        add: 'Add item to the current playlist',
+        none: 'Do nothing',
+      },
     },
     about: {
       title: 'About',
@@ -151,9 +160,25 @@ const en: Translation = {
     login: {
       username: 'Username',
       password: 'Password',
+      title: 'Login',
       login: 'Login',
       errors: {
         invalidCredentials: 'Invalid credentials',
+      },
+    },
+    createRoot: {
+      username: 'Username',
+      password: 'Password',
+      confirmPassword: 'Confirm password',
+      title: 'Create root user',
+      description:
+        'This is your first time using the application. Please create an admin user.',
+      description_noauth:
+        'This user will be used if you decide to enable authentication later on.',
+      create: 'Create user',
+      errors: {
+        generic: 'An error occurred',
+        passwordConfirm: 'Passwords do not match',
       },
     },
     profile: {
@@ -173,7 +198,12 @@ const en: Translation = {
       },
       profileUpdated: 'Profile updated',
     },
-    logout: 'Logout',
+    logout: {
+      label: 'Logout',
+      errors: {
+        generic: 'An error occurred',
+      },
+    },
     usersManagement: {
       title: 'Users',
       newUser: 'New user',

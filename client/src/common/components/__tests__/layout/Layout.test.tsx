@@ -31,6 +31,14 @@ jest.mock(
     }
 )
 
+jest.mock(
+  'modules/user/scenes/CreateRootUser',
+  () =>
+    function () {
+      return <div />
+    }
+)
+
 describe('Layout', () => {
   it('should display a loader if app is not initialised', () => {
     useInitAppMock.mockReturnValue({

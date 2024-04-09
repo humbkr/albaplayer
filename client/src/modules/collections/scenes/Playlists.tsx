@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-// eslint-disable-next-line import/no-cycle
 import PlaylistDetailPane from 'modules/collections/components/PlaylistDetailsPane'
-// eslint-disable-next-line import/no-cycle
 import { useAppSelector } from 'store/hooks'
 import PlaylistEditModal from 'modules/collections/components/PlaylistEditModal'
 import { PLAYLIST_PANE } from 'modules/collections/store'
@@ -12,11 +10,10 @@ import PlaylistsCarePane from '../components/PlaylistCarePane'
 // Playlist edition must be accessible to the children of this component.
 export const EditPlaylistContext = React.createContext<() => void>(() => {})
 
-function Playlists() {
+export default function Playlists() {
   const [modalPlaylistIsOpen, setModalPlaylistIsOpen] = useState(false)
   const [addNewPlaylist, setAddNewPlaylist] = useState(false)
 
-  const selected = useAppSelector((state) => state.playlist.currentPlaylist)
   const currentPane = useAppSelector((state) => state.playlist.currentPane)
 
   const playlistListPane = useRef<HTMLDivElement>(null)
@@ -73,7 +70,7 @@ function Playlists() {
         )}
         {currentPane === PLAYLIST_PANE.fix && <PlaylistsCarePane />}
         <PlaylistEditModal
-          playlist={addNewPlaylist ? undefined : selected}
+          addMode={addNewPlaylist}
           isOpen={modalPlaylistIsOpen}
           onClose={handleOnModalClose}
         />
@@ -81,8 +78,6 @@ function Playlists() {
     </Container>
   )
 }
-
-export default Playlists
 
 const Container = styled.div`
   display: grid;

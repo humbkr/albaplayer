@@ -2,6 +2,7 @@ package business
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 
@@ -342,7 +343,10 @@ func (interactor *LibraryInteractor) UpdateLibrary() {
 		Key:   "library_last_updated",
 		Value: time.Now().Format("20060102150405"),
 	}
-	_ = interactor.InternalVariableRepository.Save(&lastUpdated)
+	err := interactor.InternalVariableRepository.Save(&lastUpdated)
+	if err != nil {
+		fmt.Errorf("Error saving library last updated time: %s", err.Error())
+	}
 
 	interactor.LibraryIsUpdating = false
 	interactor.mutex.Unlock()

@@ -4,9 +4,14 @@ import { useGetAppConfigQuery } from 'modules/settings/api'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useGetUserQuery } from 'modules/user/store/api'
 
-jest.mock('modules/user/utils')
+jest.mock('modules/user/store/store')
+jest.mock('modules/library/store', () => ({
+  initLibrary: jest.fn(),
+}))
 
-jest.mock('modules/settings/api')
+jest.mock('modules/settings/api', () => ({
+  useGetAppConfigQuery: jest.fn(),
+}))
 const useGetAppConfigQueryMock = useGetAppConfigQuery as jest.Mock
 
 jest.mock('store/hooks')
@@ -14,9 +19,12 @@ const useAppSelectorMock = useAppSelector as jest.Mock
 const mockDispatch = jest.fn()
 const useAppDispatchMock = useAppDispatch as jest.Mock
 
-jest.mock('modules/user/store/api')
+jest.mock('modules/user/store/api', () => ({
+  useGetUserQuery: jest.fn(),
+}))
 const useGetUserQueryMock = useGetUserQuery as jest.Mock
 
+// TODO: test the rest
 describe('HOOK: useInitApp', () => {
   beforeEach(() => {
     useAppDispatchMock.mockReturnValue(mockDispatch)
@@ -26,6 +34,7 @@ describe('HOOK: useInitApp', () => {
     useGetAppConfigQueryMock.mockReturnValue({
       data: null,
       isFetching: true,
+      refetch: jest.fn(),
     })
     useAppSelectorMock.mockReturnValue({ loggedOut: false })
     useGetUserQueryMock.mockReturnValue({
@@ -62,7 +71,10 @@ describe('HOOK: useInitApp', () => {
 
   it('should return correct values when auth is enabled and user is not logged in', () => {
     useGetAppConfigQueryMock.mockReturnValue({
-      data: { authEnabled: true },
+      data: {
+        authEnabled: true,
+        rootUserCreated: true,
+      },
       isFetching: false,
     })
     useAppSelectorMock.mockReturnValue({ loggedOut: false })
@@ -100,7 +112,10 @@ describe('HOOK: useInitApp', () => {
 
   it('should return correct values when auth is disabled', () => {
     useGetAppConfigQueryMock.mockReturnValue({
-      data: { authEnabled: false },
+      data: {
+        authEnabled: false,
+        rootUserCreated: true,
+      },
       isFetching: false,
     })
     useAppSelectorMock.mockReturnValue({ loggedOut: false })

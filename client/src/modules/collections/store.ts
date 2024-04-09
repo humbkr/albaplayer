@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export enum PLAYLIST_PANE {
-  detail,
-  fix,
+  detail = 'detail',
+  fix = 'fix',
 }
 
 export type PlaylistsStateType = {

@@ -6,19 +6,22 @@ import PlaylistEditForm, {
 } from 'modules/collections/components/PlaylistEditForm'
 import {
   useCreatePlaylist,
+  useGetCurrentPlaylist,
   useUpdatePlaylistInfo,
 } from 'modules/collections/services/services'
 
 type Props = {
-  playlist?: Playlist
+  addMode: boolean
   isOpen: boolean
   onClose: () => void
 }
 
-function PlaylistEditModal({ playlist, isOpen, onClose }: Props) {
+function PlaylistEditModal({ addMode, isOpen, onClose }: Props) {
   const { t } = useTranslation()
   const createPlaylist = useCreatePlaylist()
   const updateInfo = useUpdatePlaylistInfo()
+
+  const playlist = useGetCurrentPlaylist()
 
   const formRef = useRef<HTMLFormElement | null>(null)
 
@@ -29,7 +32,7 @@ function PlaylistEditModal({ playlist, isOpen, onClose }: Props) {
   }
 
   const onSubmit = async (data: PlaylistEditFormData) => {
-    if (playlist) {
+    if (!addMode && playlist) {
       updateInfo({
         ...playlist,
         title: data.title,

@@ -66,10 +66,35 @@ export async function logout() {
   return {
     status: response.status,
     data: undefined,
-    // TODO change error message
     error:
       response.status === 200
         ? undefined
-        : i18n.t('user.login.errors.invalidCredentials'),
+        : i18n.t('user.logout.errors.generic'),
+  }
+}
+
+export async function createRootUser(
+  username: string,
+  password: string
+): Promise<AuthApiResponse<User>> {
+  const response = await fetch(
+    `${constants.BACKEND_BASE_URL}/auth/create-root`,
+    {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    }
+  )
+
+  return {
+    status: response.status,
+    data: undefined,
+    error:
+      response.status === 200
+        ? undefined
+        : i18n.t('user.createRoot.errors.generic'),
   }
 }

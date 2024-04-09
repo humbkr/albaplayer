@@ -24,11 +24,10 @@ const Pulse = styled.div<{ size: string }>`
 
   @keyframes pulse {
     0% {
-      box-shadow: ${(props) => props.theme.colors.elementHighlightFocus} 0 0 0 0;
+      box-shadow: #019a8b 0 0 0 0;
     }
     75% {
-      box-shadow: ${(props) => props.theme.colors.elementHighlightFocus}00 0 0 0
-        16px;
+      box-shadow: #019a8b00 0 0 0 16px;
     }
   }
 `

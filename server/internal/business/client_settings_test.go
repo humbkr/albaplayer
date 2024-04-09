@@ -19,7 +19,10 @@ func TestClientSettingsTestSuite(t *testing.T) {
 }
 
 func (suite *ClientSettingsInteractorTestSuite) SetupSuite() {
-	suite.ClientSettings = ClientSettingsInteractor{}
+	usersInteractor := createMockUsersInteractor()
+	suite.ClientSettings = ClientSettingsInteractor{
+		UserInteractor: *usersInteractor,
+	}
 }
 
 func (suite *ClientSettingsInteractorTestSuite) TestGetSettings() {
@@ -33,4 +36,6 @@ func (suite *ClientSettingsInteractorTestSuite) TestGetSettings() {
 	assert.True(suite.T(), settings.DisableLibraryConfiguration)
 	assert.Equal(suite.T(), "/this/is/a/test", settings.LibraryPath)
 	assert.Equal(suite.T(), "file", settings.CoversPreferredSource)
+	assert.False(suite.T(), settings.AuthEnabled)
+	assert.True(suite.T(), settings.AdminUserCreated)
 }

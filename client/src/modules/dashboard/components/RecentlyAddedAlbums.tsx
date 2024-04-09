@@ -6,6 +6,10 @@ import { immutableNestedSort } from 'common/utils/utils'
 import { useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import { LibraryStateType } from 'modules/library/store'
+import routing from 'routing'
+import { useGetUserQuery } from 'modules/user/store/api'
+import { userHasRole } from 'modules/user/utils'
+import { USER_ROLE_ADMIN } from 'modules/user/constants'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
 export const getRecentlyAddedAlbums = (
@@ -34,6 +38,9 @@ function RecentlyAddedAlbums() {
     undefined
   )
 
+  const { data: user } = useGetUserQuery()
+  const canScanLibrary = userHasRole(user, USER_ROLE_ADMIN)
+
   useEffect(() => {
     setAlbums(getRecentlyAddedAlbums(library, 6))
   }, [library])
@@ -48,7 +55,11 @@ function RecentlyAddedAlbums() {
           <EmptyState>
             <p>
               {t('dashboard.noAlbumsFound')}{' '}
-              <TextLink to="/settings">{t('dashboard.scanLibrary')}</TextLink>
+              {canScanLibrary && (
+                <TextLink to={routing.administration}>
+                  {t('dashboard.scanLibrary')}
+                </TextLink>
+              )}
             </p>
           </EmptyState>
         )}

@@ -37,10 +37,10 @@ function PlaylistDetailsPane({
 
   const playlist = useGetCurrentPlaylist()
   const currentPosition = useAppSelector(
-    (state) => state.playlist.currentTrack.position
+    (state) => state.playlist.currentTrack?.position
   )
   const currentTrackId = useAppSelector(
-    (state) => state.playlist.currentTrack.id
+    (state) => state.playlist.currentTrack?.id
   )
 
   const playPlaylist = usePlayPlaylist()

@@ -8,24 +8,39 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import i18n from 'i18n/i18n'
 import { useState } from 'react'
-import { login } from '../authApi'
+import { useGetAppConfigQuery } from 'modules/settings/api'
+import { createRootUser } from '../authApi'
 
 type FormData = {
   username: string
   password: string
+  confirmPassword: string
 }
 
-const schema = z.object({
-  username: z.string().min(1, i18n.t('common.forms.requiredField')),
-  password: z.string().min(1, i18n.t('common.forms.requiredField')),
-})
+const schema = z
+  .object({
+    username: z.string().min(1, i18n.t('common.forms.requiredField')),
+    password: z.string().min(1, i18n.t('common.forms.requiredField')),
+    confirmPassword: z.string().min(1, i18n.t('common.forms.requiredField')),
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['confirmPassword'],
+        message: i18n.t('user.createRoot.errors.passwordConfirm'),
+      })
+    }
+  })
 
 type Props = {
-  onLogin: () => void
+  onCreateRootUser: () => void
 }
 
-function Login({ onLogin }: Props) {
+// TODO: write test
+function CreateRootUser({ onCreateRootUser }: Props) {
   const { t } = useTranslation()
+  const { data: config } = useGetAppConfigQuery()
 
   const [loading, setLoading] = useState(false)
 
@@ -40,15 +55,12 @@ function Login({ onLogin }: Props) {
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)
-    const response = await login(data.username, data.password)
+    const response = await createRootUser(data.username, data.password)
     if (!response.error) {
-      onLogin()
+      onCreateRootUser()
     } else {
       setError('username', {
-        message: t('user.login.errors.invalidCredentials'),
-      })
-      setError('password', {
-        message: t('user.login.errors.invalidCredentials'),
+        message: t('user.createRoot.errors.generic'),
       })
     }
     setLoading(false)
@@ -59,10 +71,14 @@ function Login({ onLogin }: Props) {
       <Content>
         <Logo src={logoIcon} alt="Logo" />
         <LoginForm onSubmit={handleSubmit(onSubmit)}>
-          <h2>{t('user.login.title')}</h2>
+          <h2>{t('user.createRoot.title')}</h2>
+          <p>{t('user.createRoot.description')}</p>
+          {config?.authEnabled === false && (
+            <p>{t('user.createRoot.description_noauth')}</p>
+          )}
           <TextField
             name="username"
-            label={t('user.login.username')}
+            label={t('user.createRoot.username')}
             required
             register={register}
             error={errors.username?.message}
@@ -70,7 +86,16 @@ function Login({ onLogin }: Props) {
           <TextField
             type="password"
             name="password"
-            label={t('user.login.password')}
+            label={t('user.createRoot.password')}
+            required
+            register={register}
+            error={errors.password?.message}
+            autoComplete="0"
+          />
+          <TextField
+            type="password"
+            name="confirmPassword"
+            label={t('user.createRoot.confirmPassword')}
             required
             register={register}
             error={errors.password?.message}
@@ -78,7 +103,7 @@ function Login({ onLogin }: Props) {
           />
           <Actions>
             <ActionButton raised type="submit" loading={loading}>
-              {t('user.login.login')}
+              {t('user.createRoot.create')}
             </ActionButton>
           </Actions>
         </LoginForm>
@@ -87,7 +112,7 @@ function Login({ onLogin }: Props) {
   )
 }
 
-export default Login
+export default CreateRootUser
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.colors.background};

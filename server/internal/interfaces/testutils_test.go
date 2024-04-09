@@ -210,7 +210,7 @@ func initTestDataSource(ds *sql.DB) (err error) {
 	file.Close()
 
 	// Users <> Roles
-	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(1, 'owner')")
+	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(1, 'root')")
 	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(2, 'admin')")
 	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(3, 'listener')")
 

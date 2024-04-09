@@ -14,15 +14,15 @@ type User struct {
 type Role string
 
 const (
-	ROLE_OWNER    Role = "owner"
+	ROLE_ROOT     Role = "root"
 	ROLE_ADMIN    Role = "admin"
 	ROLE_LISTENER Role = "listener"
 )
 
 func GetRoleAsString(role Role) string {
 	switch role {
-	case ROLE_OWNER:
-		return "owner"
+	case ROLE_ROOT:
+		return "root"
 	case ROLE_ADMIN:
 		return "admin"
 	case ROLE_LISTENER:
@@ -34,8 +34,8 @@ func GetRoleAsString(role Role) string {
 
 func GetRoleFromString(role string) Role {
 	switch role {
-	case "owner":
-		return ROLE_OWNER
+	case "root":
+		return ROLE_ROOT
 	case "admin":
 		return ROLE_ADMIN
 	case "listener":

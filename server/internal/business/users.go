@@ -47,7 +47,7 @@ func (interactor *UsersInteractor) SaveUser(entity *User) error {
 
 // DeleteUser deletes a user.
 // Returns an error if no user id provided.
-// User with role owner cannot be deleted.
+// User with role root cannot be deleted.
 func (interactor *UsersInteractor) DeleteUser(entity *User) error {
 	if entity.Id == 0 {
 		return errors.New("cannot delete user: id not provided")
@@ -83,8 +83,8 @@ func canDeleteUser(actionOriginUser User, userToBeDeleted User) (bool, error) {
 	}
 
 	// Check permissions.
-	if UserHasRole(userToBeDeleted, ROLE_OWNER) {
-		return false, errors.New("cannot delete a user with the role 'owner'")
+	if UserHasRole(userToBeDeleted, ROLE_ROOT) {
+		return false, errors.New("cannot delete a user with the role 'root'")
 	}
 	if UserHasRole(userToBeDeleted, ROLE_ADMIN) && !UserHasRole(actionOriginUser, ROLE_ADMIN) {
 		return false, errors.New("only a user with the 'admin' role can delete another 'admin'")

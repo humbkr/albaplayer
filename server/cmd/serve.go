@@ -30,7 +30,9 @@ var serveCmd = &cobra.Command{
 	Long:  `Launch all services, create all endpoints, and serve UI web app.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		libraryInteractor, usersInteractor, internalVariablesInteractor := internal.InitApp()
-		settingsInteractor := business.ClientSettingsInteractor{}
+		settingsInteractor := business.ClientSettingsInteractor{
+			UserInteractor: usersInteractor,
+		}
 
 		initialData := graph.GraphQLServerInitialData{
 			LibraryInteractor:          &libraryInteractor,
@@ -71,10 +73,12 @@ var serveCmd = &cobra.Command{
 			mux.HandleFunc("/auth/login", auth.Login)
 			mux.HandleFunc("/auth/logout", auth.Logout)
 			mux.HandleFunc("/auth/refresh-token", auth.RefreshToken)
+			mux.HandleFunc("/auth/create-root", auth.CreateRootUser)
 		}
 
 		// Serve app config.
-		mux.HandleFunc("/config", interfaces.GetAppConfig)
+		appConfigHandler := interfaces.NewAppConfigHandler(&usersInteractor)
+		mux.HandleFunc("/config", appConfigHandler.GetAppConfig)
 
 		// Serve SPA.
 		fileServer := http.FileServer(pkger.Dir("/web"))

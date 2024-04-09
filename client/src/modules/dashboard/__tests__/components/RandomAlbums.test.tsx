@@ -6,6 +6,8 @@ import themeDefault from 'themes/lightGreen'
 import RandomAlbums from 'modules/dashboard/components/RandomAlbums'
 import { dashboardInitialState } from 'modules/dashboard/store'
 import { getAuthAssetURL } from 'api/api'
+import { useGetUserQuery } from 'modules/user/store/api'
+import { USER_ROLE_ADMIN, USER_ROLE_LISTENER } from 'modules/user/constants'
 import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
 
 jest.mock(
@@ -23,6 +25,12 @@ jest.mock('modules/player/store/store', () => ({
 jest.mock('api/api', () => ({
   getAuthAssetURL: jest.fn(),
 }))
+const getAuthAssetURLMock = getAuthAssetURL as jest.Mock
+
+jest.mock('modules/user/store/api', () => ({
+  useGetUserQuery: jest.fn(),
+}))
+const useGetUserQueryMock = useGetUserQuery as jest.Mock
 
 const mockLibrary = {
   artists: {
@@ -113,7 +121,10 @@ const store = makeMockStore({
 
 describe('dashboard - RandomAlbums', () => {
   beforeEach(() => {
-    ;(getAuthAssetURL as jest.Mock).mockResolvedValue('whatever')
+    getAuthAssetURLMock.mockResolvedValue('whatever')
+    useGetUserQueryMock.mockReturnValue({
+      data: { roles: [USER_ROLE_LISTENER] },
+    })
   })
 
   it('should render correctly', () => {
@@ -146,7 +157,29 @@ describe('dashboard - RandomAlbums', () => {
     expect(store.dispatch).toHaveBeenCalledTimes(1)
   })
 
-  it('should render correctly when no albums in the library', () => {
+  it('should render correctly when no albums in the library and user cannot scan', () => {
+    const customStore = makeMockStore({
+      dashboard: dashboardInitialState,
+      playlist: mockPlaylist,
+    })
+
+    render(
+      <ReduxProvider store={customStore}>
+        <ThemeProvider theme={themeDefault}>
+          <BrowserRouter>
+            <RandomAlbums />
+          </BrowserRouter>
+        </ThemeProvider>
+      </ReduxProvider>
+    )
+
+    expect(screen.getByText('dashboard.noAlbumsFound')).toBeInTheDocument()
+    expect(screen.queryByText('dashboard.scanLibrary')).not.toBeInTheDocument()
+  })
+
+  it('should render correctly when no albums in the library and user can scan', () => {
+    useGetUserQueryMock.mockReturnValue({ data: { roles: [USER_ROLE_ADMIN] } })
+
     const customStore = makeMockStore({
       dashboard: dashboardInitialState,
       playlist: mockPlaylist,

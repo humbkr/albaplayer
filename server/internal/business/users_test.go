@@ -151,15 +151,15 @@ func (suite *UsersInteractorTestSuite) TestGetFromUsername() {
 }
 
 func (suite *UsersInteractorTestSuite) TestUserHasRole() {
-	user := &User{Id: 1, Roles: []Role{ROLE_OWNER, ROLE_ADMIN}}
-	assert.True(suite.T(), UserHasRole(*user, ROLE_OWNER))
+	user := &User{Id: 1, Roles: []Role{ROLE_ROOT, ROLE_ADMIN}}
+	assert.True(suite.T(), UserHasRole(*user, ROLE_ROOT))
 	assert.True(suite.T(), UserHasRole(*user, ROLE_ADMIN))
 	assert.False(suite.T(), UserHasRole(*user, ROLE_LISTENER))
 }
 
 func (suite *UsersInteractorTestSuite) TestCanDeleteUser() {
 	// Everything ok.
-	actionUser := &User{Id: 1, Roles: []Role{ROLE_OWNER}}
+	actionUser := &User{Id: 1, Roles: []Role{ROLE_ROOT}}
 	userToDelete := &User{Id: 2, Roles: []Role{ROLE_LISTENER}}
 	canDelete, err := canDeleteUser(*actionUser, *userToDelete)
 	assert.Nil(suite.T(), err)
@@ -173,15 +173,15 @@ func (suite *UsersInteractorTestSuite) TestCanDeleteUser() {
 	assert.False(suite.T(), canDelete)
 
 	// Cannot delete because user to delete has no role.
-	actionUser = &User{Id: 1, Roles: []Role{ROLE_OWNER}}
+	actionUser = &User{Id: 1, Roles: []Role{ROLE_ROOT}}
 	userToDelete = &User{Id: 2}
 	canDelete, err = canDeleteUser(*actionUser, *userToDelete)
 	assert.NotNil(suite.T(), err)
 	assert.False(suite.T(), canDelete)
 
-	// Cannot delete because user to delete has role OWNER.
-	actionUser = &User{Id: 1, Roles: []Role{ROLE_OWNER}}
-	userToDelete = &User{Id: 2, Roles: []Role{ROLE_OWNER}}
+	// Cannot delete because user to delete has role ROOT.
+	actionUser = &User{Id: 1, Roles: []Role{ROLE_ROOT}}
+	userToDelete = &User{Id: 2, Roles: []Role{ROLE_ROOT}}
 	canDelete, err = canDeleteUser(*actionUser, *userToDelete)
 	assert.NotNil(suite.T(), err)
 	assert.False(suite.T(), canDelete)

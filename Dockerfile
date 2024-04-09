@@ -40,7 +40,10 @@ RUN cp /app/build/prod.alba.yml /generated/alba.yml
 ## Final image
 FROM debian
 
+# Copy generated files from previous steps
 COPY --from=build_server /generated/ /app/
+
+# Make binary executable
 RUN chmod +x /app/alba
 
 ENTRYPOINT cd /app && ./alba serve

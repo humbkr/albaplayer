@@ -100,22 +100,33 @@ func (h AuthHandlers) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// GetAuthConfig returns the auth config.
-func (h AuthHandlers) GetAuthConfig(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-
-	resp := struct {
-		AuthEnabled bool `json:"auth_enabled"`
-	}{
-		AuthEnabled: viper.GetBool("Auth.Enabled"),
+// CreateRootUser returns the auth config.
+func (h AuthHandlers) CreateRootUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "invalid request method", http.StatusMethodNotAllowed)
+		return
 	}
 
-	jsonResp, err := json.Marshal(resp)
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	credentials := struct {
+		Username string
+		Password string
+	}{}
+	err := decoder.Decode(&credentials)
+	if err != nil || credentials.Username == "" || credentials.Password == "" {
+		http.Error(w, "missing fields: username or password", http.StatusBadRequest)
+		return
+	}
+
+	_, err = createRootUser(h.UserInteractor, credentials.Username, credentials.Password)
 	if err != nil {
-		log.Fatalf("Unable to marshall user to JSON. Err: %s", err)
+		http.Error(w, "unable to create root user", http.StatusInternalServerError)
+		return
 	}
-	w.Write(jsonResp)
+
+	w.WriteHeader(http.StatusOK)
 }
 
 // A private key for context that only this package can access. This is important

@@ -105,3 +105,14 @@ If you only want to work on the client you can set
 REACT_APP_BACKEND_URL=https://demo.albaplayer.com
 ```
 in /client/.env.development instead of having to run the server locally
+
+## Docker
+To use the docker container, you will need to mount four volumes:
+```
+- ./volumes/alba.yml:/app/alba.yml
+- ./volumes/alba.db:/app/alba.db
+- ./volumes/covers:/app/covers
+- ./volumes/library:/app/library
+```
+And to make sure the alba.yml and alba.db files exist on the host before starting the container
+so docker mounts them correctly and not as directories.

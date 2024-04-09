@@ -6,8 +6,11 @@ import { initLibrary } from 'modules/library/store'
 import { setLoggedOut } from 'modules/user/store/store'
 
 export default function useInitApp() {
-  const { data: appConfig, isFetching: isFetchingConfig } =
-    useGetAppConfigQuery()
+  const {
+    data: appConfig,
+    isFetching: isFetchingConfig,
+    refetch: refetchAppConfig,
+  } = useGetAppConfigQuery()
 
   const dispatch = useAppDispatch()
   const { loggedOut } = useAppSelector((state) => state.user)
@@ -15,7 +18,7 @@ export default function useInitApp() {
   const {
     data: user,
     isLoading: isFetchingUser,
-    refetch,
+    refetch: refetchUser,
   } = useGetUserQuery(undefined, { skip: loggedOut || appConfig === undefined })
 
   useEffect(() => {
@@ -31,14 +34,25 @@ export default function useInitApp() {
     dispatch(setLoggedOut(false))
     if (isFetchingUser) {
       // Workaround because when clearing rtkQ state after logout, isFetching is true.
-      refetch()
+      refetchUser()
     }
     dispatch(initLibrary(true))
   }
 
+  const onCreateRootUser = () => {
+    refetchAppConfig()
+  }
+
   return {
-    shouldDisplayLogin: !!appConfig?.authEnabled && !user,
+    shouldDisplayLogin: !!(
+      appConfig &&
+      appConfig.rootUserCreated &&
+      appConfig.authEnabled &&
+      !user
+    ),
+    shouldDisplayRootCreation: !!(appConfig && !appConfig.rootUserCreated),
     isLoading: isFetchingConfig || (!loggedOut && isFetchingUser),
     onLogin,
+    onCreateRootUser,
   }
 }
