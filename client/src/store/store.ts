@@ -56,7 +56,7 @@ const store = configureStore({
 
 const persistor = persistStore(store)
 
-// Optional, but required for refetchOnFocus/refetchOnReconnect behaviors.
+// Optional, but required for refetchOnFocus / refetchOnReconnect behaviors.
 setupListeners(store.dispatch)
 
 export default store

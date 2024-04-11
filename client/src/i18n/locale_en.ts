@@ -155,6 +155,7 @@ const en: Translation = {
       title: 'About',
       version: 'Version: {{version}}',
     },
+    refreshAppData: 'Refresh app data',
   },
   user: {
     login: {

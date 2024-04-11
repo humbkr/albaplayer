@@ -159,6 +159,7 @@ const fr: Translation = {
       title: 'A propos',
       version: 'Version: {{version}}',
     },
+    refreshAppData: 'Mettre à jour les données',
   },
   user: {
     login: {

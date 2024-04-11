@@ -6,6 +6,8 @@ import ROUTES from 'routing'
 import { useNavigate } from 'react-router'
 import { ThemeProvider } from 'styled-components'
 import themeDefault from 'themes/lightGreen'
+import { refreshData } from 'modules/settings/services'
+import { logoutUser } from 'modules/user/services'
 
 jest.mock('modules/user/store/api', () => ({
   useGetUserQuery: jest.fn(),
@@ -15,6 +17,14 @@ const useGetUserQueryMock = useGetUserQuery as jest.Mock
 jest.mock('react-router')
 const useNavigateMock = useNavigate as jest.Mock
 const mockNavigate = jest.fn()
+
+jest.mock('modules/user/services', () => ({
+  logoutUser: jest.fn(),
+}))
+
+jest.mock('modules/settings/services', () => ({
+  refreshData: jest.fn(),
+}))
 
 describe('UserActionsMenu', () => {
   beforeEach(() => {
@@ -63,6 +73,7 @@ describe('UserActionsMenu', () => {
       // Button icons.
       expect(screen.getByText('admin_panel_settings')).toBeInTheDocument()
       expect(screen.getByText('settings')).toBeInTheDocument()
+      expect(screen.getByText('refresh')).toBeInTheDocument()
     })
 
     it('navigate to the correct page when administration button is pressed', async () => {
@@ -87,6 +98,18 @@ describe('UserActionsMenu', () => {
       await userEvent.click(screen.getByText('settings'))
 
       expect(mockNavigate).toHaveBeenCalledWith(ROUTES.preferences)
+    })
+
+    it('calls correct action when refresh is pressed', async () => {
+      render(
+        <ThemeProvider theme={themeDefault}>
+          <UserActionsMenu />
+        </ThemeProvider>
+      )
+
+      await userEvent.click(screen.getByText('refresh'))
+
+      expect(refreshData).toHaveBeenCalled()
     })
 
     it('renders correctly when user has role listener only', () => {
@@ -188,6 +211,30 @@ describe('UserActionsMenu', () => {
       await userEvent.click(screen.getByText('settings'))
 
       expect(mockNavigate).toHaveBeenCalledWith(ROUTES.preferences)
+    })
+
+    it('calls correct action when refresh is pressed', async () => {
+      render(
+        <ThemeProvider theme={themeDefault}>
+          <UserActionsMenu />
+        </ThemeProvider>
+      )
+
+      await userEvent.click(screen.getByText('refresh'))
+
+      expect(refreshData).toHaveBeenCalled()
+    })
+
+    it('calls correct action when log out is pressed', async () => {
+      render(
+        <ThemeProvider theme={themeDefault}>
+          <UserActionsMenu />
+        </ThemeProvider>
+      )
+
+      await userEvent.click(screen.getByText('logout'))
+
+      expect(logoutUser).toHaveBeenCalled()
     })
   })
 })

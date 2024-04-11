@@ -9,6 +9,7 @@ import { logoutUser } from 'modules/user/services'
 import { useNavigate } from 'react-router'
 import ROUTES from 'routing'
 import { useToggle } from 'common/utils/useToggle'
+import { refreshData } from 'modules/settings/services'
 
 function UserActionsMenu() {
   const { t } = useTranslation()
@@ -31,6 +32,10 @@ function UserActionsMenu() {
     navigate(ROUTES.preferences)
   }
 
+  const refreshAppData = async () => {
+    await refreshData()
+  }
+
   const logOutUser = async () => {
     await logoutUser()
   }
@@ -49,6 +54,9 @@ function UserActionsMenu() {
         )}
         <UserButton active={false} onClick={goToPreferences}>
           <Icon>settings</Icon>
+        </UserButton>
+        <UserButton active={false} onClick={refreshAppData}>
+          <Icon>refresh</Icon>
         </UserButton>
       </Container>
     )
@@ -70,6 +78,9 @@ function UserActionsMenu() {
         )}
         <MenuItem onClick={goToPreferences}>
           {t('settings.preferences.title')} <Icon size={18}>settings</Icon>
+        </MenuItem>
+        <MenuItem onClick={refreshAppData}>
+          {t('settings.refreshAppData')} <Icon size={18}>refresh</Icon>
         </MenuItem>
         <MenuItem onClick={logOutUser}>
           {t('user.logout.label')} <Icon size={18}>logout</Icon>
