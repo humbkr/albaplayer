@@ -13,13 +13,13 @@ type UserDbRepository struct {
 
 const selectUserQuery = "SELECT u.id, u.name, u.email, u.password, u.config, u.created_at, ur.role_name AS role " +
 	"FROM users u " +
-	"JOIN users_roles ur ON u.id = ur.user_id"
+	"JOIN users_roles ur ON u.id = ur.user_id "
 const updateUserQuery = "UPDATE users SET name = ?, email = ?, password = ?, config = ? WHERE id = ?"
 const insertUserQuery = "INSERT INTO users(name, email, password, config, created_at) VALUES(?, ?, ?, ?, ?)"
 
 // Get fetches a user from the database.
 func (r UserDbRepository) Get(id int) (entity business.User, err error) {
-	query := selectUserQuery + " WHERE u.id = ?"
+	query := selectUserQuery + "WHERE u.id = ? ORDER BY u.id"
 	rows, err := r.AppContext.DB.Query(query, id)
 	entities, err := processUserRows(rows, err)
 	if err != nil || len(entities) == 0 {
@@ -33,7 +33,7 @@ func (r UserDbRepository) Get(id int) (entity business.User, err error) {
 
 // GetAll fetches all users from the database.
 func (r UserDbRepository) GetAll() (entities []business.User, err error) {
-	rows, err := r.AppContext.DB.Query(selectUserQuery)
+	rows, err := r.AppContext.DB.Query(selectUserQuery + "ORDER BY u.id")
 	entities, err = processUserRows(rows, err)
 	if err != nil {
 		return
@@ -139,6 +139,20 @@ func (r UserDbRepository) Delete(entity *business.User) (err error) {
 func (r UserDbRepository) Exists(id int) bool {
 	_, err := r.Get(id)
 	return err == nil
+}
+
+// GetFromUsername retrieves a user entity using its username (for authentication purpose).
+func (r UserDbRepository) GetFromUsername(username string) (entity business.User, err error) {
+	query := selectUserQuery + " WHERE u.name = ?"
+	rows, err := r.AppContext.DB.Query(query, username)
+	entities, err := processUserRows(rows, err)
+	if err != nil || len(entities) == 0 {
+		return entity, errors.New("invalid credentials")
+	}
+
+	entity = entities[0]
+
+	return
 }
 
 // Utilities.

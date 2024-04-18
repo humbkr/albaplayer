@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
 import { formatDuration } from 'common/utils/utils'
-import ActionButtonCircle from 'common/components/ActionButtonCircle'
-import { constants } from 'api'
+import ActionButtonCircle from 'common/components/buttons/ActionButtonCircle'
+import APIConstants from 'api/constants'
 import SearchLink from 'modules/browser/components/SearchLink'
 import { useAppSelector } from 'store/hooks'
 import { TFunction } from 'i18next'
@@ -37,7 +37,7 @@ function getTrackInfoForDisplay(
         number: track?.number ? track.number.toString() : '',
         disc: track?.disc ?? '',
         duration: track?.duration ? formatDuration(track.duration) : '',
-        cover: track?.cover ? constants.BACKEND_BASE_URL + track.cover : '',
+        cover: track?.cover ? APIConstants.BACKEND_BASE_URL + track.cover : '',
       }
     : null
 }
@@ -88,7 +88,7 @@ function NowPlayingHeader({ pinned = false }: Props) {
   }
 
   return (
-    <Wrapper pinned={pinned}>
+    <Container pinned={pinned}>
       <Background cover={trackInfo?.cover}>
         <NowPlaying pinned={pinned}>
           <CoverInfo pinned={pinned}>
@@ -128,26 +128,25 @@ function NowPlayingHeader({ pinned = false }: Props) {
           )}
         </NowPlaying>
       </Background>
-    </Wrapper>
+    </Container>
   )
 }
 
 export default NowPlayingHeader
 
-const Wrapper = styled.div<{ pinned: boolean }>`
+const Container = styled.div<{ pinned: boolean }>`
   padding: 0 50px;
+  width: 100%;
 
   ${({ pinned, theme }) =>
     pinned &&
     `
-    background-color: ${theme.backgroundColor};
-    padding: 10px;
-    margin-left: ${theme.sidebar.width};
-    position: fixed;
+    background-color: ${theme.colors.background};
+    padding: 10px 10px 0;
+    position: sticky;
     z-index: 666;
     top: 0;
     left: 0;
-    width: calc(100vw - ${theme.sidebar.width});
   `}
 `
 const NowPlaying = styled.div<{ pinned: boolean }>`
@@ -169,6 +168,7 @@ const Background = styled.div<{ cover?: string }>`
   display: block;
   overflow: hidden;
   z-index: 0;
+  border-radius: 3px;
 
   &:before {
     width: 100%;

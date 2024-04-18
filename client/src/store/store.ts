@@ -1,18 +1,24 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+/* istanbul ignore file */
+
+import { configureStore } from '@reduxjs/toolkit'
 import {
-  persistStore,
-  persistReducer,
+  createMigrate,
   FLUSH,
-  REHYDRATE,
   PAUSE,
   PERSIST,
+  persistReducer,
+  persistStore,
   PURGE,
   REGISTER,
-  createMigrate,
+  REHYDRATE,
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
+import { graphqlAPI, restAPI } from 'api/api'
+import { setupListeners } from '@reduxjs/toolkit/query'
 import rootReducer from './rootReducer'
 import migrations from './migrations'
+
+const debugModeEnabled = process.env.REACT_APP_DEBUG_MODE === 'true'
 
 // @ts-ignore
 const persistanceReducer = persistReducer(
@@ -28,22 +34,30 @@ const persistanceReducer = persistReducer(
   rootReducer
 )
 
+const middleware = [graphqlAPI.middleware, restAPI.middleware]
+
+const defaultMiddlewareOptions = {
+  serializableCheck: debugModeEnabled
+    ? {
+        // Ignore non serializable data for redux-persist actions.
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      }
+    : false,
+  immutableCheck: debugModeEnabled,
+}
+
 // @ts-ignore
 const store = configureStore({
   reducer: persistanceReducer,
-  middleware: getDefaultMiddleware({
-    serializableCheck: {
-      // Ignore non serializable data for redux-persist actions.
-      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-    },
-    // Note: if you want to use a huge music library in development, uncomment the following lines.
-    // serializableCheck: false,
-    // immutableCheck: false,
-  }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware(defaultMiddlewareOptions).concat(...middleware),
   devTools: process.env.NODE_ENV !== 'production',
 })
 
 const persistor = persistStore(store)
+
+// Optional, but required for refetchOnFocus / refetchOnReconnect behaviors.
+setupListeners(store.dispatch)
 
 export default store
 export { persistor }

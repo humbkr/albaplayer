@@ -1,13 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
-import ActionButtonIcon from 'common/components/ActionButtonIcon'
+import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import {
   playerTogglePlayPause,
   queueRemoveTrack,
   setItemFromQueue,
 } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
+import AnimatedEQ from 'common/components/AnimatedEQ'
 
 type Props = {
   item: QueueItemDisplay
@@ -54,11 +55,20 @@ function NowPlayingQueueItem({ item, currentIndex }: Props) {
   return (
     <QueueItemWrapper isCurrent={isCurrent} onContextMenu={onRightClick}>
       <QueueItemFirstColumn>
-        <QueueItemPosition>{item.position}</QueueItemPosition>
-        <QueueActionButtonIcon
-          icon={playbackButtonIcon}
-          onClick={handlePlayBackButton}
-        />
+        {(!isPlaying || !isCurrent) && (
+          <QueueItemPosition>{item.position}</QueueItemPosition>
+        )}
+        {isPlaying && isCurrent && (
+          <CurrentPlaying>
+            <AnimatedEQ />
+          </CurrentPlaying>
+        )}
+        <QueueActionButtonIcon>
+          <ActionButtonIcon
+            icon={playbackButtonIcon}
+            onClick={handlePlayBackButton}
+          />
+        </QueueActionButtonIcon>
       </QueueItemFirstColumn>
       <div>{item.track.title}</div>
       <QueueItemInfo>{item.track.artist?.name}</QueueItemInfo>
@@ -71,27 +81,32 @@ function NowPlayingQueueItem({ item, currentIndex }: Props) {
 
 export default NowPlayingQueueItem
 
-const QueueActionButtonIcon = styled(ActionButtonIcon)`
+const QueueActionButtonIcon = styled.div`
   display: none;
-  color: ${(props) => props.theme.buttons.color};
+  color: ${(props) => props.theme.buttons.backgroundColor};
 
   :hover {
-    color: ${(props) => props.theme.buttons.colorHover};
+    color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `
 const QueueItemActions = styled.div`
   display: none;
   vertical-align: middle;
   text-align: right;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
+
+  :hover {
+    color: ${(props) => props.theme.colors.textPrimary};
+  }
 `
 const QueueItemPosition = styled.div``
+const CurrentPlaying = styled.div``
 const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   display: grid;
   grid-template-columns: 60px 40% auto 44px;
-  height: ${(props) => props.theme.itemHeight};
-  color: ${(props) => props.theme.textPrimaryColor};
-  border-bottom: 1px solid ${(props) => props.theme.separatorColor};
+  height: ${(props) => props.theme.layout.itemHeight};
+  color: ${(props) => props.theme.colors.textPrimary};
+  border-bottom: 1px solid ${(props) => props.theme.colors.separator};
   ${(props) => (props.isCurrent ? 'font-weight: bold' : '')};
 
   > * {
@@ -99,9 +114,11 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   }
 
   :hover {
-    background-color: ${(props) => props.theme.highlight};
+    background-color: ${(props) => props.theme.colors.elementHighlight};
+    cursor: grab;
 
-    ${QueueItemPosition} {
+    ${QueueItemPosition},
+    ${CurrentPlaying} {
       display: none;
     }
 
@@ -112,7 +129,7 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
 `
 const QueueItemFirstColumn = styled.div`
   justify-self: center;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const QueueItemInfo = styled.div`
   font-weight: normal;

@@ -1,9 +1,8 @@
-import { api } from 'api'
+import libraryAPI from 'modules/library/api'
 import { immutableSortTracks } from 'common/utils/utils'
 import playerSlice from 'modules/player/store/player.store'
 import queueSlice from 'modules/player/store/queue.store'
 import { LibraryStateType } from 'modules/library/store'
-import { PlaylistsStateType } from 'modules/playlist/store'
 import { PlayerPlaybackMode } from 'modules/player/utils'
 
 const reducers = { player: playerSlice.reducer, queue: queueSlice.reducer }
@@ -38,7 +37,7 @@ export const setItemFromQueue = (itemPosition: number): AppThunk =>
     }
 
     // Make API call to get the track full info.
-    return api
+    return libraryAPI
       .getFullTrackInfo(state.queue.items[itemPosition].track.id)
       .then((response) => {
         dispatch(playerSetTrack(response.data.track))
@@ -87,17 +86,6 @@ export const playArtist =
     dispatch(playerTogglePlayPause(true))
   }
 
-export const playPlaylist =
-  (id: string): AppThunk =>
-  (dispatch, getState) => {
-    const { library, playlist } = getState()
-
-    dispatch(queueClear())
-    dispatch(queueAddTracks(getTracksFromPlaylist(id, library, playlist)))
-    dispatch(setItemFromQueue(0))
-    dispatch(playerTogglePlayPause(true))
-  }
-
 export const playTrackAfterCurrent =
   (id: string): AppThunk =>
   (dispatch, getState) => {
@@ -138,20 +126,6 @@ export const playArtistAfterCurrent =
     }
   }
 
-export const playPlaylistAfterCurrent =
-  (id: string): AppThunk =>
-  (dispatch, getState) => {
-    const { library, playlist, player } = getState()
-
-    dispatch(
-      queueAddTracksAfterCurrent(getTracksFromPlaylist(id, library, playlist))
-    )
-
-    if (!player.track) {
-      dispatch(setItemFromQueue(0))
-    }
-  }
-
 export const addTrack =
   (id: string): AppThunk =>
   (dispatch, getState) => {
@@ -186,18 +160,6 @@ export const addArtist =
     const { library, player } = getState()
 
     dispatch(queueAddTracks(getTracksFromArtist(id, library)))
-
-    if (!player.track) {
-      dispatch(setItemFromQueue(0))
-    }
-  }
-
-export const addPlaylist =
-  (id: string): AppThunk =>
-  (dispatch, getState) => {
-    const { library, playlist, player } = getState()
-
-    dispatch(queueAddTracks(getTracksFromPlaylist(id, library, playlist)))
 
     if (!player.track) {
       dispatch(setItemFromQueue(0))
@@ -253,7 +215,7 @@ export const setNextTrack = (endOfTrack: boolean): AppThunk =>
     }
 
     // Make API call to get the track full info.
-    return api.getFullTrackInfo(nextTrackId).then((response) => {
+    return libraryAPI.getFullTrackInfo(nextTrackId).then((response) => {
       dispatch(playerSetTrack(response.data.track))
       dispatch(queueSetCurrent(newQueuePosition))
 
@@ -301,7 +263,7 @@ export const setPreviousTrack = (): AppThunk =>
     }
 
     // Make API call to get the track full info.
-    return api.getFullTrackInfo(prevTrackId).then((response) => {
+    return libraryAPI.getFullTrackInfo(prevTrackId).then((response) => {
       dispatch(playerSetTrack(response.data.track))
       dispatch(queueSetCurrent(newQueuePosition))
     })
@@ -335,21 +297,5 @@ export const getTracksFromArtist = (
     ...track,
     artist: library.artists[track.artistId as string],
     album: track.albumId ? library.albums[track.albumId] : undefined,
-  }))
-}
-
-export const getTracksFromPlaylist = (
-  id: string,
-  library: LibraryStateType,
-  playlists: PlaylistsStateType
-): Track[] => {
-  const playlist = { ...playlists.playlists[id] }
-
-  return playlist.items.map((item) => ({
-    ...item.track,
-    artist: item.track.artistId
-      ? library.artists[item.track.artistId]
-      : undefined,
-    album: item.track.albumId ? library.albums[item.track.albumId] : undefined,
   }))
 }

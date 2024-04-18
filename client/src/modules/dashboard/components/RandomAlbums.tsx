@@ -4,7 +4,11 @@ import AlbumTeaser from 'modules/dashboard/components/AlbumTeaser'
 import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
-import ActionButtonIcon from '../../../common/components/ActionButtonIcon'
+import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
+import { userHasRole } from 'modules/user/utils'
+import { useGetUserQuery } from 'modules/user/store/api'
+import { USER_ROLE_ADMIN } from 'modules/user/constants'
+import routing from 'routing'
 import { getRandomAlbums } from '../store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
@@ -17,6 +21,9 @@ function RandomAlbums() {
     undefined
   )
 
+  const { data: user } = useGetUserQuery()
+  const canScanLibrary = userHasRole(user, USER_ROLE_ADMIN)
+
   useEffect(() => {
     if (randomAlbums.length === 0) {
       dispatch(getRandomAlbums())
@@ -27,17 +34,23 @@ function RandomAlbums() {
     <Wrapper>
       <Header>
         <h2>{t('dashboard.randomAlbums')}</h2>
-        <ActionButtonIcon
-          icon="refresh"
-          onClick={() => dispatch(getRandomAlbums())}
-          testId="random-albums-refresh-button"
-        />
+        <RandomizeButton>
+          <ActionButtonIcon
+            icon="refresh"
+            onClick={() => dispatch(getRandomAlbums())}
+            testId="random-albums-refresh-button"
+          />
+        </RandomizeButton>
       </Header>
       {randomAlbums.length === 0 && (
         <EmptyState>
           <p>
             {t('dashboard.noAlbumsFound')}{' '}
-            <TextLink to="/settings">{t('dashboard.scanLibrary')}</TextLink>
+            {canScanLibrary && (
+              <TextLink to={routing.administration}>
+                {t('dashboard.scanLibrary')}
+              </TextLink>
+            )}
           </p>
         </EmptyState>
       )}
@@ -65,15 +78,22 @@ function RandomAlbums() {
 export default RandomAlbums
 
 const Wrapper = styled.div`
-  max-width: 1060px;
+  max-width: ${(props) => props.theme.layout.contentMaxWidth};
   min-width: 780px;
   margin: 0 auto 30px;
 `
 const Header = styled.div`
-  height: ${(props) => props.theme.itemHeight};
+  height: ${(props) => props.theme.layout.itemHeight};
   padding: 0 5px 0 20px;
   display: flex;
   align-items: center;
+`
+const RandomizeButton = styled.div`
+  color: ${(props) => props.theme.buttons.backgroundColor};
+
+  :hover {
+    color: ${(props) => props.theme.buttons.backgroundColorHover};
+  }
 `
 const AlbumsList = styled.div`
   padding: 0 10px;
@@ -89,10 +109,10 @@ const Cell = styled.div`
 `
 const EmptyState = styled.div`
   padding: 5px 20px;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const TextLink = styled(Link)`
-  color: ${(props) => props.theme.highlightFocus};
+  color: ${(props) => props.theme.colors.elementHighlightFocus};
   text-decoration: none;
 
   :hover {

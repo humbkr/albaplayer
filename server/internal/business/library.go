@@ -2,6 +2,7 @@ package business
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 
@@ -16,10 +17,11 @@ const LibraryDefaultAlbum = "Unknown album"
 const LibraryDefaultCompilationArtist = "Various artists"
 
 type LibraryInteractor struct {
-	ArtistRepository ArtistRepository
-	AlbumRepository  AlbumRepository
-	TrackRepository  TrackRepository
-	CoverRepository  CoverRepository
+	ArtistRepository     ArtistRepository
+	AlbumRepository      AlbumRepository
+	TrackRepository      TrackRepository
+	CoverRepository      CoverRepository
+	CollectionRepository CollectionRepository
 	// TODO Check if the library repo should be an interface here.
 	LibraryRepository          LibraryRepository
 	MediaFileRepository        MediaFileRepository
@@ -68,6 +70,11 @@ func (interactor *LibraryInteractor) DeleteArtist(artist *domain.Artist) error {
 // ArtistExists checks if an artist exists or not.
 func (interactor *LibraryInteractor) ArtistExists(artistId int) bool {
 	return interactor.ArtistRepository.Exists(artistId)
+}
+
+// ArtistsCount returns the number of artists in the library.
+func (interactor *LibraryInteractor) ArtistsCount() (int, error) {
+	return interactor.ArtistRepository.Count()
 }
 
 // GetAlbum gets an album from its id.
@@ -128,6 +135,11 @@ func (interactor *LibraryInteractor) DeleteAlbum(album *domain.Album) error {
 // AlbumExists checks if an album exists or not.
 func (interactor *LibraryInteractor) AlbumExists(albumId int) bool {
 	return interactor.AlbumRepository.Exists(albumId)
+}
+
+// AlbumsCount returns the number of albums in the library.
+func (interactor *LibraryInteractor) AlbumsCount() (int, error) {
+	return interactor.AlbumRepository.Count()
 }
 
 // GetTrack gets a track from its id.
@@ -201,6 +213,11 @@ func (interactor *LibraryInteractor) TrackExists(trackId int) bool {
 	return interactor.TrackRepository.Exists(trackId)
 }
 
+// TracksCount returns the number of tracks in the library.
+func (interactor *LibraryInteractor) TracksCount() (int, error) {
+	return interactor.TrackRepository.Count()
+}
+
 // SaveCover saves a cover.
 func (interactor *LibraryInteractor) SaveCover(cover *domain.Cover) error {
 	invalid := false
@@ -261,6 +278,57 @@ func (interactor *LibraryInteractor) CoverHashExists(hash string) int {
 	return interactor.CoverRepository.ExistsByHash(hash)
 }
 
+// GetCollection gets a collection from its id.
+// If no collection found, returns an error.
+func (interactor *LibraryInteractor) GetCollection(collectionId int) (domain.Collection, error) {
+	return interactor.CollectionRepository.Get(collectionId)
+}
+
+// GetAllCollections gets all collections for a given type.
+// If no tracks found, returns an empty collection.
+func (interactor *LibraryInteractor) GetAllCollections(collectionType string, userId int) ([]domain.Collection, error) {
+	return interactor.CollectionRepository.GetAll(collectionType, userId)
+}
+
+// SaveCollection saves a collection.
+func (interactor *LibraryInteractor) SaveCollection(collection *domain.Collection) error {
+	invalid := false
+	var message string
+	if collection.Title == "" {
+		invalid = true
+		message = "cannot save collection: empty title"
+	}
+	if collection.Type == "" {
+		invalid = true
+		message = "cannot save collection: no type provided"
+	}
+	if collection.Type == "" {
+		invalid = true
+		message = "cannot save collection: no user id provided"
+	}
+
+	if invalid {
+		return errors.New(message)
+	}
+
+	return interactor.CollectionRepository.Save(collection)
+}
+
+// DeleteCollection deletes a collection.
+// Returns an error if no collectionId provided.
+func (interactor *LibraryInteractor) DeleteCollection(collection *domain.Collection) error {
+	if collection.Id == 0 {
+		return errors.New("cannot delete collection: id not provided")
+	}
+
+	return interactor.CollectionRepository.Delete(collection)
+}
+
+// CollectionExists checks if a collection exists or not.
+func (interactor *LibraryInteractor) CollectionExists(collectionId int) bool {
+	return interactor.CollectionRepository.Exists(collectionId)
+}
+
 // UpdateLibrary populates and update the library.
 func (interactor *LibraryInteractor) UpdateLibrary() {
 	interactor.mutex.Lock()
@@ -275,7 +343,10 @@ func (interactor *LibraryInteractor) UpdateLibrary() {
 		Key:   "library_last_updated",
 		Value: time.Now().Format("20060102150405"),
 	}
-	_ = interactor.InternalVariableRepository.Save(&lastUpdated)
+	err := interactor.InternalVariableRepository.Save(&lastUpdated)
+	if err != nil {
+		fmt.Errorf("Error saving library last updated time: %s", err.Error())
+	}
 
 	interactor.LibraryIsUpdating = false
 	interactor.mutex.Unlock()

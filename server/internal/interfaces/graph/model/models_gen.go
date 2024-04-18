@@ -2,28 +2,44 @@
 
 package model
 
+type CollectionInput struct {
+	UserID *int    `json:"userId,omitempty"`
+	Title  *string `json:"title,omitempty"`
+	Type   *string `json:"type,omitempty"`
+	Items  *string `json:"items,omitempty"`
+}
+
 type LibraryUpdateState struct {
-	TracksNumber  *int `json:"tracksNumber"`
-	AlbumsNumber  *int `json:"albumsNumber"`
-	ArtistsNumber *int `json:"artistsNumber"`
+	TracksNumber  *int `json:"tracksNumber,omitempty"`
+	AlbumsNumber  *int `json:"albumsNumber,omitempty"`
+	ArtistsNumber *int `json:"artistsNumber,omitempty"`
+}
+
+type Mutation struct {
+}
+
+type Query struct {
 }
 
 type Settings struct {
-	LibraryPath            *string `json:"libraryPath"`
-	CoversPreferredSource  *string `json:"coversPreferredSource"`
-	DisableLibrarySettings *bool   `json:"disableLibrarySettings"`
-	Version                *string `json:"version"`
+	LibraryPath            *string `json:"libraryPath,omitempty"`
+	CoversPreferredSource  *string `json:"coversPreferredSource,omitempty"`
+	DisableLibrarySettings *bool   `json:"disableLibrarySettings,omitempty"`
+	Version                *string `json:"version,omitempty"`
+	AuthEnabled            *bool   `json:"authEnabled,omitempty"`
+	AdminUserCreated       *bool   `json:"adminUserCreated,omitempty"`
 }
 
 type UserInput struct {
-	Name     *string   `json:"name"`
-	Email    *string   `json:"email"`
-	Password *string   `json:"password"`
-	Data     *string   `json:"data"`
-	Roles    []*string `json:"roles"`
+	Name            *string   `json:"name,omitempty"`
+	Email           *string   `json:"email,omitempty"`
+	Password        *string   `json:"password,omitempty"`
+	CurrentPassword *string   `json:"currentPassword,omitempty"`
+	Data            *string   `json:"data,omitempty"`
+	Roles           []*string `json:"roles,omitempty"`
 }
 
 type Variable struct {
-	Key   *string `json:"key"`
-	Value *string `json:"value"`
+	Key   *string `json:"key,omitempty"`
+	Value *string `json:"value,omitempty"`
 }

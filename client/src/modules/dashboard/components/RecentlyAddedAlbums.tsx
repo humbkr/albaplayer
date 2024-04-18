@@ -5,7 +5,11 @@ import { Link } from 'react-router-dom'
 import { immutableNestedSort } from 'common/utils/utils'
 import { useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
-import { LibraryStateType } from '../../library/store'
+import { LibraryStateType } from 'modules/library/store'
+import routing from 'routing'
+import { useGetUserQuery } from 'modules/user/store/api'
+import { userHasRole } from 'modules/user/utils'
+import { USER_ROLE_ADMIN } from 'modules/user/constants'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
 export const getRecentlyAddedAlbums = (
@@ -34,6 +38,9 @@ function RecentlyAddedAlbums() {
     undefined
   )
 
+  const { data: user } = useGetUserQuery()
+  const canScanLibrary = userHasRole(user, USER_ROLE_ADMIN)
+
   useEffect(() => {
     setAlbums(getRecentlyAddedAlbums(library, 6))
   }, [library])
@@ -48,7 +55,11 @@ function RecentlyAddedAlbums() {
           <EmptyState>
             <p>
               {t('dashboard.noAlbumsFound')}{' '}
-              <TextLink to="/settings">{t('dashboard.scanLibrary')}</TextLink>
+              {canScanLibrary && (
+                <TextLink to={routing.administration}>
+                  {t('dashboard.scanLibrary')}
+                </TextLink>
+              )}
             </p>
           </EmptyState>
         )}
@@ -73,16 +84,17 @@ function RecentlyAddedAlbums() {
 export default RecentlyAddedAlbums
 
 const Wrapper = styled.div`
-  background-color: ${(props) => props.theme.cards.backgroundColor};
-  max-width: 1060px;
+  background-color: ${(props) => props.theme.colors.cardLightBackground};
+  max-width: ${(props) => props.theme.layout.contentMaxWidth};
   min-width: 780px;
   margin: 0 auto;
   padding-bottom: 10px;
-  color: ${(props) => props.theme.textPrimaryColor};
+  color: ${(props) => props.theme.colors.textPrimary};
+  border-radius: 3px;
 `
 const Header = styled.div`
   padding: 0 20px;
-  height: ${(props) => props.theme.itemHeight};
+  height: ${(props) => props.theme.layout.itemHeight};
   display: flex;
   align-items: center;
 `
@@ -98,10 +110,10 @@ const Cell = styled.div`
 `
 const EmptyState = styled.div`
   padding: 5px 0 10px;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const TextLink = styled(Link)`
-  color: ${(props) => props.theme.highlightFocus};
+  color: ${(props) => props.theme.colors.elementHighlightFocus};
   text-decoration: none;
 
   :hover {

@@ -23,11 +23,9 @@ func (interactor *UsersInteractor) GetAllUsers() ([]User, error) {
 // SaveUser saves a use.
 // Returns an error if a mandatory property is empty.
 func (interactor *UsersInteractor) SaveUser(entity *User) error {
+	// Check that all required info is present.
 	if entity.Name == "" {
 		return errors.New("cannot save user: empty name")
-	}
-	if entity.Email == "" {
-		return errors.New("cannot save user: empty email")
 	}
 	if entity.Password == "" {
 		return errors.New("cannot save user: empty password")
@@ -36,12 +34,20 @@ func (interactor *UsersInteractor) SaveUser(entity *User) error {
 		return errors.New("cannot save user: no associated role")
 	}
 
+	// Check that a user with the same username does not already exist.
+	users, _ := interactor.GetAllUsers()
+	for _, user := range users {
+		if user.Id != entity.Id && user.Name == entity.Name {
+			return errors.New("cannot save user: another user with the same username already exists")
+		}
+	}
+
 	return interactor.UserRepository.Save(entity)
 }
 
 // DeleteUser deletes a user.
 // Returns an error if no user id provided.
-// User with role owner cannot be deleted.
+// User with role root cannot be deleted.
 func (interactor *UsersInteractor) DeleteUser(entity *User) error {
 	if entity.Id == 0 {
 		return errors.New("cannot delete user: id not provided")
@@ -61,33 +67,34 @@ func (interactor *UsersInteractor) UserExists(entityId int) bool {
 	return interactor.UserRepository.Exists(entityId)
 }
 
+// UserGetFromUsername retrieves a user from its username.
+func (interactor *UsersInteractor) UserGetFromUsername(username string) (User, error) {
+	return interactor.UserRepository.GetFromUsername(username)
+}
+
 // canDeleteUser checks if a user has the permissions to delete another one.
 func canDeleteUser(actionOriginUser User, userToBeDeleted User) (bool, error) {
 	// If we cannot check permissions, abort.
 	if len(userToBeDeleted.Roles) < 1 {
 		return false, errors.New("cannot check user to be deleted roles")
 	}
-	// TODO: implement this later.
-	//if len(actionOriginUser.Roles) < 1 {
-	//	return false, errors.New("cannot check action user roles")
-	//}
-	//if len(userToBeDeleted.Roles) < 1 {
-	//	return false, errors.New("cannot check user to be deleted roles")
-	//}
+	if len(actionOriginUser.Roles) < 1 {
+		return false, errors.New("cannot check action user roles")
+	}
 
 	// Check permissions.
-	if userHasRole(userToBeDeleted, ROLE_OWNER) {
-		return false, errors.New("cannot delete a user with the role 'owner'")
+	if UserHasRole(userToBeDeleted, ROLE_ROOT) {
+		return false, errors.New("cannot delete a user with the role 'root'")
 	}
-	if userHasRole(userToBeDeleted, ROLE_ADMIN) && !userHasRole(actionOriginUser, ROLE_ADMIN) {
+	if UserHasRole(userToBeDeleted, ROLE_ADMIN) && !UserHasRole(actionOriginUser, ROLE_ADMIN) {
 		return false, errors.New("only a user with the 'admin' role can delete another 'admin'")
 	}
 
 	return true, nil
 }
 
-// userHasRole checks if a user has a specific role.
-func userHasRole(user User, roleName Role) bool {
+// UserHasRole checks if a user has a specific role.
+func UserHasRole(user User, roleName Role) bool {
 	for _, value := range user.Roles {
 		if value == roleName {
 			return true

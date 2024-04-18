@@ -1,33 +1,30 @@
-import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
+import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
   addArtist,
   playArtist,
   playArtistAfterCurrent,
 } from 'modules/player/store/store'
-import {
-  playlistsSelector,
-  addArtist as addArtistToPlaylist,
-} from 'modules/playlist/store'
-import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
+import { useGetCollectionsQuery } from 'modules/collections/services/api'
+import { useAddArtistToPlaylist } from 'modules/collections/services/services'
 
 function ArtistContextMenu() {
   const { t } = useTranslation()
 
-  const playlists = useAppSelector((state) => playlistsSelector(state))
+  const { data: { playlists = [] } = {} } = useGetCollectionsQuery()
+  const addArtistToPlaylist = useAddArtistToPlaylist()
   const dispatch = useAppDispatch()
 
   const playlistsItems = playlists.map((item: Playlist) => (
     <Item
       key={item.id}
       onClick={(menuItem: any) =>
-        dispatch(
-          addArtistToPlaylist({
-            playlistId: item.id,
-            artistId: menuItem.props.data.id,
-          })
-        )
+        addArtistToPlaylist({
+          playlistId: item.id,
+          artistId: menuItem.props.data.id,
+        })
       }
     >
       {item.title}
@@ -37,7 +34,7 @@ function ArtistContextMenu() {
     <Item
       key="new"
       onClick={(menuItem: any) =>
-        dispatch(addArtistToPlaylist({ artistId: menuItem.props.data.id }))
+        addArtistToPlaylist({ artistId: menuItem.props.data.id })
       }
     >
       {t('playlists.actions.createNewPlaylist')}

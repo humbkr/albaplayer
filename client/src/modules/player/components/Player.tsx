@@ -15,16 +15,19 @@ import {
   setPreviousTrack,
 } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
-import { constants as APIConstants } from 'api'
+import APIConstants from 'api/constants'
 import { useInterval } from 'common/utils/useInterval'
 import { playerSelector, queueSelector } from 'modules/player/store/selectors'
 import { PlayerPlaybackMode, setCycleNumPos } from 'modules/player/utils'
+import { useTranslation } from 'react-i18next'
 
 function getListeningVolume(volumeBarValue: number) {
   return volumeBarValue ** 2
 }
 
+// TODO https://stackoverflow.com/questions/48277432/load-html5-audio-from-dynamic-content-provider-with-authentication
 function Player() {
+  const { t } = useTranslation()
   const dispatch = useAppDispatch()
 
   const { shuffle, repeat, volume, track, playing, progress, duration } =
@@ -39,6 +42,17 @@ function Player() {
   const onPause = useCallback(async () => {
     dispatch(playerTogglePlayPause(false))
     await playerRef.current?.pause()
+  }, [dispatch])
+
+  const onStop = useCallback(async () => {
+    dispatch(playerTogglePlayPause(false))
+    await playerRef.current?.pause()
+    console.log('stopped by media session')
+    console.log('seekable', playerRef.current?.seekable)
+    console.log('buffered', playerRef.current?.buffered)
+    console.log('error', playerRef.current?.error)
+    console.log('networkState', playerRef.current?.networkState)
+    console.log('readyState', playerRef.current?.readyState)
   }, [dispatch])
 
   const handleTogglePlayPause = useCallback(async () => {
@@ -134,12 +148,45 @@ function Player() {
       playerRef.current.src = APIConstants.BACKEND_BASE_URL + track.src
       playerRef.current.load()
 
+      playerRef.current.onwaiting = () => {
+        console.log('onwaiting')
+        console.log('seekable', playerRef.current?.seekable)
+        console.log('buffered', playerRef.current?.buffered)
+        console.log('error', playerRef.current?.error)
+        console.log('networkState', playerRef.current?.networkState)
+        console.log('readyState', playerRef.current?.readyState)
+      }
+      playerRef.current.onerror = () => {
+        console.log('onerror')
+        console.log('seekable', playerRef.current?.seekable)
+        console.log('buffered', playerRef.current?.buffered)
+        console.log('error', playerRef.current?.error)
+        console.log('networkState', playerRef.current?.networkState)
+        console.log('readyState', playerRef.current?.readyState)
+      }
+      playerRef.current.oninvalid = () => {
+        console.log('oninvalid')
+        console.log('seekable', playerRef.current?.seekable)
+        console.log('buffered', playerRef.current?.buffered)
+        console.log('error', playerRef.current?.error)
+        console.log('networkState', playerRef.current?.networkState)
+        console.log('readyState', playerRef.current?.readyState)
+      }
+      playerRef.current.onsuspend = () => {
+        console.log('onsuspend')
+        console.log('seekable', playerRef.current?.seekable)
+        console.log('buffered', playerRef.current?.buffered)
+        console.log('error', playerRef.current?.error)
+        console.log('networkState', playerRef.current?.networkState)
+        console.log('readyState', playerRef.current?.readyState)
+      }
+
       /* istanbul ignore next */
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
-          title: track?.title || 'unknown',
-          artist: track?.artist?.name || 'unknown',
-          album: track?.album?.title || 'unknown',
+          title: track?.title || t('common.unknown'),
+          artist: track?.artist?.name || t('common.unknown'),
+          album: track?.album?.title || t('common.unknown'),
           artwork: [
             {
               src: APIConstants.BACKEND_BASE_URL + track?.cover,
@@ -164,7 +211,7 @@ function Player() {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.setActionHandler('play', () => onPlay())
       navigator.mediaSession.setActionHandler('pause', () => onPause())
-      navigator.mediaSession.setActionHandler('stop', () => onPause())
+      navigator.mediaSession.setActionHandler('stop', () => onStop())
       navigator.mediaSession.setActionHandler('previoustrack', () =>
         handleSetPreviousTrack()
       )
@@ -183,7 +230,7 @@ function Player() {
         navigator.mediaSession.setActionHandler('nexttrack', null)
       }
     }
-  }, [handleSetNextTrack, handleSetPreviousTrack, onPause, onPlay])
+  }, [handleSetNextTrack, handleSetPreviousTrack, onPause, onPlay, onStop])
 
   // Synchronises the redux progress state to the audioElement one.
   useInterval(

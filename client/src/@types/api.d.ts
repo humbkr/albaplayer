@@ -1,4 +1,6 @@
 export declare global {
+  /* Library API */
+
   type ApiArtist = {
     id: number
     name: string
@@ -29,10 +31,42 @@ export declare global {
     dateAdded?: number
   }
 
+  /* Collections API */
+
+  type ApiCollection = {
+    id: string
+    type: string
+    title: string
+    items: string
+    dateAdded: number
+    dateModified: number
+  }
+
+  type ApiCollectionForCreation = Omit<
+    ApiCollection,
+    'id' | 'dateAdded' | 'dateModified'
+  >
+  type ApiCollectionForUpdate = Omit<
+    ApiCollection,
+    'dateAdded' | 'dateModified'
+  >
+
+  type GetCollectionsResponse = {
+    collections: ApiCollection[]
+  }
+
+  type GetCollectionResponse = {
+    collection: ApiCollection
+  }
+
+  /* Variables API */
+
   type ApiVariable = {
     key?: string
     value: string
   }
+
+  /* Settings API */
 
   type ApiSettings = {
     libraryPath?: string

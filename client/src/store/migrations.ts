@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 // @ts-ignore
 const rootMigrations = {
   0: (state: RootState) => {

@@ -1,27 +1,27 @@
-import { Menu as ContextMenu, Item, Submenu } from 'react-contexify'
+import { Item, Menu as ContextMenu, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
-import { playlistsSelector, addCurrentQueue } from 'modules/playlist/store'
-import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
+import { useGetCollectionsQuery } from 'modules/collections/services/api'
+import { useAddCurrentQueueToPlaylist } from 'modules/collections/services/services'
 
 function QueueActionsMoreContextMenu() {
   const { t } = useTranslation()
 
-  const playlists = useAppSelector((state) => playlistsSelector(state))
-  const dispatch = useAppDispatch()
+  const { data: { playlists = [] } = {} } = useGetCollectionsQuery()
+  const addCurrentQueueToPlaylist = useAddCurrentQueueToPlaylist()
 
   const playlistsItems = playlists.map((item) => (
     <Item
       key={item.id}
       onClick={(menuItem: any) =>
-        dispatch(addCurrentQueue({ playlistId: menuItem.props.data.id }))
+        addCurrentQueueToPlaylist(menuItem.props.data.id)
       }
     >
       {item.title}
     </Item>
   ))
   playlistsItems.push(
-    <Item key="new" onClick={() => dispatch(addCurrentQueue({}))}>
+    <Item key="new" onClick={() => addCurrentQueueToPlaylist()}>
       {t('playlists.actions.createNewPlaylist')}
     </Item>
   )

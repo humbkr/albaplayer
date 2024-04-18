@@ -4,28 +4,34 @@ import thunk from 'redux-thunk'
 import { immutableNestedSort } from 'common/utils/utils'
 import browserSlice, {
   browserInitialState,
-  libraryBrowserSelectArtist,
-  libraryBrowserSelectAlbum,
-  libraryBrowserSearchUpdateInput,
-  libraryBrowserSearchFilter,
-  libraryBrowserInitArtists,
-  libraryBrowserSelectTrack,
-  libraryBrowserSortArtists,
-  libraryBrowserSortAlbums,
-  libraryBrowserSortTracks,
-  libraryBrowserSetFilter,
-  initArtists,
-  selectArtist,
-  selectAlbum,
-  searchFilter,
-  getArtistsList,
   getAlbumsList,
+  getArtistsList,
   getTracksList,
+  initArtists,
   libraryBrowserInit,
+  libraryBrowserInitArtists,
+  libraryBrowserSearchFilter,
+  libraryBrowserSearchUpdateInput,
+  libraryBrowserSelectAlbum,
+  libraryBrowserSelectArtist,
+  libraryBrowserSelectTrack,
+  libraryBrowserSetFilter,
+  libraryBrowserSortAlbums,
+  libraryBrowserSortArtists,
+  libraryBrowserSortTracks,
   search,
+  searchFilter,
+  selectAlbum,
+  selectArtist,
   setSearchFilter,
 } from '../store'
 import { libraryInitialState, LibraryStateType } from '../../library/store'
+
+jest.mock('modules/library/api', () => ({
+  default: {
+    getLibrary: jest.fn(),
+  },
+}))
 
 export const mockLibraryState: LibraryStateType = {
   ...libraryInitialState,

@@ -28,8 +28,8 @@ const TestArtistsFile = TestDataDir + "artists.csv"
 const TestAlbumsFile = TestDataDir + "albums.csv"
 const TestTracksFile = TestDataDir + "tracks.csv"
 const TestCoversFile = TestDataDir + "covers.csv"
-const TestRolesFile = TestDataDir + "roles.csv"
 const TestUsersFile = TestDataDir + "users.csv"
+const TestCollectionsFile = TestDataDir + "collections.csv"
 const TestFSLibDir = TestDataDir + "mp3"
 const TestFSEmptyLibDir = TestDataDir + "empty_library"
 
@@ -54,8 +54,10 @@ func clearTestDataSource(ds *sql.DB) error {
 	_, err = ds.Exec("DELETE FROM users_roles")
 	_, err = ds.Exec("DELETE FROM users")
 	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'users'")
-	_, err = ds.Exec("DELETE FROM roles")
-	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'roles'")
+	_, err = ds.Exec("DELETE FROM users_roles")
+	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'users_roles'")
+	_, err = ds.Exec("DELETE FROM collections")
+	_, err = ds.Exec("DELETE FROM sqlite_sequence WHERE name = 'collections'")
 
 	return err
 }
@@ -208,9 +210,30 @@ func initTestDataSource(ds *sql.DB) (err error) {
 	file.Close()
 
 	// Users <> Roles
-	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(1, 'owner')")
+	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(1, 'root')")
 	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(2, 'admin')")
 	ds.Exec("INSERT INTO users_roles(user_id, role_name) VALUES(3, 'listener')")
+
+	// Collections.
+	file, errOpen = os.OpenFile(TestCollectionsFile, os.O_RDONLY, 0666)
+	if errOpen != nil {
+		fmt.Println(errOpen)
+	}
+
+	r = csv.NewReader(file)
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Insert the row in database.
+		ds.Exec("INSERT INTO collections(id, user_id, type, title, items, created_at) VALUES(?, ?, ?, ?, ?, ?)", record[0], record[1], record[2], record[3], record[4], record[5])
+	}
+	file.Close()
 
 	return nil
 }

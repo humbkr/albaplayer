@@ -1,22 +1,21 @@
-import { Menu as ContextMenu, Item, Submenu, Separator } from 'react-contexify'
+import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 import {
   addTrack,
   playTrack,
   playTrackAfterCurrent,
 } from 'modules/player/store/store'
-import {
-  playlistsSelector,
-  addTrack as addTrackToPlaylist,
-} from 'modules/playlist/store'
-import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
+import { useGetCollectionsQuery } from 'modules/collections/services/api'
+import { useAddTrackToPlaylist } from 'modules/collections/services/services'
 import { search, setSearchFilter } from '../store'
 
 function TrackContextMenu() {
   const { t } = useTranslation()
 
-  const playlists = useAppSelector((state) => playlistsSelector(state))
+  const { data: { playlists = [] } = {} } = useGetCollectionsQuery()
+  const addTrackToPlaylist = useAddTrackToPlaylist()
   const dispatch = useAppDispatch()
 
   const findAllByArtist = (menuItem: any) => {
@@ -33,12 +32,10 @@ function TrackContextMenu() {
     <Item
       key={item.id}
       onClick={(menuItem: any) =>
-        dispatch(
-          addTrackToPlaylist({
-            playlistId: item.id,
-            trackId: menuItem.props.data.id,
-          })
-        )
+        addTrackToPlaylist({
+          playlistId: item.id,
+          trackId: menuItem.props.data.id,
+        })
       }
     >
       {item.title}
@@ -48,7 +45,7 @@ function TrackContextMenu() {
     <Item
       key="new"
       onClick={(menuItem: any) =>
-        dispatch(addTrackToPlaylist({ trackId: menuItem.props.data.id }))
+        addTrackToPlaylist({ trackId: menuItem.props.data.id })
       }
     >
       {t('playlists.actions.createNewPlaylist')}

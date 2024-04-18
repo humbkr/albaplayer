@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { api, apolloClient } from 'api'
 import { initLibrary } from 'modules/library/store'
+import libraryAPI from 'modules/library/api'
+import { processApiError } from 'api/helpers'
+import api from 'api/api'
 
 type Settings = {
   libraryPath: string
@@ -30,10 +32,9 @@ export const initialState: SettingsStateType = {
 const updateLibrary = createAsyncThunk(
   'settings/updateLibrary',
   async (_, thunkAPI) => {
-    const response = await api.scanLibrary()
+    const response = await libraryAPI.scanLibrary()
 
-    // TODO: not fan of calling apolloClient here.
-    await apolloClient.resetStore()
+    // TODO: reset rtkQuery cache.
 
     thunkAPI.dispatch(initLibrary(true))
 
@@ -44,10 +45,9 @@ const updateLibrary = createAsyncThunk(
 const eraseLibrary = createAsyncThunk(
   'settings/eraseLibrary',
   async (_, thunkAPI) => {
-    const response = await api.emptyLibrary()
+    const response = await libraryAPI.emptyLibrary()
 
-    // TODO: not fan of calling apolloClient here.
-    await apolloClient.resetStore()
+    // TODO: reset rtkQuery cache.
 
     thunkAPI.dispatch(initLibrary(true))
 
@@ -80,7 +80,7 @@ const settingsSlice = createSlice({
       state.library.isUpdating = false
     })
     builder.addCase(initSettings.rejected, (state, action) => {
-      state.library.error = api.processApiError(action.payload)
+      state.library.error = processApiError(action.payload)
       state.library.isUpdating = false
     })
     builder.addCase(updateLibrary.pending, (state) => {
@@ -92,7 +92,7 @@ const settingsSlice = createSlice({
       state.library.isUpdating = false
     })
     builder.addCase(updateLibrary.rejected, (state, action) => {
-      state.library.error = api.processApiError(action.payload)
+      state.library.error = processApiError(action.payload)
       state.library.isUpdating = false
     })
     builder.addCase(eraseLibrary.pending, (state) => {
@@ -104,7 +104,7 @@ const settingsSlice = createSlice({
       state.library.isUpdating = false
     })
     builder.addCase(eraseLibrary.rejected, (state, action) => {
-      state.library.error = api.processApiError(action.payload)
+      state.library.error = processApiError(action.payload)
       state.library.isUpdating = false
     })
   },

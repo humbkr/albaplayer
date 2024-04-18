@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { api } from 'api'
+import libraryAPI from 'modules/library/api'
 
 export type LibraryStateType = {
   isFetching: boolean
@@ -39,7 +39,7 @@ const initLibrary = createAsyncThunk(
 )
 
 const fetchLibrary = createAsyncThunk('library/fetch', async (_, thunkAPI) => {
-  const response = await api.getLibrary()
+  const response = await libraryAPI.getLibrary()
 
   if (response?.data.variable?.value) {
     thunkAPI.dispatch(setLastScan(response.data.variable.value))
@@ -104,7 +104,7 @@ export { initLibrary, fetchLibrary }
 export const { setLastScan } = librarySlice.actions
 export default librarySlice.reducer
 
-// TODO: not working
+// TODO: recode this
 export const shouldFetchLibrary = async (libraryState: LibraryStateType) => {
   // If the library is currently fetching, nothing to do.
   if (libraryState.isFetching) {
@@ -114,18 +114,6 @@ export const shouldFetchLibrary = async (libraryState: LibraryStateType) => {
   // If there is no trace of a previous successful fetch, we have to fetch.
   if (!libraryState.lastScan) {
     return true
-  }
-
-  // Get last scan date from backend. If backend last scan > local version, we
-  // have to fetch.
-  try {
-    const response = await api.getVariable('library_last_updated')
-    if (response?.data?.variable?.value) {
-      const remoteLastScan = response.data.variable.value
-      return remoteLastScan > libraryState.lastScan
-    }
-  } catch (e) {
-    // Fail through.
   }
 
   return true

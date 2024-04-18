@@ -8,7 +8,7 @@ RUN yarn install
 RUN yarn build
 
 ## Server build phase
-FROM golang:1.18 AS build_server
+FROM golang:1.22 AS build_server
 
 # Install GCC for target architecture.
 RUN dpkg --add-architecture amd64 \
@@ -40,7 +40,10 @@ RUN cp /app/build/prod.alba.yml /generated/alba.yml
 ## Final image
 FROM debian
 
+# Copy generated files from previous steps
 COPY --from=build_server /generated/ /app/
+
+# Make binary executable
 RUN chmod +x /app/alba
 
 ENTRYPOINT cd /app && ./alba serve

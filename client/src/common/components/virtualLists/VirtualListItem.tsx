@@ -7,18 +7,21 @@ const VirtualListItem = styled.div<{
   width: 100%;
   ${(props) =>
     props.border
-      ? `border-bottom: 1px solid ${props.theme.separatorColor}`
+      ? `border-bottom: 1px solid ${props.theme.colors.separator}`
       : ''};
 
-  height: ${(props) => props.theme.itemHeight};
+  height: ${(props) => props.theme.layout.itemHeight};
   overflow: hidden;
+  transition: background-color 0.15s ease-in-out;
 
   :hover {
-    background-color: ${(props) => props.theme.highlight};
+    background-color: ${(props) => props.theme.colors.elementHighlight};
   }
 
   ${(props) =>
-    props.selected ? `background-color: ${props.theme.highlight}` : ''};
+    props.selected
+      ? `background-color: ${props.theme.colors.elementHighlight}`
+      : ''};
 
   > * {
     display: block;

@@ -1,6 +1,6 @@
 import { DefaultTheme } from 'styled-components'
-import themeDefault from './default'
-import themeDark from './dark'
+import themeDarkGreen from 'themes/darkGreen'
+import themeLight from 'themes/lightGreen'
 import themeDarkOrange from './darkOrange'
 
 type ThemeDefinition = {
@@ -10,22 +10,21 @@ type ThemeDefinition = {
 
 const themes = {
   default: {
-    name: 'Default',
-    config: themeDefault,
-  },
-  dark: {
-    name: 'Dark',
-    config: themeDark,
+    name: 'Dark Green',
+    config: themeDarkGreen,
   },
   darkOrange: {
     name: 'Dark Orange',
     config: themeDarkOrange,
   },
+  light: {
+    name: 'Light Green',
+    config: themeLight,
+  },
 }
 
-export default function getTheme(theme: string): ThemeDefinition | null {
-  // @ts-ignore
-  return themes[theme]
+export default function getTheme(theme: keyof typeof themes): ThemeDefinition {
+  return themes[theme] || themes.default
 }
 
 export { themes }

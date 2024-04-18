@@ -4,7 +4,7 @@ import { contextMenu } from 'react-contexify'
 import { useAppDispatch } from 'store/hooks'
 import { playAlbum } from 'modules/player/store/store'
 import { useTranslation } from 'react-i18next'
-import ActionButtonCircle from '../../../common/components/ActionButtonCircle'
+import ActionButtonCircle from 'common/components/buttons/ActionButtonCircle'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
 
@@ -55,7 +55,6 @@ function AlbumTeaser({ album, selected, setSelected }: Props) {
             <ActionButtonCircle
               icon="play_arrow"
               size={36}
-              backgroundColor="rgba(0,0,0,0.65)"
               onClick={() => dispatch(playAlbum(album.id))}
               testId="album-teaser-play-button"
             />
@@ -63,7 +62,6 @@ function AlbumTeaser({ album, selected, setSelected }: Props) {
               <ActionButtonCircle
                 icon="more_horiz"
                 size={36}
-                backgroundColor="rgba(0,0,0,0.65)"
                 onClick={handleMoreActionsPress}
                 testId="album-teaser-more-button"
               />
@@ -111,10 +109,7 @@ const Actions = styled.div`
   bottom: 10px;
   left: 10px;
   height: 37px;
-
-  > * {
-    margin-right: 10px;
-  }
+  gap: 10px;
 `
 const SecondaryActions = styled.div<{ visible: boolean }>`
   opacity: ${(props) => (props.visible ? 1 : 0)};
@@ -129,5 +124,5 @@ const Title = styled.h2`
 const Artist = styled.div`
   font-size: 0.8em;
   margin-top: 5px;
-  color: ${(props) => props.theme.textSecondaryColor};
+  color: ${(props) => props.theme.colors.textSecondary};
 `

@@ -20,8 +20,25 @@ Covers:
 #        # Path to ssl file.
 #        KeyFile: ""
 
+Users:
+    # Enables users authentication. You can disable this if your server is not public
+    # or if you don't care about users roles management.
+    # Note that by disabling this you lose the ability to have multiple users.
+    AuthEnabled: true
+    # Put a random string here
+    JWTSecret: arandomstring
+    # When AuthEnabled is false, a default user will de used. Select here its roles.
+    # Available roles are: root, admin, listener
+    DefaultUserRoles:
+        - listener
+        - admin
+        - root
+
 DevMode:
     Enabled: false
+    AllowedOrigins:
+      - http://localhost:3000
+      - http://localhost:3001
 
 # Library configuration.
 Library:
