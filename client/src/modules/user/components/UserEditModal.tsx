@@ -18,7 +18,7 @@ type Props = {
   onClose: () => void
 }
 
-function UserEditModal({ user, isOpen, onClose }: Props) {
+export default function UserEditModal({ user, isOpen, onClose }: Props) {
   const { t } = useTranslation()
 
   const [createUser, { isLoading: isLoadingCreate }] = useCreateUserMutation()
@@ -59,7 +59,8 @@ function UserEditModal({ user, isOpen, onClose }: Props) {
       })
     }
 
-    if ('error' in response) {
+    // @ts-ignore
+    if (response?.error) {
       // TODO handle username taken error
       notify(t('common.errors.unknown'), 'error')
     } else {
@@ -94,5 +95,3 @@ function UserEditModal({ user, isOpen, onClose }: Props) {
     </Modal>
   )
 }
-
-export default UserEditModal

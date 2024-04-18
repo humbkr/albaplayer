@@ -23,6 +23,10 @@ const schema = z
     password: z.string().min(1, i18n.t('common.forms.requiredField')),
     confirmPassword: z.string().min(1, i18n.t('common.forms.requiredField')),
   })
+  .refine((data) => !/\s/g.test(data.username as string), {
+    message: i18n.t('user.createRoot.errors.noWhitespace'),
+    path: ['username'],
+  })
   .superRefine(({ confirmPassword, password }, ctx) => {
     if (confirmPassword !== password) {
       ctx.addIssue({
@@ -37,8 +41,7 @@ type Props = {
   onCreateRootUser: () => void
 }
 
-// TODO: write test
-function CreateRootUser({ onCreateRootUser }: Props) {
+export default function CreateRootUser({ onCreateRootUser }: Props) {
   const { t } = useTranslation()
   const { data: config } = useGetAppConfigQuery()
 
@@ -67,7 +70,7 @@ function CreateRootUser({ onCreateRootUser }: Props) {
   }
 
   return (
-    <Container data-testid="login-page">
+    <Container data-testid="create-root-user-page">
       <Content>
         <Logo src={logoIcon} alt="Logo" />
         <LoginForm onSubmit={handleSubmit(onSubmit)}>
@@ -98,7 +101,7 @@ function CreateRootUser({ onCreateRootUser }: Props) {
             label={t('user.createRoot.confirmPassword')}
             required
             register={register}
-            error={errors.password?.message}
+            error={errors.confirmPassword?.message}
             autoComplete="0"
           />
           <Actions>
@@ -111,8 +114,6 @@ function CreateRootUser({ onCreateRootUser }: Props) {
     </Container>
   )
 }
-
-export default CreateRootUser
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.colors.background};

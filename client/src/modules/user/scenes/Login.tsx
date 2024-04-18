@@ -24,7 +24,7 @@ type Props = {
   onLogin: () => void
 }
 
-function Login({ onLogin }: Props) {
+export default function Login({ onLogin }: Props) {
   const { t } = useTranslation()
 
   const [loading, setLoading] = useState(false)
@@ -86,8 +86,6 @@ function Login({ onLogin }: Props) {
     </Container>
   )
 }
-
-export default Login
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.colors.background};

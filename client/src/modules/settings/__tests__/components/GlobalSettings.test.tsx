@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { ThemeProvider } from 'styled-components'
 import themeDefault from 'themes/darkOrange'
-import AppearanceSettings from 'modules/settings/components/AppearanceSettings'
+import GlobalSettings from 'modules/settings/components/GlobalSettings'
 import userEvent from '@testing-library/user-event'
 import { setTheme } from 'modules/settings/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
@@ -27,11 +27,11 @@ describe('AppearanceSettings', () => {
   it('renders correctly', () => {
     render(
       <ThemeProvider theme={themeDefault}>
-        <AppearanceSettings />
+        <GlobalSettings />
       </ThemeProvider>
     )
 
-    expect(screen.getByText('settings.appearance.theme')).toBeInTheDocument()
+    expect(screen.getByText('settings.global.theme')).toBeInTheDocument()
     expect(screen.getByTestId('settings-theme-select')).toBeInTheDocument()
     expect(screen.getByRole('listbox')).toHaveValue('default')
   })
@@ -39,7 +39,7 @@ describe('AppearanceSettings', () => {
   it('changes the theme correctly', async () => {
     render(
       <ThemeProvider theme={themeDefault}>
-        <AppearanceSettings />
+        <GlobalSettings />
       </ThemeProvider>
     )
 

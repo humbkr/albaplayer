@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import AppearanceSettings from 'modules/settings/components/AppearanceSettings'
+import GlobalSettings from 'modules/settings/components/GlobalSettings'
 import ProfileSettingsForm from 'modules/user/components/ProfileSettingsForm'
 import { useTabs } from 'common/utils/useTabs'
 import SettingsPageContainer from 'modules/settings/components/SettingsPageContainer'
@@ -12,10 +12,10 @@ function Preferences() {
 
   const { TabsComponent, currentTab } = useTabs(
     [
-      { id: 'appearance', label: t('settings.appearance.title') },
+      { id: 'global', label: t('settings.global.title') },
       { id: 'profile', label: t('user.profile.title') },
     ],
-    'appearance',
+    'global',
     appConfig?.authEnabled === false ? ['profile'] : []
   )
 
@@ -23,7 +23,7 @@ function Preferences() {
     <SettingsPageContainer>
       <h1>{t('settings.preferences.title')}</h1>
       <TabsComponent />
-      {currentTab === 'appearance' && <AppearanceSettings />}
+      {currentTab === 'global' && <GlobalSettings />}
       {currentTab === 'profile' && <ProfileSettingsForm />}
     </SettingsPageContainer>
   )

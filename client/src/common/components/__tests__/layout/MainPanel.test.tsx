@@ -51,8 +51,25 @@ jest.mock(
 
 describe('MainPanel', () => {
   it('displays a loader if app is not initialised', () => {
-    useAppSelectorMock.mockReturnValueOnce(true)
-    useAppSelectorMock.mockReturnValueOnce(false)
+    useAppSelectorMock.mockReturnValue({
+      isFetching: false,
+      isInitialized: false,
+    })
+
+    render(
+      <BrowserRouter>
+        <MainPanel />
+      </BrowserRouter>
+    )
+
+    expect(screen.getByTestId('main-loading-screen')).toBeInTheDocument()
+  })
+
+  it('displays a loader if data is fetching', () => {
+    useAppSelectorMock.mockReturnValue({
+      isFetching: true,
+      isInitialized: true,
+    })
 
     render(
       <BrowserRouter>
@@ -64,8 +81,10 @@ describe('MainPanel', () => {
   })
 
   it('does not display a loader if app is initialised', () => {
-    useAppSelectorMock.mockReturnValueOnce(false)
-    useAppSelectorMock.mockReturnValueOnce(true)
+    useAppSelectorMock.mockReturnValue({
+      isFetching: false,
+      isInitialized: true,
+    })
 
     render(
       <BrowserRouter>

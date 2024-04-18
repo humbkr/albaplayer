@@ -138,8 +138,8 @@ const en: Translation = {
       clearConfirm:
         'Are you sure you wish to empty the library? This cannot be undone.',
     },
-    appearance: {
-      title: 'Appearance',
+    global: {
+      title: 'Global',
       theme: 'Theme',
     },
     libraryBrowser: {
@@ -155,7 +155,7 @@ const en: Translation = {
       title: 'About',
       version: 'Version: {{version}}',
     },
-    refreshAppData: 'Refresh app data',
+    refreshAppData: 'Synchronise',
   },
   user: {
     login: {
@@ -180,6 +180,7 @@ const en: Translation = {
       errors: {
         generic: 'An error occurred',
         passwordConfirm: 'Passwords do not match',
+        noWhitespace: 'Your username must not contain any whitespace',
       },
     },
     profile: {

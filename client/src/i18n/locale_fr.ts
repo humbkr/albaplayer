@@ -142,8 +142,8 @@ const fr: Translation = {
       clearConfirm:
         'Etes-vous sûr(e) de vouloir vider la librairie ? Cette action ne peut pas être annulée.',
     },
-    appearance: {
-      title: 'Apparence',
+    global: {
+      title: 'Général',
       theme: 'Thème',
     },
     libraryBrowser: {
@@ -159,7 +159,7 @@ const fr: Translation = {
       title: 'A propos',
       version: 'Version: {{version}}',
     },
-    refreshAppData: 'Mettre à jour les données',
+    refreshAppData: 'Synchroniser',
   },
   user: {
     login: {
@@ -184,6 +184,7 @@ const fr: Translation = {
       errors: {
         generic: 'Une erreur est survenue',
         passwordConfirm: 'Les mots de passe ne correspondent pas',
+        noWhitespace: "Le nom d'utilisateur ne doit pas contenir d'espace",
       },
     },
     profile: {

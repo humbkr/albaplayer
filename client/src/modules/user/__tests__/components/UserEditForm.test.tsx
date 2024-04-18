@@ -55,7 +55,7 @@ describe('UserEditForm', () => {
         data: {
           id: 1,
           name: 'Owner User',
-          roles: ['owner', 'admin', 'listener'],
+          roles: ['root', 'admin', 'listener'],
         },
       })
 
@@ -137,7 +137,7 @@ describe('UserEditForm', () => {
         data: {
           id: 1,
           name: 'Owner User',
-          roles: ['owner', 'admin', 'listener'],
+          roles: ['root', 'admin', 'listener'],
         },
       })
 

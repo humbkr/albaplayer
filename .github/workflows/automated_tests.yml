@@ -13,12 +13,12 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.18
+          go-version: 1.22
 
       - name: Setup node
         uses: actions/setup-node@v1
         with:
-          node-version: 16.x
+          node-version: 20.x
 
       - name: Build backend
         run: cd server && go build -v ./...

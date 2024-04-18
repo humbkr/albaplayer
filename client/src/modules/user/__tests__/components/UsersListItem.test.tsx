@@ -94,7 +94,7 @@ describe('UsersListItem', () => {
     const mockUser: User = {
       id: 42,
       name: 'User 42',
-      roles: ['listener', 'admin', 'owner'],
+      roles: ['listener', 'admin', 'root'],
       dateAdded: 1680100956,
     }
 
@@ -106,7 +106,7 @@ describe('UsersListItem', () => {
 
     expect(screen.getByText('42')).toBeInTheDocument()
     expect(screen.getByText('User 42')).toBeInTheDocument()
-    expect(screen.getByText('listener, admin, owner')).toBeInTheDocument()
+    expect(screen.getByText('listener, admin, root')).toBeInTheDocument()
     expect(screen.queryByText('edit')).not.toBeInTheDocument()
     expect(screen.queryByText('delete')).not.toBeInTheDocument()
   })
@@ -116,14 +116,14 @@ describe('UsersListItem', () => {
       data: {
         id: 23,
         name: 'User 23',
-        roles: ['listener', 'admin', 'owner'],
+        roles: ['listener', 'admin', 'root'],
       },
     })
 
     const mockUser: User = {
       id: 1,
       name: 'User 1',
-      roles: ['listener', 'admin', 'owner'],
+      roles: ['listener', 'admin', 'root'],
       dateAdded: 1680100956,
     }
 
@@ -135,7 +135,7 @@ describe('UsersListItem', () => {
 
     expect(screen.getByText('1')).toBeInTheDocument()
     expect(screen.getByText('User 1')).toBeInTheDocument()
-    expect(screen.getByText('listener, admin, owner')).toBeInTheDocument()
+    expect(screen.getByText('listener, admin, root')).toBeInTheDocument()
     expect(screen.queryByText('edit')).not.toBeInTheDocument()
     expect(screen.queryByText('delete')).not.toBeInTheDocument()
   })

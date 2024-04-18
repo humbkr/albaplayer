@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event'
 import { useGetAppConfigQuery } from 'modules/settings/api'
 
 jest.mock(
-  'modules/settings/components/AppearanceSettings',
+  'modules/settings/components/GlobalSettings',
   () =>
     function () {
       return <div data-testid="AppearanceSettings" />
@@ -39,7 +39,7 @@ describe('Preferences scene', () => {
       )
 
       expect(screen.getByText('settings.preferences.title')).toBeInTheDocument()
-      expect(screen.getByText('settings.appearance.title')).toBeInTheDocument()
+      expect(screen.getByText('settings.global.title')).toBeInTheDocument()
       expect(screen.getByText('user.profile.title')).toBeInTheDocument()
       expect(screen.getByTestId('AppearanceSettings')).toBeInTheDocument()
     })
@@ -70,7 +70,7 @@ describe('Preferences scene', () => {
       )
 
       expect(screen.getByText('settings.preferences.title')).toBeInTheDocument()
-      expect(screen.getByText('settings.appearance.title')).toBeInTheDocument()
+      expect(screen.getByText('settings.global.title')).toBeInTheDocument()
       expect(screen.queryByText('user.profile.title')).not.toBeInTheDocument()
       expect(screen.getByTestId('AppearanceSettings')).toBeInTheDocument()
     })

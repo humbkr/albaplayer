@@ -4,7 +4,10 @@ import 'react-contexify/dist/ReactContexify.min.css'
 import { PLAYLIST_PANE, playlistChangePane } from 'modules/collections/store'
 import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
-import { useAddPlaylistToPlaylist, useDeletePlaylist } from 'modules/collections/services/services'
+import {
+  useAddPlaylistToPlaylist,
+  useDeletePlaylist,
+} from 'modules/collections/services/services'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
 import { usePlayPlaylistAfterCurrent } from 'modules/player/services'
 import { EditPlaylistContext } from '../scenes/Playlists'

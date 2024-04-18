@@ -11,10 +11,10 @@ jest.mock(
     }
 )
 jest.mock(
-  'common/components/layout/SideBarNavLink',
+  'common/components/layout/SidebarNavLink',
   () =>
     function () {
-      return <div data-testid="SideBarNavLink"></div>
+      return <div data-testid="SidebarNavLink"></div>
     }
 )
 

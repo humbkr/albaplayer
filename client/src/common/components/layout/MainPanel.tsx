@@ -15,12 +15,11 @@ type Props = {
 }
 
 function MainPanel({ forwardedRef }: Props) {
-  const isFetching = useAppSelector((state) => state.library.isFetching)
-  const isInitialized = useAppSelector((state) => state.library.isInitialized)
+  const { isFetching, isInitialized } = useAppSelector((state) => state.library)
 
   return (
     <>
-      {!isInitialized && <LoadingScreen />}
+      {(!isInitialized || isFetching) && <LoadingScreen />}
       {!isFetching && isInitialized && (
         <Routes>
           <Route

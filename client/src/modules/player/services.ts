@@ -43,9 +43,7 @@ export function usePlayPlaylistAfterCurrent() {
   return (playlistId: string) => {
     const { player } = store.getState()
 
-    dispatch(
-      queueAddTracksAfterCurrent(getTracksFromPlaylist(playlistId))
-    )
+    dispatch(queueAddTracksAfterCurrent(getTracksFromPlaylist(playlistId)))
 
     if (!player.track) {
       dispatch(setItemFromQueue(0))

@@ -5,7 +5,7 @@ import SelectList from 'modules/settings/components/SelectList'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 
-function AppearanceSettings() {
+function GlobalSettings() {
   const { t } = useTranslation()
 
   const theme = useAppSelector((state) => state.settings.theme)
@@ -19,7 +19,7 @@ function AppearanceSettings() {
 
   return (
     <Block data-testid="settings-theme">
-      <h2>{t('settings.appearance.theme')}</h2>
+      <h2>{t('settings.global.theme')}</h2>
       <SelectList
         testId="settings-theme-select"
         options={themeOptions}
@@ -32,7 +32,7 @@ function AppearanceSettings() {
   )
 }
 
-export default AppearanceSettings
+export default GlobalSettings
 
 const Block = styled.div`
   margin-top: 30px;

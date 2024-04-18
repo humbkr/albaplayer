@@ -87,10 +87,15 @@ function Modal({
       </ModalContent>
       {!hideActionsButtons && (
         <Actions>
-          <ActionButton onClick={onClose}>
+          <ActionButton onClick={onClose} testId="modal-cancel">
             {cancelActionLabel || t('common.cancel')}
           </ActionButton>
-          <ActionButton raised onClick={onValidate} loading={mainActionLoading}>
+          <ActionButton
+            raised
+            onClick={onValidate}
+            loading={mainActionLoading}
+            testId="modal-validate"
+          >
             {mainActionLabel || t('common.validate')}
           </ActionButton>
         </Actions>

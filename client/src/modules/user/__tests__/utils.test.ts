@@ -15,7 +15,7 @@ describe('user utils', () => {
       expect(
         userHasRole(
           { id: 1, name: 'User 1', roles: ['admin', 'listener'] },
-          'owner'
+          'root'
         )
       ).toBe(false)
     })

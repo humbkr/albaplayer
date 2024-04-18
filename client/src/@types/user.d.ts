@@ -1,5 +1,5 @@
 export declare global {
-  type Role = 'owner' | 'admin' | 'listener'
+  type Role = 'root' | 'admin' | 'listener'
 
   type User = {
     id: number

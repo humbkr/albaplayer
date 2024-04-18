@@ -35,7 +35,7 @@ jest.mock(
   'modules/user/scenes/CreateRootUser',
   () =>
     function () {
-      return <div />
+      return <div data-testid="create-root-user-page" />
     }
 )
 
@@ -44,7 +44,9 @@ describe('Layout', () => {
     useInitAppMock.mockReturnValue({
       isLoading: true,
       shouldDisplayLogin: false,
+      shouldDisplayRootCreation: false,
       onLogin: jest.fn(),
+      onCreateRootUser: jest.fn(),
     })
 
     render(
@@ -55,6 +57,9 @@ describe('Layout', () => {
 
     expect(screen.getByTestId('app-loader')).toBeInTheDocument()
     expect(screen.queryByTestId('login-page')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('create-root-user-page')
+    ).not.toBeInTheDocument()
     expect(screen.queryByTestId('sidebar')).not.toBeInTheDocument()
     expect(screen.queryByTestId('action-bar')).not.toBeInTheDocument()
     expect(screen.queryByTestId('main-panel')).not.toBeInTheDocument()
@@ -64,7 +69,9 @@ describe('Layout', () => {
     useInitAppMock.mockReturnValue({
       isLoading: false,
       shouldDisplayLogin: true,
+      shouldDisplayRootCreation: false,
       onLogin: jest.fn(),
+      onCreateRootUser: jest.fn(),
     })
 
     render(
@@ -80,11 +87,35 @@ describe('Layout', () => {
     expect(screen.queryByTestId('main-panel')).not.toBeInTheDocument()
   })
 
+  it('should display the root user creation page if no user configured yet', () => {
+    useInitAppMock.mockReturnValue({
+      isLoading: false,
+      shouldDisplayLogin: false,
+      shouldDisplayRootCreation: true,
+      onLogin: jest.fn(),
+      onCreateRootUser: jest.fn(),
+    })
+
+    render(
+      <ThemeProvider theme={themeDefault}>
+        <Layout />
+      </ThemeProvider>
+    )
+
+    expect(screen.queryByTestId('app-loader')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('login-page')).not.toBeInTheDocument()
+    expect(screen.getByTestId('create-root-user-page')).toBeInTheDocument()
+    expect(screen.queryByTestId('sidebar')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('action-bar')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('main-panel')).not.toBeInTheDocument()
+  })
+
   it('should display the app if app initialised and user is logged in', () => {
     useInitAppMock.mockReturnValue({
       isLoading: false,
       shouldDisplayLogin: false,
       onLogin: jest.fn(),
+      onCreateRootUser: jest.fn(),
     })
 
     render(

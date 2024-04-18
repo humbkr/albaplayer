@@ -12,7 +12,7 @@ const loginMock = login as jest.Mock
 
 const mockOnLogin = jest.fn()
 
-describe('Login screen', () => {
+describe('User - Login screen', () => {
   beforeEach(() => {
     loginMock.mockReturnValue(Promise.resolve({ id: 1, name: 'User 1' }))
   })

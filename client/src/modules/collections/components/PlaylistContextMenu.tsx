@@ -49,9 +49,7 @@ function PlaylistContextMenu() {
       {(value: () => void) => (
         <ContextMenu id="playlist-context-menu">
           <Item
-            onClick={(menuItem: any) =>
-              playPlaylist(menuItem.props.data.id)
-            }
+            onClick={(menuItem: any) => playPlaylist(menuItem.props.data.id)}
           >
             {t('player.actions.playNow')}
           </Item>
@@ -63,9 +61,7 @@ function PlaylistContextMenu() {
             {t('player.actions.playAfter')}
           </Item>
           <Item
-            onClick={(menuItem: any) =>
-              addPlaylist(menuItem.props.data.id)
-            }
+            onClick={(menuItem: any) => addPlaylist(menuItem.props.data.id)}
           >
             {t('player.actions.addToQueue')}
           </Item>

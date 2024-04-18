@@ -1,6 +1,10 @@
 import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
-import { addArtist, playArtist, playArtistAfterCurrent } from 'modules/player/store/store'
+import {
+  addArtist,
+  playArtist,
+  playArtistAfterCurrent,
+} from 'modules/player/store/store'
 import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
