@@ -13,6 +13,13 @@ jest.mock(
     }
 )
 jest.mock(
+  'modules/settings/components/LibraryBrowserSettings',
+  () =>
+    function () {
+      return <div data-testid="LibraryBrowserSettings" />
+    }
+)
+jest.mock(
   'modules/user/components/ProfileSettingsForm',
   () =>
     function () {
@@ -54,6 +61,18 @@ describe('Preferences scene', () => {
       await userEvent.click(screen.getByText('user.profile.title'))
 
       expect(screen.getByTestId('ProfileSettingsForm')).toBeInTheDocument()
+    })
+
+    it('should display library browser settings if corresponding tab is selected', async () => {
+      render(
+        <ThemeProvider theme={themeDefault}>
+          <Preferences />
+        </ThemeProvider>
+      )
+
+      await userEvent.click(screen.getByText('settings.libraryBrowser.title'))
+
+      expect(screen.getByTestId('LibraryBrowserSettings')).toBeInTheDocument()
     })
   })
 

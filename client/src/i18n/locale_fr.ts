@@ -91,12 +91,14 @@ const fr: Translation = {
         year: 'année',
         artist: 'artiste',
       },
+      addedToQueue: '{{itemName}} ajouté à la liste de lecture',
     },
     artists: {
       title: 'Artistes',
       sort: {
         name: 'nom',
       },
+      addedToQueue: '{{itemName}} ajouté à la liste de lecture',
     },
     tracks: {
       title: 'Chansons',
@@ -107,6 +109,7 @@ const fr: Translation = {
         album: 'album',
         number: 'numéro de chanson',
       },
+      addedToQueue: '{{itemName}} ajouté à la liste de lecture',
     },
   },
   dashboard: {

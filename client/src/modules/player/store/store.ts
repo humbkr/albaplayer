@@ -45,121 +45,165 @@ export const setItemFromQueue = (itemPosition: number): AppThunk =>
       })
   }
 
-export const playTrack =
-  (id: string): AppThunk =>
+export const playTrack = (id: string) => playTracks([id])
+export const playTracks =
+  (trackIds: string[]): AppThunk =>
   (dispatch, getState) => {
     const { library } = getState()
 
-    const track = { ...library.tracks[id] }
-    track.artist = library.artists[track.artistId]
-    track.album = library.albums[track.albumId]
+    const tracks = trackIds.map((id) => {
+      const track = { ...library.tracks[id] }
+      track.artist = library.artists[track.artistId]
+      track.album = library.albums[track.albumId]
+
+      return track
+    })
 
     dispatch(queueClear())
-    dispatch(queueAddTracks([track]))
+    dispatch(queueAddTracks(tracks))
     dispatch(setItemFromQueue(0))
     dispatch(playerTogglePlayPause(true))
   }
 
-export const playAlbum =
-  (id: string): AppThunk =>
+export const playAlbum = (id: string) => playAlbums([id])
+export const playAlbums =
+  (albumIds: string[]): AppThunk =>
   (dispatch, getState) => {
     const { library } = getState()
 
-    dispatch(queueClear())
-    dispatch(
-      queueAddTracks(
-        immutableSortTracks(getTracksFromAlbum(id, library), 'number')
-      )
+    const tracks = albumIds.flatMap((id) =>
+      immutableSortTracks(getTracksFromAlbum(id, library), 'number')
     )
+
+    dispatch(queueClear())
+    dispatch(queueAddTracks(tracks))
     dispatch(setItemFromQueue(0))
     dispatch(playerTogglePlayPause(true))
   }
 
-export const playArtist =
-  (id: string): AppThunk =>
+export const playArtist = (id: string) => playArtists([id])
+export const playArtists =
+  (artistIds: string[]): AppThunk =>
   (dispatch, getState) => {
     const { library } = getState()
 
+    const tracks = artistIds.flatMap((id) =>
+      immutableSortTracks(getTracksFromArtist(id, library), 'number')
+    )
+
     dispatch(queueClear())
-    dispatch(queueAddTracks(getTracksFromArtist(id, library)))
+    dispatch(queueAddTracks(tracks))
     dispatch(setItemFromQueue(0))
     dispatch(playerTogglePlayPause(true))
   }
 
-export const playTrackAfterCurrent =
-  (id: string): AppThunk =>
+export const playTrackAfterCurrent = (id: string) =>
+  playTracksAfterCurrent([id])
+export const playTracksAfterCurrent =
+  (trackIds: string[]): AppThunk =>
   (dispatch, getState) => {
     const { library, player } = getState()
 
-    const track = { ...library.tracks[id] }
-    track.artist = library.artists[track.artistId]
-    track.album = library.albums[track.albumId]
+    const tracks = trackIds.map((id) => {
+      const track = { ...library.tracks[id] }
+      track.artist = library.artists[track.artistId]
+      track.album = library.albums[track.albumId]
 
-    dispatch(queueAddTracksAfterCurrent([track]))
+      return track
+    })
+
+    dispatch(queueAddTracksAfterCurrent(tracks))
 
     if (!player.track) {
       dispatch(setItemFromQueue(0))
     }
   }
 
-export const playAlbumAfterCurrent =
-  (id: string): AppThunk =>
+export const playAlbumAfterCurrent = (id: string) =>
+  playAlbumsAfterCurrent([id])
+export const playAlbumsAfterCurrent =
+  (albumIds: string[]): AppThunk =>
   (dispatch, getState) => {
     const { library, player } = getState()
 
-    dispatch(queueAddTracksAfterCurrent(getTracksFromAlbum(id, library)))
+    const tracks = albumIds.flatMap((id) =>
+      immutableSortTracks(getTracksFromAlbum(id, library), 'number')
+    )
+
+    dispatch(queueAddTracksAfterCurrent(tracks))
 
     if (!player.track) {
       dispatch(setItemFromQueue(0))
     }
   }
 
-export const playArtistAfterCurrent =
-  (id: string): AppThunk =>
+export const playArtistAfterCurrent = (id: string) =>
+  playArtistsAfterCurrent([id])
+export const playArtistsAfterCurrent =
+  (artistIds: string[]): AppThunk =>
   (dispatch, getState) => {
     const { library, player } = getState()
 
-    dispatch(queueAddTracksAfterCurrent(getTracksFromArtist(id, library)))
+    const tracks = artistIds.flatMap((id) =>
+      immutableSortTracks(getTracksFromArtist(id, library), 'number')
+    )
+
+    dispatch(queueAddTracksAfterCurrent(tracks))
 
     if (!player.track) {
       dispatch(setItemFromQueue(0))
     }
   }
 
-export const addTrack =
-  (id: string): AppThunk =>
+export const addTrack = (id: string) => addTracks([id])
+export const addTracks =
+  (trackIds: string[]): AppThunk =>
   (dispatch, getState) => {
     const { library, player } = getState()
 
-    const track = { ...library.tracks[id] }
-    track.artist = library.artists[track.artistId]
-    track.album = library.albums[track.albumId]
+    const tracks = trackIds.map((id) => {
+      const track = { ...library.tracks[id] }
+      track.artist = library.artists[track.artistId]
+      track.album = library.albums[track.albumId]
 
-    dispatch(queueAddTracks([track]))
+      return track
+    })
+
+    dispatch(queueAddTracks(tracks))
 
     if (!player.track) {
       dispatch(setItemFromQueue(0))
     }
   }
 
-export const addAlbum =
-  (id: string): AppThunk =>
+export const addAlbum = (id: string) => addAlbums([id])
+export const addAlbums =
+  (albumIds: string[]): AppThunk =>
   (dispatch, getState) => {
     const { library, player } = getState()
 
-    dispatch(queueAddTracks(getTracksFromAlbum(id, library)))
+    const tracks = albumIds.flatMap((id) =>
+      immutableSortTracks(getTracksFromAlbum(id, library), 'number')
+    )
+
+    dispatch(queueAddTracks(tracks))
 
     if (!player.track) {
       dispatch(setItemFromQueue(0))
     }
   }
 
-export const addArtist =
-  (id: string): AppThunk =>
+export const addArtist = (id: string): AppThunk => addArtists([id])
+export const addArtists =
+  (artistIds: string[]): AppThunk =>
   (dispatch, getState) => {
     const { library, player } = getState()
 
-    dispatch(queueAddTracks(getTracksFromArtist(id, library)))
+    const tracks = artistIds.flatMap((id) =>
+      immutableSortTracks(getTracksFromArtist(id, library), 'number')
+    )
+
+    dispatch(queueAddTracks(tracks))
 
     if (!player.track) {
       dispatch(setItemFromQueue(0))

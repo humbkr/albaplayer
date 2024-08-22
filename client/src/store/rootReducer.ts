@@ -13,7 +13,7 @@ import userReducer from 'modules/user/store/store'
 const settingsPersistConfig = {
   key: 'settings',
   storage,
-  whitelist: ['theme'],
+  whitelist: ['browser', 'theme'],
 }
 
 const playerPersistConfig = {

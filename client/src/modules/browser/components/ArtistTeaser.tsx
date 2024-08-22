@@ -1,6 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
+import { useAppSelector } from 'store/hooks'
+import { useAddArtist, usePlayArtist } from 'modules/browser/services'
+import { notify } from 'common/utils/notifications'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   item: Artist
@@ -9,6 +13,31 @@ type Props = {
 }
 
 function ArtistTeaser({ item, index, onContextMenu }: Props) {
+  const { onClickBehavior } = useAppSelector((state) => state.settings.browser)
+
+  const { t } = useTranslation()
+
+  const playArtist = usePlayArtist()
+  const addArtist = useAddArtist()
+
+  const onDoubleClick = () => {
+    switch (onClickBehavior) {
+      case 'play':
+        playArtist(item.id)
+        break
+      case 'add':
+        addArtist(item.id)
+        notify(
+          t('browser.artists.addedToQueue', { itemName: item.name }),
+          'info'
+        )
+        break
+      default:
+        // Do nothing.
+        break
+    }
+  }
+
   const onRightClick = (e: React.MouseEvent) => {
     e.preventDefault()
     onContextMenu(item.id, index)
@@ -22,7 +51,10 @@ function ArtistTeaser({ item, index, onContextMenu }: Props) {
   }
 
   return (
-    <ArtistTeaserWrapper onContextMenu={onRightClick}>
+    <ArtistTeaserWrapper
+      onContextMenu={onRightClick}
+      onDoubleClick={onDoubleClick}
+    >
       <ArtistTeaserName>{item.name}</ArtistTeaserName>
     </ArtistTeaserWrapper>
   )
@@ -42,4 +74,5 @@ const ArtistTeaserWrapper = styled.div`
   height: ${(props) => props.theme.layout.itemHeight};
   padding: 0 15px;
   cursor: pointer;
+  user-select: none;
 `
