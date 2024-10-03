@@ -12,9 +12,6 @@ export const browserInitialState: BrowserState = {
   selectedArtists: '0',
   selectedAlbums: '0',
   selectedTracks: '0',
-  currentPositionArtists: 0,
-  currentPositionAlbums: 0,
-  currentPositionTracks: 0,
   search: {
     term: '',
     filter: 'all',
@@ -38,7 +35,6 @@ const browserSlice = createSlice({
       state: BrowserState,
       action: PayloadAction<{
         artistId: string
-        index: number
         filteredAlbums: Album[]
         filteredTracks: Track[]
       }>
@@ -46,9 +42,6 @@ const browserSlice = createSlice({
       state.selectedAlbums = '0'
       state.selectedTracks = '0'
       state.selectedArtists = action.payload.artistId
-      state.currentPositionArtists = action.payload.index
-      state.currentPositionAlbums = 0
-      state.currentPositionTracks = 0
       state.albums = action.payload.filteredAlbums
       state.tracks = action.payload.filteredTracks
     },
@@ -56,25 +49,20 @@ const browserSlice = createSlice({
       state: BrowserState,
       action: PayloadAction<{
         albumId: string
-        index: number
         filteredTracks: Track[]
       }>
     ) {
       state.selectedTracks = '0'
       state.selectedAlbums = action.payload.albumId
-      state.currentPositionAlbums = action.payload.index
-      state.currentPositionTracks = 0
       state.tracks = action.payload.filteredTracks
     },
     libraryBrowserSelectTrack(
       state: BrowserState,
       action: PayloadAction<{
         trackId: string
-        index: number
       }>
     ) {
       state.selectedTracks = action.payload.trackId
-      state.currentPositionTracks = action.payload.index
     },
     libraryBrowserSortArtists(
       state: BrowserState,
@@ -113,9 +101,6 @@ const browserSlice = createSlice({
       state.selectedArtists = '0'
       state.selectedAlbums = '0'
       state.selectedTracks = '0'
-      state.currentPositionArtists = 0
-      state.currentPositionAlbums = 0
-      state.currentPositionTracks = 0
       // Set search filtered lists and term in memory.
       state.search = {
         term: action.payload.searchTerm,
@@ -161,19 +146,16 @@ export const libraryBrowserInit = (): AppThunk => (dispatch, getState) => {
   dispatch(
     selectArtist({
       artistId: state.libraryBrowser.selectedArtists,
-      index: state.libraryBrowser.currentPositionArtists,
     })
   )
   dispatch(
     selectAlbum({
       albumId: state.libraryBrowser.selectedAlbums,
-      index: state.libraryBrowser.currentPositionAlbums,
     })
   )
   dispatch(
     libraryBrowserSelectTrack({
       trackId: state.libraryBrowser.selectedTracks,
-      index: state.libraryBrowser.currentPositionTracks,
     })
   )
 }
@@ -198,7 +180,7 @@ export const search =
       dispatch(searchFilter(text))
     } else if (text.length === 0) {
       // Reinitialise library browser.
-      dispatch(selectArtist({ artistId: '0', index: 0 }))
+      dispatch(selectArtist({ artistId: '0' }))
       // Others tabs will be reinitialised automatically.
       dispatch(libraryBrowserInit())
     }
@@ -221,7 +203,7 @@ export const setSearchFilter =
   }
 
 export const selectArtist =
-  ({ artistId, index }: { artistId: string; index: number }): AppThunk =>
+  ({ artistId }: { artistId: string }): AppThunk =>
   (dispatch, getState) => {
     const { libraryBrowser, library } = getState()
 
@@ -292,7 +274,6 @@ export const selectArtist =
     dispatch(
       libraryBrowserSelectArtist({
         artistId,
-        index,
         filteredAlbums: hydratedAlbums,
         filteredTracks: hydratedTracks,
       })
@@ -300,7 +281,7 @@ export const selectArtist =
   }
 
 export const selectAlbum =
-  ({ albumId, index }: { albumId: string; index: number }): AppThunk =>
+  ({ albumId }: { albumId: string }): AppThunk =>
   (dispatch, getState) => {
     const { libraryBrowser, library } = getState()
 
@@ -371,7 +352,6 @@ export const selectAlbum =
     dispatch(
       libraryBrowserSelectAlbum({
         albumId,
-        index,
         filteredTracks: hydratedTracks,
       })
     )
@@ -595,7 +575,7 @@ const getTracks = (state: RootState) => state.libraryBrowser.tracks
 const getTracksSortOrder = (state: RootState) => state.libraryBrowser.sortTracks
 export const getTracksList = createSelector(
   [getTracks, getTracksSortOrder],
-  (list: Track[], sortOrder: SortOrder) => {
+  (list: Track[], sortOrder: TracksSortOptions) => {
     const itemList = immutableSortTracks(list, sortOrder)
 
     // Add a "All" item at the beginning of the list

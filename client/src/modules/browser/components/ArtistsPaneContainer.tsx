@@ -3,11 +3,7 @@ import styled from 'styled-components'
 import { addArtist, playArtist } from 'modules/player/store/store'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import ArtistContextMenu from 'modules/browser/components/ArtistContextMenu'
-import {
-  getArtistsList,
-  libraryBrowserSortArtists,
-  selectArtist,
-} from 'modules/browser/store'
+import { getArtistsList, selectArtist } from 'modules/browser/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
@@ -32,28 +28,13 @@ function ArtistsPaneContainer({
   const { t } = useTranslation()
 
   const artists = useAppSelector((state) => getArtistsList(state))
-  const orderBy = useAppSelector((state) => state.libraryBrowser.sortArtists)
-  const currentPosition = useAppSelector(
-    (state) => state.libraryBrowser.currentPositionArtists
-  )
   const currentArtist = useAppSelector(
     (state) => state.libraryBrowser.selectedArtists
   )
   const dispatch = useAppDispatch()
 
-  const orderByOptions: { value: ArtistsSortOptions; label: string }[] = [
-    { value: 'name', label: t('browser.artists.sort.name') },
-  ]
-
-  // Change event handler for LibraryBrowserListHeader.
-  const onSortChangeHandler = (event: React.MouseEvent<HTMLSelectElement>) => {
-    dispatch(
-      libraryBrowserSortArtists(event.currentTarget.value as ArtistsSortOptions)
-    )
-  }
-
-  const onItemClick = (itemId: string, index: number) => {
-    dispatch(selectArtist({ artistId: itemId, index }))
+  const onItemClick = (itemId: string) => {
+    dispatch(selectArtist({ artistId: itemId }))
   }
 
   const handlePlayNow = (artistId: string) => {
@@ -75,17 +56,14 @@ function ArtistsPaneContainer({
   return (
     <ArtistsPaneWrapper>
       <LibraryBrowserPane>
-        <LibraryBrowserListHeader
-          title={t('browser.artists.title')}
-          orderBy={orderBy}
-          orderByOptions={orderByOptions}
-          onChange={onSortChangeHandler}
-        />
+        <LibraryBrowserListHeader title={t('browser.artists.title')} />
         <VirtualList
           ref={forwardedRef}
           items={artists}
           itemDisplay={ArtistTeaser}
-          currentPosition={currentPosition}
+          currentPosition={
+            artists.findIndex((artist) => artist.id === currentArtist) || 0
+          }
           onItemClick={onItemClick}
           onKeyDown={onKeyDown}
         />

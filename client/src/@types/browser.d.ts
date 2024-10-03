@@ -17,9 +17,6 @@ export declare global {
     selectedArtists: string
     selectedAlbums: string
     selectedTracks: string
-    currentPositionArtists: number
-    currentPositionAlbums: number
-    currentPositionTracks: number
     search: {
       term: string
       filter: SearchFilter

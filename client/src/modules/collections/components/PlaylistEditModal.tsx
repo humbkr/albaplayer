@@ -44,9 +44,10 @@ function PlaylistEditModal({ addMode, isOpen, onClose }: Props) {
     onClose()
   }
 
-  const title = playlist
-    ? t('playlists.actions.editPlaylist')
-    : t('playlists.actions.createANewPlaylist')
+  const title =
+    playlist && !addMode
+      ? t('playlists.actions.editPlaylist')
+      : t('playlists.actions.createANewPlaylist')
   const actionLabel = playlist ? t('common.edit') : t('common.create')
 
   return (
@@ -61,7 +62,7 @@ function PlaylistEditModal({ addMode, isOpen, onClose }: Props) {
     >
       <PlaylistEditForm
         formRef={formRef}
-        playlist={playlist}
+        playlist={addMode ? undefined : playlist}
         onSubmit={onSubmit}
       />
     </Modal>

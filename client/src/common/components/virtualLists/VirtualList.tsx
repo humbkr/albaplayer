@@ -14,7 +14,7 @@ type Props = {
   items: Array<any>
   itemDisplay: ComponentType<ItemDisplayProps>
   currentPosition: number
-  onItemClick: (itemId: string, index: number) => void
+  onItemClick: (itemId: string) => void
   onKeyDown: (e: KeyboardEvent) => void
 }
 
@@ -54,7 +54,7 @@ function VirtualList({
           index: nextIndex,
           behavior: 'auto',
           done: () => {
-            onItemClick(items[nextIndex].id, nextIndex)
+            onItemClick(items[nextIndex].id)
           },
         })
         e.preventDefault()
@@ -95,14 +95,14 @@ function VirtualList({
               selected={selected}
               border
               key={item.id}
-              onClick={() => onItemClick(item.id, index)}
+              onClick={() => onItemClick(item.id)}
             >
               <Display
                 item={item}
                 selected={selected}
                 index={index}
                 // Select item on context click.
-                onContextMenu={() => onItemClick(item.id, index)}
+                onContextMenu={() => onItemClick(item.id)}
               />
             </VirtualListItem>
           )
