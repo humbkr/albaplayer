@@ -246,7 +246,7 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (bool, error)
 	return err == nil, err
 }
 
-// CreateCollection is the resolver for the createCollection field.
+// CreateCollection is the resolver for the createCollection mutation.
 func (r *mutationResolver) CreateCollection(ctx context.Context, input model.CollectionInput) (*model.Collection, error) {
 	user := auth.GetUserFromContext(ctx)
 	if user.Id == 0 {

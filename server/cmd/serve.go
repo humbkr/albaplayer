@@ -60,8 +60,9 @@ var serveCmd = &cobra.Command{
 		}
 
 		// Serve media files streaming endpoint.
+		var streamMiddleware = auth.StreamMiddleware()
 		mediaFilesHandler := interfaces.NewMediaStreamHandler(&libraryInteractor)
-		mux.Handle("/stream/", http.StripPrefix("/stream/", middleware(mediaFilesHandler)))
+		mux.Handle("/stream/", http.StripPrefix("/stream/", streamMiddleware(mediaFilesHandler)))
 
 		// Serve media files streaming endpoint.
 		coverFilesHandler := interfaces.NewCoverStreamHandler(&libraryInteractor)

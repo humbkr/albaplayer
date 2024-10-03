@@ -194,6 +194,28 @@ func NoAuthMiddleware() func(http.Handler) http.Handler {
 	}
 }
 
+// StreamMiddleware handles the streaming media so the playback does not stop even when the
+// html5 audio tag makes calls without sending any cookie.
+func StreamMiddleware() func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Check track ids in memory
+			isSameTrackRequested := true
+
+			// Save track id in memory.
+
+			if isSameTrackRequested || !viper.GetBool("Users.AuthEnabled") {
+				// If track id matches one of the ids in memory, don't run the authentication.
+				next.ServeHTTP(w, r)
+			} else {
+				// If track id does not match, run the authentication
+				authMiddleware := AuthMiddleware()
+				authMiddleware(next)
+			}
+		})
+	}
+}
+
 func addAuthCookiesToResponse(w http.ResponseWriter, tokens TokenPair) {
 	accessTokenCookie := &http.Cookie{
 		Name:     "access_token",
