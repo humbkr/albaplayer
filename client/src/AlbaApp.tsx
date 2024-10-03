@@ -1,24 +1,24 @@
-import {
-  createGlobalStyle,
-  DefaultTheme,
-  ThemeProvider,
-} from 'styled-components'
+import { createGlobalStyle, DefaultTheme, ThemeProvider } from 'styled-components'
 import MaterialIconsWoff2 from 'common/assets/fonts/MaterialIcons-Regular.woff2'
 import MaterialIconsTtf from 'common/assets/fonts/MaterialIcons-Regular.ttf'
 import getTheme from 'themes'
 import { useAppSelector } from 'store/hooks'
-import Layout from 'common/components/layout/Layout'
+import DesktopLayout from 'common/components/layout/Layout'
+import MobileLayout from 'common/components/layout/Layout.mobile'
 import { NotificationsContainer } from 'common/utils/notifications'
 import 'react-toastify/dist/ReactToastify.css'
+import { isMobileBrowser } from 'common/utils/utils'
 
 function AlbaApp() {
   const currentThemeName = useAppSelector((state) => state.settings.theme)
   const theme = getTheme(currentThemeName)
 
+  const isMobile = isMobileBrowser()
+
   return (
     <ThemeProvider theme={theme?.config}>
       <GlobalStyle />
-      <Layout />
+      {isMobile ? <MobileLayout /> : <DesktopLayout />}
       <NotificationsContainer />
     </ThemeProvider>
   )
@@ -36,6 +36,10 @@ const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
        local('MaterialIcons-Regular'),
        url(${MaterialIconsWoff2}) format('woff2'),
        url(${MaterialIconsTtf}) format('truetype');
+  }
+
+  :root {
+    overscroll-behavior: none;
   }
   
   * {

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import NowPlayingQueue from 'modules/now_playing/components/NowPlayingQueue'
 import NowPlayingHeader from 'modules/now_playing/components/NowPlayingHeader'
 import Scroller from 'common/components/Scroller'
+import { devices } from 'themes/breakpoints'
 
 function NowPlaying() {
   const [headerIsPinned, setHeaderIsPinned] = useState(false)
@@ -34,17 +35,21 @@ function NowPlaying() {
 export default NowPlaying
 
 const Container = styled.div`
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 0;
   max-width: ${(props) => props.theme.layout.contentMaxWidth};
   position: relative;
   margin: 0 auto;
+
+  @media only screen and ${devices.md} {
+    padding: 30px 0;
+  }
 `
 const NowPlayingQueueWrapper = styled.div<{ headerIsPinned: boolean }>`
   width: 100%;
-  padding: 30px 50px;
+  padding: 30px 0;
 
   ${({ headerIsPinned }) =>
     headerIsPinned &&
@@ -54,5 +59,9 @@ const NowPlayingQueueWrapper = styled.div<{ headerIsPinned: boolean }>`
 
   > h2 {
     margin-bottom: 20px;
+  }
+
+  @media only screen and ${devices.md} {
+    padding: 30px 50px;
   }
 `

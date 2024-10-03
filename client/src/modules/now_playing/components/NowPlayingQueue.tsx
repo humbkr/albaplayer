@@ -3,6 +3,7 @@ import { queueReplace, queueSetCurrent } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import React from 'react'
+import { devices } from 'themes/breakpoints'
 import NowPlayingQueueHeader from './NowPlayingQueueHeader'
 import NowPlayingQueueList from './NowPlayingQueueList'
 import NowPlayingQueueActions from './NowPlayingQueueActions'
@@ -62,6 +63,11 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding-left: 10px;
+
+  @media only screen and ${devices.md} {
+    padding-left: 0;
+  }
 `
 const QueueTitle = styled.h2`
   display: inline;

@@ -7,6 +7,7 @@ import SearchLink from 'modules/browser/components/SearchLink'
 import { useAppSelector } from 'store/hooks'
 import { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
+import { devices } from 'themes/breakpoints'
 
 const SEARCH_ENGINE_URL = 'https://www.google.fr/search?q='
 
@@ -135,7 +136,6 @@ function NowPlayingHeader({ pinned = false }: Props) {
 export default NowPlayingHeader
 
 const Container = styled.div<{ pinned: boolean }>`
-  padding: 0 50px;
   width: 100%;
 
   ${({ pinned, theme }) =>
@@ -148,20 +148,29 @@ const Container = styled.div<{ pinned: boolean }>`
     top: 0;
     left: 0;
   `}
+
+  @media only screen and ${devices.md} {
+    padding: 0 50px;
+  }
 `
 const NowPlaying = styled.div<{ pinned: boolean }>`
   transition: padding-left 0.2s ease, padding-right 0.2s ease;
   width: 100%;
   margin: 0 auto;
-  padding: 20px 40px;
   background-color: ${(props) => props.theme.nowPlaying.backgroundColor};
   display: flex;
+  flex-direction: column;
 
   ${({ pinned }) =>
     pinned &&
     `
     padding: 0;
   `}
+
+  @media only screen and ${devices.md} {
+    padding: 20px 40px;
+    flex-direction: row;
+  }
 `
 const Background = styled.div<{ cover?: string }>`
   position: relative;
@@ -187,21 +196,26 @@ const Background = styled.div<{ cover?: string }>`
 `
 const CoverInfo = styled.div<{ pinned: boolean }>`
   display: inline-block;
-  width: 250px;
-  height: 250px;
+  width: 100%;
+  aspect-ratio: 1;
   background: url(${coverPlaceholder}) no-repeat;
   background-size: 100% 100%;
   flex-shrink: 0;
 
-  ${({ pinned }) =>
-    pinned &&
-    `
+  @media only screen and ${devices.md} {
+    width: 250px;
+    height: 250px;
+
+    ${({ pinned }) =>
+      pinned &&
+      `
     width: 100px;
     height: 100px;
     padding: 5px;
     background-size: 90px 90px;
     background-position: top 5px left 5px;
   `}
+  }
 `
 const SongCover = styled.img`
   width: 100%;

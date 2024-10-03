@@ -17,14 +17,14 @@ function Cover({ src }: Props) {
   }, [src])
 
   return (
-    <div>
+    <>
       <DefaultCover src={coverPlaceholder} data-testid="cover-default" />
       {src && (
         <RealCoverWrapper cover={coverURL}>
           <RealCover src={coverURL} data-testid="cover-image" />
         </RealCoverWrapper>
       )}
-    </div>
+    </>
   )
 }
 
