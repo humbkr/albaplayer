@@ -33,9 +33,6 @@ function AlbumsPaneContainer({
 
   const albums = useAppSelector((state) => getAlbumsList(state))
   const orderBy = useAppSelector((state) => state.libraryBrowser.sortAlbums)
-  const currentPosition = useAppSelector(
-    (state) => state.libraryBrowser.currentPositionAlbums
-  )
   const currentAlbum = useAppSelector(
     (state) => state.libraryBrowser.selectedAlbums
   )
@@ -54,8 +51,8 @@ function AlbumsPaneContainer({
     )
   }
 
-  const onItemClick = (itemId: string, index: number) => {
-    dispatch(selectAlbum({ albumId: itemId, index }))
+  const onItemClick = (itemId: string) => {
+    dispatch(selectAlbum({ albumId: itemId }))
   }
 
   const handlePlayNow = (albumId: string) => {
@@ -87,7 +84,9 @@ function AlbumsPaneContainer({
           ref={forwardedRef}
           items={albums}
           itemDisplay={AlbumTeaser}
-          currentPosition={currentPosition}
+          currentPosition={
+            albums.findIndex((album) => album.id === currentAlbum) || 0
+          }
           onItemClick={onItemClick}
           onKeyDown={onKeyDown}
         />

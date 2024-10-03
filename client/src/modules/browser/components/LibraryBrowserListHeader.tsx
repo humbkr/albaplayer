@@ -1,31 +1,34 @@
+import React from 'react'
 import styled from 'styled-components'
 import SelectContainer, {
   Option,
 } from 'common/components/forms/SelectContainer'
 
 type Props = {
-  orderByOptions: Option[]
-  orderBy: string
+  orderByOptions?: Option[]
+  orderBy?: string
   title?: string
-  onChange: (event: React.MouseEvent<HTMLSelectElement>) => void
+  onChange?: (event: React.MouseEvent<HTMLSelectElement>) => void
 }
 
 function LibraryBrowserListHeader({
   orderByOptions,
-  orderBy,
+  orderBy = '',
   title = '',
-  onChange,
+  onChange = () => {},
 }: Props) {
   return (
     <LibraryBrowserListHeaderWrapper>
       <ContentWrapper>
         <h2>{title}</h2>
-        <SelectContainer
-          tabIndex="-1"
-          options={orderByOptions}
-          value={orderBy}
-          onChangeHandler={onChange}
-        />
+        {orderByOptions && (
+          <SelectContainer
+            tabIndex="-1"
+            options={orderByOptions}
+            value={orderBy}
+            onChangeHandler={onChange}
+          />
+        )}
       </ContentWrapper>
     </LibraryBrowserListHeaderWrapper>
   )

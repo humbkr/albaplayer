@@ -33,9 +33,6 @@ function TracksPaneContainer({
 
   const tracks = useAppSelector((state) => getTracksList(state))
   const orderBy = useAppSelector((state) => state.libraryBrowser.sortTracks)
-  const currentPosition = useAppSelector(
-    (state) => state.libraryBrowser.currentPositionTracks
-  )
   const currentTrack = useAppSelector(
     (state) => state.libraryBrowser.selectedTracks
   )
@@ -55,8 +52,8 @@ function TracksPaneContainer({
     )
   }
 
-  const onItemClick = (itemId: string, index: number) => {
-    dispatch(libraryBrowserSelectTrack({ trackId: itemId, index }))
+  const onItemClick = (itemId: string) => {
+    dispatch(libraryBrowserSelectTrack({ trackId: itemId }))
   }
 
   const handlePlayNow = (trackId: string) => {
@@ -89,7 +86,9 @@ function TracksPaneContainer({
             ref={forwardedRef}
             items={tracks}
             itemDisplay={TrackTeaser}
-            currentPosition={currentPosition}
+            currentPosition={
+              tracks.findIndex((track) => track.id === currentTrack) || 0
+            }
             onItemClick={onItemClick}
             onKeyDown={onKeyDown}
           />

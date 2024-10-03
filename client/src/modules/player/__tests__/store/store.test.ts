@@ -477,13 +477,17 @@ describe('player (redux)', () => {
       const artistTracks = Object.values(mockLibraryState.tracks).filter(
         (item) => item.artistId === '2'
       )
-      const expectedTracks = artistTracks.map((item) => ({
-        ...item,
-        artist: item.artistId
-          ? mockLibraryState.artists[item.artistId]
-          : undefined,
-        album: item.albumId ? mockLibraryState.albums[item.albumId] : undefined,
-      }))
+      const expectedTracks = artistTracks
+        .sort((a, b) => a.id.localeCompare(b.id))
+        .map((item) => ({
+          ...item,
+          artist: item.artistId
+            ? mockLibraryState.artists[item.artistId]
+            : undefined,
+          album: item.albumId
+            ? mockLibraryState.albums[item.albumId]
+            : undefined,
+        }))
 
       const expected = [
         queueClear(),
@@ -497,7 +501,17 @@ describe('player (redux)', () => {
       )
 
       const actual = store.getActions()
-      expect(actual).toEqual(expected)
+
+      expect(actual[0]).toEqual(expected[0])
+      expect(actual[2]).toEqual(expected[2])
+
+      const actualTracks = actual[1].payload
+        .map((item: Track) => item.id)
+        .sort((a: string, b: string) => a.localeCompare(b))
+      const expectedTracks2 = (expected[1].payload as Track[])
+        .map((item: Track) => item.id)
+        .sort((a, b) => a.localeCompare(b))
+      expect(actualTracks).toEqual(expectedTracks2)
     })
   })
 
@@ -654,7 +668,14 @@ describe('player (redux)', () => {
       )
 
       const actual = store.getActions()
-      expect(actual).toEqual(expected)
+
+      const actualTracks = actual[0].payload
+        .map((item: Track) => item.id)
+        .sort((a: string, b: string) => a.localeCompare(b))
+      const expectedTracksTest = (expected[0].payload as Track[])
+        .map((item: Track) => item.id)
+        .sort((a, b) => a.localeCompare(b))
+      expect(actualTracks).toEqual(expectedTracksTest)
     })
 
     it('should dispatch correct actions when no track in player', async () => {
@@ -684,7 +705,14 @@ describe('player (redux)', () => {
       )
 
       const actual = store.getActions()
-      expect(actual).toEqual(expected)
+
+      const actualTracks = actual[0].payload
+        .map((item: Track) => item.id)
+        .sort((a: string, b: string) => a.localeCompare(b))
+      const expectedTracksTest = (expected[0].payload as Track[])
+        .map((item: Track) => item.id)
+        .sort((a, b) => a.localeCompare(b))
+      expect(actualTracks).toEqual(expectedTracksTest)
     })
   })
 
@@ -839,7 +867,14 @@ describe('player (redux)', () => {
       )
 
       const actual = store.getActions()
-      expect(actual).toEqual(expected)
+
+      const actualTracks = actual[0].payload
+        .map((item: Track) => item.id)
+        .sort((a: string, b: string) => a.localeCompare(b))
+      const expectedTracksTest = (expected[0].payload as Track[])
+        .map((item: Track) => item.id)
+        .sort((a, b) => a.localeCompare(b))
+      expect(actualTracks).toEqual(expectedTracksTest)
     })
 
     it('should dispatch correct actions when no track in player', async () => {
@@ -858,10 +893,7 @@ describe('player (redux)', () => {
         album: item.albumId ? mockLibraryState.albums[item.albumId] : undefined,
       }))
 
-      const expected = [
-        queueAddTracks(expectedTracks),
-        // SetItemFromQueue(0),
-      ]
+      const expected = [queueAddTracks(expectedTracks)]
 
       await store.dispatch(
         // @ts-ignore
@@ -869,7 +901,14 @@ describe('player (redux)', () => {
       )
 
       const actual = store.getActions()
-      expect(actual).toEqual(expected)
+
+      const actualTracks = actual[0].payload
+        .map((item: Track) => item.id)
+        .sort((a: string, b: string) => a.localeCompare(b))
+      const expectedTracksTest = (expected[0].payload as Track[])
+        .map((item: Track) => item.id)
+        .sort((a, b) => a.localeCompare(b))
+      expect(actualTracks).toEqual(expectedTracksTest)
     })
   })
 

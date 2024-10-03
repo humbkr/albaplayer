@@ -49,8 +49,8 @@ export const immutableNestedSort = (
   return [...items].sort((propA, propB) => {
     // PropA and propB are objects so we need to find the property value to compare.
     // For that we look for an object property given the depth of prop that we were passed.
-    let a = propA
-    let b = propB
+    let a: any = propA
+    let b: any = propB
     let i = 0
     while (i < len) {
       a = a[property[i]]
@@ -82,24 +82,29 @@ export const immutableNestedSort = (
  */
 export const immutableSortTracks = (
   items: Array<any>,
-  prop: string
+  prop: TracksSortOptions
 ): Array<any> => {
   let result = 0
 
   return [...items].sort((propA, propB) => {
     // PropA and propB are objects so we need to find the property value to compare.
     // For that we look for an object property given the depth of prop that we were passed.
-    let a = propA
-    let b = propB
+    let a: any = propA
+    let b: any = propB
 
-    if (prop === 'number' || prop === 'album') {
-      // Special case for track number and album: we also need to sort by disc.
+    if (prop === 'album') {
+      // Special case for album: we also need to sort by disc.
       a = `${propA.albumId}${sanitizeDiscNumber(
         propA.disc
       )}${sanitizeTrackNumber(propA.number)}`
       b = `${propB.albumId}${sanitizeDiscNumber(
         propB.disc
       )}${sanitizeTrackNumber(propB.number)}`
+    } else if (prop === 'artistId') {
+      // Special case for artistId: we need to sort by artistId and then by track number
+      // so it doesn't feel weird for the user.
+      a = `${propA.artistId}${sanitizeTrackNumber(propA.number)}`
+      b = `${propB.artistId}${sanitizeTrackNumber(propB.number)}`
     } else {
       a = a[prop]
       b = b[prop]

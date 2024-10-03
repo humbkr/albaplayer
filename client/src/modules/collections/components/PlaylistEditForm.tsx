@@ -19,8 +19,6 @@ type Props = {
 function PlaylistEditForm({ formRef, playlist, onSubmit }: Props) {
   const { t } = useTranslation()
 
-  console.log('PlaylistEditForm', playlist)
-
   const schema = useMemo(
     () =>
       z.object({

@@ -351,11 +351,8 @@ describe('library browser (redux)', () => {
             : undefined,
         })),
         selectedArtists: '1',
-        currentPositionArtists: 1,
         selectedAlbums: '1',
-        currentPositionAlbums: 1,
         selectedTracks: '1',
-        currentPositionTracks: 1,
       }
 
       const filteredAlbums: Album[] = Object.values(testState.albums).filter(
@@ -380,11 +377,8 @@ describe('library browser (redux)', () => {
         albums: filteredAlbums,
         tracks: filteredTracks,
         selectedArtists: '2',
-        currentPositionArtists: 2,
         selectedAlbums: '0',
-        currentPositionAlbums: 0,
         selectedTracks: '0',
-        currentPositionTracks: 0,
       })
     })
 
@@ -408,9 +402,7 @@ describe('library browser (redux)', () => {
             : undefined,
         })),
         selectedAlbums: '1',
-        currentPositionAlbums: 1,
         selectedTracks: '1',
-        currentPositionTracks: 1,
       }
 
       const filteredTracks: Track[] = Object.values(
@@ -430,9 +422,7 @@ describe('library browser (redux)', () => {
         ...testState,
         tracks: filteredTracks,
         selectedAlbums: '2',
-        currentPositionAlbums: 2,
         selectedTracks: '0',
-        currentPositionTracks: 0,
       })
     })
 
@@ -456,9 +446,7 @@ describe('library browser (redux)', () => {
             : undefined,
         })),
         selectedAlbums: '1',
-        currentPositionAlbums: 1,
         selectedTracks: '1',
-        currentPositionTracks: 1,
       }
 
       expect(
@@ -472,7 +460,6 @@ describe('library browser (redux)', () => {
       ).toEqual({
         ...testState,
         selectedTracks: '2',
-        currentPositionTracks: 2,
       })
     })
 
@@ -563,11 +550,8 @@ describe('library browser (redux)', () => {
             : undefined,
         })),
         selectedArtists: '1',
-        currentPositionArtists: 1,
         selectedAlbums: '1',
-        currentPositionAlbums: 1,
         selectedTracks: '1',
-        currentPositionTracks: 1,
       }
 
       const filteredArtists: Artist[] = Object.values(testState.artists).filter(
@@ -593,11 +577,8 @@ describe('library browser (redux)', () => {
       ).toEqual({
         ...testState,
         selectedArtists: '0',
-        currentPositionArtists: 0,
         selectedAlbums: '0',
-        currentPositionAlbums: 0,
         selectedTracks: '0',
-        currentPositionTracks: 0,
         artists: filteredArtists,
         albums: filteredAlbums,
         tracks: filteredTracks,
@@ -650,7 +631,6 @@ describe('library browser (redux)', () => {
               })
             ),
             filteredTracks: [],
-            index: 0,
           },
           type: 'libraryBrowser/libraryBrowserSelectArtist',
         },
@@ -658,13 +638,11 @@ describe('library browser (redux)', () => {
           payload: {
             albumId: '0',
             filteredTracks: [],
-            index: 0,
           },
           type: 'libraryBrowser/libraryBrowserSelectAlbum',
         },
         {
           payload: {
-            index: 0,
             trackId: '0',
           },
           type: 'libraryBrowser/libraryBrowserSelectTrack',
@@ -737,7 +715,6 @@ describe('library browser (redux)', () => {
               })
             ),
             filteredTracks: [],
-            index: 0,
           },
           type: 'libraryBrowser/libraryBrowserSelectArtist',
         },
@@ -755,7 +732,6 @@ describe('library browser (redux)', () => {
               })
             ),
             filteredTracks: [],
-            index: 0,
           },
           type: 'libraryBrowser/libraryBrowserSelectArtist',
         },
@@ -763,13 +739,11 @@ describe('library browser (redux)', () => {
           payload: {
             albumId: '0',
             filteredTracks: [],
-            index: 0,
           },
           type: 'libraryBrowser/libraryBrowserSelectAlbum',
         },
         {
           payload: {
-            index: 0,
             trackId: '0',
           },
           type: 'libraryBrowser/libraryBrowserSelectTrack',
@@ -851,7 +825,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectArtist({
           artistId: '2',
-          index: 2,
           filteredAlbums: Object.values<Album>(mockLibraryState.albums)
             .filter((item) => item.artistId === '2')
             .map((album) => ({
@@ -916,7 +889,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectArtist({
           artistId: '3',
-          index: 3,
           filteredAlbums,
           filteredTracks,
         }),
@@ -936,7 +908,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectArtist({
           artistId: '0',
-          index: 0,
           filteredAlbums: Object.values<Album>(mockLibraryState.albums).map(
             (album) => ({
               ...album,
@@ -995,7 +966,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectArtist({
           artistId: '0',
-          index: 0,
           filteredAlbums,
           filteredTracks,
         }),
@@ -1015,7 +985,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectArtist({
           artistId: '1',
-          index: 1,
           filteredAlbums: Object.values<Album>(mockLibraryState.albums)
             .filter((item) => item.artistId === '1')
             .map((album) => ({
@@ -1048,7 +1017,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectAlbum({
           albumId: '2',
-          index: 2,
           filteredTracks: Object.values<Track>(mockLibraryState.tracks)
             .filter((item) => item.albumId === '2')
             .map((track) => ({
@@ -1107,7 +1075,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectAlbum({
           albumId: '2',
-          index: 2,
           filteredTracks,
         }),
       ]
@@ -1126,7 +1093,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectAlbum({
           albumId: '0',
-          index: 0,
           filteredTracks: [],
         }),
       ]
@@ -1179,7 +1145,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectAlbum({
           albumId: '0',
-          index: 0,
           filteredTracks,
         }),
       ]
@@ -1209,7 +1174,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectAlbum({
           albumId: '0',
-          index: 0,
           filteredTracks: Object.values<Track>(mockLibraryState.tracks)
             .filter((item) => item.artistId === '2')
             .map((track) => ({
@@ -1245,7 +1209,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectAlbum({
           albumId: '3',
-          index: 3,
           filteredTracks: Object.values<Track>(mockLibraryState.tracks)
             .filter((item) => item.artistId === '2' && item.albumId === '3')
             .map((track) => ({
@@ -1281,7 +1244,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectAlbum({
           albumId: '4',
-          index: 3,
           filteredTracks: Object.values<Track>(mockLibraryState.tracks)
             .filter((item) => item.albumId === '4')
             .map((track) => ({
@@ -1317,7 +1279,6 @@ describe('library browser (redux)', () => {
       const expected = [
         libraryBrowserSelectAlbum({
           albumId: '0',
-          index: 0,
           filteredTracks: Object.values<Track>(mockLibraryState.tracks)
             .filter((item) => item.artistId === '34')
             .map((track) => ({
