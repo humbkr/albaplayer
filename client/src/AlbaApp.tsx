@@ -9,7 +9,6 @@ import getTheme from 'themes'
 import { useAppSelector } from 'store/hooks'
 import Layout from 'common/components/layout/Layout'
 import { NotificationsContainer } from 'common/utils/notifications'
-import 'react-toastify/dist/ReactToastify.css'
 
 function AlbaApp() {
   const currentThemeName = useAppSelector((state) => state.settings.theme)
