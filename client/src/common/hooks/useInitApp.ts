@@ -44,6 +44,7 @@ export default function useInitApp() {
   }
 
   return {
+    isServerReachable: !isFetchingConfig && !!appConfig,
     shouldDisplayLogin: !!(
       appConfig &&
       appConfig.rootUserCreated &&

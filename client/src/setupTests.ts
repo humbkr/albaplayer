@@ -27,6 +27,7 @@ const renderNodes = (reactNodes: ReactNode[] | string) => {
     return reactNodes
   }
 
+  // @ts-ignore
   return Object.keys(reactNodes).map((key, i) => {
     // @ts-ignore
     const child = reactNodes[key]

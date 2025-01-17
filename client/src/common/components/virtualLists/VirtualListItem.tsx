@@ -15,7 +15,10 @@ const VirtualListItem = styled.div<{
   transition: background-color 0.15s ease-in-out;
 
   :hover {
-    background-color: ${(props) => props.theme.colors.elementHighlight};
+    background-color: ${(props) =>
+      props.selected
+        ? props.theme.colors.elementHighlightFocus
+        : props.theme.colors.elementHighlight};
   }
 
   ${(props) =>

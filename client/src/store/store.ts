@@ -20,8 +20,7 @@ import migrations from './migrations'
 
 const debugModeEnabled = process.env.REACT_APP_DEBUG_MODE === 'true'
 
-// @ts-ignore
-const persistanceReducer = persistReducer(
+const persistanceReducer: any = persistReducer<RootReducer>(
   {
     key: 'root',
     storage,

@@ -57,8 +57,12 @@ const Select = styled.select<any>`
   background-image: url(${(props) =>
     props.theme.isDark ? selectArrowLight : selectArrowDark});
   background-repeat: no-repeat, repeat;
-  background-position: right 1rem top 52%, 0 0;
-  background-size: 0.65em auto, 100%;
+  background-position:
+    right 1rem top 52%,
+    0 0;
+  background-size:
+    0.65em auto,
+    100%;
 
   :hover {
     cursor: pointer;

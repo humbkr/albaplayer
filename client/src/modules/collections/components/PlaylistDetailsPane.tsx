@@ -174,7 +174,7 @@ const Wrapper = styled.div`
   overflow: hidden;
   height: 100%;
 
-  :focus-within {
+  &:focus-within {
     // Can't find a way to manage that directly in the
     // VirtualListItem component.
     ${VirtualListItem}.selected {

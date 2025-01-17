@@ -42,6 +42,7 @@ jest.mock(
 describe('Layout', () => {
   it('should display a loader if app is not initialised', () => {
     useInitAppMock.mockReturnValue({
+      isServerReachable: true,
       isLoading: true,
       shouldDisplayLogin: false,
       shouldDisplayRootCreation: false,
@@ -67,6 +68,7 @@ describe('Layout', () => {
 
   it('should display the login page if app initialised, auth enabled, and no user logged in', () => {
     useInitAppMock.mockReturnValue({
+      isServerReachable: true,
       isLoading: false,
       shouldDisplayLogin: true,
       shouldDisplayRootCreation: false,
@@ -89,6 +91,7 @@ describe('Layout', () => {
 
   it('should display the root user creation page if no user configured yet', () => {
     useInitAppMock.mockReturnValue({
+      isServerReachable: true,
       isLoading: false,
       shouldDisplayLogin: false,
       shouldDisplayRootCreation: true,
@@ -112,6 +115,7 @@ describe('Layout', () => {
 
   it('should display the app if app initialised and user is logged in', () => {
     useInitAppMock.mockReturnValue({
+      isServerReachable: true,
       isLoading: false,
       shouldDisplayLogin: false,
       onLogin: jest.fn(),

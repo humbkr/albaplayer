@@ -18,6 +18,7 @@ function Layout() {
 
   const {
     isLoading,
+    isServerReachable,
     shouldDisplayLogin,
     shouldDisplayRootCreation,
     onLogin,
@@ -29,6 +30,14 @@ function Layout() {
       <LoadingContainer>
         <LoaderPulseLogo />
       </LoadingContainer>
+    )
+  } else if (!isServerReachable) {
+    return (
+      <GlobalError>
+        <h2>
+          Error: Unable to connect to server, please check your configuration
+        </h2>
+      </GlobalError>
     )
   }
 
@@ -97,4 +106,8 @@ const Content = styled.div`
   flex-grow: 1;
   background-color: ${(props) => props.theme.colors.background};
   overflow: hidden;
+`
+const GlobalError = styled.div`
+  padding: 20px;
+  color: ${(props) => props.theme.colors.textPrimary};
 `

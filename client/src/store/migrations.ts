@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 
-// @ts-ignore
 const rootMigrations = {
   0: (state: RootState) => {
     // Playlist items are now { track: Track, position: number }
@@ -52,7 +51,6 @@ const rootMigrations = {
   },
 }
 
-// @ts-ignore
 const migrations = {
   rootMigrations,
 }

@@ -7,7 +7,7 @@ const LibraryBrowserPane = styled.div`
   height: 100%;
   width: 100%;
 
-  :focus-within {
+  &:focus-within {
     // Can't find a way to manage that directly in the
     // VirtualListItem component.
     ${VirtualListItem}.selected {

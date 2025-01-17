@@ -27,7 +27,7 @@ function AlbaApp() {
 export default AlbaApp
 
 // Global styles used by the styled components.
-const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
+const GlobalStyle = createGlobalStyle<{ theme?: DefaultTheme }>`
   @font-face {
   font-family: 'Material Icons';
   font-style: normal;

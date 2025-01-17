@@ -112,7 +112,9 @@ const FilterButton = styled.div<{
     props.active
       ? props.theme.colors.sidebarTextPrimaryHover
       : props.theme.colors.sidebarTextPrimary};
-  transition: background-color 0.15s ease-in-out, color 0.1s ease-in-out;
+  transition:
+    background-color 0.15s ease-in-out,
+    color 0.1s ease-in-out;
 
   ${(props) =>
     props.active &&
@@ -129,7 +131,7 @@ const SearchInputWrapper = styled.div`
   background-color: ${(props) => props.theme.colors.sidebarBackground};
   transition: background-color 0.15s ease-in-out;
 
-  :focus-within {
+  &:focus-within {
     background-color: ${(props) => props.theme.colors.elementHighlightFocus};
   }
 `

@@ -150,7 +150,9 @@ const Container = styled.div<{ pinned: boolean }>`
   `}
 `
 const NowPlaying = styled.div<{ pinned: boolean }>`
-  transition: padding-left 0.2s ease, padding-right 0.2s ease;
+  transition:
+    padding-left 0.2s ease,
+    padding-right 0.2s ease;
   width: 100%;
   margin: 0 auto;
   padding: 20px 40px;

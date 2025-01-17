@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 
-// @ts-ignore
+// @ts-ignore This is just to make sure we have the same keys in all translations, en being the reference
 const en: Translation = {
   common: {
     forms: {
@@ -254,4 +254,5 @@ const en: Translation = {
   },
 }
 
+// @ts-ignore
 export default en

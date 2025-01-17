@@ -46,7 +46,7 @@ const mockUpdateCollection = jest.fn()
 
 describe('Collections > services', () => {
   beforeEach(() => {
-    store.getState.mockReturnValue({
+    ;(store.getState as jest.Mock).mockReturnValue({
       queue: {
         items: [
           {
@@ -695,7 +695,7 @@ describe('Collections > services', () => {
     })
 
     test('does nothing if playlist to add does not exist', () => {
-      store.getState.mockReturnValue({
+      ;(store.getState as jest.Mock).mockReturnValue({
         queue: {
           items: [],
         },

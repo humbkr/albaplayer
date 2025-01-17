@@ -32,7 +32,7 @@ const SidebarNavLinkWrapper = styled(NavLink)`
   color: ${(props) => props.theme.colors.sidebarTextPrimary};
   transition: 0.15s ease-in-out;
 
-  :hover,
+  &:hover,
   &.active {
     color: ${(props) => props.theme.colors.sidebarTextPrimaryHover};
     background-color: ${(props) => props.theme.colors.sidebarTextPrimary};

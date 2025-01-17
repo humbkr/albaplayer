@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 
-// @ts-ignore
 const fr: Translation = {
   common: {
     forms: {

@@ -1,5 +1,6 @@
 import { Action, ThunkAction } from '@reduxjs/toolkit'
 import store from 'store/store'
+import rootReducer from 'store/rootReducer'
 
 export declare global {
   type AppDispatch = typeof store.dispatch
@@ -10,4 +11,5 @@ export declare global {
     unknown,
     Action<string>
   >
+  type RootReducer = ReturnType<typeof rootReducer>
 }

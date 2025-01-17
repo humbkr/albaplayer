@@ -100,7 +100,9 @@ const Wrapper = styled.div<{ visible: boolean }>`
   display: flex;
   width: 100%;
   margin-right: 20px;
-  transition: background-color linear 0.15s, color linear 0.15s;
+  transition:
+    background-color linear 0.15s,
+    color linear 0.15s;
   border-radius: 3px;
   background-color: ${(props) =>
     props.visible ? props.theme.dashboard.backgroundColor : 'transparent'};

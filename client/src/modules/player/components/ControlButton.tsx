@@ -1,5 +1,5 @@
 import React from 'react'
-import styled, { ThemedStyledProps } from 'styled-components'
+import styled, { ExecutionContext } from 'styled-components'
 
 type StyleProps = {
   active?: boolean
@@ -40,12 +40,7 @@ function ControlButton({
 export default ControlButton
 
 function getButtonColor(
-  {
-    theme,
-    disabled,
-    active,
-    noHoverEffect,
-  }: StyleProps & ThemedStyledProps<any, any>,
+  { theme, disabled, active, noHoverEffect }: StyleProps & ExecutionContext,
   hover?: boolean
 ): string {
   if (disabled) {
@@ -72,7 +67,9 @@ const Button = styled.button<StyleProps>`
     height: ${(props) => (props.size ? `${props.size}px` : '24px')};
 
     * {
-      transition: fill 0.2s, stroke 0.2s;
+      transition:
+        fill 0.2s,
+        stroke 0.2s;
     }
 
     &:not([fill='none']) {
