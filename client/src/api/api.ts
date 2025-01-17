@@ -56,6 +56,7 @@ export async function request(
 const baseQuery = graphqlRequestBaseQuery<
   Partial<ClientError> & { errorCode: string }
 >({
+  // @ts-ignore TODO: Fix this typing issue when RTK query is up-to-date.
   client: graphQLClient,
   customErrors: ({ name, stack, response }) => {
     if (!response?.status.toString().startsWith('2')) {

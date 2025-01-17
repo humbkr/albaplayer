@@ -1316,6 +1316,11 @@
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.1.1.tgz#076d78ce99822258cf813ecc1e7fa460fa74d052"
   integrity sha512-NQ17ii0rK1b34VZonlmT2QMJFI70m0TRwbknO/ihlbatXyaktDhN/98vBiUU6kNBPljqGqyIrl2T4nY2RpFANg==
 
+"@graphql-typed-document-node/core@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
+  integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
+
 "@hello-pangea/dnd@^16.2.0":
   version "16.2.0"
   resolved "https://registry.yarnpkg.com/@hello-pangea/dnd/-/dnd-16.2.0.tgz#58cbadeb56f8c7a381da696bb7aa3bfbb87876ec"
@@ -5085,7 +5090,14 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.4, 
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
 
-graphql-request@5.1.0, "graphql-request@^4.0.0 || ^5.0.0 || ^6.0.0", graphql-request@^5.1.0:
+graphql-request@7.1.2:
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-7.1.2.tgz#52d7fd6d8d08c9f0b00c84a091376ce9fbdfa945"
+  integrity sha512-+XE3iuC55C2di5ZUrB4pjgwe+nIQBuXVIK9J98wrVwojzDW3GMdSBZfxUk8l4j9TieIpjpggclxhNEU9ebGF8w==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.2.0"
+
+"graphql-request@^4.0.0 || ^5.0.0 || ^6.0.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-5.1.0.tgz#dbc8feee27d21b993cd5da2d3af67821827b240a"
   integrity sha512-0OeRVYigVwIiXhNmqnPDt+JhMzsjinxHE7TVy3Lm6jUzav0guVcL0lfSbi6jVTRAxcbwgyr6yrZioSHxf9gHzw==
