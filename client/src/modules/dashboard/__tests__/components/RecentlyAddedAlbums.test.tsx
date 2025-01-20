@@ -1,14 +1,11 @@
-import { render, screen } from '@testing-library/react'
-import { Provider as ReduxProvider } from 'react-redux'
-import { ThemeProvider } from 'styled-components'
-import { BrowserRouter } from 'react-router-dom'
-import themeDefault from 'themes/lightGreen'
+import { screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router'
 import { dashboardInitialState } from 'modules/dashboard/store'
 import RecentlyAddedAlbums from 'modules/dashboard/components/RecentlyAddedAlbums'
 import { libraryInitialState } from 'modules/library/store'
 import { useGetUserQuery } from 'modules/user/store/api'
 import { USER_ROLE_ADMIN, USER_ROLE_LISTENER } from 'modules/user/constants'
-import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
+import { renderWithProviders } from 'common/utils/testing/testUtils'
 
 jest.mock('modules/library/api', () => ({
   default: {
@@ -76,20 +73,13 @@ const mockLibrary = {
 }
 
 const mockPlaylist = {
-  playlists: {
-    playlist1: {
-      id: 'playlist1',
-      title: 'Playlist one',
-      date: '2020-09-09',
-      items: [],
-    },
-  },
+  currentPlaylist: '',
 }
 
-const store = makeMockStore({
+const mockState = {
   library: mockLibrary,
   playlist: mockPlaylist,
-})
+}
 
 describe('dashboard - RecentlyAddedAlbums', () => {
   beforeEach(() => {
@@ -99,14 +89,11 @@ describe('dashboard - RecentlyAddedAlbums', () => {
   })
 
   it('should render correctly when albums available', () => {
-    render(
-      <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <BrowserRouter>
-            <RecentlyAddedAlbums />
-          </BrowserRouter>
-        </ThemeProvider>
-      </ReduxProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <RecentlyAddedAlbums />
+      </BrowserRouter>,
+      { preloadedState: mockState }
     )
 
     expect(screen.getByText('dashboard.recentlyAdded')).toBeInTheDocument()
@@ -114,20 +101,17 @@ describe('dashboard - RecentlyAddedAlbums', () => {
   })
 
   it('should render correctly when no albums in the library and user cannot scan', () => {
-    const customStore = makeMockStore({
-      library: libraryInitialState,
-      dashboard: dashboardInitialState,
-      playlist: mockPlaylist,
-    })
-
-    render(
-      <ReduxProvider store={customStore}>
-        <ThemeProvider theme={themeDefault}>
-          <BrowserRouter>
-            <RecentlyAddedAlbums />
-          </BrowserRouter>
-        </ThemeProvider>
-      </ReduxProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <RecentlyAddedAlbums />
+      </BrowserRouter>,
+      {
+        preloadedState: {
+          library: libraryInitialState,
+          dashboard: dashboardInitialState,
+          playlist: mockPlaylist,
+        },
+      }
     )
 
     expect(screen.getByText('dashboard.noAlbumsFound')).toBeInTheDocument()
@@ -137,20 +121,17 @@ describe('dashboard - RecentlyAddedAlbums', () => {
   it('should render correctly when no albums in the library ans user can scan', () => {
     useGetUserQueryMock.mockReturnValue({ data: { roles: [USER_ROLE_ADMIN] } })
 
-    const customStore = makeMockStore({
-      library: libraryInitialState,
-      dashboard: dashboardInitialState,
-      playlist: mockPlaylist,
-    })
-
-    render(
-      <ReduxProvider store={customStore}>
-        <ThemeProvider theme={themeDefault}>
-          <BrowserRouter>
-            <RecentlyAddedAlbums />
-          </BrowserRouter>
-        </ThemeProvider>
-      </ReduxProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <RecentlyAddedAlbums />
+      </BrowserRouter>,
+      {
+        preloadedState: {
+          library: libraryInitialState,
+          dashboard: dashboardInitialState,
+          playlist: mockPlaylist,
+        },
+      }
     )
 
     expect(screen.getByText('dashboard.noAlbumsFound')).toBeInTheDocument()

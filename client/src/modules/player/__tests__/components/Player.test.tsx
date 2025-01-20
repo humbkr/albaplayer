@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from 'store/hooks'
 import Player from 'modules/player/components/Player'
 import { PlayerPlaybackMode } from 'modules/player/utils'
 import { playerSelector, queueSelector } from 'modules/player/store/selectors'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router'
 import {
   playerSetProgress,
   playerSetVolume,
@@ -54,7 +54,7 @@ jest.mock('modules/player/store/selectors')
 const playerSelectorMock = playerSelector as jest.Mock
 const queueSelectorMock = queueSelector as jest.Mock
 
-jest.mock('api/api', () => ({
+jest.mock('api/helpers', () => ({
   getAuthAssetURL: jest.fn(),
 }))
 

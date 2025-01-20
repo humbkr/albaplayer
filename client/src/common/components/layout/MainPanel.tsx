@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router'
 import LibraryBrowser from 'modules/browser/scenes/LibraryBrowser'
 import NowPlaying from 'modules/now_playing/scenes/NowPlaying'
 import LoadingScreen from 'common/components/layout/LoadingScreen'

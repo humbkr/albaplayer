@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import Ripple from 'common/components/Ripple'
 import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
 import { useTranslation } from 'react-i18next'
 import Cover from '../../../common/components/Cover'
@@ -17,20 +16,18 @@ function TrackInfo({ track, onClick }: Props) {
   const trackArtist = track?.artist?.name || t('library.unknownArtist')
 
   return (
-    <Ripple>
-      <TrackInfoWrapper onClick={onClick} data-testid="player-track-info">
-        <Overlay />
-        <Cover src={track?.cover} />
-        {track && (
-          <OverlayText>
-            <TrackTitle>{trackTitle}</TrackTitle>
-            <ArtistName>
-              by <SearchLink type="artist" searchString={trackArtist} />
-            </ArtistName>
-          </OverlayText>
-        )}
-      </TrackInfoWrapper>
-    </Ripple>
+    <TrackInfoWrapper onClick={onClick} data-testid="player-track-info">
+      <Overlay />
+      <Cover src={track?.cover} />
+      {track && (
+        <OverlayText>
+          <TrackTitle>{trackTitle}</TrackTitle>
+          <ArtistName>
+            by <SearchLink type="artist" searchString={trackArtist} />
+          </ArtistName>
+        </OverlayText>
+      )}
+    </TrackInfoWrapper>
   )
 }
 

@@ -1,4 +1,4 @@
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router'
 import { render, screen } from '@testing-library/react'
 import { ThemeProvider } from 'styled-components'
 import themeDefault from 'themes/lightGreen'

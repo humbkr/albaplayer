@@ -128,7 +128,7 @@ const mockLibraryState: LibraryStateType = {
 
 describe('player reducer', () => {
   it('should handle player initial state', () => {
-    expect(playerSlice.reducer(undefined, { type: null })).toEqual(
+    expect(playerSlice.reducer(undefined, { type: '' })).toEqual(
       playerInitialState
     )
   })

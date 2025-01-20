@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { getAuthAssetURL } from 'api/api'
+import { getAuthAssetURL } from 'api/helpers'
 import { useEffect, useState } from 'react'
 import coverPlaceholder from '../assets/images/cover_placeholder.png'
 

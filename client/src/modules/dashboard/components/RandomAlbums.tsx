@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import AlbumTeaser from 'modules/dashboard/components/AlbumTeaser'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'

@@ -1,11 +1,7 @@
-import { render, screen } from '@testing-library/react'
-import { Provider as ReduxProvider } from 'react-redux'
-import themeDefault from 'themes/lightGreen'
-import { ThemeProvider } from 'styled-components'
+import { screen } from '@testing-library/react'
 import { useNavigate } from 'react-router'
-import { browserInitialState } from 'modules/browser/store'
 import ActionBar from 'common/components/layout/ActionBar'
-import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
+import { renderWithProviders } from 'common/utils/testing/testUtils'
 
 jest.mock(
   'modules/browser/components/SearchBar',
@@ -32,17 +28,7 @@ describe('ActionBar', () => {
   })
 
   it('should contain all the required elements', () => {
-    const store = makeMockStore({
-      libraryBrowser: browserInitialState,
-    })
-
-    render(
-      <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <ActionBar />
-        </ThemeProvider>
-      </ReduxProvider>
-    )
+    renderWithProviders(<ActionBar />)
 
     expect(screen.getByTestId('search-bar')).toBeInTheDocument()
     expect(screen.getByTestId('user-action-menu')).toBeInTheDocument()

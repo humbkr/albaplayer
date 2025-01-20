@@ -1,7 +1,7 @@
 import MainPanel from 'common/components/layout/MainPanel'
 import { render, screen } from '@testing-library/react'
 import { useAppSelector } from 'store/hooks'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router'
 
 jest.mock('store/hooks')
 const useAppSelectorMock = useAppSelector as jest.Mock

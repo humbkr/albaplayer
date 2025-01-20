@@ -30,6 +30,7 @@ const persistanceReducer: any = persistReducer<RootReducer>(
       debug: process.env.REACT_APP_DEBUG_MODE === 'true',
     }),
   },
+  // @ts-ignore
   rootReducer
 )
 
@@ -45,18 +46,21 @@ const defaultMiddlewareOptions = {
   immutableCheck: debugModeEnabled,
 }
 
-// @ts-ignore
-const store = configureStore({
-  reducer: persistanceReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware(defaultMiddlewareOptions).concat(...middleware),
-  devTools: process.env.NODE_ENV !== 'production',
-})
+function setupStore(preloadedState?: Partial<RootReducer>) {
+  return configureStore({
+    reducer: persistanceReducer,
+    preloadedState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware(defaultMiddlewareOptions).concat(...middleware),
+    devTools: process.env.NODE_ENV !== 'production',
+  })
+}
 
+const store = setupStore()
 const persistor = persistStore(store)
 
 // Optional, but required for refetchOnFocus / refetchOnReconnect behaviors.
 setupListeners(store.dispatch)
 
 export default store
-export { persistor }
+export { persistor, setupStore }

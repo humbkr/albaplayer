@@ -2,7 +2,7 @@ import SidebarNavLink from 'common/components/layout/SidebarNavLink'
 import { render, screen } from '@testing-library/react'
 import { ThemeProvider } from 'styled-components'
 import themeDefault from 'themes/lightGreen'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router'
 
 describe('Sidebar', () => {
   it('displays correctly', () => {

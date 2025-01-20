@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react'
 
 import Cover from 'common/components/Cover'
-import { getAuthAssetURL } from 'api/api'
+import { getAuthAssetURL } from 'api/helpers'
 
-jest.mock('api/api', () => ({
+jest.mock('api/helpers', () => ({
   getAuthAssetURL: jest.fn(),
 }))
 

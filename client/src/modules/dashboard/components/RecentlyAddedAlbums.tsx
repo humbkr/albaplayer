@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import AlbumTeaserHorizontal from 'modules/dashboard/components/AlbumTeaserHorizontal'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { immutableNestedSort } from 'common/utils/utils'
 import { useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'

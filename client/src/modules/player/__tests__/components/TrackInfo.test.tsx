@@ -1,17 +1,13 @@
-import { ThemeProvider } from 'styled-components'
-import { Provider as ReduxProvider } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
-import { render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import theme from 'themes/lightGreen'
 import TrackInfo from 'modules/player/components/TrackInfo'
-import { getAuthAssetURL } from 'api/api'
-import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
+import { getAuthAssetURL } from 'api/helpers'
+import { renderWithProviders } from 'common/utils/testing/testUtils'
 
 const mockOnClick = jest.fn()
-const mockStore = makeMockStore()
 
-jest.mock('api/api', () => ({
+jest.mock('api/helpers', () => ({
   getAuthAssetURL: jest.fn(),
 }))
 
@@ -32,14 +28,10 @@ describe('TrackInfo', () => {
       title: 'Track title',
     }
 
-    render(
-      <ReduxProvider store={mockStore}>
-        <BrowserRouter>
-          <ThemeProvider theme={theme}>
-            <TrackInfo onClick={mockOnClick} track={testTrack} />
-          </ThemeProvider>
-        </BrowserRouter>
-      </ReduxProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <TrackInfo onClick={mockOnClick} track={testTrack} />
+      </BrowserRouter>
     )
 
     expect(screen.getByText('Track title')).toBeInTheDocument()
@@ -54,14 +46,10 @@ describe('TrackInfo', () => {
       title: '',
     }
 
-    render(
-      <ReduxProvider store={mockStore}>
-        <BrowserRouter>
-          <ThemeProvider theme={theme}>
-            <TrackInfo onClick={mockOnClick} track={testTrack} />
-          </ThemeProvider>
-        </BrowserRouter>
-      </ReduxProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <TrackInfo onClick={mockOnClick} track={testTrack} />
+      </BrowserRouter>
     )
 
     expect(screen.getByText('library.unknownTitle')).toBeInTheDocument()
@@ -76,14 +64,10 @@ describe('TrackInfo', () => {
       title: '',
     }
 
-    render(
-      <ReduxProvider store={mockStore}>
-        <BrowserRouter>
-          <ThemeProvider theme={theme}>
-            <TrackInfo onClick={mockOnClick} track={testTrack} />
-          </ThemeProvider>
-        </BrowserRouter>
-      </ReduxProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <TrackInfo onClick={mockOnClick} track={testTrack} />
+      </BrowserRouter>
     )
 
     await userEvent.click(screen.getByTestId('cover-default'))

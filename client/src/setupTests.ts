@@ -5,6 +5,8 @@
 import '@testing-library/jest-dom'
 import 'jest-styled-components'
 
+import { TextDecoder, TextEncoder } from 'util'
+
 // @ts-ignore
 import * as matchers from 'jest-extended'
 import React, { ReactNode } from 'react'
@@ -81,3 +83,7 @@ jest.mock('react-modal', () => ({
   ...jest.requireActual('react-modal'),
   setAppElement: () => {},
 }))
+
+global.TextEncoder = TextEncoder
+// @ts-ignore
+global.TextDecoder = TextDecoder
