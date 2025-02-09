@@ -1,4 +1,4 @@
-import { LibraryStateType } from 'modules/library/store'
+import type { LibraryStateType } from 'modules/library/store'
 
 /**
  * Given a track, tries to find the most similar tracks in the library based on track title, album
@@ -15,7 +15,7 @@ import { LibraryStateType } from 'modules/library/store'
  * @return Track[]
  *   Tracks that matched the original track data.
  */
-// eslint-disable-next-line import/prefer-default-export
+
 export const findSimilarTracks = (
   track: Track,
   library: LibraryStateType

@@ -1,4 +1,5 @@
-import React, { Ref, useState } from 'react'
+import type { Ref } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { addTrack, playTrack } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
@@ -76,6 +77,7 @@ function TracksPaneContainer({
     <TracksPaneWrapper>
       <LibraryBrowserPane>
         <LibraryBrowserListHeader
+          icon="audiotrack"
           title={t('browser.tracks.title')}
           orderBy={orderBy}
           orderByOptions={orderByOptions}
@@ -111,7 +113,6 @@ function TracksPaneContainer({
 }
 
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <TracksPaneContainer {...props} forwardedRef={ref} />
 ))
 

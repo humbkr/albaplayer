@@ -1,34 +1,26 @@
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import UsersSettings from 'modules/user/scenes/UsersSettings'
-import { useGetUsersQuery } from 'modules/user/store/api'
+import { useGetUsersQuery } from 'modules/user/api'
 import { useGetAppConfigQuery } from 'modules/settings/api'
+import type { Mock } from 'vitest'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock(
-  'modules/user/components/UserEditModal',
-  () =>
-    function () {
-      return <div data-testid="UserEditModal"></div>
-    }
-)
-jest.mock(
-  'modules/user/components/UsersListItem',
-  () =>
-    function () {
-      return <div data-testid="UsersListItem"></div>
-    }
-)
-
-jest.mock('modules/settings/api', () => ({
-  useGetAppConfigQuery: jest.fn(),
+vi.mock('modules/user/components/UserEditModal', () => ({
+  default: () => <div data-testid="UserEditModal"></div>,
 }))
-jest.mock('modules/user/store/api', () => ({
-  useGetUsersQuery: jest.fn(),
+vi.mock('modules/user/components/UsersListItem', () => ({
+  default: () => <div data-testid="UsersListItem"></div>,
 }))
 
-const useGetUsersQueryMock = useGetUsersQuery as jest.Mock
-const getAppConfigQueryMock = useGetAppConfigQuery as jest.Mock
+vi.mock('modules/settings/api', () => ({
+  useGetAppConfigQuery: vi.fn(),
+}))
+vi.mock('modules/user/api', () => ({
+  useGetUsersQuery: vi.fn(),
+}))
+
+const useGetUsersQueryMock = useGetUsersQuery as Mock
+const getAppConfigQueryMock = useGetAppConfigQuery as Mock
 
 describe('Users settings screen', () => {
   beforeEach(() => {
@@ -44,11 +36,7 @@ describe('Users settings screen', () => {
   it('renders correctly when auth is enabled', () => {
     getAppConfigQueryMock.mockReturnValue({ data: { authEnabled: true } })
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UsersSettings />
-      </ThemeProvider>
-    )
+    renderWithProviders(<UsersSettings />)
 
     expect(screen.getByText('user.usersManagement.title')).toBeInTheDocument()
 
@@ -71,11 +59,7 @@ describe('Users settings screen', () => {
   it('renders correctly when auth is disabled', () => {
     getAppConfigQueryMock.mockReturnValue({ data: { authEnabled: false } })
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UsersSettings />
-      </ThemeProvider>
-    )
+    renderWithProviders(<UsersSettings />)
 
     expect(
       screen.queryByText('user.usersManagement.title')

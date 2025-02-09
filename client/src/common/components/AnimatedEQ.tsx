@@ -13,6 +13,7 @@ function AnimatedEQ({ size = 24 }: Props) {
         height={size}
         viewBox="0 0 24 24"
         fill="currentColor"
+        data-testid="animated-eq-icon"
       >
         <rect
           className="eq-bar eq-bar--1"

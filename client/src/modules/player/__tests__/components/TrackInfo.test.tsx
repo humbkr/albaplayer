@@ -1,19 +1,24 @@
 import { BrowserRouter } from 'react-router'
 import { screen } from '@testing-library/react'
+import type { Mock } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import TrackInfo from 'modules/player/components/TrackInfo'
 import { getAuthAssetURL } from 'api/helpers'
-import { renderWithProviders } from 'common/utils/testing/testUtils'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-const mockOnClick = jest.fn()
+const mockOnClick = vi.fn()
 
-jest.mock('api/helpers', () => ({
-  getAuthAssetURL: jest.fn(),
-}))
+vi.mock(import('api/helpers'), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    getAuthAssetURL: vi.fn(),
+  }
+})
 
 describe('TrackInfo', () => {
   beforeEach(() => {
-    ;(getAuthAssetURL as jest.Mock).mockResolvedValue('whatever')
+    ;(getAuthAssetURL as Mock).mockResolvedValue('whatever')
   })
 
   it('displays all track info if available', () => {

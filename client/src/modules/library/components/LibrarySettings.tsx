@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import ActionButton from 'common/components/buttons/ActionButton'
 import LoaderPulse from 'common/components/LoaderPulse'
 import Message, { MessageType } from 'common/components/Message'
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
 import { userHasRole } from 'modules/user/utils'
 import { USER_ROLE_OWNER } from 'modules/user/constants'
 

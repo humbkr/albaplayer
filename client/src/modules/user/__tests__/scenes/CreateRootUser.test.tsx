@@ -1,22 +1,22 @@
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import CreateRootUser from 'modules/user/scenes/CreateRootUser'
 import { createRootUser } from 'modules/user/authApi'
 import { useGetAppConfigQuery } from 'modules/settings/api'
+import type { Mock } from 'vitest'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('modules/settings/api', () => ({
-  useGetAppConfigQuery: jest.fn(),
+vi.mock('modules/settings/api', () => ({
+  useGetAppConfigQuery: vi.fn(),
 }))
-const useGetAppConfigQueryMock = useGetAppConfigQuery as jest.Mock
+const useGetAppConfigQueryMock = useGetAppConfigQuery as Mock
 
-jest.mock('modules/user/authApi', () => ({
-  createRootUser: jest.fn(),
+vi.mock('modules/user/authApi', () => ({
+  createRootUser: vi.fn(),
 }))
-const createRootUserMock = createRootUser as jest.Mock
+const createRootUserMock = createRootUser as Mock
 
-const mockOnCreateRootUser = jest.fn()
+const mockOnCreateRootUser = vi.fn()
 
 describe('User - Create root user screen', () => {
   beforeEach(() => {
@@ -25,10 +25,8 @@ describe('User - Create root user screen', () => {
   })
 
   it('renders correctly', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
-      </ThemeProvider>
+    renderWithProviders(
+      <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
     )
 
     expect(screen.getByAltText('Logo')).toBeInTheDocument()
@@ -48,10 +46,8 @@ describe('User - Create root user screen', () => {
   it('renders correctly when auth is disabled', () => {
     useGetAppConfigQueryMock.mockReturnValue({ data: { authEnabled: false } })
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
-      </ThemeProvider>
+    renderWithProviders(
+      <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
     )
 
     expect(screen.getByAltText('Logo')).toBeInTheDocument()
@@ -69,10 +65,8 @@ describe('User - Create root user screen', () => {
   })
 
   it('creates a root user when submitted with correct info', async () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
-      </ThemeProvider>
+    renderWithProviders(
+      <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
     )
 
     await userEvent.type(
@@ -94,10 +88,8 @@ describe('User - Create root user screen', () => {
   })
 
   it('displays an error when submitted with empty info', async () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
-      </ThemeProvider>
+    renderWithProviders(
+      <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
     )
 
     await userEvent.click(screen.getByText('user.createRoot.create'))
@@ -111,10 +103,8 @@ describe('User - Create root user screen', () => {
   })
 
   it('displays an error when submitted with invalid username', async () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
-      </ThemeProvider>
+    renderWithProviders(
+      <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
     )
 
     // Username should not have white space.
@@ -143,10 +133,8 @@ describe('User - Create root user screen', () => {
   })
 
   it('displays an error when submitted with invalid confirm password', async () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
-      </ThemeProvider>
+    renderWithProviders(
+      <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
     )
 
     await userEvent.type(
@@ -176,10 +164,8 @@ describe('User - Create root user screen', () => {
   it('displays an error if a backend error occurs', async () => {
     createRootUserMock.mockReturnValue(Promise.resolve({ error: 'Woops' }))
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
-      </ThemeProvider>
+    renderWithProviders(
+      <CreateRootUser onCreateRootUser={mockOnCreateRootUser} />
     )
 
     await userEvent.type(

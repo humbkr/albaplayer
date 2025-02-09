@@ -1,6 +1,6 @@
 import LoadingScreen from 'common/components/layout/LoadingScreen'
 import { screen } from '@testing-library/react'
-import { renderWithProviders } from 'common/utils/testing/testUtils'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
 describe('LoadingScreen', () => {
   it('displays a loader when app is fetching data', () => {

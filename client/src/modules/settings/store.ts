@@ -1,9 +1,11 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
 import { initLibrary } from 'modules/library/store'
 import libraryAPI from 'modules/library/api'
 import { processApiError } from 'api/helpers'
-import api from 'api/api'
+import { getSettings } from 'api/api'
 import { SETTINGS_BROWSER_ONCLICK } from 'modules/settings/constants'
+import { createAppSlice } from 'store/createAppSlice'
 
 type Settings = {
   libraryPath: string
@@ -16,7 +18,7 @@ export type SettingsStateType = {
   library: {
     isUpdating: boolean
     error: string
-    config: Settings | {}
+    config: Settings | object
   }
   theme: string
   browser: {
@@ -63,12 +65,12 @@ const eraseLibrary = createAsyncThunk(
 )
 
 const initSettings = createAsyncThunk('settings/init', async () => {
-  const response = await api.getSettings()
+  const response = await getSettings()
 
   return response.data.settings
 })
 
-const settingsSlice = createSlice({
+export const settingsSlice = createAppSlice({
   name: 'settings',
   initialState,
   reducers: {
@@ -125,4 +127,3 @@ const settingsSlice = createSlice({
 
 export { initSettings, updateLibrary, eraseLibrary }
 export const { setTheme, setBrowserSettings } = settingsSlice.actions
-export default settingsSlice.reducer

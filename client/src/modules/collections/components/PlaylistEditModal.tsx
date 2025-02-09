@@ -1,9 +1,8 @@
 import Modal from 'common/components/layout/Modal'
 import { useTranslation } from 'react-i18next'
 import { useRef } from 'react'
-import PlaylistEditForm, {
-  PlaylistEditFormData,
-} from 'modules/collections/components/PlaylistEditForm'
+import type { PlaylistEditFormData } from 'modules/collections/components/PlaylistEditForm'
+import PlaylistEditForm from 'modules/collections/components/PlaylistEditForm'
 import {
   useCreatePlaylist,
   useGetCurrentPlaylist,

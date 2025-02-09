@@ -10,10 +10,12 @@ const LibraryBrowserPane = styled.div`
   &:focus-within {
     // Can't find a way to manage that directly in the
     // VirtualListItem component.
+
     ${VirtualListItem}.selected {
       ${(props) =>
         `background-color: ${props.theme.colors.elementHighlightFocus}`};
     }
+
     ${VirtualListItem} .selected {
       ${(props) =>
         `color: ${props.theme.colors.elementHighlightFocusTextColor}`};

@@ -1,16 +1,17 @@
-import { Action, ThunkAction } from '@reduxjs/toolkit'
-import store, { setupStore } from 'store/store'
-import rootReducer from 'store/rootReducer'
+import type { Action, ThunkAction } from '@reduxjs/toolkit'
+import type store from 'store/store'
 
 export declare global {
-  type AppDispatch = typeof store.dispatch
+  // Infer the type of `store`
+  type AppStore = typeof store
+  // Infer the `AppDispatch` type from the store itself
+  type AppDispatch = AppStore['dispatch']
+
   type RootState = ReturnType<typeof store.getState>
-  type AppThunk<ReturnType = void> = ThunkAction<
-    ReturnType,
+  type AppThunk<ThunkReturnType = void> = ThunkAction<
+    ThunkReturnType,
     RootState,
     unknown,
-    Action<string>
+    Action
   >
-  type RootReducer = ReturnType<typeof rootReducer>
-  export type AppStore = ReturnType<typeof setupStore>
 }

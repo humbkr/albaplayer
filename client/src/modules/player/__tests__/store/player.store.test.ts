@@ -1,7 +1,9 @@
-import playerSlice, {
+import {
+  playerSlice,
   playerInitialState,
 } from 'modules/player/store/player.store'
-import { libraryInitialState, LibraryStateType } from 'modules/library/store'
+import type { LibraryStateType } from 'modules/library/store'
+import { libraryInitialState } from 'modules/library/store'
 import { PlayerPlaybackMode } from 'modules/player/utils'
 
 const {
@@ -14,9 +16,9 @@ const {
   playerSetVolume,
 } = playerSlice.actions
 
-jest.mock('modules/library/api', () => ({
+vi.mock('modules/library/api', () => ({
   libraryAPI: {
-    getLibrary: jest.fn().mockResolvedValue({}),
+    getLibrary: vi.fn().mockResolvedValue({}),
   },
 }))
 

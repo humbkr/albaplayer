@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
 import { setCycleNumPos, PlayerPlaybackMode } from 'modules/player/utils'
+import { createAppSlice } from 'store/createAppSlice'
 
 export type PlayerStateType = {
   // Controls and audio state.
@@ -27,7 +28,7 @@ export const playerInitialState: PlayerStateType = {
   track: undefined,
 }
 
-const playerSlice = createSlice({
+export const playerSlice = createAppSlice({
   name: 'player',
   initialState: playerInitialState,
   reducers: {
@@ -67,5 +68,3 @@ export const {
   playerSetDuration,
   playerSetProgress,
 } = playerSlice.actions
-
-export default playerSlice

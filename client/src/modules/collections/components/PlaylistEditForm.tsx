@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod/dist/zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import i18n from 'i18n/i18n'
-import React, { useMemo } from 'react'
+import type React from 'react'
+import { useMemo } from 'react'
 import TextField from 'common/components/forms/TextField'
 
 export type PlaylistEditFormData = {
@@ -11,7 +12,7 @@ export type PlaylistEditFormData = {
 }
 
 type Props = {
-  formRef?: React.RefObject<HTMLFormElement>
+  formRef?: React.RefObject<HTMLFormElement | null>
   playlist?: Playlist
   onSubmit: (data: PlaylistEditFormData) => void
 }

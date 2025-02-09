@@ -1,12 +1,11 @@
 import libraryAPI from 'modules/library/api'
 import { immutableSortTracks } from 'common/utils/utils'
-import playerSlice from 'modules/player/store/player.store'
-import queueSlice from 'modules/player/store/queue.store'
-import { LibraryStateType } from 'modules/library/store'
+import { playerSlice } from 'modules/player/store/player.store'
+import { queueSlice } from 'modules/player/store/queue.store'
+import type { LibraryStateType } from 'modules/library/store'
 import { PlayerPlaybackMode } from 'modules/player/utils'
 
-const reducers = { player: playerSlice.reducer, queue: queueSlice.reducer }
-export default reducers
+export { playerSlice, queueSlice }
 export const {
   playerTogglePlayPause,
   playerToggleShuffle,

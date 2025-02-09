@@ -1,4 +1,7 @@
 {
+  "name": "albaplayer",
+  "private": true,
+  "type": "module",
   "scripts": {
     "prepare": "husky"
   },

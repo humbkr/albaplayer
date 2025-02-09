@@ -1,3 +1,5 @@
+/* v8 ignore start */
+
 import styled from 'styled-components'
 
 const IconButton = styled.button`
@@ -11,7 +13,7 @@ const IconButton = styled.button`
 
   color: ${(props) => props.theme.colors.textPrimary};
 
-  :hover {
+  &:hover {
     cursor: pointer;
   }
 `

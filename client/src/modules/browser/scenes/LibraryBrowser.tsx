@@ -1,4 +1,5 @@
-import React, { forwardRef, Ref, RefObject, useEffect, useRef } from 'react'
+import type { Ref, RefObject } from 'react'
+import { forwardRef, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import TracksPaneContainer from 'modules/browser/components/TracksPaneContainer'
 import ArtistsPaneContainer from 'modules/browser/components/ArtistsPaneContainer'
@@ -72,7 +73,6 @@ function LibraryBrowser({ forwardedRef }: Props) {
 }
 
 export default forwardRef<HTMLElement>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <LibraryBrowser {...props} forwardedRef={ref} />
 ))
 

@@ -1,5 +1,5 @@
 cd client
-yarn test --watchAll=false
+yarn test:c
 
 cd ../server
 go test ./...

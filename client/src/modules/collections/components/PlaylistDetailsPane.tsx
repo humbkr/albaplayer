@@ -1,4 +1,5 @@
-import React, { Ref, useState } from 'react'
+import type { Ref } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
@@ -165,7 +166,6 @@ function PlaylistDetailsPane({
 }
 
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <PlaylistDetailsPane {...props} forwardedRef={ref} />
 ))
 
@@ -177,10 +177,12 @@ const Wrapper = styled.div`
   &:focus-within {
     // Can't find a way to manage that directly in the
     // VirtualListItem component.
+
     ${VirtualListItem}.selected {
       ${(props) =>
         `background-color: ${props.theme.colors.elementHighlightFocus}`};
     }
+
     ${VirtualListItem} .selected {
       ${(props) =>
         `color: ${props.theme.colors.elementHighlightFocusTextColor}`};
@@ -205,7 +207,7 @@ const Actions = styled.div`
 const PlaylistActionButton = styled(ActionButtonIcon)`
   color: ${(props) => props.theme.buttons.backgroundColor};
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `

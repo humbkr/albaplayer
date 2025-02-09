@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
@@ -79,7 +79,7 @@ const TrackWrapper = styled.div`
     align-self: center;
   }
 
-  :hover {
+  &:hover {
     ${TrackActions} {
       display: block;
     }

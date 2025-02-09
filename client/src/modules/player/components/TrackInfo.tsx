@@ -45,7 +45,7 @@ const TrackInfoWrapper = styled.div`
 const Overlay = styled.div`
   position: absolute;
   background-color: #191922;
-  opacity: 0.65;
+  opacity: 0.6;
   top: 0;
   left: 0;
   width: 100%;

@@ -1,4 +1,6 @@
-import React, { forwardRef, Ref } from 'react'
+import type { Ref } from 'react'
+import type React from 'react'
+import { forwardRef } from 'react'
 import styled from 'styled-components'
 import { DebounceInput } from 'react-debounce-input'
 import { search, setSearchFilter } from 'modules/browser/store'
@@ -87,7 +89,6 @@ function SearchBar({ forwardedRef }: Props) {
 }
 
 export default forwardRef<HTMLElement>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <SearchBar {...props} forwardedRef={ref} />
 ))
 

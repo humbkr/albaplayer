@@ -1,7 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
+import { fireEvent, screen } from '@testing-library/react'
 import SelectList from 'modules/settings/components/SelectList'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
 const mockOptions = [
   { value: 'opt1', label: 'Option 1' },
@@ -11,14 +10,12 @@ const mockOptions = [
 
 describe('SelectList', () => {
   it('Displays a select list', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <SelectList
-          value="opt3"
-          options={mockOptions}
-          onChangeHandler={() => null}
-        />
-      </ThemeProvider>
+    renderWithProviders(
+      <SelectList
+        value="opt3"
+        options={mockOptions}
+        onChangeHandler={() => null}
+      />
     )
 
     expect(screen.getByText('Option 1')).not.toBeNull()
@@ -30,16 +27,14 @@ describe('SelectList', () => {
   })
 
   it('Executes a callback when value changes', async () => {
-    const mockCallback = jest.fn()
+    const mockCallback = vi.fn()
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <SelectList
-          value="opt3"
-          options={mockOptions}
-          onChangeHandler={mockCallback}
-        />
-      </ThemeProvider>
+    renderWithProviders(
+      <SelectList
+        value="opt3"
+        options={mockOptions}
+        onChangeHandler={mockCallback}
+      />
     )
 
     fireEvent.change(screen.getByTestId('select-list'), {

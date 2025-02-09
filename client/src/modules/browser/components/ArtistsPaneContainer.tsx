@@ -1,4 +1,5 @@
-import React, { Ref, useState } from 'react'
+import type { Ref } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { addArtist, playArtist } from 'modules/player/store/store'
 import VirtualList from 'common/components/virtualLists/VirtualList'
@@ -56,7 +57,10 @@ function ArtistsPaneContainer({
   return (
     <ArtistsPaneWrapper>
       <LibraryBrowserPane>
-        <LibraryBrowserListHeader title={t('browser.artists.title')} />
+        <LibraryBrowserListHeader
+          icon="person"
+          title={t('browser.artists.title')}
+        />
         <VirtualList
           ref={forwardedRef}
           items={artists}
@@ -82,7 +86,6 @@ function ArtistsPaneContainer({
 }
 
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <ArtistsPaneContainer {...props} forwardedRef={ref} />
 ))
 

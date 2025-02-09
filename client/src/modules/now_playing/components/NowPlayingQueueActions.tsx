@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import ActionButton from 'common/components/buttons/ActionButton'
 import { queueClear } from 'modules/player/store/store'
@@ -52,7 +52,7 @@ const QueueActionButton = styled(ActionButtonIcon)`
   padding: 0;
   color: ${(props) => props.theme.buttons.backgroundColor};
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `

@@ -4,9 +4,21 @@ import {
 } from 'modules/collections/services/utils'
 import { COLLECTION_TYPE } from 'modules/collections/utils/constants'
 
-// eslint-disable-next-line max-len
-const mockItemsJson =
-  '[{"track":{"id":"12","title":"No Man\'s Land","number":2,"duration":0,"disc":"","cover":"/covers/2","dateAdded":1708682679,"artistId":"3","albumId":"2","artist":{"id":"3","name":"Dirty Greed","dateAdded":1708682679},"album":{"id":"2","title":"From Dawn...","year":"","cover":"/covers/2","artistId":"3","artist":{"id":"3"},"dateAdded":1708682679}},"position":1},{"track":{"id":"87","title":"Anything \'Cept The Truth","number":1,"duration":0,"disc":"","cover":"/covers/10","dateAdded":1708682679,"artistId":"5","albumId":"9","artist":{"id":"5","name":"Eagles of Death Metal","dateAdded":1708682679},"album":{"id":"9","title":"Heart On","year":"2008","cover":"/covers/10","artistId":"5","artist":{"id":"5"},"dateAdded":1708682679}},"position":2},{"track":{"id":"127","title":"Illusory Motion","number":1,"duration":0,"disc":"","cover":"/covers/13","dateAdded":1708682679,"artistId":"6","albumId":"12","artist":{"id":"6","name":"Elder","dateAdded":1708682679},"album":{"id":"12","title":"The Gold & Silver Sessions","year":"2019","cover":"/covers/13","artistId":"6","artist":{"id":"6"},"dateAdded":1708682679}},"position":3}]'
+const mockItemsJson = `
+  [{"track":{"id":"12","title":"No Man's Land","number":2,"duration":0,"disc":"",
+  "cover":"/covers/2","dateAdded":1708682679,"artistId":"3","albumId":"2","artist":{"id":"3",
+  "name":"Dirty Greed","dateAdded":1708682679},"album":{"id":"2","title":"From Dawn...","year":"",
+  "cover":"/covers/2","artistId":"3","artist":{"id":"3"},"dateAdded":1708682679}},"position":1},
+  {"track":{"id":"87","title":"Anything 'Cept The Truth","number":1,"duration":0,"disc":"",
+  "cover":"/covers/10","dateAdded":1708682679,"artistId":"5","albumId":"9","artist":{"id":"5",
+  "name":"Eagles of Death Metal","dateAdded":1708682679},"album":{"id":"9","title":"Heart On",
+  "year":"2008","cover":"/covers/10","artistId":"5","artist":{"id":"5"},"dateAdded":1708682679}},
+  "position":2},{"track":{"id":"127","title":"Illusory Motion","number":1,"duration":0,"disc":"",
+  "cover":"/covers/13","dateAdded":1708682679,"artistId":"6","albumId":"12","artist":{"id":"6",
+  "name":"Elder","dateAdded":1708682679},"album":{"id":"12","title":"The Gold & Silver Sessions",
+  "year":"2019","cover":"/covers/13","artistId":"6","artist":{"id":"6"},"dateAdded":1708682679}},
+  "position":3}]
+`
 
 const mockitems = [
   {

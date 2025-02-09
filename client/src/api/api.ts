@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { graphqlRequestBaseQuery } from '@rtk-query/graphql-request-base-query'
 import constants from 'api/constants'
-import { ClientError, gql, GraphQLClient } from 'graphql-request'
+import type { ClientError } from 'graphql-request'
+import { gql, GraphQLClient } from 'graphql-request'
 import { refreshToken } from 'modules/user/authApi'
 import { logoutUser } from 'modules/user/services'
-import { processApiError } from './helpers'
 
 export type GraphQLApiResponse = {
   status: number
@@ -56,8 +56,9 @@ export async function request(
 const baseQuery = graphqlRequestBaseQuery<
   Partial<ClientError> & { errorCode: string }
 >({
-  // @ts-ignore TODO: Fix this typing issue when RTK query is up-to-date.
+  // @ts-ignore
   client: graphQLClient,
+  // @ts-ignore TODO: fix this
   customErrors: ({ name, stack, response }) => {
     if (!response?.status.toString().startsWith('2')) {
       // This is a server error, not a GraphQL error.
@@ -110,14 +111,14 @@ const baseQueryWithReauth: (...args: any[]) => Promise<any> = async (
   return result
 }
 
-export const graphqlAPI = createApi({
+export const graphqlAPISlice = createApi({
   reducerPath: 'graphqlApi',
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
   tagTypes: ['Auth'],
 })
 
-export const restAPI = createApi({
+export const restAPISlice = createApi({
   reducerPath: 'restApi',
   baseQuery: fetchBaseQuery({
     baseUrl: `${constants.BACKEND_BASE_URL}`,
@@ -125,7 +126,7 @@ export const restAPI = createApi({
   endpoints: () => ({}),
 })
 
-const getSettings = () => {
+export const getSettings = () => {
   const getSettingsQuery = gql`
     query getSettingsQuery {
       settings {
@@ -138,9 +139,4 @@ const getSettings = () => {
   `
 
   return request(getSettingsQuery)
-}
-
-export default {
-  getSettings,
-  processApiError,
 }

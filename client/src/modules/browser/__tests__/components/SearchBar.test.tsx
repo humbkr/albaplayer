@@ -1,13 +1,14 @@
 import { screen, waitFor } from '@testing-library/react'
+import type { Mock } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { browserInitialState } from 'modules/browser/store'
 import { useNavigate } from 'react-router'
 import SearchBar from 'modules/browser/components/SearchBar'
-import { renderWithProviders } from 'common/utils/testing/testUtils'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('react-router')
-const useNavigateMock = useNavigate as jest.Mock
-const mockNavigate = jest.fn()
+vi.mock('react-router')
+const useNavigateMock = useNavigate as Mock
+const mockNavigate = vi.fn()
 
 describe('SearchBar', () => {
   beforeEach(() => {

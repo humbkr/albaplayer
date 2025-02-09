@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import Icon from 'common/components/Icon'
 import LoaderPulse from 'common/components/LoaderPulse'

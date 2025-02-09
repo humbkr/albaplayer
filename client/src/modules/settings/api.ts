@@ -1,4 +1,4 @@
-import { graphqlAPI, restAPI } from 'api/api'
+import { graphqlAPISlice, restAPISlice } from 'api/api'
 import { gql } from 'graphql-request'
 
 type AppConfigResponse = {
@@ -17,7 +17,7 @@ type AppConfig = {
   rootUserCreated: boolean
 }
 
-const settingsApi = restAPI.injectEndpoints({
+const settingsApi = restAPISlice.injectEndpoints({
   endpoints: (builder) => ({
     getAppConfig: builder.query<AppConfig, void>({
       query: () => '/config',
@@ -33,7 +33,7 @@ const settingsApi = restAPI.injectEndpoints({
 
 export const { useGetAppConfigQuery } = settingsApi
 
-const variableApi = graphqlAPI.injectEndpoints({
+const variableApi = graphqlAPISlice.injectEndpoints({
   endpoints: (builder) => ({
     getVariable: builder.query<string, string>({
       query: (key) => ({

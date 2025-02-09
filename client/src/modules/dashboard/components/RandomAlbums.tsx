@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import { userHasRole } from 'modules/user/utils'
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
 import { USER_ROLE_ADMIN } from 'modules/user/constants'
 import routing from 'routing'
 import { getRandomAlbums } from '../store'
@@ -91,7 +91,7 @@ const Header = styled.div`
 const RandomizeButton = styled.div`
   color: ${(props) => props.theme.buttons.backgroundColor};
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `
@@ -115,7 +115,7 @@ const TextLink = styled(Link)`
   color: ${(props) => props.theme.colors.elementHighlightFocus};
   text-decoration: none;
 
-  :hover {
+  &:hover {
     text-decoration: underline;
   }
 `

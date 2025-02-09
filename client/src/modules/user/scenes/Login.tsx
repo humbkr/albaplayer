@@ -41,6 +41,7 @@ export default function Login({ onLogin }: Props) {
   const onSubmit = async (data: FormData) => {
     setLoading(true)
     const response = await login(data.username, data.password)
+
     if (!response.error) {
       onLogin()
     } else {

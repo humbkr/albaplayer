@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import useSearch from '../hooks/useSearch'
 
@@ -24,7 +24,6 @@ function SearchLink({ type, searchString }: Props) {
 
   return (
     // We need a link so the browser can manage text wrapping correctly.
-    // eslint-disable-next-line jsx-a11y/anchor-is-valid
     <Link onClick={onClick}>{searchString}</Link>
   )
 }
@@ -42,7 +41,7 @@ const Link = styled.a`
   display: inline;
   cursor: pointer;
 
-  :hover {
+  &:hover {
     text-decoration: underline;
   }
 `

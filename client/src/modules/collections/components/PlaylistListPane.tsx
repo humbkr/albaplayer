@@ -1,4 +1,5 @@
-import React, { Ref, useState } from 'react'
+import type { Ref } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { addTrack, playTrack } from 'modules/player/store/store'
 import PlaylistsListHeader from 'modules/collections/components/PlaylistListHeader'

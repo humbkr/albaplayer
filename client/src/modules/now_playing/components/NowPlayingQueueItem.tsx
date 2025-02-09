@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
@@ -85,7 +85,7 @@ const QueueActionButtonIcon = styled.div`
   display: none;
   color: ${(props) => props.theme.buttons.backgroundColor};
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `
@@ -95,7 +95,7 @@ const QueueItemActions = styled.div`
   text-align: right;
   color: ${(props) => props.theme.colors.textSecondary};
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.colors.textPrimary};
   }
 `
@@ -113,7 +113,7 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
     align-self: center;
   }
 
-  :hover {
+  &:hover {
     background-color: ${(props) => props.theme.colors.elementHighlight};
     cursor: grab;
 

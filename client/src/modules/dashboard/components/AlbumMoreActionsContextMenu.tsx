@@ -15,7 +15,6 @@ function ConditionalItem({ children, ...props }: any) {
     return null
   }
 
-  // eslint-disable-next-line react/jsx-props-no-spreading
   return <Item {...props}>{children}</Item>
 }
 

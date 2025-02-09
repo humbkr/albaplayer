@@ -1,4 +1,5 @@
-import React, { Ref, useState } from 'react'
+import type { Ref } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { addAlbum, playAlbum } from 'modules/player/store/store'
 import VirtualList from 'common/components/virtualLists/VirtualList'
@@ -75,6 +76,7 @@ function AlbumsPaneContainer({
     <AlbumsPaneWrapper>
       <LibraryBrowserPane>
         <LibraryBrowserListHeader
+          icon="album"
           title={t('browser.albums.title')}
           orderBy={orderBy}
           orderByOptions={orderByOptions}
@@ -105,7 +107,6 @@ function AlbumsPaneContainer({
 }
 
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <AlbumsPaneContainer {...props} forwardedRef={ref} />
 ))
 

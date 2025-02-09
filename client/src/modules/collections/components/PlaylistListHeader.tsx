@@ -38,7 +38,7 @@ const Wrapper = styled.div`
 const Actions = styled.div`
   color: ${(props) => props.theme.buttons.backgroundColor};
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `

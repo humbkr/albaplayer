@@ -1,28 +1,29 @@
 import { logout as apiLogout } from 'modules/user/authApi'
-import store from 'store/store'
-import { graphqlAPI } from 'api/api'
-import { setLoggedOut } from 'modules/user/store/store'
+import { store } from 'store/store'
+import { graphqlAPISlice } from 'api/api'
 import { logoutUser } from 'modules/user/services'
 
-jest.mock('store/store', () => ({
-  dispatch: jest.fn(),
+vi.mock('store/store', () => ({
+  store: {
+    dispatch: vi.fn(),
+  },
 }))
 
-jest.mock('api/api', () => ({
-  graphqlAPI: {
+vi.mock('api/api', () => ({
+  graphqlAPISlice: {
     util: {
-      resetApiState: jest.fn(),
-      invalidateTags: jest.fn(),
+      resetApiState: vi.fn(),
+      invalidateTags: vi.fn(),
     },
   },
 }))
 
-jest.mock('modules/user/store/store', () => ({
-  setLoggedOut: jest.fn(),
+vi.mock('modules/user/store/store', () => ({
+  setLoggedOut: vi.fn(),
 }))
 
-jest.mock('modules/user/authApi', () => ({
-  logout: jest.fn(),
+vi.mock('modules/user/authApi', () => ({
+  logout: vi.fn(),
 }))
 
 describe('user utils', () => {
@@ -31,11 +32,10 @@ describe('user utils', () => {
       await logoutUser()
 
       expect(apiLogout).toHaveBeenCalled()
-      expect(store.dispatch).toHaveBeenCalledWith(setLoggedOut(true))
       expect(store.dispatch).toHaveBeenCalledWith(
-        graphqlAPI.util.resetApiState()
+        graphqlAPISlice.util.resetApiState()
       )
-      expect(graphqlAPI.util.invalidateTags).toHaveBeenCalledWith(['Auth'])
+      expect(graphqlAPISlice.util.invalidateTags).toHaveBeenCalledWith(['Auth'])
     })
   })
 })

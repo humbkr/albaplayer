@@ -32,7 +32,7 @@ const Button = styled.button<{ active?: boolean }>`
   height: 30px;
   cursor: pointer;
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.colors.elementHighlightFocus};
   }
 `

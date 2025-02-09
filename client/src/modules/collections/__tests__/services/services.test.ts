@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react'
+import type { Mock } from 'vitest'
 import {
   useAddAlbumToPlaylist,
   useAddArtistToPlaylist,
@@ -21,32 +22,34 @@ import {
 } from 'modules/collections/services/api'
 import { useAppSelector } from 'store/hooks'
 import { COLLECTION_TYPE } from 'modules/collections/utils/constants'
-import store from 'store/store'
+import { store } from 'store/store'
 
-jest.mock('store/store', () => ({
-  getState: jest.fn(),
+vi.mock('store/store', () => ({
+  store: {
+    getState: vi.fn(),
+  },
 }))
 
-jest.mock('store/hooks')
-const useAppSelectorMock = useAppSelector as jest.Mock
+vi.mock('store/hooks')
+const useAppSelectorMock = useAppSelector as unknown as Mock
 
-jest.mock('modules/collections/services/api', () => ({
-  useGetCollectionsQuery: jest.fn(),
-  useCreateCollectionMutation: jest.fn(),
-  useUpdateCollectionMutation: jest.fn(),
-  useDeleteCollectionMutation: jest.fn(),
+vi.mock('modules/collections/services/api', () => ({
+  useGetCollectionsQuery: vi.fn(),
+  useCreateCollectionMutation: vi.fn(),
+  useUpdateCollectionMutation: vi.fn(),
+  useDeleteCollectionMutation: vi.fn(),
 }))
-const useGetCollectionsQueryMock = useGetCollectionsQuery as jest.Mock
-const useCreateCollectionMutationMock = useCreateCollectionMutation as jest.Mock
-const useUpdateCollectionMutationMock = useUpdateCollectionMutation as jest.Mock
-const useDeleteCollectionMutationMock = useDeleteCollectionMutation as jest.Mock
+const useGetCollectionsQueryMock = useGetCollectionsQuery as Mock
+const useCreateCollectionMutationMock = useCreateCollectionMutation as Mock
+const useUpdateCollectionMutationMock = useUpdateCollectionMutation as Mock
+const useDeleteCollectionMutationMock = useDeleteCollectionMutation as Mock
 
-const mockCreateCollection = jest.fn()
-const mockUpdateCollection = jest.fn()
+const mockCreateCollection = vi.fn()
+const mockUpdateCollection = vi.fn()
 
 describe('Collections > services', () => {
   beforeEach(() => {
-    ;(store.getState as jest.Mock).mockReturnValue({
+    ;(store.getState as Mock).mockReturnValue({
       queue: {
         items: [
           {
@@ -695,7 +698,7 @@ describe('Collections > services', () => {
     })
 
     test('does nothing if playlist to add does not exist', () => {
-      ;(store.getState as jest.Mock).mockReturnValue({
+      ;(store.getState as Mock).mockReturnValue({
         queue: {
           items: [],
         },
@@ -1013,7 +1016,7 @@ describe('Collections > services', () => {
   })
 
   describe('useDeletePlaylist', () => {
-    const mockDeleteCollection = jest.fn()
+    const mockDeleteCollection = vi.fn()
 
     beforeEach(() => {
       useDeleteCollectionMutationMock.mockReturnValue([mockDeleteCollection])

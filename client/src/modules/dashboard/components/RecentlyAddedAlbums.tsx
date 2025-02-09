@@ -5,9 +5,9 @@ import { Link } from 'react-router'
 import { immutableNestedSort } from 'common/utils/utils'
 import { useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
-import { LibraryStateType } from 'modules/library/store'
+import type { LibraryStateType } from 'modules/library/store'
 import routing from 'routing'
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
 import { userHasRole } from 'modules/user/utils'
 import { USER_ROLE_ADMIN } from 'modules/user/constants'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
@@ -116,7 +116,7 @@ const TextLink = styled(Link)`
   color: ${(props) => props.theme.colors.elementHighlightFocus};
   text-decoration: none;
 
-  :hover {
+  &:hover {
     text-decoration: underline;
   }
 `

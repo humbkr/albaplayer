@@ -1,15 +1,12 @@
-import React, { Ref, useEffect } from 'react'
+import type { Ref } from 'react'
+import React, { useEffect } from 'react'
 import styled, { useTheme } from 'styled-components'
-import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
+import type { VirtuosoHandle } from 'react-virtuoso'
+import { Virtuoso } from 'react-virtuoso'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 import PlaylistItemComponent from 'modules/collections/components/PlaylistItem'
-import {
-  DragDropContext,
-  Draggable,
-  DraggableProvided,
-  Droppable,
-  DropResult,
-} from '@hello-pangea/dnd'
+import type { DraggableProvided, DropResult } from '@hello-pangea/dnd'
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { arrayMoveImmutable } from 'common/utils/utils'
 
 type ItemProps = {

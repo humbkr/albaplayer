@@ -1,21 +1,23 @@
-import playlistsSlice, {
+import type { PlaylistsStateType } from 'modules/collections/store'
+import {
+  playlistSlice,
   playlistSelectPlaylist,
   playlistSelectTrack,
   playlistsInitialState,
-  PlaylistsStateType,
 } from 'modules/collections/store'
 
-jest.mock('modules/library/api', () => ({
+vi.mock('modules/library/api', () => ({
   libraryAPI: {
-    getLibrary: jest.fn().mockResolvedValue({}),
+    getLibrary: vi.fn().mockResolvedValue({}),
   },
 }))
 
 describe('playlists (redux)', () => {
   describe('reducer', () => {
     it('should handle initial state', () => {
-      // @ts-ignore
-      expect(playlistsSlice(undefined, {})).toEqual(playlistsInitialState)
+      expect(playlistSlice.reducer(undefined, { type: '' })).toEqual(
+        playlistsInitialState
+      )
     })
 
     it('should handle playlistSelectPlaylist action', () => {
@@ -24,7 +26,7 @@ describe('playlists (redux)', () => {
       }
 
       expect(
-        playlistsSlice(testState, {
+        playlistSlice.reducer(testState, {
           type: playlistSelectPlaylist.type,
           payload: 'playlist_id',
         })
@@ -41,7 +43,7 @@ describe('playlists (redux)', () => {
       }
 
       expect(
-        playlistsSlice(testState, {
+        playlistSlice.reducer(testState, {
           type: playlistSelectTrack.type,
           payload: { trackId: '1', trackIndex: 0 },
         })

@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
+import { createAppSlice } from 'store/createAppSlice'
 
 export type DashboardStateType = {
   randomAlbumsNumber: number
@@ -10,7 +11,7 @@ export const dashboardInitialState: DashboardStateType = {
   randomAlbums: [],
 }
 
-const dashboardSlice = createSlice({
+export const dashboardSlice = createAppSlice({
   name: 'dashboard',
   initialState: dashboardInitialState,
   reducers: {
@@ -21,7 +22,6 @@ const dashboardSlice = createSlice({
 })
 
 export const { setRandomAlbums } = dashboardSlice.actions
-export default dashboardSlice.reducer
 
 export const getRandomAlbums = (): AppThunk => (dispatch, getState) => {
   const { library } = getState()
@@ -49,7 +49,6 @@ export const getRandomAlbums = (): AppThunk => (dispatch, getState) => {
   dispatch(setRandomAlbums(randomAlbums))
 }
 
-/* istanbul ignore next */
 const getRandomInt = (min: number, max: number): number => {
   // The maximum is exclusive and the minimum is inclusive.
   min = Math.ceil(min)

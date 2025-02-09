@@ -1,10 +1,10 @@
-/* istanbul ignore file */
+/* v8 ignore start */
 
 import { gql } from 'graphql-request'
-import { graphqlAPI } from 'api/api'
+import { graphqlAPISlice } from 'api/api'
 import { transformCollectionsResponse } from 'modules/collections/services/utils'
 
-const collectionApi = graphqlAPI
+const collectionApi = graphqlAPISlice
   .enhanceEndpoints({ addTagTypes: ['Collections', 'Collection'] })
   .injectEndpoints({
     endpoints: (builder) => ({
@@ -91,7 +91,7 @@ const collectionApi = graphqlAPI
           invalidatesTags: ['Collections', 'Collection'],
         }
       ),
-      deleteCollection: builder.mutation<Boolean, string>({
+      deleteCollection: builder.mutation<boolean, string>({
         query: (collectionId) => {
           const mutation = gql`
             mutation DeleteCollection($id: ID!) {

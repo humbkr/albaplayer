@@ -1,5 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import libraryAPI from 'modules/library/api'
+import { createAppSlice } from 'store/createAppSlice'
 
 export type LibraryStateType = {
   isFetching: boolean
@@ -25,30 +27,7 @@ export const libraryInitialState: LibraryStateType = {
   tracks: {},
 }
 
-const initLibrary = createAsyncThunk(
-  'library/init',
-  async (force: boolean, thunkAPI) => {
-    const state = thunkAPI.getState() as { library: LibraryStateType }
-
-    if (force || (await shouldFetchLibrary(state.library))) {
-      return thunkAPI.dispatch(fetchLibrary())
-    }
-
-    return null
-  }
-)
-
-const fetchLibrary = createAsyncThunk('library/fetch', async (_, thunkAPI) => {
-  const response = await libraryAPI.getLibrary()
-
-  if (response?.data.variable?.value) {
-    thunkAPI.dispatch(setLastScan(response.data.variable.value))
-  }
-
-  return response?.data
-})
-
-const librarySlice = createSlice({
+export const librarySlice = createAppSlice({
   name: 'library',
   initialState: libraryInitialState,
   reducers: {
@@ -102,7 +81,29 @@ const librarySlice = createSlice({
 
 export { initLibrary, fetchLibrary }
 export const { setLastScan } = librarySlice.actions
-export default librarySlice.reducer
+
+const initLibrary = createAsyncThunk(
+  'library/init',
+  async (force: boolean, thunkAPI) => {
+    const state = thunkAPI.getState() as { library: LibraryStateType }
+
+    if (force || (await shouldFetchLibrary(state.library))) {
+      return thunkAPI.dispatch(fetchLibrary())
+    }
+
+    return null
+  }
+)
+
+const fetchLibrary = createAsyncThunk('library/fetch', async (_, thunkAPI) => {
+  const response = await libraryAPI.getLibrary()
+
+  if (response?.data.variable?.value) {
+    thunkAPI.dispatch(setLastScan(response.data.variable.value))
+  }
+
+  return response?.data
+})
 
 // TODO: recode this
 export const shouldFetchLibrary = async (libraryState: LibraryStateType) => {

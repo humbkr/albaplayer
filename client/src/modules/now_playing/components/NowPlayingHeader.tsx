@@ -5,7 +5,7 @@ import ActionButtonCircle from 'common/components/buttons/ActionButtonCircle'
 import APIConstants from 'api/constants'
 import SearchLink from 'modules/browser/components/SearchLink'
 import { useAppSelector } from 'store/hooks'
-import { TFunction } from 'i18next'
+import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
 const SEARCH_ENGINE_URL = 'https://www.google.fr/search?q='

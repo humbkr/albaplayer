@@ -1,29 +1,24 @@
 import SidebarNavLink from 'common/components/layout/SidebarNavLink'
-import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
+import { screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
 describe('Sidebar', () => {
   it('displays correctly', () => {
-    render(
+    renderWithProviders(
       <BrowserRouter>
-        <ThemeProvider theme={themeDefault}>
-          <SidebarNavLink to="/test">Children</SidebarNavLink>
-        </ThemeProvider>
+        <SidebarNavLink to="/test">Children</SidebarNavLink>
       </BrowserRouter>
     )
 
     expect(screen.getByText('Children')).toBeInTheDocument()
   })
   it('displays an icon if specified', () => {
-    render(
+    renderWithProviders(
       <BrowserRouter>
-        <ThemeProvider theme={themeDefault}>
-          <SidebarNavLink to="/test" icon="add">
-            Children
-          </SidebarNavLink>
-        </ThemeProvider>
+        <SidebarNavLink to="/test" icon="add">
+          Children
+        </SidebarNavLink>
       </BrowserRouter>
     )
 

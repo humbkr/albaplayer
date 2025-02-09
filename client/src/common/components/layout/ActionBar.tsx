@@ -1,4 +1,5 @@
-import React, { forwardRef, Ref } from 'react'
+import type { Ref } from 'react'
+import { forwardRef } from 'react'
 import styled from 'styled-components'
 import SearchBar from 'modules/browser/components/SearchBar'
 import UserActionsMenu from 'modules/user/components/UserActionsMenu'
@@ -19,7 +20,6 @@ function ActionBar({ forwardedRef }: Props) {
 }
 
 export default forwardRef<HTMLElement>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <ActionBar {...props} forwardedRef={ref} />
 ))
 

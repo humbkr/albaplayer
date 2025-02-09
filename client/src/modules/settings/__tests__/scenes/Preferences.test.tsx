@@ -1,36 +1,24 @@
-import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
+import { screen } from '@testing-library/react'
 import Preferences from 'modules/settings/scenes/Preferences'
 import userEvent from '@testing-library/user-event'
 import { useGetAppConfigQuery } from 'modules/settings/api'
+import type { Mock } from 'vitest'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock(
-  'modules/settings/components/GlobalSettings',
-  () =>
-    function () {
-      return <div data-testid="AppearanceSettings" />
-    }
-)
-jest.mock(
-  'modules/settings/components/LibraryBrowserSettings',
-  () =>
-    function () {
-      return <div data-testid="LibraryBrowserSettings" />
-    }
-)
-jest.mock(
-  'modules/user/components/ProfileSettingsForm',
-  () =>
-    function () {
-      return <div data-testid="ProfileSettingsForm" />
-    }
-)
-
-jest.mock('modules/settings/api', () => ({
-  useGetAppConfigQuery: jest.fn(),
+vi.mock('modules/settings/components/GlobalSettings', () => ({
+  default: () => <div data-testid="GlobalSettings" />,
 }))
-const useGetAppConfigQueryMock = useGetAppConfigQuery as jest.Mock
+vi.mock('modules/settings/components/LibraryBrowserSettings', () => ({
+  default: () => <div data-testid="LibraryBrowserSettings" />,
+}))
+vi.mock('modules/user/components/ProfileSettingsForm', () => ({
+  default: () => <div data-testid="ProfileSettingsForm" />,
+}))
+
+vi.mock('modules/settings/api', () => ({
+  useGetAppConfigQuery: vi.fn(),
+}))
+const useGetAppConfigQueryMock = useGetAppConfigQuery as Mock
 
 describe('Preferences scene', () => {
   describe('when auth is enabled', function () {
@@ -39,24 +27,16 @@ describe('Preferences scene', () => {
     })
 
     it('should display correctly', () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <Preferences />
-        </ThemeProvider>
-      )
+      renderWithProviders(<Preferences />)
 
       expect(screen.getByText('settings.preferences.title')).toBeInTheDocument()
       expect(screen.getByText('settings.global.title')).toBeInTheDocument()
       expect(screen.getByText('user.profile.title')).toBeInTheDocument()
-      expect(screen.getByTestId('AppearanceSettings')).toBeInTheDocument()
+      expect(screen.getByTestId('GlobalSettings')).toBeInTheDocument()
     })
 
     it('should display profile settings if corresponding tab is selected', async () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <Preferences />
-        </ThemeProvider>
-      )
+      renderWithProviders(<Preferences />)
 
       await userEvent.click(screen.getByText('user.profile.title'))
 
@@ -64,11 +44,7 @@ describe('Preferences scene', () => {
     })
 
     it('should display library browser settings if corresponding tab is selected', async () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <Preferences />
-        </ThemeProvider>
-      )
+      renderWithProviders(<Preferences />)
 
       await userEvent.click(screen.getByText('settings.libraryBrowser.title'))
 
@@ -82,16 +58,12 @@ describe('Preferences scene', () => {
     })
 
     it('should display correctly', () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <Preferences />
-        </ThemeProvider>
-      )
+      renderWithProviders(<Preferences />)
 
       expect(screen.getByText('settings.preferences.title')).toBeInTheDocument()
       expect(screen.getByText('settings.global.title')).toBeInTheDocument()
       expect(screen.queryByText('user.profile.title')).not.toBeInTheDocument()
-      expect(screen.getByTestId('AppearanceSettings')).toBeInTheDocument()
+      expect(screen.getByTestId('GlobalSettings')).toBeInTheDocument()
     })
   })
 })

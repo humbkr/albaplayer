@@ -1,11 +1,14 @@
-import i18n from 'i18next'
+// Note: do not use or export directly i18n from 'i18next' as it will cause an error in the tsc
+// utility: "Error: Debug Failure. False expression."
+
+import { use, t } from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
 import en from './locale_en'
 import fr from './locale_fr'
 
-i18n.use(initReactI18next).init({
-  debug: process.env.REACT_APP_DEBUG_MODE === 'true',
+use(initReactI18next).init({
+  debug: import.meta.env.VITE_DEBUG_MODE === 'true',
   fallbackLng: 'en',
   returnNull: false,
   interpolation: {
@@ -21,4 +24,6 @@ i18n.use(initReactI18next).init({
   },
 })
 
-export default i18n
+export default {
+  t,
+}

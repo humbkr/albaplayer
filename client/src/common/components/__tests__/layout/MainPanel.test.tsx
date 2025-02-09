@@ -1,53 +1,30 @@
 import MainPanel from 'common/components/layout/MainPanel'
+import type { Mock } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { useAppSelector } from 'store/hooks'
 import { BrowserRouter } from 'react-router'
 
-jest.mock('store/hooks')
-const useAppSelectorMock = useAppSelector as jest.Mock
+vi.mock('store/hooks')
+const useAppSelectorMock = useAppSelector as unknown as Mock
 
-jest.mock(
-  'modules/now_playing/scenes/NowPlaying',
-  () =>
-    function () {
-      return <div data-testid="now-playing" />
-    }
-)
-jest.mock(
-  'modules/settings/scenes/Preferences',
-  () =>
-    function () {
-      return <div data-testid="preferences" />
-    }
-)
-jest.mock(
-  'modules/collections/scenes/Playlists',
-  () =>
-    function () {
-      return <div data-testid="playlists" />
-    }
-)
-jest.mock(
-  'modules/dashboard/scenes/Dashboard',
-  () =>
-    function () {
-      return <div data-testid="dashboard" />
-    }
-)
-jest.mock(
-  'modules/settings/scenes/Administration',
-  () =>
-    function () {
-      return <div data-testid="administration" />
-    }
-)
-jest.mock(
-  'modules/browser/scenes/LibraryBrowser',
-  () =>
-    function () {
-      return <div data-testid="library-browser" />
-    }
-)
+vi.mock('modules/now_playing/scenes/NowPlaying', () => ({
+  default: () => <div data-testid="now-playing" />,
+}))
+vi.mock('modules/settings/scenes/Preferences', () => ({
+  default: () => <div data-testid="preferences" />,
+}))
+vi.mock('modules/collections/scenes/Playlists', () => ({
+  default: () => <div data-testid="playlists" />,
+}))
+vi.mock('modules/dashboard/scenes/Dashboard', () => ({
+  default: () => <div data-testid="dashboard" />,
+}))
+vi.mock('modules/settings/scenes/Administration', () => ({
+  default: () => <div data-testid="administration" />,
+}))
+vi.mock('modules/browser/scenes/LibraryBrowser', () => ({
+  default: () => <div data-testid="library-browser" />,
+}))
 
 describe('MainPanel', () => {
   it('displays a loader if app is not initialised', () => {

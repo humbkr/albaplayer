@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import selectArrowLight from 'common/assets/images/select-arrow-light.svg'
 import selectArrowDark from 'common/assets/images/select-arrow-dark.svg'
@@ -51,8 +51,10 @@ const Select = styled.select<any>`
   appearance: none;
   border: 0;
   background-color: transparent;
-  background-image: url(${(props) =>
-    props.theme.isDark ? selectArrowLight : selectArrowDark});
+  background-image: url('${(props) =>
+    props.theme.isDark
+      ? selectArrowLight.replaceAll("'", '"')
+      : selectArrowDark.replaceAll("'", '"')}');
   background-repeat: no-repeat, repeat;
   background-position:
     right 0.3rem top 52%,
@@ -64,13 +66,16 @@ const Select = styled.select<any>`
   &::-ms-expand {
     display: none;
   }
-  :hover {
+
+  &:hover {
     cursor: pointer;
     outline: none;
   }
-  :focus {
+
+  &:focus {
     outline: none;
   }
+
   option {
     font-weight: normal;
   }

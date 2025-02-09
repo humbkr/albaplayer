@@ -1,4 +1,4 @@
-import store from 'store/store'
+import { store } from 'store/store'
 import { useTranslation } from 'react-i18next'
 import { useAppSelector } from 'store/hooks'
 import { COLLECTION_TYPE } from 'modules/collections/utils/constants'
@@ -53,8 +53,9 @@ export function useAddTrackToPlaylist() {
     const { library } = store.getState()
     const track = { ...library.tracks[trackId] }
     // Hydrate track with album and artist info.
-    track.artist = library.artists[track.artistId]
-    track.album = library.albums[track.albumId]
+
+    track.artist = library.artists[track.artistId as string]
+    track.album = library.albums[track.albumId as string]
 
     addTracksToPlaylist([track], playlistId)
   }

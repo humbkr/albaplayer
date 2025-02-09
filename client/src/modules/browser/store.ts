@@ -1,4 +1,7 @@
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
+import { createSelector } from '@reduxjs/toolkit'
+import { createAppSlice } from 'store/createAppSlice'
+
 import { immutableNestedSort, immutableSortTracks } from 'common/utils/utils'
 import APIConstants from 'api/constants'
 
@@ -21,7 +24,7 @@ export const browserInitialState: BrowserState = {
   },
 }
 
-const browserSlice = createSlice({
+export const browserSlice = createAppSlice({
   name: 'libraryBrowser',
   initialState: browserInitialState,
   reducers: {
@@ -135,7 +138,6 @@ export const {
   libraryBrowserSortAlbums,
   libraryBrowserSortTracks,
 } = browserSlice.actions
-export default browserSlice.reducer
 
 /*
  * Called when loading the browser pane.

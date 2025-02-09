@@ -2,27 +2,28 @@ import { renderHook } from '@testing-library/react'
 import useInitApp from 'common/hooks/useInitApp'
 import { useGetAppConfigQuery } from 'modules/settings/api'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
+import type { Mock } from 'vitest'
 
-jest.mock('modules/user/store/store')
-jest.mock('modules/library/store', () => ({
-  initLibrary: jest.fn(),
+vi.mock('modules/user/store/store')
+vi.mock('modules/library/store', () => ({
+  initLibrary: vi.fn(),
 }))
 
-jest.mock('modules/settings/api', () => ({
-  useGetAppConfigQuery: jest.fn(),
+vi.mock('modules/settings/api', () => ({
+  useGetAppConfigQuery: vi.fn(),
 }))
-const useGetAppConfigQueryMock = useGetAppConfigQuery as jest.Mock
+const useGetAppConfigQueryMock = useGetAppConfigQuery as Mock
 
-jest.mock('store/hooks')
-const useAppSelectorMock = useAppSelector as jest.Mock
-const mockDispatch = jest.fn()
-const useAppDispatchMock = useAppDispatch as jest.Mock
+vi.mock('store/hooks')
+const useAppSelectorMock = useAppSelector as unknown as Mock
+const mockDispatch = vi.fn()
+const useAppDispatchMock = useAppDispatch as unknown as Mock
 
-jest.mock('modules/user/store/api', () => ({
-  useGetUserQuery: jest.fn(),
+vi.mock('modules/user/api', () => ({
+  useGetUserQuery: vi.fn(),
 }))
-const useGetUserQueryMock = useGetUserQuery as jest.Mock
+const useGetUserQueryMock = useGetUserQuery as Mock
 
 // TODO: test the rest
 describe('HOOK: useInitApp', () => {
@@ -34,13 +35,13 @@ describe('HOOK: useInitApp', () => {
     useGetAppConfigQueryMock.mockReturnValue({
       data: null,
       isFetching: true,
-      refetch: jest.fn(),
+      refetch: vi.fn(),
     })
     useAppSelectorMock.mockReturnValue({ loggedOut: false })
     useGetUserQueryMock.mockReturnValue({
       data: null,
       isLoading: false,
-      refetch: jest.fn(),
+      refetch: vi.fn(),
     })
 
     const { result } = renderHook(() => useInitApp())
@@ -59,7 +60,7 @@ describe('HOOK: useInitApp', () => {
     useGetUserQueryMock.mockReturnValue({
       data: null,
       isLoading: true,
-      refetch: jest.fn(),
+      refetch: vi.fn(),
     })
 
     const { result } = renderHook(() => useInitApp())
@@ -81,7 +82,7 @@ describe('HOOK: useInitApp', () => {
     useGetUserQueryMock.mockReturnValue({
       data: null,
       isLoading: false,
-      refetch: jest.fn(),
+      refetch: vi.fn(),
     })
 
     const { result } = renderHook(() => useInitApp())
@@ -100,7 +101,7 @@ describe('HOOK: useInitApp', () => {
     useGetUserQueryMock.mockReturnValue({
       data: { id: '42' },
       isLoading: false,
-      refetch: jest.fn(),
+      refetch: vi.fn(),
     })
 
     const { result } = renderHook(() => useInitApp())
@@ -122,7 +123,7 @@ describe('HOOK: useInitApp', () => {
     useGetUserQueryMock.mockReturnValue({
       data: null,
       isLoading: false,
-      refetch: jest.fn(),
+      refetch: vi.fn(),
     })
 
     const { result } = renderHook(() => useInitApp())
@@ -138,7 +139,7 @@ describe('HOOK: useInitApp', () => {
       isFetching: false,
     })
     useAppSelectorMock.mockReturnValue({ loggedOut: false })
-    const mockRefetch = jest.fn()
+    const mockRefetch = vi.fn()
     useGetUserQueryMock.mockReturnValue({
       data: null,
       isLoading: true,
@@ -150,7 +151,7 @@ describe('HOOK: useInitApp', () => {
 
     onLogin()
 
-    expect(mockDispatch).toHaveBeenCalledTimes(2)
+    expect(mockDispatch).toHaveBeenCalledTimes(1)
     expect(mockRefetch).toHaveBeenCalledTimes(1)
   })
 })

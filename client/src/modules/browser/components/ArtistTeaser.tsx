@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import { useAppSelector } from 'store/hooks'
@@ -69,7 +69,8 @@ const ArtistTeaserName = styled.h2`
   font-weight: normal;
 `
 const ArtistTeaserWrapper = styled.div`
-  display: table;
+  display: flex;
+  align-items: center;
   width: 100%;
   height: ${(props) => props.theme.layout.itemHeight};
   padding: 0 15px;

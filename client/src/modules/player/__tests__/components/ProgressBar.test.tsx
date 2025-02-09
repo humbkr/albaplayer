@@ -1,32 +1,27 @@
-import { ThemeProvider } from 'styled-components'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import theme from 'themes/lightGreen'
 import ProgressBar from 'modules/player/components/ProgressBar'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
 // Required to test components using react-slider.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 global.ResizeObserver = require('resize-observer-polyfill')
 
-const mockSeek = jest.fn()
+const mockSeek = vi.fn()
 
 describe('ProgressBar', () => {
-  beforeEach(() => jest.clearAllMocks())
-
   it('displays a progression of the right percentage base on time elapsed / total duration', () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <ProgressBar position={45} duration={100} seek={mockSeek} />
-      </ThemeProvider>
+    renderWithProviders(
+      <ProgressBar position={45} duration={100} seek={mockSeek} />
     )
 
     expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '45')
   })
 
   it('calls the seek function when clicked', async () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <ProgressBar position={45} duration={100} seek={mockSeek} />
-      </ThemeProvider>
+    renderWithProviders(
+      <ProgressBar position={45} duration={100} seek={mockSeek} />
     )
 
     await userEvent.click(screen.getByRole('slider'))
@@ -34,14 +29,12 @@ describe('ProgressBar', () => {
   })
 
   it('displays a visible slider thumb only on hover', async () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <ProgressBar position={45} duration={100} seek={mockSeek} />
-      </ThemeProvider>
+    renderWithProviders(
+      <ProgressBar position={45} duration={100} seek={mockSeek} />
     )
 
     expect(screen.getByRole('slider')).toHaveStyle(
-      'background-color: transparent'
+      'background-color: rgba(0, 0, 0, 0)'
     )
 
     await userEvent.hover(screen.getByRole('slider'))
@@ -53,7 +46,7 @@ describe('ProgressBar', () => {
     await userEvent.unhover(screen.getByRole('slider'))
 
     expect(screen.getByRole('slider')).toHaveStyle(
-      'background-color: transparent'
+      'background-color: rgba(0, 0, 0, 0)'
     )
   })
 })

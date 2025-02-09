@@ -44,13 +44,17 @@ interface ContainerProps {
 }
 
 const Container = styled.div<ContainerProps>`
+  position: absolute;
+  top: 280px;
   width: 100%;
   height: 16px;
-  transform: translateY(-9px);
+  transform: translateY(-5px);
   display: flex;
   align-items: center;
+  z-index: 20;
 
   .slider {
+    height: 6px;
     display: flex;
     align-items: center;
     width: 100%;

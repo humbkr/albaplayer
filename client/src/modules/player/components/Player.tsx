@@ -47,12 +47,6 @@ function Player() {
   const onStop = useCallback(async () => {
     dispatch(playerTogglePlayPause(false))
     await playerRef.current?.pause()
-    console.log('stopped by media session')
-    console.log('seekable', playerRef.current?.seekable)
-    console.log('buffered', playerRef.current?.buffered)
-    console.log('error', playerRef.current?.error)
-    console.log('networkState', playerRef.current?.networkState)
-    console.log('readyState', playerRef.current?.readyState)
   }, [dispatch])
 
   const handleTogglePlayPause = useCallback(async () => {
@@ -123,7 +117,7 @@ function Player() {
 
     return audio
     // We want to set volume only at first load.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // react-hooks/exhaustive-deps
   }, [dispatch, handleSetNextTrack])
 
   const playerRef = useRef(audioElement)
@@ -148,40 +142,12 @@ function Player() {
       playerRef.current.src = APIConstants.BACKEND_BASE_URL + track.src
       playerRef.current.load()
 
-      playerRef.current.onwaiting = () => {
-        console.log('onwaiting')
-        console.log('seekable', playerRef.current?.seekable)
-        console.log('buffered', playerRef.current?.buffered)
-        console.log('error', playerRef.current?.error)
-        console.log('networkState', playerRef.current?.networkState)
-        console.log('readyState', playerRef.current?.readyState)
-      }
-      playerRef.current.onerror = () => {
-        console.log('onerror')
-        console.log('seekable', playerRef.current?.seekable)
-        console.log('buffered', playerRef.current?.buffered)
-        console.log('error', playerRef.current?.error)
-        console.log('networkState', playerRef.current?.networkState)
-        console.log('readyState', playerRef.current?.readyState)
-      }
-      playerRef.current.oninvalid = () => {
-        console.log('oninvalid')
-        console.log('seekable', playerRef.current?.seekable)
-        console.log('buffered', playerRef.current?.buffered)
-        console.log('error', playerRef.current?.error)
-        console.log('networkState', playerRef.current?.networkState)
-        console.log('readyState', playerRef.current?.readyState)
-      }
-      playerRef.current.onsuspend = () => {
-        console.log('onsuspend')
-        console.log('seekable', playerRef.current?.seekable)
-        console.log('buffered', playerRef.current?.buffered)
-        console.log('error', playerRef.current?.error)
-        console.log('networkState', playerRef.current?.networkState)
-        console.log('readyState', playerRef.current?.readyState)
-      }
+      playerRef.current.onwaiting = () => {}
+      playerRef.current.onerror = () => {}
+      playerRef.current.oninvalid = () => {}
+      playerRef.current.onsuspend = () => {}
 
-      /* istanbul ignore next */
+      /* v8 ignore next 14 */
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: track?.title || t('common.unknown'),
@@ -203,11 +169,11 @@ function Player() {
     }
 
     dispatch(playerSetProgress(0))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // React-hooks/exhaustive-deps
   }, [dispatch, track])
 
   useEffect(() => {
-    /* istanbul ignore next */
+    /* v8 ignore next 11 */
     if ('mediaSession' in navigator) {
       navigator.mediaSession.setActionHandler('play', () => onPlay())
       navigator.mediaSession.setActionHandler('pause', () => onPause())
@@ -221,7 +187,7 @@ function Player() {
     }
 
     return () => {
-      /* istanbul ignore next */
+      /* v8 ignore next 9 */
       if ('mediaSession' in navigator) {
         navigator.mediaSession.setActionHandler('play', null)
         navigator.mediaSession.setActionHandler('pause', null)
@@ -271,4 +237,7 @@ export default Player
 
 const PlayerWrapper = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 `

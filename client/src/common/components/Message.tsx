@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import Icon from 'common/components/Icon'
 
@@ -25,7 +25,6 @@ function Message({ type, children }: Props) {
     case MessageType.error:
       Picto = <Icon>error</Icon>
       break
-    default:
   }
 
   return (

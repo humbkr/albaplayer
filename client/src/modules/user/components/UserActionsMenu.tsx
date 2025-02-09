@@ -1,4 +1,4 @@
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import Icon from 'common/components/Icon'
@@ -115,7 +115,7 @@ const UserButton = styled.button<{ active: boolean }>`
   height: 100%;
   transition: background-color 0.15s ease-in-out;
 
-  :hover {
+  &:hover {
     background-color: ${(props) => props.theme.colors.background};
   }
 `
@@ -146,7 +146,7 @@ const MenuItem = styled.button`
   align-items: center;
   justify-content: space-between;
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.colors.sidebarTextPrimaryHover};
     background-color: ${(props) => props.theme.colors.sidebarTextPrimary};
   }

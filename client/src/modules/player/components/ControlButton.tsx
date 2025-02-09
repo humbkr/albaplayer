@@ -1,5 +1,6 @@
-import React from 'react'
-import styled, { ExecutionContext } from 'styled-components'
+import type React from 'react'
+import type { ExecutionContext } from 'styled-components'
+import styled from 'styled-components'
 
 type StyleProps = {
   active?: boolean

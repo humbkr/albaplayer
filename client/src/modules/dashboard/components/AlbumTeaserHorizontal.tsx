@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import type React from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import dayjs from 'dayjs'
 import { contextMenu } from 'react-contexify'
@@ -141,7 +142,7 @@ const ActionButton = styled.div<{ visible: boolean }>`
     transition: text-shadow linear 0.1s;
   }
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `

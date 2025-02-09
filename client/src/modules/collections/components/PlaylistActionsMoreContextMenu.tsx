@@ -1,5 +1,5 @@
 import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
-import { MenuItemEventHandler } from 'react-contexify/lib/types'
+import type { MenuItemEventHandler } from 'react-contexify/lib/types'
 import 'react-contexify/dist/ReactContexify.min.css'
 import { PLAYLIST_PANE, playlistChangePane } from 'modules/collections/store'
 import { useAppDispatch } from 'store/hooks'
@@ -73,10 +73,7 @@ function PlaylistActionsMoreContextMenu() {
           <Item
             // @ts-ignore
             onClick={(menuItem: MenuItemEventHandlerPlaylist) => {
-              if (
-                // eslint-disable-next-line no-alert
-                window.confirm(t('playlists.deleteConfirm'))
-              ) {
+              if (window.confirm(t('playlists.deleteConfirm'))) {
                 deletePlaylist(menuItem.props.playlist.id)
               }
             }}

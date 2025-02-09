@@ -1,38 +1,31 @@
 import { screen } from '@testing-library/react'
+import type { Mock } from 'vitest'
 import { BrowserRouter } from 'react-router'
 import { dashboardInitialState } from 'modules/dashboard/store'
 import RecentlyAddedAlbums from 'modules/dashboard/components/RecentlyAddedAlbums'
 import { libraryInitialState } from 'modules/library/store'
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
 import { USER_ROLE_ADMIN, USER_ROLE_LISTENER } from 'modules/user/constants'
-import { renderWithProviders } from 'common/utils/testing/testUtils'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('modules/library/api', () => ({
+vi.mock('modules/library/api', () => ({
   default: {
-    getLibrary: jest.fn(),
+    getLibrary: vi.fn(),
   },
 }))
 
-jest.mock(
-  'modules/dashboard/components/AlbumTeaserHorizontal',
-  () =>
-    function () {
-      return <div data-testid="AlbumTeaserHorizontal" />
-    }
-)
-
-jest.mock(
-  'modules/dashboard/components/AlbumMoreActionsContextMenu',
-  () =>
-    function () {
-      return <div data-testid="AlbumMoreActionsContextMenu" />
-    }
-)
-
-jest.mock('modules/user/store/api', () => ({
-  useGetUserQuery: jest.fn(),
+vi.mock('modules/dashboard/components/AlbumTeaserHorizontal', () => ({
+  default: () => <div data-testid="AlbumTeaserHorizontal" />,
 }))
-const useGetUserQueryMock = useGetUserQuery as jest.Mock
+
+vi.mock('modules/dashboard/components/AlbumMoreActionsContextMenu', () => ({
+  default: () => <div data-testid="AlbumMoreActionsContextMenu" />,
+}))
+
+vi.mock('modules/user/api', () => ({
+  useGetUserQuery: vi.fn(),
+}))
+const useGetUserQueryMock = useGetUserQuery as Mock
 
 const mockLibrary = {
   artists: {

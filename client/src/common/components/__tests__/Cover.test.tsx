@@ -1,15 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import type { Mock } from 'vitest'
 
 import Cover from 'common/components/Cover'
 import { getAuthAssetURL } from 'api/helpers'
 
-jest.mock('api/helpers', () => ({
-  getAuthAssetURL: jest.fn(),
+vi.mock('api/helpers', () => ({
+  getAuthAssetURL: vi.fn(),
 }))
 
 describe('QueueActionsMoreContextMenu', () => {
   beforeEach(() => {
-    ;(getAuthAssetURL as jest.Mock).mockResolvedValue('whatever')
+    ;(getAuthAssetURL as Mock).mockResolvedValue('whatever')
   })
 
   it('renders correctly', async () => {

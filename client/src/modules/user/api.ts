@@ -1,8 +1,7 @@
-/* istanbul ignore file */
+/* v8 ignore start */
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { gql } from 'graphql-request'
-import { graphqlAPI } from 'api/api'
+import { graphqlAPISlice } from 'api/api'
 
 type GetUsersResponse = {
   users: User[]
@@ -17,7 +16,7 @@ export type UserToUpdate = Partial<User> & {
   newPassword?: string
 }
 
-const userApi = graphqlAPI
+const userApi = graphqlAPISlice
   .enhanceEndpoints({ addTagTypes: ['Users', 'User'] })
   .injectEndpoints({
     endpoints: (builder) => ({
@@ -140,7 +139,7 @@ const userApi = graphqlAPI
         transformResponse: (response: GetUserResponse) => response.user,
         invalidatesTags: ['Users', 'User'],
       }),
-      deleteUser: builder.mutation<Boolean, number>({
+      deleteUser: builder.mutation<boolean, number>({
         query: (userId) => {
           const mutation = gql`
             mutation DeleteUser($id: ID!) {

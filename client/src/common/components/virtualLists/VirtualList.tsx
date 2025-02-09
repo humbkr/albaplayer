@@ -1,6 +1,8 @@
-import React, { ComponentType, Ref } from 'react'
+import type { ComponentType, Ref } from 'react'
+import React from 'react'
 import styled, { useTheme } from 'styled-components'
-import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
+import type { VirtuosoHandle } from 'react-virtuoso'
+import { Virtuoso } from 'react-virtuoso'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 
 type ItemDisplayProps = {
@@ -113,7 +115,6 @@ function VirtualList({
 }
 
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <VirtualList {...props} forwardedRef={ref} />
 ))
 

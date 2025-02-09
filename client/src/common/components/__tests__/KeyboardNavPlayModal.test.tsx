@@ -1,34 +1,31 @@
 import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
-import { render, screen } from '@testing-library/react'
-import themeDefault from 'themes/lightGreen'
-import { ThemeProvider } from 'styled-components'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React from 'react'
+import type React from 'react'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('common/components/layout/Modal', () => ({
+vi.mock('common/components/layout/Modal', () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => (
     <div>test {children}</div>
   ),
 }))
 
-const mockHandlePlayNow = jest.fn()
-const mockHandleAddToQueue = jest.fn()
-const mockHandleClose = jest.fn()
+const mockHandlePlayNow = vi.fn()
+const mockHandleAddToQueue = vi.fn()
+const mockHandleClose = vi.fn()
 
 describe('KeyboardNavPlayModal', () => {
   it('displays correctly', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <KeyboardNavPlayModal
-          id="id"
-          itemId="item-id"
-          handlePlayNow={mockHandlePlayNow}
-          handleAddToQueue={mockHandleAddToQueue}
-          isOpen
-          onClose={mockHandleClose}
-        />
-      </ThemeProvider>
+    renderWithProviders(
+      <KeyboardNavPlayModal
+        id="id"
+        itemId="item-id"
+        handlePlayNow={mockHandlePlayNow}
+        handleAddToQueue={mockHandleAddToQueue}
+        isOpen
+        onClose={mockHandleClose}
+      />
     )
 
     expect(
@@ -42,17 +39,15 @@ describe('KeyboardNavPlayModal', () => {
   })
 
   it('triggers correct actions on "Enter" key press', async () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <KeyboardNavPlayModal
-          id="id"
-          itemId="item-id"
-          handlePlayNow={mockHandlePlayNow}
-          handleAddToQueue={mockHandleAddToQueue}
-          isOpen
-          onClose={mockHandleClose}
-        />
-      </ThemeProvider>
+    renderWithProviders(
+      <KeyboardNavPlayModal
+        id="id"
+        itemId="item-id"
+        handlePlayNow={mockHandlePlayNow}
+        handleAddToQueue={mockHandleAddToQueue}
+        isOpen
+        onClose={mockHandleClose}
+      />
     )
 
     await userEvent.click(
@@ -67,17 +62,15 @@ describe('KeyboardNavPlayModal', () => {
   })
 
   it('triggers correct actions on "Space" key press', async () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <KeyboardNavPlayModal
-          id="id"
-          itemId="item-id"
-          handlePlayNow={mockHandlePlayNow}
-          handleAddToQueue={mockHandleAddToQueue}
-          isOpen
-          onClose={mockHandleClose}
-        />
-      </ThemeProvider>
+    renderWithProviders(
+      <KeyboardNavPlayModal
+        id="id"
+        itemId="item-id"
+        handlePlayNow={mockHandlePlayNow}
+        handleAddToQueue={mockHandleAddToQueue}
+        isOpen
+        onClose={mockHandleClose}
+      />
     )
 
     await userEvent.click(

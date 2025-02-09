@@ -5,7 +5,7 @@ import PlaylistCareListItem from 'modules/collections/components/PlaylistCareLis
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import Icon from 'common/components/Icon'
 import ActionButton from 'common/components/buttons/ActionButton'
-import { LibraryStateType } from 'modules/library/store'
+import type { LibraryStateType } from 'modules/library/store'
 import { useTranslation } from 'react-i18next'
 import LoaderPulse from 'common/components/LoaderPulse'
 import { PLAYLIST_PANE, playlistChangePane } from 'modules/collections/store'
@@ -145,7 +145,7 @@ const BackButtonIcon = styled(Icon)`
   justify-content: center;
   color: ${(props) => props.theme.colors.textPrimary};
 
-  :hover {
+  &:hover {
     cursor: pointer;
     color: ${(props) => props.theme.colors.elementHighlightFocus};
   }
