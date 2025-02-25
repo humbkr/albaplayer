@@ -357,7 +357,10 @@ func (interactor *LibraryInteractor) EraseLibrary() {
 	interactor.mutex.Lock()
 	interactor.LibraryIsUpdating = true
 
+	// Delete everything from database.
 	interactor.LibraryRepository.Erase()
+
+	// Delete generated cover files.
 	_ = interactor.MediaFileRepository.DeleteCovers()
 
 	interactor.LibraryIsUpdating = false

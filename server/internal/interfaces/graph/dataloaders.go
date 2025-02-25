@@ -162,3 +162,12 @@ func GetAlbum(ctx context.Context, albumId int) (*model.Album, error) {
 
 	return result.(*model.Album), nil
 }
+
+// ResetLoadersCache reset the dataloaders cache
+func ResetLoadersCache(ctx context.Context) error {
+	loaders := For(ctx)
+	loaders.AlbumLoader.ClearAll()
+	loaders.ArtistLoader.ClearAll()
+
+	return nil
+}
