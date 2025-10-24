@@ -1,13 +1,14 @@
 import styled from 'styled-components'
 import { getAuthAssetURL } from 'api/helpers'
+import type { HTMLAttributes } from 'react'
 import { useEffect, useState } from 'react'
 import coverPlaceholder from '../assets/images/cover_placeholder.png'
 
-type Props = {
+type Props = HTMLAttributes<HTMLDivElement> & {
   src?: string
 }
 
-function Cover({ src }: Props) {
+function Cover({ src, ...props }: Props) {
   const [coverURL, setCoverUrl] = useState('')
 
   useEffect(() => {
@@ -17,9 +18,9 @@ function Cover({ src }: Props) {
   }, [src])
 
   return (
-    <div>
+    <div {...props}>
       <DefaultCover src={coverPlaceholder} data-testid="cover-default" />
-      {src && (
+      {coverURL && (
         <RealCoverWrapper cover={coverURL}>
           <RealCover src={coverURL} data-testid="cover-image" />
         </RealCoverWrapper>

@@ -45,8 +45,8 @@ function PlaylistEditModal({ addMode, isOpen, onClose }: Props) {
 
   const title =
     playlist && !addMode
-      ? t('playlists.actions.editPlaylist')
-      : t('playlists.actions.createANewPlaylist')
+      ? t('collections.playlists.actions.editPlaylist')
+      : t('collections.playlists.actions.createANewPlaylist')
   const actionLabel = playlist ? t('common.edit') : t('common.create')
 
   return (
@@ -56,7 +56,7 @@ function PlaylistEditModal({ addMode, isOpen, onClose }: Props) {
       onClose={onClose}
       onValidate={onValidate}
       title={title}
-      cancelActionLabel={t('playlists.actions.cancel')}
+      cancelActionLabel={t('collections.playlists.actions.cancel')}
       mainActionLabel={actionLabel}
     >
       <PlaylistEditForm

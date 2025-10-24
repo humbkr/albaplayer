@@ -1,12 +1,16 @@
+import type React from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
 import NowPlayingQueue from 'modules/now_playing/components/NowPlayingQueue'
 import NowPlayingHeader from 'modules/now_playing/components/NowPlayingHeader'
 import Scroller from 'common/components/Scroller'
+import { devices } from 'themes/breakpoints'
+import useBreakpoints from 'common/utils/useLayoutBreakpoints'
 
 function NowPlaying() {
   const [headerIsPinned, setHeaderIsPinned] = useState(false)
   const [contentRef, setContentRef] = useState<HTMLDivElement>()
+  const { isMD } = useBreakpoints()
 
   const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
     if (e.currentTarget.scrollTop > 210) {
@@ -16,14 +20,17 @@ function NowPlaying() {
     }
   }
 
+  const pinHeader = isMD && headerIsPinned
+
   return (
     <Scroller onScroll={onScroll}>
       <Container
         // @ts-ignore
         ref={setContentRef}
+        headerIsPinned={pinHeader}
       >
-        <NowPlayingHeader pinned={headerIsPinned} />
-        <NowPlayingQueueWrapper headerIsPinned={headerIsPinned}>
+        <NowPlayingHeader pinned={pinHeader} />
+        <NowPlayingQueueWrapper headerIsPinned={pinHeader}>
           <NowPlayingQueue contentElement={contentRef} />
         </NowPlayingQueueWrapper>
       </Container>
@@ -33,18 +40,36 @@ function NowPlaying() {
 
 export default NowPlaying
 
-const Container = styled.div`
+const Container = styled.div<{ headerIsPinned: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 0;
+  padding: 10px 10px;
   max-width: ${(props) => props.theme.layout.contentMaxWidth};
   position: relative;
   margin: 0 auto;
+
+  @media only screen and ${devices.sm} {
+    padding: 20px 20px;
+  }
+
+  @media only screen and ${devices.lg} {
+    padding: 30px 50px;
+  }
+
+  ${({ headerIsPinned }) =>
+    headerIsPinned &&
+    `
+    padding: 210px 10px 20px;
+    
+    @media only screen and ${devices.lg} {
+      padding: 210px 10px 20px;
+    }
+  `}
 `
 const NowPlayingQueueWrapper = styled.div<{ headerIsPinned: boolean }>`
   width: 100%;
-  padding: 30px 50px;
+  padding: 30px 0;
 
   ${({ headerIsPinned }) =>
     headerIsPinned &&

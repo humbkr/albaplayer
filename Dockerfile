@@ -1,5 +1,5 @@
 ## Client build phase
-FROM node:16 as build_client
+FROM node:22 AS build_client
 
 ADD client /app
 WORKDIR /app
@@ -8,7 +8,7 @@ RUN yarn install
 RUN yarn build
 
 ## Server build phase
-FROM golang:1.22 AS build_server
+FROM golang:1.23 AS build_server
 
 # Install GCC for target architecture.
 RUN dpkg --add-architecture amd64 \
@@ -46,5 +46,5 @@ COPY --from=build_server /generated/ /app/
 # Make binary executable
 RUN chmod +x /app/alba
 
-ENTRYPOINT cd /app && ./alba serve
+ENTRYPOINT exec cd /app && ./alba serve
 EXPOSE 8888

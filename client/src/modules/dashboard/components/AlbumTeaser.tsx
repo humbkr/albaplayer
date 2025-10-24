@@ -6,6 +6,7 @@ import { useAppDispatch } from 'store/hooks'
 import { playAlbum } from 'modules/player/store/store'
 import { useTranslation } from 'react-i18next'
 import ActionButtonCircle from 'common/components/buttons/ActionButtonCircle'
+import { isMobileBrowser } from 'common/utils/isMobileBrowser'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
 
@@ -20,6 +21,8 @@ function AlbumTeaser({ album, selected, setSelected }: Props) {
   const dispatch = useAppDispatch()
 
   const [mouseHover, setMouseHover] = useState(false)
+
+  const isTouchDevice = isMobileBrowser()
 
   const handleMoreActionsPress = (
     e: React.MouseEvent,
@@ -57,14 +60,16 @@ function AlbumTeaser({ album, selected, setSelected }: Props) {
               icon="play_arrow"
               size={36}
               onClick={() => dispatch(playAlbum(album.id))}
-              testId="album-teaser-play-button"
+              data-testid="album-teaser-play-button"
+              overlayMode
             />
-            <SecondaryActions visible={mouseHover || selected}>
+            <SecondaryActions visible={mouseHover || selected || isTouchDevice}>
               <ActionButtonCircle
                 icon="more_horiz"
                 size={36}
                 onClick={handleMoreActionsPress}
-                testId="album-teaser-more-button"
+                data-testid="album-teaser-more-button"
+                overlayMode
               />
             </SecondaryActions>
           </Actions>

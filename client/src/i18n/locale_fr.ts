@@ -2,6 +2,7 @@
 
 const fr: Translation = {
   common: {
+    by: 'par',
     forms: {
       requiredField: 'Ce champ est obligatoire.',
     },
@@ -25,9 +26,8 @@ const fr: Translation = {
     navigation: {
       nowPlaying: 'Liste de lecture',
       libraryBrowser: 'Librairie',
-      playlists: 'Playlists',
+      collections: 'Collections',
       inspiration: 'Inspiration',
-      settings: 'Réglages',
     },
   },
   player: {
@@ -41,38 +41,45 @@ const fr: Translation = {
     queueHeader: {
       track: 'chanson',
       artist: 'artiste',
+      album: 'album',
     },
     queueActions: {
       playTrack: 'Jouer la chanson',
       removeTrack: 'Supprimer la chanson de la liste',
     },
+    queueItem: {
+      disc: 'disque {{disc}}',
+    },
   },
-  playlists: {
-    form: {
-      title: 'Titre',
+  collections: {
+    title: 'Collections',
+    playlists: {
+      form: {
+        title: 'Titre',
+      },
+      actions: {
+        addToPlaylist: 'Ajouter à la playlist...',
+        createNewPlaylist: '+ Créer une nouvelle playlist',
+        createANewPlaylist: 'Créer une nouvelle playlist',
+        duplicatePlaylist: '+ Dupliquer la playlist',
+        editPlaylist: 'Modifier la playlist',
+        deletePlaylist: 'Supprimer la playlist',
+        removeFromPlaylist: 'Supprimer de la playlist',
+        cancel: 'annuler',
+      },
+      defaultPlaylistName: 'Nouvelle playlist',
+      deleteConfirm: 'Etes-vous sûr(e) de vouloir supprimer cette playlist ?',
+      care: {
+        fixDeadTracks: 'Corriger les chansons manquantes...',
+        notFound: 'non trouvé',
+        found: 'trouvé',
+        experimental: 'Expérimental',
+        description:
+          "Corriger une playlist qui s'est désynchronisée de la librairie, par exemple suite à une suppression et re-scan de celle-ci. Cette fonctionnalité va tenter de retrouver les chansons et de mettre à jour la playlist.",
+        start: 'Commencer',
+      },
+      title: 'Playlists',
     },
-    actions: {
-      addToPlaylist: 'Ajouter à la playlist...',
-      createNewPlaylist: '+ Créer une nouvelle playlist',
-      createANewPlaylist: 'Créer une nouvelle playlist',
-      duplicatePlaylist: '+ Dupliquer la playlist',
-      editPlaylist: 'Modifier la playlist',
-      deletePlaylist: 'Supprimer la playlist',
-      removeFromPlaylist: 'Supprimer de la playlist',
-      cancel: 'annuler',
-    },
-    defaultPlaylistName: 'Nouvelle playlist',
-    deleteConfirm: 'Etes-vous sûr(e) de vouloir supprimer cette playlist ?',
-    care: {
-      fixDeadTracks: 'Corriger les chansons manquantes...',
-      notFound: 'non trouvé',
-      found: 'trouvé',
-      experimental: 'Expérimental',
-      description:
-        "Corriger une playlist qui s'est désynchronisée de la librairie, par exemple suite à une suppression et re-scan de celle-ci. Cette fonctionnalité va tenter de retrouver les chansons et de mettre à jour la playlist.",
-      start: 'Commencer',
-    },
-    title: 'Playlists',
   },
   browser: {
     actions: {
@@ -82,6 +89,10 @@ const fr: Translation = {
         'une fois de plus pour ajouter à la liste de lecture courante',
       pressToReplacePlaylist:
         'pour remplacer la liste de lecture courante par la sélection',
+    },
+    album: {
+      disc: 'Disque {{disc}}',
+      title: 'Album',
     },
     albums: {
       title: 'Albums',
@@ -109,6 +120,7 @@ const fr: Translation = {
         number: 'numéro de chanson',
       },
       addedToQueue: '{{itemName}} ajouté à la liste de lecture',
+      discAddedToQueue: 'Disque {{itemName}} ajouté à la liste de lecture',
     },
   },
   dashboard: {

@@ -9,6 +9,9 @@ import {
 } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import AnimatedEQ from 'common/components/AnimatedEQ'
+import { useTranslation } from 'react-i18next'
+import { devices } from 'themes/breakpoints'
+import useBreakpoints from 'common/utils/useLayoutBreakpoints'
 
 type Props = {
   item: QueueItemDisplay
@@ -16,8 +19,10 @@ type Props = {
 }
 
 function NowPlayingQueueItem({ item, currentIndex }: Props) {
+  const { t } = useTranslation()
   const isPlaying = useAppSelector((state) => state.player.playing)
   const dispatch = useAppDispatch()
+  const { isMD, isXL } = useBreakpoints()
 
   const handlePlayBackButton = () => {
     const isCurrent = currentIndex + 1 === item.position
@@ -70,8 +75,43 @@ function NowPlayingQueueItem({ item, currentIndex }: Props) {
           />
         </QueueActionButtonIcon>
       </QueueItemFirstColumn>
-      <div>{item.track.title}</div>
-      <QueueItemInfo>{item.track.artist?.name}</QueueItemInfo>
+      <QueueItemInfo highlightable isCurrent={isCurrent}>
+        <Ellipsis>{item.track.title}</Ellipsis>
+      </QueueItemInfo>
+      {isMD && !isXL && (
+        <QueueItemInfo>
+          <div>
+            <Ellipsis lineClamp={1}>{item.track.artist?.name}</Ellipsis>
+          </div>
+          <SecondaryInfo>
+            <Ellipsis lineClamp={1}>
+              {`${item.track.album?.title}${
+                item.track.disc
+                  ? `
+               - ${t('player.queueItem.disc', { disc: item.track.disc })}`
+                  : ''
+              }`}
+            </Ellipsis>
+          </SecondaryInfo>
+        </QueueItemInfo>
+      )}
+      {isXL && (
+        <>
+          <QueueItemInfo>
+            <Ellipsis>{item.track.artist?.name}</Ellipsis>
+          </QueueItemInfo>
+          <QueueItemInfo>
+            <Ellipsis>
+              {`${item.track.album?.title}${
+                item.track.disc
+                  ? ` 
+              - ${t('player.queueItem.disc', { disc: item.track.disc })}`
+                  : ''
+              }`}
+            </Ellipsis>
+          </QueueItemInfo>
+        </>
+      )}
       <QueueItemActions>
         <ActionButtonIcon icon="delete" onClick={handleRemoveTrack} />
       </QueueItemActions>
@@ -103,7 +143,7 @@ const QueueItemPosition = styled.div``
 const CurrentPlaying = styled.div``
 const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   display: grid;
-  grid-template-columns: 60px 40% auto 44px;
+  grid-template-columns: 50px 50% auto 44px;
   height: ${(props) => props.theme.layout.itemHeight};
   color: ${(props) => props.theme.colors.textPrimary};
   border-bottom: 1px solid ${(props) => props.theme.colors.separator};
@@ -126,11 +166,36 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
       display: block;
     }
   }
+
+  @media only screen and ${devices.xl} {
+    grid-template-columns: 50px 30% 30% auto 44px;
+  }
 `
 const QueueItemFirstColumn = styled.div`
   justify-self: center;
   color: ${(props) => props.theme.colors.textSecondary};
 `
-const QueueItemInfo = styled.div`
+const QueueItemInfo = styled.div<{
+  highlightable?: boolean
+  isCurrent?: boolean
+}>`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: ${(props) => props.theme.layout.itemHeight};
   font-weight: normal;
+  padding-right: 10px;
+  ${(props) =>
+    props.highlightable && props.isCurrent ? 'font-weight: bold' : ''};
+`
+const Ellipsis = styled.div<{ lineClamp?: number }>`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: ${(props) => props.lineClamp || 2};
+  line-clamp: ${(props) => props.lineClamp || 2};
+  -webkit-box-orient: vertical;
+`
+const SecondaryInfo = styled.div`
+  color: ${(props) => props.theme.colors.textSecondary};
 `

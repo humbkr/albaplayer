@@ -530,6 +530,9 @@ export const searchFilter =
     )
   }
 
+export const getArtist = (state: RootState, artistId: string): Artist =>
+  state.libraryBrowser.artists.find((artist: Artist) => artist.id === artistId)
+
 const getArtists = (state: RootState) => state.libraryBrowser.artists
 const getArtistsSortOrder = (state: RootState) =>
   state.libraryBrowser.sortArtists
@@ -556,8 +559,11 @@ const getAlbums = (state: RootState) => state.libraryBrowser.albums
 const getAlbumsSortOrder = (state: RootState) => state.libraryBrowser.sortAlbums
 export const getAlbumsList = createSelector(
   [getAlbums, getAlbumsSortOrder],
-  (list: Album[], sortOrder: SortOrder) => {
-    const itemList = immutableNestedSort(list, sortOrder)
+  (list: Album[], sortOrder: SortOrder, artistId) => {
+    const filteredList = artistId
+      ? list.filter((item) => item.artistId === artistId)
+      : list
+    const itemList = immutableNestedSort(filteredList, sortOrder)
 
     // Add a "All" item at the beginning of the list
     const itemAll = {
@@ -575,12 +581,19 @@ export const getAlbumsList = createSelector(
 
 const getTracks = (state: RootState) => state.libraryBrowser.tracks
 const getTracksSortOrder = (state: RootState) => state.libraryBrowser.sortTracks
+export const getIsInAlbumMode = (state: RootState, isInAlbumMode: boolean) =>
+  isInAlbumMode
 export const getTracksList = createSelector(
-  [getTracks, getTracksSortOrder],
-  (list: Track[], sortOrder: TracksSortOptions) => {
-    const itemList = immutableSortTracks(list, sortOrder)
+  [getTracks, getTracksSortOrder, getIsInAlbumMode],
+  (list: Track[], sortOrder: TracksSortOptions, isInAlbumMode) => {
+    const actualSortOrder = isInAlbumMode ? 'album' : sortOrder
+    const itemList = immutableSortTracks(list, actualSortOrder)
 
-    // Add a "All" item at the beginning of the list
+    if (isInAlbumMode) {
+      return itemList
+    }
+
+    // Add an "All" item at the beginning of the list
     const itemAll = {
       id: '0',
       name: 'All',

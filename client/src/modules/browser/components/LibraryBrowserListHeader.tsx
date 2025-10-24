@@ -10,6 +10,7 @@ type Props = {
   title?: string
   icon?: string
   onChange?: (event: React.MouseEvent<HTMLSelectElement>) => void
+  className?: string
 }
 
 function LibraryBrowserListHeader({
@@ -18,9 +19,10 @@ function LibraryBrowserListHeader({
   title = '',
   icon,
   onChange = () => {},
+  className,
 }: Props) {
   return (
-    <LibraryBrowserListHeaderWrapper>
+    <LibraryBrowserListHeaderWrapper className={className}>
       <ContentWrapper>
         <Title>
           {icon && <Icon size={22}>{icon}</Icon>}
@@ -42,7 +44,7 @@ function LibraryBrowserListHeader({
 export default LibraryBrowserListHeader
 
 const LibraryBrowserListHeaderWrapper = styled.div`
-  flex: 0 1 ${(props) => props.theme.layout.itemHeight};
+  height: ${(props) => props.theme.layout.itemHeight};
   color: ${(props) => props.theme.colors.textSecondary};
   padding: 0 15px;
 `
@@ -58,6 +60,7 @@ const ContentWrapper = styled.div`
 `
 const Title = styled.div`
   display: flex;
+  flex-grow: 1;
   gap: 10px;
 
   > i {

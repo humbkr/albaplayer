@@ -7,6 +7,7 @@ import { useAppDispatch } from 'store/hooks'
 import { playAlbum } from 'modules/player/store/store'
 import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
+import { isMobileBrowser } from 'common/utils/isMobileBrowser'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
 
@@ -22,6 +23,8 @@ function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
   const dispatch = useAppDispatch()
 
   const [mouseHover, setMouseHover] = useState(false)
+
+  const isTouchDevice = isMobileBrowser()
 
   const handleMoreActionsPress = (
     e: React.MouseEvent,
@@ -39,6 +42,8 @@ function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
     })
   }
 
+  const isVisible = mouseHover || selected || isTouchDevice
+
   return (
     <Wrapper
       onMouseOver={() => setMouseHover(true)}
@@ -46,15 +51,15 @@ function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
       onFocus={() => setMouseHover(true)}
       onBlur={() => setMouseHover(false)}
       onContextMenu={(e) => handleMoreActionsPress(e, true)}
-      visible={mouseHover || selected}
+      visible={isVisible}
       data-testid="album-teaser-horizontal"
     >
       <CoverWrapper>
         <ActionOverlay
-          visible={mouseHover || selected}
+          visible={isVisible}
           data-testid="album-teaser-horizontal-overlay"
         >
-          <ActionButton visible={mouseHover || selected}>
+          <ActionButton visible={isVisible}>
             <ActionButtonIcon
               icon="play_arrow"
               size={40}
@@ -80,8 +85,8 @@ function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
             Added on: {dayjs.unix(album.dateAdded).format('DD/MM/YYYY')}
           </DateAdded>
         </Left>
-        <SecondaryActions visible={mouseHover || selected}>
-          <ActionButton visible={mouseHover || selected}>
+        <SecondaryActions visible={isVisible}>
+          <ActionButton visible={isVisible}>
             <ActionButtonIcon
               icon="more_horiz"
               size={25}
@@ -100,7 +105,6 @@ export default AlbumTeaserHorizontal
 const Wrapper = styled.div<{ visible: boolean }>`
   display: flex;
   width: 100%;
-  margin-right: 20px;
   transition:
     background-color linear 0.15s,
     color linear 0.15s;
@@ -111,10 +115,11 @@ const Wrapper = styled.div<{ visible: boolean }>`
     props.visible ? props.theme.dashboard.textPrimaryColor : 'inherit'};
 `
 const CoverWrapper = styled.div`
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
   position: relative;
   width: 80px;
-  height: 80px;
 `
 const ActionOverlay = styled.div<{ visible: boolean }>`
   position: absolute;

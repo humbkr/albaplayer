@@ -1,5 +1,5 @@
 import type { Ref, RefObject } from 'react'
-import { forwardRef, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import TracksPaneContainer from 'modules/browser/components/TracksPaneContainer'
 import ArtistsPaneContainer from 'modules/browser/components/ArtistsPaneContainer'
@@ -8,7 +8,7 @@ import { libraryBrowserInit } from 'modules/browser/store'
 import { useAppDispatch } from 'store/hooks'
 
 type Props = {
-  forwardedRef: Ref<HTMLElement>
+  ref: Ref<HTMLElement>
 }
 
 /**
@@ -17,40 +17,36 @@ type Props = {
  * Handles the switch between artists / albums / tracks pane using
  * left and right arrows.
  */
-function LibraryBrowser({ forwardedRef }: Props) {
+export default function LibraryBrowser({ ref }: Props) {
   // List components of each pane.
-  const artistsPane = useRef<HTMLDivElement>(null)
-  const albumsPane = useRef<HTMLDivElement>(null)
-  const tracksPane = useRef<HTMLDivElement>(null)
+  const artistsPaneRef = useRef<HTMLDivElement>(null)
+  const albumsPaneRef = useRef<HTMLDivElement>(null)
+  const tracksPaneRef = useRef<HTMLDivElement>(null)
 
   const dispatch = useAppDispatch()
 
   useEffect(() => {
     dispatch(libraryBrowserInit())
-    ;(forwardedRef as RefObject<HTMLElement>)?.current?.focus()
-  }, [dispatch, forwardedRef])
+    ;(ref as RefObject<HTMLElement>)?.current?.focus()
+  }, [dispatch, ref])
 
   const handleSwitchPaneArtists = (e: KeyboardEvent) => {
     if (e.code === 'ArrowRight') {
-      // @ts-ignore
-      albumsPane.current?.children[0].focus()
+      ;(albumsPaneRef.current?.children[0] as HTMLElement).focus()
     }
   }
 
   const handleSwitchPaneAlbums = (e: KeyboardEvent) => {
     if (e.code === 'ArrowLeft') {
-      // @ts-ignore
-      artistsPane.current?.children[0].focus()
-    } else if (e.code === 'ArrowRight' && tracksPane.current) {
-      // @ts-ignore
-      tracksPane.current.children[0].focus()
+      ;(artistsPaneRef.current?.children[0] as HTMLElement).focus()
+    } else if (e.code === 'ArrowRight' && tracksPaneRef.current) {
+      ;(tracksPaneRef.current.children[0] as HTMLElement).focus()
     }
   }
 
   const handleSwitchPaneTracks = (e: KeyboardEvent) => {
     if (e.code === 'ArrowLeft') {
-      // @ts-ignore
-      albumsPane.current?.children[0].focus()
+      ;(albumsPaneRef.current?.children[0] as HTMLElement).focus()
     }
   }
 
@@ -58,25 +54,22 @@ function LibraryBrowser({ forwardedRef }: Props) {
     <Container>
       <ArtistsPaneContainer
         switchPaneHandler={handleSwitchPaneArtists}
-        ref={artistsPane}
+        ref={artistsPaneRef}
       />
       <AlbumsPaneContainer
         switchPaneHandler={handleSwitchPaneAlbums}
-        ref={albumsPane}
+        ref={albumsPaneRef}
       />
       <TracksPaneContainer
         switchPaneHandler={handleSwitchPaneTracks}
-        ref={tracksPane}
+        ref={tracksPaneRef}
       />
     </Container>
   )
 }
 
-export default forwardRef<HTMLElement>((props, ref) => (
-  <LibraryBrowser {...props} forwardedRef={ref} />
-))
-
 const Container = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   height: 100%;
 `

@@ -8,13 +8,16 @@ import MaterialIconsWoff2 from 'common/assets/fonts/MaterialIcons-Regular.woff2'
 import MaterialIconsTtf from 'common/assets/fonts/MaterialIcons-Regular.ttf'
 import getTheme from 'themes'
 import { useAppSelector } from 'store/hooks'
-import Layout from 'common/components/layout/Layout'
 import { NotificationsContainer } from 'common/utils/notifications'
 import isPropValid from '@emotion/is-prop-valid'
+import DesktopLayout from 'common/components/layout/Layout'
+import MobileLayout from 'common/components/layout/Layout.mobile'
+import { isMobileBrowser } from 'common/utils/isMobileBrowser'
 
 function AlbaApp() {
   const currentThemeName = useAppSelector((state) => state.settings.theme)
   const theme = getTheme(currentThemeName)
+  const isMobile = isMobileBrowser()
 
   // TODO: check the downside of utilizing the shouldForwardProp function vs transient props
   return (
@@ -27,7 +30,7 @@ function AlbaApp() {
     >
       <ThemeProvider theme={theme?.config}>
         <GlobalStyle />
-        <Layout />
+        {isMobile ? <MobileLayout /> : <DesktopLayout />}
         <NotificationsContainer />
       </ThemeProvider>
     </StyleSheetManager>
@@ -46,6 +49,14 @@ const GlobalStyle = createGlobalStyle<{ theme?: DefaultTheme }>`
     local('MaterialIcons-Regular'),
     url(${MaterialIconsWoff2}) format('woff2'),
     url(${MaterialIconsTtf}) format('truetype');
+  }
+  
+  html {
+    overflow: hidden;
+  }
+
+  :root {
+    overscroll-behavior: none;
   }
 
   * {

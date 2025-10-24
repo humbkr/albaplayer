@@ -10,6 +10,7 @@ import routing from 'routing'
 import { useGetUserQuery } from 'modules/user/api'
 import { userHasRole } from 'modules/user/utils'
 import { USER_ROLE_ADMIN } from 'modules/user/constants'
+import { devices } from 'themes/breakpoints'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
 export const getRecentlyAddedAlbums = (
@@ -86,11 +87,13 @@ export default RecentlyAddedAlbums
 const Wrapper = styled.div`
   background-color: ${(props) => props.theme.colors.cardLightBackground};
   max-width: ${(props) => props.theme.layout.contentMaxWidth};
-  min-width: 780px;
   margin: 0 auto;
   padding-bottom: 10px;
   color: ${(props) => props.theme.colors.textPrimary};
-  border-radius: 3px;
+
+  @media only screen and ${devices.xl} {
+    border-radius: 3px;
+  }
 `
 const Header = styled.div`
   padding: 0 20px;
@@ -100,12 +103,18 @@ const Header = styled.div`
 `
 const AlbumsList = styled.div`
   padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-column-gap: 20px;
+
+  @media only screen and ${devices.lg} {
+    grid-template-columns: 1fr 1fr;
+  }
 `
 const Cell = styled.div`
   display: inline-flex;
   align-items: center;
   min-width: 220px;
-  width: 50%;
   padding-bottom: 10px;
 `
 const EmptyState = styled.div`

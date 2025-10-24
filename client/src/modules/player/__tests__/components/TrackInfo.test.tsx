@@ -8,13 +8,9 @@ import { renderWithProviders } from 'common/utils/testing/test-utils'
 
 const mockOnClick = vi.fn()
 
-vi.mock(import('api/helpers'), async (importOriginal) => {
-  const actual = await importOriginal()
-  return {
-    ...actual,
-    getAuthAssetURL: vi.fn(),
-  }
-})
+vi.mock('api/helpers', () => ({
+  getAuthAssetURL: vi.fn(),
+}))
 
 describe('TrackInfo', () => {
   beforeEach(() => {
@@ -41,7 +37,7 @@ describe('TrackInfo', () => {
 
     expect(screen.getByText('Track title')).toBeInTheDocument()
     expect(screen.getByText('Artist name')).toBeInTheDocument()
-    expect(screen.getByTestId('cover-image')).toBeInTheDocument()
+    expect(screen.getByTestId('track-art')).toBeInTheDocument()
   })
 
   it('displays default values if track info is not available', () => {
@@ -59,7 +55,7 @@ describe('TrackInfo', () => {
 
     expect(screen.getByText('library.unknownTitle')).toBeInTheDocument()
     expect(screen.getByText('library.unknownArtist')).toBeInTheDocument()
-    expect(screen.queryByTestId('cover-image')).not.toBeInTheDocument()
+    expect(screen.getByTestId('track-art')).toBeInTheDocument()
   })
 
   it('calls onClick callback when clicked', async () => {

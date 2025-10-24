@@ -50,7 +50,7 @@ function AlbumMoreActionsContextMenu({ menuId, onHidden }: Props) {
         addAlbumToPlaylist({ albumId: menuItem.props.album.id })
       }
     >
-      {t('playlists.actions.createNewPlaylist')}
+      {t('collections.playlists.actions.createNewPlaylist')}
     </Item>
   )
 
@@ -76,7 +76,7 @@ function AlbumMoreActionsContextMenu({ menuId, onHidden }: Props) {
         {t('player.actions.addToQueue')}
       </Item>
       <Separator />
-      <Submenu label={t('playlists.actions.addToPlaylist')}>
+      <Submenu label={t('collections.playlists.actions.addToPlaylist')}>
         {playlistsItems}
       </Submenu>
     </ContextMenu>

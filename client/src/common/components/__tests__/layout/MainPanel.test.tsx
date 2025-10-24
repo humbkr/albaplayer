@@ -25,6 +25,21 @@ vi.mock('modules/settings/scenes/Administration', () => ({
 vi.mock('modules/browser/scenes/LibraryBrowser', () => ({
   default: () => <div data-testid="library-browser" />,
 }))
+vi.mock('modules/browser/scenes/LibraryBrowser.mobile', () => ({
+  default: () => <div data-testid="library-browser-mobile" />,
+}))
+vi.mock('modules/browser/scenes/LibraryBrowserAlbum.mobile', () => ({
+  default: () => <div data-testid="library-browser-album-mobile" />,
+}))
+vi.mock('modules/browser/scenes/LibraryBrowserAlbums.mobile', () => ({
+  default: () => <div data-testid="library-browser-albums-mobile" />,
+}))
+vi.mock('modules/browser/scenes/LibraryBrowserArtist.mobile', () => ({
+  default: () => <div data-testid="library-browser-artist-mobile" />,
+}))
+vi.mock('modules/browser/scenes/LibraryBrowserArtists.mobile', () => ({
+  default: () => <div data-testid="library-browser-artists-mobile" />,
+}))
 
 describe('MainPanel', () => {
   it('displays a loader if app is not initialised', () => {
@@ -35,7 +50,7 @@ describe('MainPanel', () => {
 
     render(
       <BrowserRouter>
-        <MainPanel />
+        <MainPanel ref={null} />
       </BrowserRouter>
     )
 
@@ -50,7 +65,7 @@ describe('MainPanel', () => {
 
     render(
       <BrowserRouter>
-        <MainPanel />
+        <MainPanel ref={null} />
       </BrowserRouter>
     )
 
@@ -65,7 +80,7 @@ describe('MainPanel', () => {
 
     render(
       <BrowserRouter>
-        <MainPanel />
+        <MainPanel ref={null} />
       </BrowserRouter>
     )
 

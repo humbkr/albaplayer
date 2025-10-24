@@ -22,13 +22,6 @@ import {
 } from 'modules/collections/services/api'
 import { useAppSelector } from 'store/hooks'
 import { COLLECTION_TYPE } from 'modules/collections/utils/constants'
-import { store } from 'store/store'
-
-vi.mock('store/store', () => ({
-  store: {
-    getState: vi.fn(),
-  },
-}))
 
 vi.mock('store/hooks')
 const useAppSelectorMock = useAppSelector as unknown as Mock
@@ -47,53 +40,53 @@ const useDeleteCollectionMutationMock = useDeleteCollectionMutation as Mock
 const mockCreateCollection = vi.fn()
 const mockUpdateCollection = vi.fn()
 
+const mockState = {
+  queue: {
+    items: [
+      {
+        track: {
+          id: 'track03',
+          title: 'trackTitle03',
+          src: 'trackSrc03',
+          artistId: 'artist03',
+          albumId: 'album01',
+          artist: { id: 'artist01', name: 'artistName01' },
+          album: { id: 'album01', title: 'albumTitle01' },
+        },
+        position: 1,
+      },
+    ],
+  },
+  library: {
+    tracks: {
+      track01: {
+        id: 'track01',
+        title: 'trackTitle01',
+        src: 'trackSrc01',
+        artistId: 'artist01',
+        albumId: 'album01',
+      },
+      track02: {
+        id: 'track02',
+        title: 'trackTitle02',
+        src: 'trackSrc02',
+        artistId: 'artist02',
+        albumId: 'album02',
+      },
+    },
+    artists: {
+      artist01: { id: 'artist01', name: 'artistName01' },
+      artist02: { id: 'artist02', name: 'artistName02' },
+    },
+    albums: {
+      album01: { id: 'album01', title: 'albumTitle01' },
+      album02: { id: 'album02', title: 'albumTitle02' },
+    },
+  },
+}
+
 describe('Collections > services', () => {
   beforeEach(() => {
-    ;(store.getState as Mock).mockReturnValue({
-      queue: {
-        items: [
-          {
-            track: {
-              id: 'track03',
-              title: 'trackTitle03',
-              src: 'trackSrc03',
-              artistId: 'artist03',
-              albumId: 'album01',
-              artist: { id: 'artist01', name: 'artistName01' },
-              album: { id: 'album01', title: 'albumTitle01' },
-            },
-            position: 1,
-          },
-        ],
-      },
-      library: {
-        tracks: {
-          track01: {
-            id: 'track01',
-            title: 'trackTitle01',
-            src: 'trackSrc01',
-            artistId: 'artist01',
-            albumId: 'album01',
-          },
-          track02: {
-            id: 'track02',
-            title: 'trackTitle02',
-            src: 'trackSrc02',
-            artistId: 'artist02',
-            albumId: 'album02',
-          },
-        },
-        artists: {
-          artist01: { id: 'artist01', name: 'artistName01' },
-          artist02: { id: 'artist02', name: 'artistName02' },
-        },
-        albums: {
-          album01: { id: 'album01', title: 'albumTitle01' },
-          album02: { id: 'album02', title: 'albumTitle02' },
-        },
-      },
-    })
-
     useCreateCollectionMutationMock.mockReturnValue([mockCreateCollection])
     useUpdateCollectionMutationMock.mockReturnValue([mockUpdateCollection])
   })
@@ -207,6 +200,7 @@ describe('Collections > services', () => {
           ],
         },
       })
+      useAppSelectorMock.mockReturnValue(mockState.library)
     })
 
     test('adds track to an existing playlist', () => {
@@ -256,7 +250,7 @@ describe('Collections > services', () => {
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
         id: undefined,
-        title: 'playlists.defaultPlaylistName',
+        title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
           {
@@ -304,6 +298,7 @@ describe('Collections > services', () => {
           ],
         },
       })
+      useAppSelectorMock.mockReturnValue(mockState.library)
     })
 
     test('adds album to an existing playlist', () => {
@@ -353,7 +348,7 @@ describe('Collections > services', () => {
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
         id: undefined,
-        title: 'playlists.defaultPlaylistName',
+        title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
           {
@@ -401,6 +396,7 @@ describe('Collections > services', () => {
           ],
         },
       })
+      useAppSelectorMock.mockReturnValue(mockState.library)
     })
 
     test('adds artist to an existing playlist', () => {
@@ -450,7 +446,7 @@ describe('Collections > services', () => {
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
         id: undefined,
-        title: 'playlists.defaultPlaylistName',
+        title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
           {
@@ -570,7 +566,7 @@ describe('Collections > services', () => {
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
         id: undefined,
-        title: 'playlists.defaultPlaylistName',
+        title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
           {
@@ -629,6 +625,7 @@ describe('Collections > services', () => {
           ],
         },
       })
+      useAppSelectorMock.mockReturnValue(mockState.queue)
     })
 
     test('adds current queue to an existing playlist', () => {
@@ -678,7 +675,7 @@ describe('Collections > services', () => {
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
         id: undefined,
-        title: 'playlists.defaultPlaylistName',
+        title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
           {
@@ -698,15 +695,8 @@ describe('Collections > services', () => {
     })
 
     test('does nothing if playlist to add does not exist', () => {
-      ;(store.getState as Mock).mockReturnValue({
-        queue: {
-          items: [],
-        },
-        library: {
-          tracks: {},
-          artists: {},
-          albums: {},
-        },
+      useAppSelectorMock.mockReturnValue({
+        items: [],
       })
 
       const { result } = renderHook(() => useAddCurrentQueueToPlaylist())
@@ -1009,7 +999,7 @@ describe('Collections > services', () => {
       expect(mockUpdateCollection).toHaveBeenCalledWith({
         id: 'playlistId',
         type: COLLECTION_TYPE.tracks,
-        title: 'playlists.defaultPlaylistName',
+        title: 'collections.playlists.defaultPlaylistName',
         items: JSON.stringify([]),
       })
     })
@@ -1071,6 +1061,8 @@ describe('Collections > services', () => {
           ],
         },
       })
+
+      useAppSelectorMock.mockReturnValue(mockState.library)
     })
 
     test('returns tracks from a playlist', () => {

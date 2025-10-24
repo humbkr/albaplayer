@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import { NavLink } from 'react-router'
 import Icon from 'common/components/Icon'
+import type React from 'react'
 
 type Props = {
   to: string

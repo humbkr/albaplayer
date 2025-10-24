@@ -83,13 +83,13 @@ function PlaylistsCarePane() {
       </Header>
       <Main>
         <Description>
-          <Strong>{t('playlists.care.experimental')}:</Strong>{' '}
-          {t('playlists.care.description')}
+          <Strong>{t('collections.playlists.care.experimental')}:</Strong>{' '}
+          {t('collections.playlists.care.description')}
         </Description>
         <ActionsWrapper>
           <Actions>
             <ActionButton raised onClick={processTracks} disabled={processing}>
-              {t('playlists.care.start')}
+              {t('collections.playlists.care.start')}
             </ActionButton>
             {processing && <LoaderPulse />}
             {(processing || processed) && (
@@ -101,6 +101,7 @@ function PlaylistsCarePane() {
         </ActionsWrapper>
         <ListWrapper>
           <VirtualList
+            ref={null}
             items={items}
             itemDisplay={PlaylistCareListItem}
             currentPosition={0}

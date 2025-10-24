@@ -1,7 +1,7 @@
 import type { ComponentType, Ref } from 'react'
 import React from 'react'
 import styled, { useTheme } from 'styled-components'
-import type { VirtuosoHandle } from 'react-virtuoso'
+import type { FlatScrollIntoViewLocation, VirtuosoHandle } from 'react-virtuoso'
 import { Virtuoso } from 'react-virtuoso'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 
@@ -10,6 +10,7 @@ type ItemDisplayProps = {
   selected?: boolean
   index: number
   onContextMenu: (itemId: string, index: number) => void
+  type?: string
 }
 
 type Props = {
@@ -17,24 +18,25 @@ type Props = {
   itemDisplay: ComponentType<ItemDisplayProps>
   currentPosition: number
   onItemClick: (itemId: string) => void
-  onKeyDown: (e: KeyboardEvent) => void
+  onKeyDown?: (e: KeyboardEvent) => void
+  Header?: React.ReactNode
+  fixedItemHeight?: boolean
+  ref: Ref<HTMLDivElement>
 }
 
-type InternalProps = Props & {
-  forwardedRef: Ref<HTMLDivElement>
-}
-
-function VirtualList({
+export default function VirtualList({
   items,
   itemDisplay,
   currentPosition,
   onItemClick,
   onKeyDown,
-  forwardedRef,
-}: InternalProps) {
+  Header,
+  fixedItemHeight = true,
+  ref,
+}: Props) {
   const theme = useTheme()
 
-  const ref = React.useRef<VirtuosoHandle | null>(null)
+  const virtuosoRef = React.useRef<VirtuosoHandle | null>(null)
   const listRef = React.useRef(null)
 
   const keyDownCallback = React.useCallback(
@@ -47,18 +49,22 @@ function VirtualList({
         nextIndex = Math.min(items.length - 1, currentPosition + 1)
       } else {
         // Pass the event to the parent and abort.
-        onKeyDown(e)
+        if (onKeyDown) {
+          onKeyDown(e)
+        }
         return
       }
 
-      if (nextIndex !== -1 && ref.current) {
-        ref.current.scrollIntoView({
+      if (nextIndex !== -1 && virtuosoRef.current) {
+        const scrollParameters: FlatScrollIntoViewLocation = {
           index: nextIndex,
           behavior: 'auto',
           done: () => {
             onItemClick(items[nextIndex].id)
           },
-        })
+        }
+
+        virtuosoRef.current.scrollIntoView(scrollParameters)
         e.preventDefault()
       }
     },
@@ -81,13 +87,16 @@ function VirtualList({
   const Display: ComponentType<ItemDisplayProps> = itemDisplay
 
   return (
-    <ListWrapper ref={forwardedRef}>
+    <ListWrapper ref={ref}>
       <Virtuoso
-        ref={ref}
+        ref={virtuosoRef}
         scrollerRef={scrollerRef}
         style={{ width: '100%' }}
-        fixedItemHeight={parseInt(theme.layout.itemHeight, 10)}
+        fixedItemHeight={
+          fixedItemHeight ? parseInt(theme.layout.itemHeight, 10) : undefined
+        }
         data={items}
+        components={Header ? { Header: () => Header } : {}}
         itemContent={(index, item) => {
           const selected = index === currentPosition
 
@@ -105,6 +114,7 @@ function VirtualList({
                 index={index}
                 // Select item on context click.
                 onContextMenu={() => onItemClick(item.id)}
+                type={item.type}
               />
             </VirtualListItem>
           )
@@ -113,10 +123,6 @@ function VirtualList({
     </ListWrapper>
   )
 }
-
-export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  <VirtualList {...props} forwardedRef={ref} />
-))
 
 const ListWrapper = styled.div`
   display: flex;

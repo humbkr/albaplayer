@@ -2,6 +2,7 @@ import eslintPlugin from '@eslint/js'
 import importPlugin from 'eslint-plugin-import'
 import tsEslintPlugin from 'typescript-eslint'
 import reactPlugin from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
 import prettierPluginConfigRecommended from 'eslint-plugin-prettier/recommended'
 
 export default tsEslintPlugin.config([
@@ -10,6 +11,15 @@ export default tsEslintPlugin.config([
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
   prettierPluginConfigRecommended,
+  {
+    plugins: {
+      'react-hooks': reactHooks
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+    }
+  },
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

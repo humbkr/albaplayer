@@ -59,7 +59,7 @@ function QueueItemContextMenu() {
         addTrackToPlaylist({ trackId: menuItem.props.data.track.id })
       }
     >
-      {t('playlists.actions.createNewPlaylist')}
+      {t('collections.playlists.actions.createNewPlaylist')}
     </Item>
   )
 
@@ -80,7 +80,7 @@ function QueueItemContextMenu() {
         {t('player.queueActions.removeTrack')}
       </Item>
       <Separator />
-      <Submenu label={t('playlists.actions.addToPlaylist')}>
+      <Submenu label={t('collections.playlists.actions.addToPlaylist')}>
         {playlistsItems}
       </Submenu>
       <Separator />

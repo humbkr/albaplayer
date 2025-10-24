@@ -18,7 +18,7 @@ function TrackInfo({ track, onClick }: Props) {
   return (
     <TrackInfoWrapper onClick={onClick} data-testid="player-track-info">
       <Overlay />
-      <Cover src={track?.cover} />
+      <Cover src={track?.cover} data-testid="track-art" />
       {track && (
         <OverlayText>
           <TrackTitle>{trackTitle}</TrackTitle>

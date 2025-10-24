@@ -10,7 +10,6 @@ const VirtualListItem = styled.div<{
       ? `border-bottom: 1px solid ${props.theme.colors.separator}`
       : ''};
 
-  height: ${(props) => props.theme.layout.itemHeight};
   overflow: hidden;
   transition: background-color 0.15s ease-in-out;
 
@@ -22,13 +21,6 @@ const VirtualListItem = styled.div<{
     props.selected
       ? `background-color: ${props.theme.colors.elementHighlight}`
       : ''};
-
-  > * {
-    display: block;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-  }
 `
 
 export default VirtualListItem

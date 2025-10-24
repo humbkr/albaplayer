@@ -43,7 +43,7 @@ function PlaylistEditForm({ formRef, playlist, onSubmit }: Props) {
     <form onSubmit={handleSubmit(onSubmit)} ref={formRef}>
       <TextField
         name="title"
-        label={t('playlists.form.title')}
+        label={t('collections.playlists.form.title')}
         required
         register={register}
         error={errors.title?.message}

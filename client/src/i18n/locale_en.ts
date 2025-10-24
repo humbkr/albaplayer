@@ -3,6 +3,7 @@
 // @ts-ignore This is just to make sure we have the same keys in all translations, en being the reference
 const en: Translation = {
   common: {
+    by: 'by',
     forms: {
       requiredField: 'This field is required.',
     },
@@ -25,9 +26,8 @@ const en: Translation = {
     navigation: {
       nowPlaying: 'Now Playing',
       libraryBrowser: 'Library Browser',
-      playlists: 'Playlists',
+      collections: 'Collections',
       inspiration: 'Inspiration',
-      settings: 'Settings',
     },
   },
   player: {
@@ -41,38 +41,45 @@ const en: Translation = {
     queueHeader: {
       track: 'track',
       artist: 'artist',
+      album: 'album',
     },
     queueActions: {
       playTrack: 'Play track',
       removeTrack: 'Remove track from queue',
     },
+    queueItem: {
+      disc: 'disc {{disc}}',
+    },
   },
-  playlists: {
-    form: {
-      title: 'Title',
+  collections: {
+    title: 'Collections',
+    playlists: {
+      form: {
+        title: 'Title',
+      },
+      actions: {
+        addToPlaylist: 'Add to playlist...',
+        createNewPlaylist: '+ Create new playlist',
+        createANewPlaylist: 'Create a new playlist',
+        duplicatePlaylist: '+ Duplicate playlist',
+        editPlaylist: 'Edit playlist',
+        deletePlaylist: 'Delete playlist',
+        removeFromPlaylist: 'Remove from playlist',
+        cancel: 'cancel',
+      },
+      defaultPlaylistName: 'New playlist',
+      deleteConfirm: 'Are you sure you wish to delete this playlist?',
+      care: {
+        fixDeadTracks: 'Fix dead tracks...',
+        notFound: 'not found',
+        found: 'found',
+        experimental: 'Experimental',
+        description:
+          'fix a playlist that has become desynchronised from the library, for example after having cleaned up the library an rebuilt it. This will try to find your tracks again and update the playlist.',
+        start: 'Start',
+      },
+      title: 'Playlists',
     },
-    actions: {
-      addToPlaylist: 'Add to playlist...',
-      createNewPlaylist: '+ Create new playlist',
-      createANewPlaylist: 'Create a new playlist',
-      duplicatePlaylist: '+ Duplicate playlist',
-      editPlaylist: 'Edit playlist',
-      deletePlaylist: 'Delete playlist',
-      removeFromPlaylist: 'Remove from playlist',
-      cancel: 'cancel',
-    },
-    defaultPlaylistName: 'New playlist',
-    deleteConfirm: 'Are you sure you wish to delete this playlist?',
-    care: {
-      fixDeadTracks: 'Fix dead tracks...',
-      notFound: 'not found',
-      found: 'found',
-      experimental: 'Experimental',
-      description:
-        'fix a playlist that has become desynchronised from the library, for example after having cleaned up the library an rebuilt it. This will try to find your tracks again and update the playlist.',
-      start: 'Start',
-    },
-    title: 'Playlists',
   },
   browser: {
     actions: {
@@ -80,6 +87,10 @@ const en: Translation = {
       findAllOnAlbum: 'Find all on album',
       pressToAddToPlaylist: 'again to add to the current playlist',
       pressToReplacePlaylist: 'to replace playlist with current selection',
+    },
+    album: {
+      disc: 'Disc {{disc}}',
+      title: 'Album',
     },
     albums: {
       title: 'Albums',
@@ -107,6 +118,7 @@ const en: Translation = {
         number: 'track number',
       },
       addedToQueue: '{{itemName}} added to queue',
+      discAddedToQueue: 'Disc {{itemName}} added to queue',
     },
   },
   dashboard: {

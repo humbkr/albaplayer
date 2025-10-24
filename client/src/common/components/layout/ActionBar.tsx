@@ -38,5 +38,4 @@ const Container = styled.div`
 `
 const Search = styled.div`
   flex-grow: 1;
-  max-width: 700px;
 `

@@ -40,7 +40,7 @@ function PlaylistContextMenu() {
         addPlaylistToPlaylist({ playlistToAddId: menuItem.props.data.id })
       }
     >
-      {t('playlists.actions.duplicatePlaylist')}
+      {t('collections.playlists.actions.duplicatePlaylist')}
     </Item>
   )
 
@@ -66,11 +66,13 @@ function PlaylistContextMenu() {
             {t('player.actions.addToQueue')}
           </Item>
           <Separator />
-          <Submenu label={t('playlists.actions.addToPlaylist')}>
+          <Submenu label={t('collections.playlists.actions.addToPlaylist')}>
             {playlistsItems}
           </Submenu>
           <Separator />
-          <Item onClick={value}>{t('playlists.actions.editPlaylist')}</Item>
+          <Item onClick={value}>
+            {t('collections.playlists.actions.editPlaylist')}
+          </Item>
         </ContextMenu>
       )}
     </EditPlaylistContext.Consumer>

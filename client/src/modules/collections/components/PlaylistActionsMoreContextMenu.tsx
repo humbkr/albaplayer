@@ -47,7 +47,7 @@ function PlaylistActionsMoreContextMenu() {
         addPlaylistToPlaylist({ playlistToAddId: menuItem.props.playlist.id })
       }
     >
-      {t('playlists.actions.duplicatePlaylist')}
+      {t('collections.playlists.actions.duplicatePlaylist')}
     </Item>
   )
 
@@ -63,26 +63,26 @@ function PlaylistActionsMoreContextMenu() {
             {t('player.actions.playAfter')}
           </Item>
           <Separator />
-          <Submenu label={t('playlists.actions.addToPlaylist')}>
+          <Submenu label={t('collections.playlists.actions.addToPlaylist')}>
             {playlistsItems}
           </Submenu>
           <Separator />
           <Item onClick={() => value('edit')}>
-            {t('playlists.actions.editPlaylist')}
+            {t('collections.playlists.actions.editPlaylist')}
           </Item>
           <Item
             // @ts-ignore
             onClick={(menuItem: MenuItemEventHandlerPlaylist) => {
-              if (window.confirm(t('playlists.deleteConfirm'))) {
+              if (window.confirm(t('collections.playlists.deleteConfirm'))) {
                 deletePlaylist(menuItem.props.playlist.id)
               }
             }}
           >
-            {t('playlists.actions.deletePlaylist')}
+            {t('collections.playlists.actions.deletePlaylist')}
           </Item>
           <Separator />
           <Item onClick={() => dispatch(playlistChangePane(PLAYLIST_PANE.fix))}>
-            {t('playlists.care.fixDeadTracks')}
+            {t('collections.playlists.care.fixDeadTracks')}
           </Item>
         </ContextMenu>
       )}
