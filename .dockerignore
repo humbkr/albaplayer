@@ -11,5 +11,4 @@
 !/server/build/prod.alba.yml
 /server/alba.db
 /server/alba.yml
-/server/app.log
 /server/albaplayer
