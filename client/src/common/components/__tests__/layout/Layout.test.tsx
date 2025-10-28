@@ -1,59 +1,44 @@
 import Layout from 'common/components/layout/Layout'
-import { render, screen } from '@testing-library/react'
+import type { Mock } from 'vitest'
+import { screen } from '@testing-library/react'
 import useInitApp from 'common/hooks/useInitApp'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('common/hooks/useInitApp', () => jest.fn())
-const useInitAppMock = useInitApp as jest.Mock
+vi.mock('common/hooks/useInitApp', () => ({
+  default: vi.fn(),
+}))
+const useInitAppMock = useInitApp as Mock
 
-jest.mock('modules/player/hooks/usePlaybackKeys', () => jest.fn())
+vi.mock('modules/player/hooks/usePlaybackKeys', () => ({
+  default: vi.fn(),
+}))
 
-jest.mock(
-  'common/components/layout/Sidebar',
-  () =>
-    function () {
-      return <div data-testid="sidebar" />
-    }
-)
-jest.mock(
-  'common/components/layout/ActionBar',
-  () =>
-    function () {
-      return <div data-testid="action-bar" />
-    }
-)
-jest.mock(
-  'common/components/layout/MainPanel',
-  () =>
-    function () {
-      return <div data-testid="main-panel" />
-    }
-)
+vi.mock('common/components/layout/Sidebar', () => ({
+  default: () => <div data-testid="sidebar" />,
+}))
+vi.mock('common/components/layout/ActionBar', () => ({
+  default: () => <div data-testid="action-bar" />,
+}))
+vi.mock('common/components/layout/MainPanel', () => ({
+  default: () => <div data-testid="main-panel" />,
+}))
 
-jest.mock(
-  'modules/user/scenes/CreateRootUser',
-  () =>
-    function () {
-      return <div data-testid="create-root-user-page" />
-    }
-)
+vi.mock('modules/user/scenes/CreateRootUser', () => ({
+  default: () => <div data-testid="create-root-user-page" />,
+}))
 
 describe('Layout', () => {
   it('should display a loader if app is not initialised', () => {
     useInitAppMock.mockReturnValue({
+      isServerReachable: true,
       isLoading: true,
       shouldDisplayLogin: false,
       shouldDisplayRootCreation: false,
-      onLogin: jest.fn(),
-      onCreateRootUser: jest.fn(),
+      onLogin: vi.fn(),
+      onCreateRootUser: vi.fn(),
     })
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Layout />
-      </ThemeProvider>
-    )
+    renderWithProviders(<Layout />)
 
     expect(screen.getByTestId('app-loader')).toBeInTheDocument()
     expect(screen.queryByTestId('login-page')).not.toBeInTheDocument()
@@ -67,18 +52,15 @@ describe('Layout', () => {
 
   it('should display the login page if app initialised, auth enabled, and no user logged in', () => {
     useInitAppMock.mockReturnValue({
+      isServerReachable: true,
       isLoading: false,
       shouldDisplayLogin: true,
       shouldDisplayRootCreation: false,
-      onLogin: jest.fn(),
-      onCreateRootUser: jest.fn(),
+      onLogin: vi.fn(),
+      onCreateRootUser: vi.fn(),
     })
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Layout />
-      </ThemeProvider>
-    )
+    renderWithProviders(<Layout />)
 
     expect(screen.queryByTestId('app-loader')).not.toBeInTheDocument()
     expect(screen.getByTestId('login-page')).toBeInTheDocument()
@@ -89,18 +71,15 @@ describe('Layout', () => {
 
   it('should display the root user creation page if no user configured yet', () => {
     useInitAppMock.mockReturnValue({
+      isServerReachable: true,
       isLoading: false,
       shouldDisplayLogin: false,
       shouldDisplayRootCreation: true,
-      onLogin: jest.fn(),
-      onCreateRootUser: jest.fn(),
+      onLogin: vi.fn(),
+      onCreateRootUser: vi.fn(),
     })
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Layout />
-      </ThemeProvider>
-    )
+    renderWithProviders(<Layout />)
 
     expect(screen.queryByTestId('app-loader')).not.toBeInTheDocument()
     expect(screen.queryByTestId('login-page')).not.toBeInTheDocument()
@@ -112,17 +91,14 @@ describe('Layout', () => {
 
   it('should display the app if app initialised and user is logged in', () => {
     useInitAppMock.mockReturnValue({
+      isServerReachable: true,
       isLoading: false,
       shouldDisplayLogin: false,
-      onLogin: jest.fn(),
-      onCreateRootUser: jest.fn(),
+      onLogin: vi.fn(),
+      onCreateRootUser: vi.fn(),
     })
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Layout />
-      </ThemeProvider>
-    )
+    renderWithProviders(<Layout />)
 
     expect(screen.queryByTestId('app-loader')).not.toBeInTheDocument()
     expect(screen.queryByTestId('login-page')).not.toBeInTheDocument()

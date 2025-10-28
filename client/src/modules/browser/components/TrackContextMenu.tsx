@@ -62,7 +62,7 @@ function TrackContextMenu() {
         addTrackToPlaylist({ trackId: menuItem.props.data.id })
       }
     >
-      {t('playlists.actions.createNewPlaylist')}
+      {t('collections.playlists.actions.createNewPlaylist')}
     </Item>
   )
 
@@ -72,7 +72,7 @@ function TrackContextMenu() {
       <Item onClick={playAfter}>{t('player.actions.playAfter')}</Item>
       <Item onClick={playLast}>{t('player.actions.addToQueue')}</Item>
       <Separator />
-      <Submenu label={t('playlists.actions.addToPlaylist')}>
+      <Submenu label={t('collections.playlists.actions.addToPlaylist')}>
         {playlistsItems}
       </Submenu>
       <Separator />

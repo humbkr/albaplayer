@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import type React from 'react'
 
 type Props = {
   onScroll?: (event: React.UIEvent<HTMLDivElement, UIEvent>) => void

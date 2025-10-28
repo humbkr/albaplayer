@@ -1,19 +1,19 @@
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/darkGreen'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import ProfileSettingsForm from 'modules/user/components/ProfileSettingsForm'
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
 import userEvent from '@testing-library/user-event'
+import type { Mock } from 'vitest'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-const mockUpdateUser = jest.fn()
-jest.mock('modules/user/store/api', () => ({
-  useGetUserQuery: jest.fn(),
+const mockUpdateUser = vi.fn()
+vi.mock('modules/user/api', () => ({
+  useGetUserQuery: vi.fn(),
   useUpdateUserMutation: () => [mockUpdateUser, { isLoading: false }],
 }))
 
 describe('ProfileSettingsForm', () => {
   beforeEach(() => {
-    ;(useGetUserQuery as jest.Mock).mockReturnValue({
+    ;(useGetUserQuery as Mock).mockReturnValue({
       data: {
         id: '1',
         username: 'test',
@@ -23,11 +23,7 @@ describe('ProfileSettingsForm', () => {
   })
 
   it('displays correctly', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <ProfileSettingsForm />
-      </ThemeProvider>
-    )
+    renderWithProviders(<ProfileSettingsForm />)
 
     expect(
       screen.getByText('user.profile.roles', { exact: false })
@@ -45,11 +41,7 @@ describe('ProfileSettingsForm', () => {
   })
 
   it('displays password fields when user choose to update their password', async () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <ProfileSettingsForm />
-      </ThemeProvider>
-    )
+    renderWithProviders(<ProfileSettingsForm />)
 
     await userEvent.click(screen.getByText('user.profile.changePassword'))
 

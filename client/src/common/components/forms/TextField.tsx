@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { InputHTMLAttributes } from 'react'
+import type { InputHTMLAttributes } from 'react'
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   name: string

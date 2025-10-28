@@ -1,26 +1,30 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 
 type Props = React.HTMLProps<HTMLButtonElement> & {
   size?: number
   color?: string
-  icon?: string
-  testId?: string
+  icon: string
+  ['data-testid']?: string
+  // Overlay Mode add a background color to the button to improve visibility.
+  overlayMode?: boolean
 }
 
 function ActionButtonCircle({
   size = 50,
   color,
-  icon = '',
+  icon,
   onClick,
-  testId,
+  ['data-testid']: dataTestId = '',
+  overlayMode = false,
 }: Props) {
   return (
     <ActionButtonCircleWrapper
       onClick={onClick}
       color={color}
-      data-testid={testId}
+      data-testid={dataTestId}
       size={size}
+      overlayMode={overlayMode}
     >
       {icon}
     </ActionButtonCircleWrapper>
@@ -32,12 +36,14 @@ export default ActionButtonCircle
 const ActionButtonCircleWrapper = styled.button<{
   size: number
   color?: string
+  overlayMode?: boolean
 }>`
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: ${(props) =>
+    props.overlayMode ? 'rgba(0, 0, 0, 0.6)' : 'transparent'};
   border-radius: 50%;
   border: 1px solid ${(props) => props.color};
   width: ${(props) => props.size}px;
@@ -48,6 +54,9 @@ const ActionButtonCircleWrapper = styled.button<{
   &:hover {
     border: 1px solid ${(props) => props.theme.colors.elementHighlightFocus};
     color: ${(props) => props.theme.colors.elementHighlightFocus};
+  }
+  &:focus {
+    border: 1px solid ${(props) => props.theme.colors.elementHighlightFocus};
   }
 
   // For icon.

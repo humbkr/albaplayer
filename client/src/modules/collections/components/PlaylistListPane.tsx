@@ -1,4 +1,5 @@
-import React, { Ref, useState } from 'react'
+import type { Ref } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { addTrack, playTrack } from 'modules/player/store/store'
 import PlaylistsListHeader from 'modules/collections/components/PlaylistListHeader'
@@ -96,7 +97,7 @@ const Wrapper = styled.div`
   height: 100%;
   border-right: 1px solid ${(props) => props.theme.colors.separator};
 
-  :focus-within {
+  &:focus-within {
     // Can't find a way to manage that directly in the
     // VirtualListItem component.
     ${VirtualListItem}.selected {

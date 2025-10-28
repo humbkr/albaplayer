@@ -1,68 +1,38 @@
-import React, { Ref, useState } from 'react'
+import type { Ref } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
-import { addTrack, playTrack } from 'modules/player/store/store'
-import { useAppDispatch, useAppSelector } from 'store/hooks'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import { useTranslation } from 'react-i18next'
 import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
-import {
-  getTracksList,
-  libraryBrowserSelectTrack,
-  libraryBrowserSortTracks,
-} from '../store'
-import TrackTeaser from './TrackTeaser'
-import LibraryBrowserListHeader from './LibraryBrowserListHeader'
-import TrackContextMenu from './TrackContextMenu'
+import { useTracksPanel } from 'modules/browser/hooks/useTracksPanel'
+import { AlbumDetailsHeader } from 'modules/browser/components/AlbumDetailsHeader'
+import AlbumDetailsListItem from 'modules/browser/components/AlbumDetailsListItem'
+import DiscContextMenu from 'modules/browser/components/DiscContextMenu'
 import LibraryBrowserPane from './LibraryBrowserPane'
+import TrackContextMenu from './TrackContextMenu'
+import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 
 type Props = {
   switchPaneHandler: (e: KeyboardEvent) => void
+  ref: Ref<HTMLDivElement>
 }
 
-type InternalProps = Props & {
-  forwardedRef: Ref<HTMLDivElement>
-}
-
-function TracksPaneContainer({
-  switchPaneHandler,
-  forwardedRef,
-}: InternalProps) {
+export default function TracksPaneContainer({ switchPaneHandler, ref }: Props) {
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
   const { t } = useTranslation()
 
-  const tracks = useAppSelector((state) => getTracksList(state))
-  const orderBy = useAppSelector((state) => state.libraryBrowser.sortTracks)
-  const currentTrack = useAppSelector(
-    (state) => state.libraryBrowser.selectedTracks
-  )
-  const dispatch = useAppDispatch()
-
-  const orderByOptions: { value: TracksSortOptions; label: string }[] = [
-    { value: 'title', label: t('browser.tracks.sort.title') },
-    { value: 'number', label: t('browser.tracks.sort.number') },
-    { value: 'album', label: t('browser.tracks.sort.album') },
-    { value: 'artistId', label: t('browser.tracks.sort.artist') },
-  ]
-
-  // Change event handler for LibraryBrowserListHeader.
-  const onSortChangeHandler = (event: React.MouseEvent<HTMLSelectElement>) => {
-    dispatch(
-      libraryBrowserSortTracks(event.currentTarget.value as TracksSortOptions)
-    )
-  }
-
-  const onItemClick = (itemId: string) => {
-    dispatch(libraryBrowserSelectTrack({ trackId: itemId }))
-  }
-
-  const handlePlayNow = (trackId: string) => {
-    dispatch(playTrack(trackId))
-  }
-
-  const handleAddToQueue = (trackId: string) => {
-    dispatch(addTrack(trackId))
-  }
+  const {
+    items,
+    orderBy,
+    currentItem,
+    orderByOptions,
+    onSortChangeHandler,
+    onItemClick,
+    handlePlayNow,
+    handleAddToQueue,
+    isInAlbumMode,
+  } = useTracksPanel()
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.code === 'Enter') {
@@ -72,36 +42,43 @@ function TracksPaneContainer({
     }
   }
 
+  const currentIndex = items.findIndex((item) => item.id === currentItem)
+  const currentPosition = currentIndex >= 0 ? currentIndex : 0
+
   return (
     <TracksPaneWrapper>
       <LibraryBrowserPane>
-        <LibraryBrowserListHeader
-          title={t('browser.tracks.title')}
-          orderBy={orderBy}
-          orderByOptions={orderByOptions}
-          onChange={onSortChangeHandler}
-        />
-        {tracks.length > 1 && (
-          <VirtualList
-            ref={forwardedRef}
-            items={tracks}
-            itemDisplay={TrackTeaser}
-            currentPosition={
-              tracks.findIndex((track) => track.id === currentTrack) || 0
-            }
-            onItemClick={onItemClick}
-            onKeyDown={onKeyDown}
+        {!isInAlbumMode && (
+          <LibraryBrowserListHeader
+            icon="audiotrack"
+            title={t('browser.tracks.title')}
+            orderBy={orderBy}
+            orderByOptions={orderByOptions}
+            onChange={onSortChangeHandler}
           />
         )}
-        {tracks.length === 1 && (
+        {items.length > 1 && (
+          <VirtualList
+            ref={ref}
+            items={items}
+            itemDisplay={AlbumDetailsListItem}
+            currentPosition={currentPosition}
+            onItemClick={onItemClick}
+            onKeyDown={onKeyDown}
+            Header={isInAlbumMode ? <AlbumDetailsHeader /> : undefined}
+            fixedItemHeight={!isInAlbumMode}
+          />
+        )}
+        {items.length === 1 && (
           <NoTracks>{t('browser.tracks.selectAnArtistOrAlbum')}</NoTracks>
         )}
         <TrackContextMenu />
+        {isInAlbumMode && <DiscContextMenu />}
         <KeyboardNavPlayModal
           id="tracks-nav-modal"
           onClose={() => setModalIsOpen(false)}
           isOpen={modalIsOpen}
-          itemId={currentTrack}
+          itemId={currentItem}
           handlePlayNow={handlePlayNow}
           handleAddToQueue={handleAddToQueue}
         />
@@ -110,16 +87,10 @@ function TracksPaneContainer({
   )
 }
 
-export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  <TracksPaneContainer {...props} forwardedRef={ref} />
-))
-
 const TracksPaneWrapper = styled.div`
   display: inline-block;
   vertical-align: top;
   overflow: hidden;
-  width: 34%;
   height: 100%;
 `
 const NoTracks = styled.div`

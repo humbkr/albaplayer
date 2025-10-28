@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 
@@ -33,7 +33,6 @@ export default PlaylistTeaser
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   width: 100%;
   height: ${(props) => props.theme.layout.itemHeight};
   padding-left: 15px;

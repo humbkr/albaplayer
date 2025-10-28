@@ -1,13 +1,9 @@
 import Modal from 'common/components/layout/Modal'
-import UserEditForm, {
-  UserEditFormData,
-} from 'modules/user/components/UserEditForm'
+import type { UserEditFormData } from 'modules/user/components/UserEditForm'
+import UserEditForm from 'modules/user/components/UserEditForm'
 import { useTranslation } from 'react-i18next'
-import {
-  useCreateUserMutation,
-  UserToUpdate,
-  useUpdateUserMutation,
-} from 'modules/user/store/api'
+import type { UserToUpdate } from 'modules/user/api'
+import { useCreateUserMutation, useUpdateUserMutation } from 'modules/user/api'
 import { notify } from 'common/utils/notifications'
 import { useRef } from 'react'
 import { USER_ROLE_LISTENER } from 'modules/user/constants'
@@ -59,7 +55,6 @@ export default function UserEditModal({ user, isOpen, onClose }: Props) {
       })
     }
 
-    // @ts-ignore
     if (response?.error) {
       // TODO handle username taken error
       notify(t('common.errors.unknown'), 'error')

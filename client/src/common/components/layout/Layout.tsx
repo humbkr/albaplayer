@@ -4,10 +4,10 @@ import styled from 'styled-components'
 import ActionBar from 'common/components/layout/ActionBar'
 import { useRef } from 'react'
 import Login from 'modules/user/scenes/Login'
-import LoaderPulseLogo from 'common/components/LoaderPulseLogo'
 import usePlaybackKeys from 'modules/player/hooks/usePlaybackKeys'
 import useInitApp from 'common/hooks/useInitApp'
 import CreateRootUser from 'modules/user/scenes/CreateRootUser'
+import AppLoader from 'common/components/layout/AppLoader'
 
 function Layout() {
   // Used to handle the search input focus.
@@ -18,53 +18,42 @@ function Layout() {
 
   const {
     isLoading,
+    isServerReachable,
     shouldDisplayLogin,
     shouldDisplayRootCreation,
     onLogin,
     onCreateRootUser,
   } = useInitApp()
 
-  if (isLoading) {
-    return (
-      <LoadingContainer>
-        <LoaderPulseLogo />
-      </LoadingContainer>
-    )
-  }
-
   return (
-    <AppContainer>
-      {shouldDisplayLogin && <Login onLogin={onLogin} />}
-      {shouldDisplayRootCreation && (
-        <CreateRootUser onCreateRootUser={onCreateRootUser} />
-      )}
-      {!shouldDisplayLogin && !shouldDisplayRootCreation && (
-        <>
-          <Left>
-            <Sidebar />
-          </Left>
-          <Right>
-            <Top>
-              <ActionBar ref={searchInputRef} />
-            </Top>
-            <Content>
-              <MainPanel ref={searchInputRef} />
-            </Content>
-          </Right>
-        </>
-      )}
-    </AppContainer>
+    <AppLoader isLoading={isLoading} isServerReachable={isServerReachable}>
+      <AppContainer>
+        {shouldDisplayLogin && <Login onLogin={onLogin} />}
+        {shouldDisplayRootCreation && (
+          <CreateRootUser onCreateRootUser={onCreateRootUser} />
+        )}
+        {!shouldDisplayLogin && !shouldDisplayRootCreation && (
+          <>
+            <Left>
+              <Sidebar />
+            </Left>
+            <Right>
+              <Top>
+                <ActionBar ref={searchInputRef} />
+              </Top>
+              <Content>
+                <MainPanel ref={searchInputRef} />
+              </Content>
+            </Right>
+          </>
+        )}
+      </AppContainer>
+    </AppLoader>
   )
 }
 
 export default Layout
 
-const LoadingContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-`
 const AppContainer = styled.div`
   display: flex;
   position: fixed;

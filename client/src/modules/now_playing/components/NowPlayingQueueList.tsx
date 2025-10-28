@@ -1,13 +1,8 @@
 import React, { useEffect } from 'react'
 import NowPlayingQueueItem from 'modules/now_playing/components/NowPlayingQueueItem'
 import { Virtuoso } from 'react-virtuoso'
-import {
-  DraggableProvided,
-  DragDropContext,
-  DropResult,
-  Droppable,
-  Draggable,
-} from '@hello-pangea/dnd'
+import type { DraggableProvided, DropResult } from '@hello-pangea/dnd'
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import styled from 'styled-components'
 import { arrayMoveImmutable } from 'common/utils/utils'
 

@@ -1,16 +1,16 @@
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import Login from 'modules/user/scenes/Login'
 import { login } from 'modules/user/authApi'
 import userEvent from '@testing-library/user-event'
+import type { Mock } from 'vitest'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('modules/user/authApi', () => ({
-  login: jest.fn(),
+vi.mock('modules/user/authApi', () => ({
+  login: vi.fn(),
 }))
-const loginMock = login as jest.Mock
+const loginMock = login as Mock
 
-const mockOnLogin = jest.fn()
+const mockOnLogin = vi.fn()
 
 describe('User - Login screen', () => {
   beforeEach(() => {
@@ -18,11 +18,7 @@ describe('User - Login screen', () => {
   })
 
   it('renders correctly', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Login onLogin={mockOnLogin} />
-      </ThemeProvider>
-    )
+    renderWithProviders(<Login onLogin={mockOnLogin} />)
 
     expect(screen.getByAltText('Logo')).toBeInTheDocument()
     expect(screen.getByText('user.login.username')).toBeInTheDocument()
@@ -31,11 +27,7 @@ describe('User - Login screen', () => {
   })
 
   it('logs in the user when submitted with correct info', async () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Login onLogin={mockOnLogin} />
-      </ThemeProvider>
-    )
+    renderWithProviders(<Login onLogin={mockOnLogin} />)
 
     await userEvent.type(screen.getByLabelText('user.login.username'), 'user')
     await userEvent.type(
@@ -48,11 +40,7 @@ describe('User - Login screen', () => {
   })
 
   it('displays an error when submitted with empty info', async () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Login onLogin={mockOnLogin} />
-      </ThemeProvider>
-    )
+    renderWithProviders(<Login onLogin={mockOnLogin} />)
 
     await userEvent.click(screen.getByText('user.login.login'))
 
@@ -68,11 +56,7 @@ describe('User - Login screen', () => {
       Promise.resolve({ error: 'Invalid username or password' })
     )
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Login onLogin={mockOnLogin} />
-      </ThemeProvider>
-    )
+    renderWithProviders(<Login onLogin={mockOnLogin} />)
 
     await userEvent.type(screen.getByLabelText('user.login.username'), 'user')
     await userEvent.type(

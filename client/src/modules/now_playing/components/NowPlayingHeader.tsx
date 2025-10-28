@@ -5,8 +5,9 @@ import ActionButtonCircle from 'common/components/buttons/ActionButtonCircle'
 import APIConstants from 'api/constants'
 import SearchLink from 'modules/browser/components/SearchLink'
 import { useAppSelector } from 'store/hooks'
-import { TFunction } from 'i18next'
+import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
+import { devices } from 'themes/breakpoints'
 
 const SEARCH_ENGINE_URL = 'https://www.google.fr/search?q='
 
@@ -99,7 +100,7 @@ function NowPlayingHeader({ pinned = false }: Props) {
               <div>
                 <Title pinned={pinned}>{trackInfo?.title}</Title>
                 <Artist pinned={pinned}>
-                  by{' '}
+                  {`${t('common.by')} `}
                   <SearchLink type="artist" searchString={trackInfo?.artist} />
                 </Artist>
               </div>
@@ -113,10 +114,12 @@ function NowPlayingHeader({ pinned = false }: Props) {
                 <ActionButtonCircle
                   icon="queue_music"
                   onClick={() => handleWebSearch(WebSearchType.tab)}
+                  overlayMode
                 />
                 <ActionButtonCircle
                   icon="mic"
                   onClick={() => handleWebSearch(WebSearchType.lyrics)}
+                  overlayMode
                 />
               </SongActions>
             </SongInfo>
@@ -135,14 +138,13 @@ function NowPlayingHeader({ pinned = false }: Props) {
 export default NowPlayingHeader
 
 const Container = styled.div<{ pinned: boolean }>`
-  padding: 0 50px;
   width: 100%;
 
   ${({ pinned, theme }) =>
     pinned &&
     `
     background-color: ${theme.colors.background};
-    padding: 10px 10px 0;
+    padding: 10px 0 0;
     position: sticky;
     z-index: 666;
     top: 0;
@@ -150,18 +152,32 @@ const Container = styled.div<{ pinned: boolean }>`
   `}
 `
 const NowPlaying = styled.div<{ pinned: boolean }>`
-  transition: padding-left 0.2s ease, padding-right 0.2s ease;
+  transition:
+    padding-left 0.2s ease,
+    padding-right 0.2s ease;
   width: 100%;
   margin: 0 auto;
-  padding: 20px 40px;
+  padding: 10px;
   background-color: ${(props) => props.theme.nowPlaying.backgroundColor};
   display: flex;
+  flex-direction: column;
 
   ${({ pinned }) =>
     pinned &&
     `
     padding: 0;
   `}
+
+  @media only screen and ${devices.md} {
+    padding: 20px 40px;
+    flex-direction: row;
+
+    ${({ pinned }) =>
+      pinned &&
+      `
+      padding: 0;
+    `}
+  }
 `
 const Background = styled.div<{ cover?: string }>`
   position: relative;
@@ -187,8 +203,8 @@ const Background = styled.div<{ cover?: string }>`
 `
 const CoverInfo = styled.div<{ pinned: boolean }>`
   display: inline-block;
-  width: 250px;
-  height: 250px;
+  width: 100%;
+  aspect-ratio: 1;
   background: url(${coverPlaceholder}) no-repeat;
   background-size: 100% 100%;
   flex-shrink: 0;
@@ -202,6 +218,21 @@ const CoverInfo = styled.div<{ pinned: boolean }>`
     background-size: 90px 90px;
     background-position: top 5px left 5px;
   `}
+
+  @media only screen and ${devices.md} {
+    width: 250px;
+    height: 250px;
+
+    ${({ pinned }) =>
+      pinned &&
+      `
+      width: 100px;
+      height: 100px;
+      padding: 5px;
+      background-size: 90px 90px;
+      background-position: top 5px left 5px;
+    `}
+  }
 `
 const SongCover = styled.img`
   width: 100%;
@@ -210,12 +241,11 @@ const SongCover = styled.img`
 const SongInfo = styled.div<{ pinned?: boolean }>`
   position: relative;
   vertical-align: top;
-  height: 250px;
   color: ${(props) => props.theme.nowPlaying.textPrimaryColor};
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 10px;
 
   > * {
     transition: flex-grow 0.4s ease;
@@ -235,6 +265,26 @@ const SongInfo = styled.div<{ pinned?: boolean }>`
       flex-grow: 1;
     }
   `}
+
+  @media only screen and ${devices.md} {
+    height: 250px;
+    padding: 20px;
+
+    ${({ pinned }) =>
+      pinned &&
+      `
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+      height: 100px;
+      align-items: center;
+      padding: 20px 0 20px 20px;
+      
+      > * {
+        flex-grow: 1;
+      }
+    `}
+  }
 `
 const SongInfoPart2 = styled.div<{ pinned: boolean }>`
   padding: 15px 0 5px;
@@ -284,6 +334,7 @@ const SongActions = styled.div<{ pinned: boolean }>`
   flex-grow: 1;
   display: flex;
   align-items: flex-end;
+  padding-top: 20px;
 
   > * {
     margin-right: 20px;
@@ -296,4 +347,16 @@ const SongActions = styled.div<{ pinned: boolean }>`
     flex-shrink: 0;
     padding-left: 20px;
   `}
+
+  @media only screen and ${devices.md} {
+    padding-top: 0;
+
+    ${({ pinned }) =>
+      pinned &&
+      `
+      flex-grow: 0;
+      flex-shrink: 0;
+      padding-left: 20px;
+    `}
+  }
 `

@@ -4,7 +4,7 @@ const Icon = styled.i<{ size?: number }>`
   font-family: 'Material Icons';
   font-weight: normal;
   font-style: normal;
-  font-size: ${(props) => props.size}px;
+  font-size: ${(props) => props.size || 24}px;
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
@@ -15,8 +15,5 @@ const Icon = styled.i<{ size?: number }>`
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 `
-Icon.defaultProps = {
-  size: 24,
-}
 
 export default Icon

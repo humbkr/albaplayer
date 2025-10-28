@@ -1,12 +1,11 @@
-import React, { Ref, useState } from 'react'
+import type { Ref } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { addArtist, playArtist } from 'modules/player/store/store'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import ArtistContextMenu from 'modules/browser/components/ArtistContextMenu'
-import { getArtistsList, selectArtist } from 'modules/browser/store'
-import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
+import { useArtistsPanel } from 'modules/browser/hooks/useArtistsPanel'
 import ArtistTeaser from './ArtistTeaser'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
@@ -27,23 +26,13 @@ function ArtistsPaneContainer({
 
   const { t } = useTranslation()
 
-  const artists = useAppSelector((state) => getArtistsList(state))
-  const currentArtist = useAppSelector(
-    (state) => state.libraryBrowser.selectedArtists
-  )
-  const dispatch = useAppDispatch()
-
-  const onItemClick = (itemId: string) => {
-    dispatch(selectArtist({ artistId: itemId }))
-  }
-
-  const handlePlayNow = (artistId: string) => {
-    dispatch(playArtist(artistId))
-  }
-
-  const handleAddToQueue = (artistId: string) => {
-    dispatch(addArtist(artistId))
-  }
+  const {
+    artists,
+    currentArtist,
+    onItemClick,
+    handlePlayNow,
+    handleAddToQueue,
+  } = useArtistsPanel()
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.code === 'Enter') {
@@ -56,7 +45,10 @@ function ArtistsPaneContainer({
   return (
     <ArtistsPaneWrapper>
       <LibraryBrowserPane>
-        <LibraryBrowserListHeader title={t('browser.artists.title')} />
+        <LibraryBrowserListHeader
+          icon="person"
+          title={t('browser.artists.title')}
+        />
         <VirtualList
           ref={forwardedRef}
           items={artists}
@@ -82,7 +74,6 @@ function ArtistsPaneContainer({
 }
 
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <ArtistsPaneContainer {...props} forwardedRef={ref} />
 ))
 
@@ -90,6 +81,5 @@ const ArtistsPaneWrapper = styled.div`
   display: inline-block;
   vertical-align: top;
   overflow: hidden;
-  width: 33%;
   height: 100%;
 `

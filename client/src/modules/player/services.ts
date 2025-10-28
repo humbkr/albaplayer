@@ -6,7 +6,7 @@ import {
   setItemFromQueue,
 } from 'modules/player/store/store'
 import { useGetTracksFromPlaylist } from 'modules/collections/services/services'
-import store from 'store/store'
+import { store } from 'store/store'
 import { useAppDispatch } from 'store/hooks'
 
 export function useAddPlaylist() {

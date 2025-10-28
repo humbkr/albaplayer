@@ -1,8 +1,11 @@
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import {
+  addAlbumDisc,
   addAlbums,
   addArtists,
   addTracks,
+  playAlbumDisc,
+  playAlbumDiscAfterCurrent,
   playAlbums,
   playAlbumsAfterCurrent,
   playArtists,
@@ -97,6 +100,30 @@ export function useAddAlbum() {
   }
 }
 
+export function usePlayAlbumDisc() {
+  const dispatch = useAppDispatch()
+
+  return (albumId: string, disc: string) => {
+    dispatch(playAlbumDisc(albumId, disc))
+  }
+}
+
+export function usePlayAlbumDiscAfterCurrent() {
+  const dispatch = useAppDispatch()
+
+  return (albumId: string, disc: string) => {
+    dispatch(playAlbumDiscAfterCurrent(albumId, disc))
+  }
+}
+
+export function useAddAlbumDisc() {
+  const dispatch = useAppDispatch()
+
+  return (albumId: string, disc: string) => {
+    dispatch(addAlbumDisc(albumId, disc))
+  }
+}
+
 function useGetArtistIds() {
   const currentArtists = useAppSelector((state) => state.libraryBrowser.artists)
 
@@ -137,5 +164,25 @@ export function useAddArtist() {
 
   return (artistId: string) => {
     dispatch(addArtists(getArtistIds(artistId)))
+  }
+}
+
+export function useGetAlbumDetails(albumId: string): Album | undefined {
+  const library = useAppSelector((state: RootState) => state.library)
+
+  if (!albumId || albumId === '0') {
+    return undefined
+  }
+
+  const album = library.albums[albumId]
+  const artist = library.artists[album.artistId as string]
+  const tracks = (Object.values(library.tracks) as Track[]).filter(
+    (track: Track) => track.albumId === album.id
+  )
+
+  return {
+    ...album,
+    artist,
+    tracks,
   }
 }

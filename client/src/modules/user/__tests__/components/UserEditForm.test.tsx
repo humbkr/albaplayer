@@ -1,15 +1,15 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import UserEditForm from 'modules/user/components/UserEditForm'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
+import type { Mock } from 'vitest'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('modules/user/store/api', () => ({
-  useGetUserQuery: jest.fn(),
+vi.mock('modules/user/api', () => ({
+  useGetUserQuery: vi.fn(),
 }))
-const useGetUserQueryMock = useGetUserQuery as jest.Mock
+const useGetUserQueryMock = useGetUserQuery as Mock
 
-const mockOnSubmit = jest.fn()
+const mockOnSubmit = vi.fn()
 
 describe('UserEditForm', () => {
   describe('adding a new user', () => {
@@ -22,11 +22,7 @@ describe('UserEditForm', () => {
         },
       })
 
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserEditForm onSubmit={mockOnSubmit} />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserEditForm onSubmit={mockOnSubmit} />)
 
       expect(
         screen.getByText('user.usersManagement.form.username')
@@ -59,11 +55,7 @@ describe('UserEditForm', () => {
         },
       })
 
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserEditForm onSubmit={mockOnSubmit} />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserEditForm onSubmit={mockOnSubmit} />)
 
       expect(
         screen.getByText('user.usersManagement.form.username')
@@ -104,10 +96,8 @@ describe('UserEditForm', () => {
         roles: ['listener', 'admin'],
       }
 
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserEditForm onSubmit={mockOnSubmit} user={testUser} />
-        </ThemeProvider>
+      renderWithProviders(
+        <UserEditForm onSubmit={mockOnSubmit} user={testUser} />
       )
 
       expect(
@@ -147,10 +137,8 @@ describe('UserEditForm', () => {
         roles: ['listener', 'admin'],
       }
 
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserEditForm onSubmit={mockOnSubmit} user={testUser} />
-        </ThemeProvider>
+      renderWithProviders(
+        <UserEditForm onSubmit={mockOnSubmit} user={testUser} />
       )
 
       expect(

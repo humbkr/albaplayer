@@ -16,8 +16,8 @@ function Sidebar() {
         <SidebarNavLink to="/library" icon="library_music">
           {t('sidebar.navigation.libraryBrowser')}
         </SidebarNavLink>
-        <SidebarNavLink to="/playlists" icon="view_list">
-          {t('sidebar.navigation.playlists')}
+        <SidebarNavLink to="/collections" icon="view_list">
+          {t('sidebar.navigation.collections')}
         </SidebarNavLink>
         <SidebarNavLink to="/inspiration" icon="lightbulb_outline">
           {t('sidebar.navigation.inspiration')}

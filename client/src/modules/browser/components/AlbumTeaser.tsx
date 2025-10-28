@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import { useAppSelector } from 'store/hooks'
@@ -85,7 +85,8 @@ const AlbumTeaserArtist = styled.span`
   font-style: italic;
 `
 const AlbumTeaserWrapper = styled.div`
-  display: table;
+  display: flex;
+  align-items: center;
   width: 100%;
   height: ${(props) => props.theme.layout.itemHeight};
   padding: 0 15px;
@@ -93,9 +94,4 @@ const AlbumTeaserWrapper = styled.div`
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
-
-  > div {
-    display: table-cell;
-    vertical-align: middle;
-  }
 `

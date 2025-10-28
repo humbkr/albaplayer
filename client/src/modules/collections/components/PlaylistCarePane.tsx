@@ -5,7 +5,7 @@ import PlaylistCareListItem from 'modules/collections/components/PlaylistCareLis
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import Icon from 'common/components/Icon'
 import ActionButton from 'common/components/buttons/ActionButton'
-import { LibraryStateType } from 'modules/library/store'
+import type { LibraryStateType } from 'modules/library/store'
 import { useTranslation } from 'react-i18next'
 import LoaderPulse from 'common/components/LoaderPulse'
 import { PLAYLIST_PANE, playlistChangePane } from 'modules/collections/store'
@@ -83,13 +83,13 @@ function PlaylistsCarePane() {
       </Header>
       <Main>
         <Description>
-          <Strong>{t('playlists.care.experimental')}:</Strong>{' '}
-          {t('playlists.care.description')}
+          <Strong>{t('collections.playlists.care.experimental')}:</Strong>{' '}
+          {t('collections.playlists.care.description')}
         </Description>
         <ActionsWrapper>
           <Actions>
             <ActionButton raised onClick={processTracks} disabled={processing}>
-              {t('playlists.care.start')}
+              {t('collections.playlists.care.start')}
             </ActionButton>
             {processing && <LoaderPulse />}
             {(processing || processed) && (
@@ -101,6 +101,7 @@ function PlaylistsCarePane() {
         </ActionsWrapper>
         <ListWrapper>
           <VirtualList
+            ref={null}
             items={items}
             itemDisplay={PlaylistCareListItem}
             currentPosition={0}
@@ -145,7 +146,7 @@ const BackButtonIcon = styled(Icon)`
   justify-content: center;
   color: ${(props) => props.theme.colors.textPrimary};
 
-  :hover {
+  &:hover {
     cursor: pointer;
     color: ${(props) => props.theme.colors.elementHighlightFocus};
   }

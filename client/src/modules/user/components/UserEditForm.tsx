@@ -1,10 +1,11 @@
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod/dist/zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import i18n from 'i18n/i18n'
-import React, { useMemo } from 'react'
+import type React from 'react'
+import { useMemo } from 'react'
 import TextField from 'common/components/forms/TextField'
 import Checkboxes from 'common/components/forms/Checkboxes'
 import {
@@ -13,7 +14,7 @@ import {
   USER_ROLE_LISTENER,
   USER_ROLE_OWNER,
 } from 'modules/user/constants'
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
 
 export type UserEditFormData = {
   username: string
@@ -22,7 +23,7 @@ export type UserEditFormData = {
 }
 
 type Props = {
-  formRef?: React.RefObject<HTMLFormElement>
+  formRef?: React.RefObject<HTMLFormElement | null>
   user?: User
   onSubmit: (data: UserEditFormData) => void
 }

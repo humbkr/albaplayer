@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
 import { immutableRemove } from 'common/utils/utils'
+import { createAppSlice } from 'store/createAppSlice'
 
 export type QueueStateType = {
   items: QueueItem[]
@@ -11,7 +12,7 @@ export const queueInitialState: QueueStateType = {
   current: undefined,
 }
 
-const queueSlice = createSlice({
+export const queueSlice = createAppSlice({
   name: 'queue',
   initialState: queueInitialState,
   reducers: {
@@ -53,5 +54,3 @@ const queueSlice = createSlice({
     },
   },
 })
-
-export default queueSlice

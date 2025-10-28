@@ -1,6 +1,7 @@
 import styled from 'styled-components'
-import { NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router'
 import Icon from 'common/components/Icon'
+import type React from 'react'
 
 type Props = {
   to: string
@@ -32,7 +33,7 @@ const SidebarNavLinkWrapper = styled(NavLink)`
   color: ${(props) => props.theme.colors.sidebarTextPrimary};
   transition: 0.15s ease-in-out;
 
-  :hover,
+  &:hover,
   &.active {
     color: ${(props) => props.theme.colors.sidebarTextPrimaryHover};
     background-color: ${(props) => props.theme.colors.sidebarTextPrimary};

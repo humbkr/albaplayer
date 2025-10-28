@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import Icon from 'common/components/Icon'
 import LoaderPulse from 'common/components/LoaderPulse'
@@ -53,7 +53,9 @@ const ActionButtonWrapper = styled.button<{ raised: boolean }>`
   border-radius: 3px;
   border: 0;
   cursor: pointer;
-  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+  transition:
+    background-color 0.15s ease-in-out,
+    color 0.15s ease-in-out;
 
   ${(props) =>
     props.raised

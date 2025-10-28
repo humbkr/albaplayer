@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { graphqlRequestBaseQuery } from '@rtk-query/graphql-request-base-query'
 import constants from 'api/constants'
-import { ClientError, gql, GraphQLClient } from 'graphql-request'
+import type { ClientError } from 'graphql-request'
+import { gql, GraphQLClient } from 'graphql-request'
 import { refreshToken } from 'modules/user/authApi'
 import { logoutUser } from 'modules/user/services'
-import { processApiError } from './helpers'
 
 export type GraphQLApiResponse = {
   status: number
@@ -56,7 +56,9 @@ export async function request(
 const baseQuery = graphqlRequestBaseQuery<
   Partial<ClientError> & { errorCode: string }
 >({
+  // @ts-ignore
   client: graphQLClient,
+  // @ts-ignore TODO: fix this
   customErrors: ({ name, stack, response }) => {
     if (!response?.status.toString().startsWith('2')) {
       // This is a server error, not a GraphQL error.
@@ -109,14 +111,14 @@ const baseQueryWithReauth: (...args: any[]) => Promise<any> = async (
   return result
 }
 
-export const graphqlAPI = createApi({
+export const graphqlAPISlice = createApi({
   reducerPath: 'graphqlApi',
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
   tagTypes: ['Auth'],
 })
 
-export const restAPI = createApi({
+export const restAPISlice = createApi({
   reducerPath: 'restApi',
   baseQuery: fetchBaseQuery({
     baseUrl: `${constants.BACKEND_BASE_URL}`,
@@ -124,7 +126,7 @@ export const restAPI = createApi({
   endpoints: () => ({}),
 })
 
-const getSettings = () => {
+export const getSettings = () => {
   const getSettingsQuery = gql`
     query getSettingsQuery {
       settings {
@@ -137,38 +139,4 @@ const getSettings = () => {
   `
 
   return request(getSettingsQuery)
-}
-
-/**
- * Tries fetching an image from the backend. If the user is not authenticated,
- * it will try to get a new token and retry the request.
- *
- * @param url The URL of the image to fetch.
- *
- * @returns The URL of the image to display.
- */
-export async function getAuthAssetURL(url: string): Promise<string> {
-  const uri = `${constants.BACKEND_BASE_URL}${url}`
-
-  const response = await fetch(uri, { credentials: 'include' })
-
-  if (!response.ok && response.status === 401) {
-    // Try to get a new token.
-    const refreshResult = await refreshToken()
-    if (!refreshResult.error) {
-      // Let the browser retry the request.
-      return uri
-    } else {
-      await logoutUser()
-    }
-  }
-
-  // We already have the image data, so we can directly use it without a second request.
-  const imageBlob = await response.blob()
-  return URL.createObjectURL(imageBlob)
-}
-
-export default {
-  getSettings,
-  processApiError,
 }

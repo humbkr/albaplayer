@@ -11,7 +11,7 @@ function PlaylistListHeader({ onAddClick }: Props) {
 
   return (
     <Wrapper>
-      <h2>{t('playlists.title')}</h2>
+      <h2>{t('collections.playlists.title')}</h2>
       <Actions>
         <ActionButtonIcon icon="add" onClick={onAddClick} />
       </Actions>
@@ -38,7 +38,7 @@ const Wrapper = styled.div`
 const Actions = styled.div`
   color: ${(props) => props.theme.buttons.backgroundColor};
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `

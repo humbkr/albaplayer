@@ -1,30 +1,19 @@
-import { render, screen } from '@testing-library/react'
-import { Provider as ReduxProvider } from 'react-redux'
-import themeDefault from 'themes/lightGreen'
-import { ThemeProvider } from 'styled-components'
+import { screen } from '@testing-library/react'
+import type { Mock } from 'vitest'
 import { useNavigate } from 'react-router'
-import { browserInitialState } from 'modules/browser/store'
 import ActionBar from 'common/components/layout/ActionBar'
-import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock(
-  'modules/browser/components/SearchBar',
-  () =>
-    function () {
-      return <div data-testid="search-bar"></div>
-    }
-)
-jest.mock(
-  'modules/user/components/UserActionsMenu',
-  () =>
-    function () {
-      return <div data-testid="user-action-menu"></div>
-    }
-)
+vi.mock('modules/browser/components/SearchBar', () => ({
+  default: () => <div data-testid="search-bar" />,
+}))
+vi.mock('modules/user/components/UserActionsMenu', () => ({
+  default: () => <div data-testid="user-action-menu" />,
+}))
 
-jest.mock('react-router')
-const useNavigateMock = useNavigate as jest.Mock
-const mockNavigate = jest.fn()
+vi.mock('react-router')
+const useNavigateMock = useNavigate as Mock
+const mockNavigate = vi.fn()
 
 describe('ActionBar', () => {
   beforeEach(() => {
@@ -32,17 +21,7 @@ describe('ActionBar', () => {
   })
 
   it('should contain all the required elements', () => {
-    const store = makeMockStore({
-      libraryBrowser: browserInitialState,
-    })
-
-    render(
-      <ReduxProvider store={store}>
-        <ThemeProvider theme={themeDefault}>
-          <ActionBar />
-        </ThemeProvider>
-      </ReduxProvider>
-    )
+    renderWithProviders(<ActionBar />)
 
     expect(screen.getByTestId('search-bar')).toBeInTheDocument()
     expect(screen.getByTestId('user-action-menu')).toBeInTheDocument()

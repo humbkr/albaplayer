@@ -1,18 +1,13 @@
 import Tab from 'common/components/layout/Tab'
-import { render, screen } from '@testing-library/react'
-import themeDefault from 'themes/lightGreen'
-import { ThemeProvider } from 'styled-components'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
 describe('Tab', () => {
   it('displays correctly', async () => {
-    const mockOnClick = jest.fn()
+    const mockOnClick = vi.fn()
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Tab id="test" label="Test" onClick={mockOnClick} />
-      </ThemeProvider>
-    )
+    renderWithProviders(<Tab id="test" label="Test" onClick={mockOnClick} />)
 
     expect(screen.getByText('Test')).toBeInTheDocument()
 

@@ -1,7 +1,5 @@
-import queueSlice, {
-  queueInitialState,
-  QueueStateType,
-} from 'modules/player/store/queue.store'
+import type { QueueStateType } from 'modules/player/store/queue.store'
+import { queueSlice, queueInitialState } from 'modules/player/store/queue.store'
 
 const {
   queueSetCurrent,

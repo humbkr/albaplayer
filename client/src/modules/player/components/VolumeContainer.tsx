@@ -1,9 +1,10 @@
-import { FunctionComponent, SVGProps, useState } from 'react'
+import type { FunctionComponent, SVGProps } from 'react'
+import { useState } from 'react'
 import ReactSlider from 'react-slider'
 import styled from 'styled-components'
-import { ReactComponent as MuteIcon } from '../assets/mute.svg'
-import { ReactComponent as VolumeLowIcon } from '../assets/volume_low.svg'
-import { ReactComponent as VolumeHighIcon } from '../assets/volume_high.svg'
+import MuteIcon from '../assets/mute.svg?react'
+import VolumeLowIcon from '../assets/volume_low.svg?react'
+import VolumeHighIcon from '../assets/volume_high.svg?react'
 import ControlButton from './ControlButton'
 
 type Props = {

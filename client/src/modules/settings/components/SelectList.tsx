@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import styled from 'styled-components'
 import selectArrowLight from '../../../common/assets/images/select-arrow-light.svg'
 import selectArrowDark from '../../../common/assets/images/select-arrow-dark.svg'
@@ -10,9 +10,9 @@ type Option = {
 
 type Props = {
   value: string
-  onChangeHandler: (event: React.MouseEvent<HTMLSelectElement>) => void
+  onChangeHandler: (event: React.ChangeEvent<HTMLSelectElement>) => void
   options: Array<Option>
-  tabIndex?: string
+  tabIndex?: number
   testId?: string
 }
 
@@ -21,7 +21,7 @@ export default function SelectList({
   onChangeHandler,
   options,
   testId,
-  tabIndex = '',
+  tabIndex,
 }: Props) {
   const optionsHtml = options.map((option) => (
     <option key={option.value} value={option.value}>
@@ -43,24 +43,28 @@ export default function SelectList({
   )
 }
 
-const Select = styled.select<any>`
+const Select = styled.select`
   appearance: none;
   background-color: transparent;
   font-size: 1em;
   color: ${(props) => props.theme.buttons.backgroundColor};
   border: 1px solid ${(props) => props.theme.buttons.backgroundColor};
   border-radius: 3px;
-  padding: 6px ${(props) => props.theme.buttons.sidePadding};
+  padding: 6px;
   min-width: 250px;
   width: 100%;
   height: ${(props) => props.theme.buttons.height};
   background-image: url(${(props) =>
     props.theme.isDark ? selectArrowLight : selectArrowDark});
   background-repeat: no-repeat, repeat;
-  background-position: right 1rem top 52%, 0 0;
-  background-size: 0.65em auto, 100%;
+  background-position:
+    right 1rem top 52%,
+    0 0;
+  background-size:
+    0.65em auto,
+    100%;
 
-  :hover {
+  &:hover {
     cursor: pointer;
   }
 `

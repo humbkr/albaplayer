@@ -1,72 +1,76 @@
-import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from 'styled-components'
+import { screen } from '@testing-library/react'
+import type { Mock } from 'vitest'
 import userEvent from '@testing-library/user-event'
-import theme from 'themes/lightGreen'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import Player from 'modules/player/components/Player'
 import { PlayerPlaybackMode } from 'modules/player/utils'
 import { playerSelector, queueSelector } from 'modules/player/store/selectors'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router'
 import {
-  playerSetProgress,
+  setNextTrack,
+  setPreviousTrack,
   playerSetVolume,
   playerTogglePlayPause,
   playerToggleRepeat,
   playerToggleShuffle,
-  setNextTrack,
-  setPreviousTrack,
+  playerSetProgress,
 } from 'modules/player/store/store'
-import resetAllMocks = jest.resetAllMocks
-import clearAllMocks = jest.clearAllMocks
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
 // Required to test components using react-slider.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 global.ResizeObserver = require('resize-observer-polyfill')
 
 // Mock audio element
-window.HTMLMediaElement.prototype.load = jest.fn()
-window.HTMLMediaElement.prototype.play = jest.fn()
-window.HTMLMediaElement.prototype.pause = jest.fn()
+window.HTMLMediaElement.prototype.load = vi.fn()
+window.HTMLMediaElement.prototype.play = vi.fn()
+window.HTMLMediaElement.prototype.pause = vi.fn()
 
 // Mock mediaSession stuff.
-global.MediaMetadata = jest.fn().mockImplementation(() => ({}))
+global.MediaMetadata = vi.fn().mockImplementation(() => ({}))
 Object.defineProperty(global.navigator, 'mediaSession', {
   value: {
     metadata: {},
-    setActionHandler: jest.fn(),
+    setActionHandler: vi.fn(),
   },
 })
 
-jest.mock('store/hooks')
-const useAppDispatchMock = useAppDispatch as jest.Mock
-const useAppSelectorMock = useAppSelector as jest.Mock
+vi.mock('store/hooks')
+const useAppDispatchMock = useAppDispatch as unknown as Mock
+const useAppSelectorMock = useAppSelector as unknown as Mock
 
-jest.mock('modules/player/store/store', () => ({
-  playerTogglePlayPause: jest.fn(),
-  setNextTrack: jest.fn(),
-  setPreviousTrack: jest.fn(),
-  playerToggleRepeat: jest.fn(),
-  playerToggleShuffle: jest.fn(),
-  playerSetProgress: jest.fn(),
-  playerSetVolume: jest.fn(),
-}))
+// @ts-ignore
+vi.mock(import('modules/player/store/store'), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    playerTogglePlayPause: vi.fn(),
+    playerToggleRepeat: vi.fn(),
+    playerToggleShuffle: vi.fn(),
+    playerSetProgress: vi.fn(),
+    playerSetVolume: vi.fn(),
+    setNextTrack: vi.fn(),
+    setPreviousTrack: vi.fn(),
+  }
+})
 
-jest.mock('modules/player/store/selectors')
-const playerSelectorMock = playerSelector as jest.Mock
-const queueSelectorMock = queueSelector as jest.Mock
+vi.mock('modules/player/store/selectors')
+const playerSelectorMock = playerSelector as Mock
+const queueSelectorMock = queueSelector as Mock
 
-jest.mock('api/api', () => ({
-  getAuthAssetURL: jest.fn(),
-}))
+vi.mock(import('api/helpers'), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    getAuthAssetURL: vi.fn(),
+  }
+})
 
 describe('Player', () => {
   beforeEach(() => {
-    resetAllMocks()
-    clearAllMocks()
-    useAppDispatchMock.mockImplementation(() => jest.fn())
+    useAppDispatchMock.mockImplementation(() => vi.fn())
     useAppSelectorMock.mockImplementation((selector) => selector())
   })
-
-  afterEach(() => jest.clearAllMocks())
 
   it('displays correctly', () => {
     playerSelectorMock.mockReturnValue({
@@ -86,12 +90,10 @@ describe('Player', () => {
       current: undefined,
     })
 
-    render(
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Player />
-        </BrowserRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
     )
 
     // Must display a track info, a progress bar, and a controls elements.
@@ -124,12 +126,10 @@ describe('Player', () => {
       current: undefined,
     })
 
-    render(
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Player />
-        </BrowserRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
     )
 
     await userEvent.click(screen.getByTestId('play-pause-button'))
@@ -162,12 +162,10 @@ describe('Player', () => {
       current: undefined,
     })
 
-    render(
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Player />
-        </BrowserRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
     )
 
     await userEvent.click(screen.getByTestId('play-pause-button'))
@@ -200,12 +198,10 @@ describe('Player', () => {
       current: undefined,
     })
 
-    render(
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Player />
-        </BrowserRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
     )
 
     await userEvent.click(screen.getByTestId('repeat-button-inactive'))
@@ -237,12 +233,10 @@ describe('Player', () => {
       current: undefined,
     })
 
-    render(
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Player />
-        </BrowserRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
     )
 
     await userEvent.click(screen.getByTestId('shuffle-button-inactive'))
@@ -274,12 +268,10 @@ describe('Player', () => {
       current: 0,
     })
 
-    render(
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Player />
-        </BrowserRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
     )
 
     await userEvent.click(screen.getByTestId('next-button'))
@@ -311,12 +303,10 @@ describe('Player', () => {
       current: 1,
     })
 
-    render(
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Player />
-        </BrowserRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
     )
 
     await userEvent.click(screen.getByTestId('previous-button'))
@@ -348,12 +338,10 @@ describe('Player', () => {
       current: 1,
     })
 
-    render(
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Player />
-        </BrowserRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
     )
 
     // There are 2 sliders: the progress bar and the volume, in that order.
@@ -387,15 +375,13 @@ describe('Player', () => {
       current: 1,
     })
 
-    render(
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Player />
-        </BrowserRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
     )
 
-    await userEvent.click(screen.getByText('volume_low.svg'))
+    await userEvent.click(screen.getByTestId('player-volume-low-icon'))
 
     expect(playerSetVolume).toHaveBeenCalled()
   })

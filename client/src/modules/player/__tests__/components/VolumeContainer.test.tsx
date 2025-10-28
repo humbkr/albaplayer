@@ -1,109 +1,95 @@
-import { ThemeProvider } from 'styled-components'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import theme from 'themes/lightGreen'
 import VolumeContainer from 'modules/player/components/VolumeContainer'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
 // Required to test components using react-slider.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 global.ResizeObserver = require('resize-observer-polyfill')
 
-const mockSetVolume = jest.fn()
+const mockSetVolume = vi.fn()
 
 describe('VolumeContainer', () => {
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => vi.clearAllMocks())
 
   it('displays a volume high icon when volume is over 0.5', () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <VolumeContainer volume={0.6} setVolume={mockSetVolume} />
-      </ThemeProvider>
+    renderWithProviders(
+      <VolumeContainer volume={0.6} setVolume={mockSetVolume} />
     )
 
-    expect(screen.getAllByText('volume_high.svg')).toHaveLength(2)
-    expect(screen.queryByText('volume_low.svg')).not.toBeInTheDocument()
-    expect(screen.queryByText('mute.svg')).not.toBeInTheDocument()
+    expect(screen.getAllByTestId('player-volume-high-icon')).toHaveLength(2)
+    expect(
+      screen.queryByTestId('player-volume-low-icon')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('player-mute-icon')).not.toBeInTheDocument()
   })
 
   it('displays a volume low icon when volume is under 0.5', () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <VolumeContainer volume={0.4} setVolume={mockSetVolume} />
-      </ThemeProvider>
+    renderWithProviders(
+      <VolumeContainer volume={0.4} setVolume={mockSetVolume} />
     )
 
-    expect(screen.getByText('volume_low.svg')).toBeInTheDocument()
+    expect(screen.getByTestId('player-volume-low-icon')).toBeInTheDocument()
   })
 
   it('displays a volume muted icon when volume is 0', () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <VolumeContainer volume={0} setVolume={mockSetVolume} />
-      </ThemeProvider>
+    renderWithProviders(
+      <VolumeContainer volume={0} setVolume={mockSetVolume} />
     )
 
-    expect(screen.getByText('mute.svg')).toBeInTheDocument()
+    expect(screen.getByTestId('player-mute-icon')).toBeInTheDocument()
   })
 
   it('displays an overlay when user cursor hovers the element', async () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <VolumeContainer volume={0.4} setVolume={mockSetVolume} />
-      </ThemeProvider>
+    renderWithProviders(
+      <VolumeContainer volume={0.4} setVolume={mockSetVolume} />
     )
 
     expect(screen.getByTestId('volume-overlay')).not.toBeVisible()
 
-    await userEvent.hover(screen.getByText('volume_low.svg'))
+    await userEvent.hover(screen.getByTestId('player-volume-low-icon'))
 
     expect(screen.getByTestId('volume-overlay')).toBeVisible()
 
-    await userEvent.unhover(screen.getByText('volume_low.svg'))
+    await userEvent.unhover(screen.getByTestId('player-volume-low-icon'))
 
     expect(screen.getByTestId('volume-overlay')).not.toBeVisible()
   })
 
   it('displays a low and a high volume icons when overlay is visible', () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <VolumeContainer volume={0} setVolume={mockSetVolume} forceOverlay />
-      </ThemeProvider>
+    renderWithProviders(
+      <VolumeContainer volume={0} setVolume={mockSetVolume} forceOverlay />
     )
 
     // Overlay should be visible.
     expect(screen.getByTestId('volume-overlay')).toBeVisible()
     // Volume icons should be visible event if the original icon
     // before the hover is high or mute.
-    expect(screen.getByText('volume_low.svg')).toBeInTheDocument()
-    expect(screen.getByText('volume_high.svg')).toBeInTheDocument()
+    expect(screen.getByTestId('player-volume-low-icon')).toBeInTheDocument()
+    expect(screen.getByTestId('player-volume-high-icon')).toBeInTheDocument()
   })
 
   it('mutes volume when button is pressed and volume is > 0', async () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <VolumeContainer volume={0.4} setVolume={mockSetVolume} />
-      </ThemeProvider>
+    renderWithProviders(
+      <VolumeContainer volume={0.4} setVolume={mockSetVolume} />
     )
 
-    await userEvent.click(screen.getByText('volume_low.svg'))
+    await userEvent.click(screen.getByTestId('player-volume-low-icon'))
     expect(mockSetVolume).toHaveBeenCalledWith(0)
   })
 
   it('sets volume to max when volume high button is pressed', async () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <VolumeContainer volume={0.4} setVolume={mockSetVolume} forceOverlay />
-      </ThemeProvider>
+    renderWithProviders(
+      <VolumeContainer volume={0.4} setVolume={mockSetVolume} forceOverlay />
     )
 
-    await userEvent.click(screen.getByText('volume_high.svg'))
+    await userEvent.click(screen.getByTestId('player-volume-high-icon'))
     expect(mockSetVolume).toHaveBeenCalledWith(1)
   })
 
   it('sets the volume when the bar is pressed', async () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <VolumeContainer volume={0.4} setVolume={mockSetVolume} forceOverlay />
-      </ThemeProvider>
+    renderWithProviders(
+      <VolumeContainer volume={0.4} setVolume={mockSetVolume} forceOverlay />
     )
 
     await userEvent.click(screen.getByRole('slider'))
@@ -111,22 +97,16 @@ describe('VolumeContainer', () => {
   })
 
   it('keeps the original volume when muted and set it mack when unmuted', async () => {
-    const { rerender } = render(
-      <ThemeProvider theme={theme}>
-        <VolumeContainer volume={0.4} setVolume={mockSetVolume} />
-      </ThemeProvider>
+    const { rerender } = renderWithProviders(
+      <VolumeContainer volume={0.4} setVolume={mockSetVolume} />
     )
 
-    await userEvent.click(screen.getByText('volume_low.svg'))
+    await userEvent.click(screen.getByTestId('player-volume-low-icon'))
     expect(mockSetVolume).toHaveBeenCalledWith(0)
 
-    rerender(
-      <ThemeProvider theme={theme}>
-        <VolumeContainer volume={0} setVolume={mockSetVolume} />
-      </ThemeProvider>
-    )
+    rerender(<VolumeContainer volume={0} setVolume={mockSetVolume} />)
 
-    await userEvent.click(screen.getByText('mute.svg'))
+    await userEvent.click(screen.getByTestId('player-mute-icon'))
     expect(mockSetVolume).toHaveBeenCalledWith(0.4)
   })
 })

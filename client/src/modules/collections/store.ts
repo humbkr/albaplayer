@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
+import { createAppSlice } from 'store/createAppSlice'
 
 export enum PLAYLIST_PANE {
   detail = 'detail',
@@ -20,7 +21,7 @@ export const playlistsInitialState: PlaylistsStateType = {
   currentPane: PLAYLIST_PANE.detail,
 }
 
-const playlistSlice = createSlice({
+export const playlistSlice = createAppSlice({
   name: 'playlist',
   initialState: playlistsInitialState,
   reducers: {
@@ -49,4 +50,3 @@ export const {
   playlistSelectTrack,
   playlistChangePane,
 } = playlistSlice.actions
-export default playlistSlice.reducer

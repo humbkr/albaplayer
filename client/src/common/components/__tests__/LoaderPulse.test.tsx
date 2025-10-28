@@ -1,15 +1,11 @@
 import LoaderPulse from 'common/components/LoaderPulse'
-import { render, screen } from '@testing-library/react'
-import themeDefault from 'themes/lightGreen'
-import { ThemeProvider } from 'styled-components'
+import { screen } from '@testing-library/react'
+
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
 describe('LoaderPulse', () => {
   it('displays without error', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <LoaderPulse data-testid="loader" />
-      </ThemeProvider>
-    )
+    renderWithProviders(<LoaderPulse data-testid="loader" />)
 
     expect(screen.getByTestId('loader')).toBeInTheDocument()
   })

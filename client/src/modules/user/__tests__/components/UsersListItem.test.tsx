@@ -1,21 +1,21 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import UsersListItem from 'modules/user/components/UsersListItem'
-import { useDeleteUserMutation, useGetUserQuery } from 'modules/user/store/api'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
+import { useDeleteUserMutation, useGetUserQuery } from 'modules/user/api'
 import userEvent from '@testing-library/user-event'
+import type { Mock } from 'vitest'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('modules/user/store/api', () => ({
-  useGetUserQuery: jest.fn(),
-  useDeleteUserMutation: jest.fn().mockReturnValue([jest.fn()]),
+vi.mock('modules/user/api', () => ({
+  useGetUserQuery: vi.fn(),
+  useDeleteUserMutation: vi.fn().mockReturnValue([vi.fn()]),
 }))
 
-const useGetUserQueryMock = useGetUserQuery as jest.Mock
-const useDeleteUserMutationMock = useDeleteUserMutation as jest.Mock
+const useGetUserQueryMock = useGetUserQuery as Mock
+const useDeleteUserMutationMock = useDeleteUserMutation as Mock
 
-const mockOnEditAction = jest.fn()
+const mockOnEditAction = vi.fn()
 
-const mockDeleteUser = jest.fn()
+const mockDeleteUser = vi.fn()
 
 describe('UsersListItem', () => {
   beforeEach(() => {
@@ -38,10 +38,8 @@ describe('UsersListItem', () => {
       dateAdded: 1680100956,
     }
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UsersListItem user={mockUser} onEditAction={mockOnEditAction} />
-      </ThemeProvider>
+    renderWithProviders(
+      <UsersListItem user={mockUser} onEditAction={mockOnEditAction} />
     )
 
     expect(screen.getByText('12')).toBeInTheDocument()
@@ -67,10 +65,8 @@ describe('UsersListItem', () => {
       dateAdded: 1680100956,
     }
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UsersListItem user={mockUser} onEditAction={mockOnEditAction} />
-      </ThemeProvider>
+    renderWithProviders(
+      <UsersListItem user={mockUser} onEditAction={mockOnEditAction} />
     )
 
     expect(screen.getByText('23')).toBeInTheDocument()
@@ -98,10 +94,8 @@ describe('UsersListItem', () => {
       dateAdded: 1680100956,
     }
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UsersListItem user={mockUser} onEditAction={mockOnEditAction} />
-      </ThemeProvider>
+    renderWithProviders(
+      <UsersListItem user={mockUser} onEditAction={mockOnEditAction} />
     )
 
     expect(screen.getByText('42')).toBeInTheDocument()
@@ -127,10 +121,8 @@ describe('UsersListItem', () => {
       dateAdded: 1680100956,
     }
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UsersListItem user={mockUser} onEditAction={mockOnEditAction} />
-      </ThemeProvider>
+    renderWithProviders(
+      <UsersListItem user={mockUser} onEditAction={mockOnEditAction} />
     )
 
     expect(screen.getByText('1')).toBeInTheDocument()
@@ -156,10 +148,8 @@ describe('UsersListItem', () => {
       dateAdded: 1680100956,
     }
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UsersListItem user={mockUser} onEditAction={mockOnEditAction} />
-      </ThemeProvider>
+    renderWithProviders(
+      <UsersListItem user={mockUser} onEditAction={mockOnEditAction} />
     )
 
     await userEvent.click(screen.getByText('edit'))

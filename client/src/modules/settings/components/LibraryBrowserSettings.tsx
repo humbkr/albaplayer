@@ -1,5 +1,6 @@
 import styled from 'styled-components'
-import { setBrowserSettings, SettingsStateType } from 'modules/settings/store'
+import type { SettingsStateType } from 'modules/settings/store'
+import { setBrowserSettings } from 'modules/settings/store'
 import SelectList from 'modules/settings/components/SelectList'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'

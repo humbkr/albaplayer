@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import AlbumTeaser from 'modules/dashboard/components/AlbumTeaser'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import { userHasRole } from 'modules/user/utils'
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
 import { USER_ROLE_ADMIN } from 'modules/user/constants'
 import routing from 'routing'
+import { devices } from 'themes/breakpoints'
 import { getRandomAlbums } from '../store'
 import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
@@ -79,7 +80,7 @@ export default RandomAlbums
 
 const Wrapper = styled.div`
   max-width: ${(props) => props.theme.layout.contentMaxWidth};
-  min-width: 780px;
+  //min-width: 780px;
   margin: 0 auto 30px;
 `
 const Header = styled.div`
@@ -91,21 +92,29 @@ const Header = styled.div`
 const RandomizeButton = styled.div`
   color: ${(props) => props.theme.buttons.backgroundColor};
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.buttons.backgroundColorHover};
   }
 `
 const AlbumsList = styled.div`
-  padding: 0 10px;
+  padding: 0 20px;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   align-items: flex-start;
+  gap: 20px;
+
+  @media only screen and ${devices.md} {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @media only screen and ${devices.lg} {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
 `
 const Cell = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 10px 10px;
 `
 const EmptyState = styled.div`
   padding: 5px 20px;
@@ -115,7 +124,7 @@ const TextLink = styled(Link)`
   color: ${(props) => props.theme.colors.elementHighlightFocus};
   text-decoration: none;
 
-  :hover {
+  &:hover {
     text-decoration: underline;
   }
 `

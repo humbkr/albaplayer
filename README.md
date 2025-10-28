@@ -62,8 +62,9 @@ yarn install
 cd client
 
 # Setup environment variables
-cp .env .env.development
-# (here Change .env.development values)
+cp .env .env.local
+# Change .env.local values
+# For local development you should put REACT_APP_BACKEND_URL=http://localhost:8888
 
 # Install dependencies
 yarn install
@@ -73,7 +74,9 @@ cd ../server
 
 # Configure the server options
 cp alba.yml.example alba.yml
-# (here Change alba.yml)
+# Change alba.yml values
+# For development you should put the following values:
+# DevMode.Enabled: true
 
 # Install dependencies
 go mod download
@@ -82,9 +85,11 @@ go mod download
 #### Start server
 You will have to install [Air](https://github.com/cosmtrek/air) to have hot reloading enabled.
 ```shell
-curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+go install github.com/air-verse/air@latest
 ```
-Note: don't forget to add GOPATH/bin to your PATH
+Notes: 
+- don't forget to add GOPATH/bin to your PATH
+- you can also launch the server with your preferred method
 
 Then
 ```shell

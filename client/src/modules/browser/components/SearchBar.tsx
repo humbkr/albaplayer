@@ -1,11 +1,10 @@
-import React, { forwardRef, Ref } from 'react'
+import type { Ref } from 'react'
+import { forwardRef } from 'react'
 import styled from 'styled-components'
 import { DebounceInput } from 'react-debounce-input'
-import { search, setSearchFilter } from 'modules/browser/store'
-import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
-import { useNavigate } from 'react-router'
+import { useSearchBar } from 'modules/browser/hooks/useSearchBar'
 
 type Props = {
   forwardedRef: Ref<HTMLElement>
@@ -13,20 +12,7 @@ type Props = {
 
 function SearchBar({ forwardedRef }: Props) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
-
-  const searchState = useAppSelector((state) => state.libraryBrowser.search)
-
-  const dispatch = useAppDispatch()
-
-  const changeFilter = (filter: SearchFilter) => {
-    dispatch(setSearchFilter(filter))
-  }
-
-  const runSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(search((event.target as HTMLInputElement).value))
-    navigate('/library')
-  }
+  const { searchState, changeFilter, runSearch } = useSearchBar()
 
   return (
     <Container data-testid="search-bar">
@@ -87,7 +73,6 @@ function SearchBar({ forwardedRef }: Props) {
 }
 
 export default forwardRef<HTMLElement>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <SearchBar {...props} forwardedRef={ref} />
 ))
 
@@ -112,7 +97,9 @@ const FilterButton = styled.div<{
     props.active
       ? props.theme.colors.sidebarTextPrimaryHover
       : props.theme.colors.sidebarTextPrimary};
-  transition: background-color 0.15s ease-in-out, color 0.1s ease-in-out;
+  transition:
+    background-color 0.15s ease-in-out,
+    color 0.1s ease-in-out;
 
   ${(props) =>
     props.active &&
@@ -129,7 +116,7 @@ const SearchInputWrapper = styled.div`
   background-color: ${(props) => props.theme.colors.sidebarBackground};
   transition: background-color 0.15s ease-in-out;
 
-  :focus-within {
+  &:focus-within {
     background-color: ${(props) => props.theme.colors.elementHighlightFocus};
   }
 `
@@ -139,6 +126,8 @@ const SearchInput = styled(DebounceInput)<{
 }>`
   height: 100%;
   width: 100%;
+  min-width: 100px;
+  max-width: 480px;
   font-size: 1em;
   padding-left: 10px;
   background-color: ${(props) => props.theme.colors.inputBackground};

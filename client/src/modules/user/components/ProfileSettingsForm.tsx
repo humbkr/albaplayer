@@ -1,17 +1,14 @@
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod/dist/zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import i18n from 'i18n/i18n'
 import { useState } from 'react'
 import TextField from 'common/components/forms/TextField'
 import ActionButton from 'common/components/buttons/ActionButton'
-import {
-  useGetUserQuery,
-  UserToUpdate,
-  useUpdateUserMutation,
-} from 'modules/user/store/api'
+import type { UserToUpdate } from 'modules/user/api'
+import { useGetUserQuery, useUpdateUserMutation } from 'modules/user/api'
 import SettingsTabContent from 'modules/settings/components/SettingsTabContent'
 import { notify } from 'common/utils/notifications'
 import { USER_MIN_PASSWORD_LENGTH } from 'modules/user/constants'
@@ -172,7 +169,7 @@ const ChangePasswordButton = styled.button`
   font-weight: bold;
   cursor: pointer;
 
-  :hover {
+  &:hover {
     color: ${({ theme }) => theme.colors.elementHighlightFocus};
   }
 `

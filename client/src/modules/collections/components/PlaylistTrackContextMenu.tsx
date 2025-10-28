@@ -61,7 +61,7 @@ function PlaylistTrackContextMenu() {
         addTrackToPlaylist({ trackId: menuItem.props.data.track.id })
       }
     >
-      {t('playlists.actions.createNewPlaylist')}
+      {t('collections.playlists.actions.createNewPlaylist')}
     </Item>
   )
 
@@ -89,7 +89,7 @@ function PlaylistTrackContextMenu() {
         {t('player.actions.addToQueue')}
       </Item>
       <Separator />
-      <Submenu label={t('playlists.actions.addToPlaylist')}>
+      <Submenu label={t('collections.playlists.actions.addToPlaylist')}>
         {playlistsItems}
       </Submenu>
       <Separator />
@@ -101,7 +101,7 @@ function PlaylistTrackContextMenu() {
           )
         }
       >
-        {t('playlists.actions.removeFromPlaylist')}
+        {t('collections.playlists.actions.removeFromPlaylist')}
       </Item>
       <Separator />
       <Item onClick={(menuItem: any) => findAllByArtist(menuItem)}>

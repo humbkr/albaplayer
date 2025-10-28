@@ -1,23 +1,20 @@
-import { ThemeProvider } from 'styled-components'
-import { Provider as ReduxProvider } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
-import { render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router'
+import { screen } from '@testing-library/react'
+import type { Mock } from 'vitest'
 import userEvent from '@testing-library/user-event'
-import theme from 'themes/lightGreen'
 import TrackInfo from 'modules/player/components/TrackInfo'
-import { getAuthAssetURL } from 'api/api'
-import { makeMockStore } from '../../../../../__tests__/test-utils/redux'
+import { getAuthAssetURL } from 'api/helpers'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-const mockOnClick = jest.fn()
-const mockStore = makeMockStore()
+const mockOnClick = vi.fn()
 
-jest.mock('api/api', () => ({
-  getAuthAssetURL: jest.fn(),
+vi.mock('api/helpers', () => ({
+  getAuthAssetURL: vi.fn(),
 }))
 
 describe('TrackInfo', () => {
   beforeEach(() => {
-    ;(getAuthAssetURL as jest.Mock).mockResolvedValue('whatever')
+    ;(getAuthAssetURL as Mock).mockResolvedValue('whatever')
   })
 
   it('displays all track info if available', () => {
@@ -32,19 +29,15 @@ describe('TrackInfo', () => {
       title: 'Track title',
     }
 
-    render(
-      <ReduxProvider store={mockStore}>
-        <BrowserRouter>
-          <ThemeProvider theme={theme}>
-            <TrackInfo onClick={mockOnClick} track={testTrack} />
-          </ThemeProvider>
-        </BrowserRouter>
-      </ReduxProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <TrackInfo onClick={mockOnClick} track={testTrack} />
+      </BrowserRouter>
     )
 
     expect(screen.getByText('Track title')).toBeInTheDocument()
     expect(screen.getByText('Artist name')).toBeInTheDocument()
-    expect(screen.getByTestId('cover-image')).toBeInTheDocument()
+    expect(screen.getByTestId('track-art')).toBeInTheDocument()
   })
 
   it('displays default values if track info is not available', () => {
@@ -54,19 +47,15 @@ describe('TrackInfo', () => {
       title: '',
     }
 
-    render(
-      <ReduxProvider store={mockStore}>
-        <BrowserRouter>
-          <ThemeProvider theme={theme}>
-            <TrackInfo onClick={mockOnClick} track={testTrack} />
-          </ThemeProvider>
-        </BrowserRouter>
-      </ReduxProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <TrackInfo onClick={mockOnClick} track={testTrack} />
+      </BrowserRouter>
     )
 
     expect(screen.getByText('library.unknownTitle')).toBeInTheDocument()
     expect(screen.getByText('library.unknownArtist')).toBeInTheDocument()
-    expect(screen.queryByTestId('cover-image')).not.toBeInTheDocument()
+    expect(screen.getByTestId('track-art')).toBeInTheDocument()
   })
 
   it('calls onClick callback when clicked', async () => {
@@ -76,14 +65,10 @@ describe('TrackInfo', () => {
       title: '',
     }
 
-    render(
-      <ReduxProvider store={mockStore}>
-        <BrowserRouter>
-          <ThemeProvider theme={theme}>
-            <TrackInfo onClick={mockOnClick} track={testTrack} />
-          </ThemeProvider>
-        </BrowserRouter>
-      </ReduxProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <TrackInfo onClick={mockOnClick} track={testTrack} />
+      </BrowserRouter>
     )
 
     await userEvent.click(screen.getByTestId('cover-default'))

@@ -1,4 +1,4 @@
-import { DefaultTheme } from 'styled-components'
+import type { DefaultTheme } from 'styled-components'
 import themeDarkGreen from 'themes/darkGreen'
 import themeLight from 'themes/lightGreen'
 import themeDarkOrange from './darkOrange'

@@ -1,38 +1,38 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import {
   useCreateUserMutation,
   useGetUserQuery,
   useUpdateUserMutation,
-} from 'modules/user/store/api'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
-import React from 'react'
+} from 'modules/user/api'
+import type React from 'react'
 import userEvent from '@testing-library/user-event'
 import UserEditModal from 'modules/user/components/UserEditModal'
+import type { Mock } from 'vitest'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('react-modal', () => ({
+vi.mock('react-modal', () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
 }))
 
-jest.mock('common/utils/notifications', () => ({
-  notify: jest.fn(),
+vi.mock('common/utils/notifications', () => ({
+  notify: vi.fn(),
 }))
 
-jest.mock('modules/user/store/api', () => ({
-  useCreateUserMutation: jest.fn(),
-  useUpdateUserMutation: jest.fn(),
-  useGetUserQuery: jest.fn(),
+vi.mock('modules/user/api', () => ({
+  useCreateUserMutation: vi.fn(),
+  useUpdateUserMutation: vi.fn(),
+  useGetUserQuery: vi.fn(),
 }))
-const useCreateUserMutationMock = useCreateUserMutation as jest.Mock
-const useUpdateUserMutationMock = useUpdateUserMutation as jest.Mock
-const mockCreateUser = jest.fn()
-const mockUpdateUser = jest.fn()
-const useGetUserQueryMock = useGetUserQuery as jest.Mock
+const useCreateUserMutationMock = useCreateUserMutation as Mock
+const useUpdateUserMutationMock = useUpdateUserMutation as Mock
+const mockCreateUser = vi.fn()
+const mockUpdateUser = vi.fn()
+const useGetUserQueryMock = useGetUserQuery as Mock
 
-const mockOnClose = jest.fn()
+const mockOnClose = vi.fn()
 
 describe('UserEditModal', () => {
   beforeEach(() => {
@@ -54,21 +54,13 @@ describe('UserEditModal', () => {
   })
 
   it('renders UserEditModal correctly', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UserEditModal isOpen onClose={mockOnClose} />
-      </ThemeProvider>
-    )
+    renderWithProviders(<UserEditModal isOpen onClose={mockOnClose} />)
 
     expect(screen.getByTestId('user-edit-form')).toBeInTheDocument()
   })
 
   it('submits user data with correct info for a user creation', async () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UserEditModal isOpen onClose={mockOnClose} />
-      </ThemeProvider>
-    )
+    renderWithProviders(<UserEditModal isOpen onClose={mockOnClose} />)
 
     await userEvent.type(screen.getByTestId('input-username'), 'testUser')
     await userEvent.type(screen.getByTestId('input-password'), 'testPassword')
@@ -89,10 +81,8 @@ describe('UserEditModal', () => {
       roles: ['listener', 'admin'],
     }
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UserEditModal isOpen onClose={mockOnClose} user={mockTestUser} />
-      </ThemeProvider>
+    renderWithProviders(
+      <UserEditModal isOpen onClose={mockOnClose} user={mockTestUser} />
     )
 
     await userEvent.type(screen.getByTestId('input-username'), 'Mod')
@@ -113,10 +103,8 @@ describe('UserEditModal', () => {
       roles: ['listener', 'admin'],
     }
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UserEditModal isOpen onClose={mockOnClose} user={mockTestUser} />
-      </ThemeProvider>
+    renderWithProviders(
+      <UserEditModal isOpen onClose={mockOnClose} user={mockTestUser} />
     )
 
     await userEvent.type(screen.getByTestId('input-username'), 'Mod')

@@ -1,11 +1,10 @@
 import Modal from 'common/components/layout/Modal'
-import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
-import React from 'react'
+import { screen } from '@testing-library/react'
+import type React from 'react'
 import userEvent from '@testing-library/user-event'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('react-modal', () => ({
+vi.mock('react-modal', () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => (
     <div>test {children}</div>
@@ -14,12 +13,10 @@ jest.mock('react-modal', () => ({
 
 describe('Modal', () => {
   it('displays correctly with minimal props', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Modal id="id" isOpen>
-          Children
-        </Modal>
-      </ThemeProvider>
+    renderWithProviders(
+      <Modal id="id" isOpen>
+        Children
+      </Modal>
     )
 
     expect(screen.getByText('Children')).toBeInTheDocument()
@@ -29,18 +26,16 @@ describe('Modal', () => {
   })
 
   it('displays correctly when a title and custom actions labels are provided', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Modal
-          id="id"
-          isOpen
-          title="Title test"
-          cancelActionLabel="Cancel test"
-          mainActionLabel="Validate test"
-        >
-          Children
-        </Modal>
-      </ThemeProvider>
+    renderWithProviders(
+      <Modal
+        id="id"
+        isOpen
+        title="Title test"
+        cancelActionLabel="Cancel test"
+        mainActionLabel="Validate test"
+      >
+        Children
+      </Modal>
     )
 
     expect(screen.getByText('Children')).toBeInTheDocument()
@@ -50,12 +45,10 @@ describe('Modal', () => {
   })
 
   it('displays correctly when buttons are hidden', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Modal id="id" isOpen hideCloseButton hideActionsButtons>
-          Children
-        </Modal>
-      </ThemeProvider>
+    renderWithProviders(
+      <Modal id="id" isOpen hideCloseButton hideActionsButtons>
+        Children
+      </Modal>
     )
 
     expect(screen.getByText('Children')).toBeInTheDocument()
@@ -65,12 +58,10 @@ describe('Modal', () => {
   })
 
   it('displays a loader is loading', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Modal id="id" isOpen mainActionLoading>
-          Children
-        </Modal>
-      </ThemeProvider>
+    renderWithProviders(
+      <Modal id="id" isOpen mainActionLoading>
+        Children
+      </Modal>
     )
 
     expect(screen.getByText('Children')).toBeInTheDocument()
@@ -78,14 +69,12 @@ describe('Modal', () => {
   })
 
   it('triggers call back on close', async () => {
-    const mockHandleClose = jest.fn()
+    const mockHandleClose = vi.fn()
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Modal id="id" isOpen onClose={mockHandleClose}>
-          Children
-        </Modal>
-      </ThemeProvider>
+    renderWithProviders(
+      <Modal id="id" isOpen onClose={mockHandleClose}>
+        Children
+      </Modal>
     )
 
     await userEvent.click(screen.getByTestId('modal-close'))
@@ -98,14 +87,12 @@ describe('Modal', () => {
   })
 
   it('triggers call back on validate', async () => {
-    const mockHandleValidate = jest.fn()
+    const mockHandleValidate = vi.fn()
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <Modal id="id" isOpen onValidate={mockHandleValidate}>
-          Children
-        </Modal>
-      </ThemeProvider>
+    renderWithProviders(
+      <Modal id="id" isOpen onValidate={mockHandleValidate}>
+        Children
+      </Modal>
     )
 
     await userEvent.click(screen.getByText('common.validate'))

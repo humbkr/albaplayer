@@ -1,7 +1,7 @@
-import store from 'store/store'
 import { useTranslation } from 'react-i18next'
 import { useAppSelector } from 'store/hooks'
 import { COLLECTION_TYPE } from 'modules/collections/utils/constants'
+import { immutableSortTracks } from 'common/utils/utils'
 import {
   useCreateCollectionMutation,
   useDeleteCollectionMutation,
@@ -41,6 +41,7 @@ export function useCreatePlaylist() {
  */
 export function useAddTrackToPlaylist() {
   const addTracksToPlaylist = useAddTracksToPlaylist()
+  const library = useAppSelector((state) => state.library)
 
   return ({
     playlistId,
@@ -49,12 +50,11 @@ export function useAddTrackToPlaylist() {
     playlistId?: string
     trackId: string
   }) => {
-    // Get track info from the library.
-    const { library } = store.getState()
     const track = { ...library.tracks[trackId] }
     // Hydrate track with album and artist info.
-    track.artist = library.artists[track.artistId]
-    track.album = library.albums[track.albumId]
+
+    track.artist = library.artists[track.artistId as string]
+    track.album = library.albums[track.albumId as string]
 
     addTracksToPlaylist([track], playlistId)
   }
@@ -66,6 +66,7 @@ export function useAddTrackToPlaylist() {
  */
 export function useAddAlbumToPlaylist() {
   const addTracksToPlaylist = useAddTracksToPlaylist()
+  const library = useAppSelector((state) => state.library)
 
   return ({
     playlistId,
@@ -74,8 +75,6 @@ export function useAddAlbumToPlaylist() {
     playlistId?: string
     albumId: string
   }) => {
-    const { library } = store.getState()
-
     // Get tracks from album.
     const filteredTracks = Object.values<Track>(library.tracks).filter(
       (track) => albumId === track.albumId
@@ -88,7 +87,44 @@ export function useAddAlbumToPlaylist() {
       album: library.albums[track.albumId as string],
     }))
 
-    addTracksToPlaylist(augmentedTracks, playlistId)
+    const sortedTracks = immutableSortTracks(augmentedTracks, 'album')
+
+    addTracksToPlaylist(sortedTracks, playlistId)
+  }
+}
+
+/**
+ * Adds an album disc to a given playlist or create a new playlist with this album if no playlist id
+ * is provided.
+ */
+export function useAddAlbumDiscToPlaylist() {
+  const library = useAppSelector((state) => state.library)
+  const addTracksToPlaylist = useAddTracksToPlaylist()
+
+  return ({
+    playlistId,
+    albumId,
+    disc,
+  }: {
+    playlistId?: string
+    albumId: string
+    disc: string
+  }) => {
+    // Get tracks from album disc.
+    const filteredTracks = Object.values<Track>(library.tracks).filter(
+      (track) => albumId === track.albumId && disc === track.disc
+    )
+
+    // Hydrate tracks with album and artist info.
+    const augmentedTracks = filteredTracks.map((track) => ({
+      ...track,
+      artist: library.artists[track.artistId as string],
+      album: library.albums[track.albumId as string],
+    }))
+
+    const sortedTracks = immutableSortTracks(augmentedTracks, 'album')
+
+    addTracksToPlaylist(sortedTracks, playlistId)
   }
 }
 
@@ -98,6 +134,7 @@ export function useAddAlbumToPlaylist() {
  */
 export function useAddArtistToPlaylist() {
   const addTracksToPlaylist = useAddTracksToPlaylist()
+  const library = useAppSelector((state) => state.library)
 
   return ({
     playlistId,
@@ -106,8 +143,6 @@ export function useAddArtistToPlaylist() {
     playlistId?: string
     artistId: string
   }) => {
-    const { library } = store.getState()
-
     // Get tracks from artist.
     const filteredTracks = Object.values<Track>(library.tracks).filter(
       (track) => artistId === track.artistId
@@ -159,10 +194,9 @@ export function useAddPlaylistToPlaylist() {
  */
 export function useAddCurrentQueueToPlaylist() {
   const addTracksToPlaylist = useAddTracksToPlaylist()
+  const queue = useAppSelector((state) => state.queue)
 
   return (playlistId?: string) => {
-    const { queue } = store.getState()
-
     const tracks = queue.items.map((item: QueueItem) => item.track)
     if (tracks.length === 0) {
       return
@@ -220,7 +254,7 @@ export function useUpdatePlaylistInfo() {
     const collection = {
       id: playlist?.id,
       type: COLLECTION_TYPE.tracks,
-      title: playlist?.title || t('playlists.defaultPlaylistName'),
+      title: playlist?.title || t('collections.playlists.defaultPlaylistName'),
       items: JSON.stringify(playlist.items),
     }
 
@@ -238,7 +272,7 @@ export function useDeletePlaylist() {
 
 export function useGetTracksFromPlaylist() {
   const { data: { playlists = [] } = {} } = useGetCollectionsQuery()
-  const { library } = store.getState()
+  const library = useAppSelector((state) => state.library)
 
   return (playlistId: string) => {
     const playlist = playlists.find((playlist) => playlist.id === playlistId)
@@ -246,7 +280,7 @@ export function useGetTracksFromPlaylist() {
       return []
     }
 
-    return playlist.items.map((item) => ({
+    return playlist.items.map((item: PlaylistItem) => ({
       ...item.track,
       artist: item.track.artistId
         ? library.artists[item.track.artistId]
@@ -292,7 +326,7 @@ function useAddTracksToPlaylist() {
     const collection = {
       id: playlistId,
       type: COLLECTION_TYPE.tracks,
-      title: playlist?.title || t('playlists.defaultPlaylistName'),
+      title: playlist?.title || t('collections.playlists.defaultPlaylistName'),
       items: JSON.stringify(newTrackList),
     }
 

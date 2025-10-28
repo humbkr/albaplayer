@@ -47,7 +47,6 @@ function QueueItemContextMenu() {
   const playlistsItems = playlists.map((item: Playlist) => (
     <Item
       key={item.id}
-      // @ts-ignore
       onClick={(menuItem) => handleAddTrackToPlaylist(menuItem, item)}
     >
       {item.title}
@@ -57,17 +56,16 @@ function QueueItemContextMenu() {
     <Item
       key="new"
       onClick={(menuItem: any) =>
-        dispatch(addTrackToPlaylist({ trackId: menuItem.props.data.track.id }))
+        addTrackToPlaylist({ trackId: menuItem.props.data.track.id })
       }
     >
-      {t('playlists.actions.createNewPlaylist')}
+      {t('collections.playlists.actions.createNewPlaylist')}
     </Item>
   )
 
   return (
     <ContextMenu id="queue-item-context-menu">
       <Item
-        // @ts-ignore
         onClick={(menuItem: any) =>
           handlePlayTrack(menuItem.props.data.position - 1)
         }
@@ -75,7 +73,6 @@ function QueueItemContextMenu() {
         {t('player.queueActions.playTrack')}
       </Item>
       <Item
-        // @ts-ignore
         onClick={(menuItem: any) =>
           dispatch(queueRemoveTrack(menuItem.props.data.position - 1))
         }
@@ -83,7 +80,7 @@ function QueueItemContextMenu() {
         {t('player.queueActions.removeTrack')}
       </Item>
       <Separator />
-      <Submenu label={t('playlists.actions.addToPlaylist')}>
+      <Submenu label={t('collections.playlists.actions.addToPlaylist')}>
         {playlistsItems}
       </Submenu>
       <Separator />

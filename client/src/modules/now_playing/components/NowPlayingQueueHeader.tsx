@@ -1,14 +1,34 @@
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
+import { devices } from 'themes/breakpoints'
+import useBreakpoints from 'common/utils/useLayoutBreakpoints'
 
 function NowPlayingQueueHeader() {
   const { t } = useTranslation()
+  const { isMD, isXL } = useBreakpoints()
+
+  if (!isMD) {
+    return null
+  }
 
   return (
     <QueueHeaderRow>
       <TrackPosition>#</TrackPosition>
-      <div>{t('player.queueHeader.track')}</div>
-      <div>{t('player.queueHeader.artist')}</div>
+      {isMD && !isXL && (
+        <>
+          <TrackInfo>{t('player.queueHeader.track')}</TrackInfo>
+          <TrackInfo>
+            {`${t('player.queueHeader.artist')} / ${t('player.queueHeader.album')}`}
+          </TrackInfo>
+        </>
+      )}
+      {isXL && (
+        <>
+          <TrackInfo>{t('player.queueHeader.track')}</TrackInfo>
+          <TrackInfo>{t('player.queueHeader.artist')}</TrackInfo>
+          <TrackInfo>{t('player.queueHeader.album')}</TrackInfo>
+        </>
+      )}
     </QueueHeaderRow>
   )
 }
@@ -17,7 +37,7 @@ export default NowPlayingQueueHeader
 
 const QueueHeaderRow = styled.div`
   display: grid;
-  grid-template-columns: 60px 40% auto;
+  grid-template-columns: 50px 50% auto 44px;
   width: 100%;
   height: ${(props) => props.theme.layout.itemHeight};
   border-top: 1px solid ${(props) => props.theme.colors.separator};
@@ -26,9 +46,17 @@ const QueueHeaderRow = styled.div`
   text-transform: uppercase;
 
   > div {
-    align-self: center;
+    display: flex;
+    align-items: center;
+  }
+
+  @media only screen and ${devices.xl} {
+    grid-template-columns: 50px 30% 30% auto 44px;
   }
 `
 const TrackPosition = styled.div`
-  justify-self: center;
+  justify-content: center;
+`
+const TrackInfo = styled.div`
+  padding-right: 10px;
 `

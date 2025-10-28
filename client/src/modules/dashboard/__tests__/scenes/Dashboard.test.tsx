@@ -1,32 +1,21 @@
-import { BrowserRouter } from 'react-router-dom'
-import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
+import { BrowserRouter } from 'react-router'
+import { screen } from '@testing-library/react'
 import Dashboard from 'modules/dashboard/scenes/Dashboard'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock(
-  'modules/dashboard/components/RandomAlbums',
-  () =>
-    function () {
-      return <div data-testid="RandomAlbums" />
-    }
-)
-jest.mock(
-  'modules/dashboard/components/RecentlyAddedAlbums',
-  () =>
-    function () {
-      return <div data-testid="RecentlyAddedAlbums" />
-    }
-)
+vi.mock('modules/dashboard/components/RandomAlbums', () => ({
+  default: () => <div data-testid="RandomAlbums" />,
+}))
+vi.mock('modules/dashboard/components/RecentlyAddedAlbums', () => ({
+  default: () => <div data-testid="RecentlyAddedAlbums" />,
+}))
 
 describe('dashboard - Dashboard scene', () => {
   it('should render without error', () => {
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <BrowserRouter>
-          <Dashboard />
-        </BrowserRouter>
-      </ThemeProvider>
+    renderWithProviders(
+      <BrowserRouter>
+        <Dashboard />
+      </BrowserRouter>
     )
 
     expect(screen.getByTestId('RandomAlbums')).toBeInTheDocument()

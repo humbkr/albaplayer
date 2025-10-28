@@ -1,8 +1,5 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
 cd client
-yarn test --watchAll=false
+yarn test:c
 
 cd ../server
 go test ./...

@@ -1,16 +1,11 @@
-import React, { Ref, useState } from 'react'
+import type { Ref } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { addAlbum, playAlbum } from 'modules/player/store/store'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import AlbumTeaser from 'modules/browser/components/AlbumTeaser'
-import {
-  getAlbumsList,
-  libraryBrowserSortAlbums,
-  selectAlbum,
-} from 'modules/browser/store'
-import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
+import { useAlbumsPanel } from 'modules/browser/hooks/useAlbumsPanel'
 import LibraryBrowserListHeader from './LibraryBrowserListHeader'
 import LibraryBrowserPane from './LibraryBrowserPane'
 import AlbumContextMenu from './AlbumContextMenu'
@@ -31,37 +26,16 @@ function AlbumsPaneContainer({
 
   const { t } = useTranslation()
 
-  const albums = useAppSelector((state) => getAlbumsList(state))
-  const orderBy = useAppSelector((state) => state.libraryBrowser.sortAlbums)
-  const currentAlbum = useAppSelector(
-    (state) => state.libraryBrowser.selectedAlbums
-  )
-  const dispatch = useAppDispatch()
-
-  const orderByOptions: { value: AlbumsSortOptions; label: string }[] = [
-    { value: 'title', label: t('browser.albums.sort.title') },
-    { value: 'year', label: t('browser.albums.sort.year') },
-    { value: 'artistName', label: t('browser.albums.sort.artist') },
-  ]
-
-  // Change event handler for LibraryBrowserListHeader.
-  const onSortChangeHandler = (event: React.MouseEvent<HTMLSelectElement>) => {
-    dispatch(
-      libraryBrowserSortAlbums(event.currentTarget.value as AlbumsSortOptions)
-    )
-  }
-
-  const onItemClick = (itemId: string) => {
-    dispatch(selectAlbum({ albumId: itemId }))
-  }
-
-  const handlePlayNow = (albumId: string) => {
-    dispatch(playAlbum(albumId))
-  }
-
-  const handleAddToQueue = (albumId: string) => {
-    dispatch(addAlbum(albumId))
-  }
+  const {
+    albums,
+    orderBy,
+    currentAlbum,
+    orderByOptions,
+    onSortChangeHandler,
+    onItemClick,
+    handlePlayNow,
+    handleAddToQueue,
+  } = useAlbumsPanel()
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.code === 'Enter') {
@@ -75,6 +49,7 @@ function AlbumsPaneContainer({
     <AlbumsPaneWrapper>
       <LibraryBrowserPane>
         <LibraryBrowserListHeader
+          icon="album"
           title={t('browser.albums.title')}
           orderBy={orderBy}
           orderByOptions={orderByOptions}
@@ -105,7 +80,6 @@ function AlbumsPaneContainer({
 }
 
 export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
   <AlbumsPaneContainer {...props} forwardedRef={ref} />
 ))
 
@@ -113,7 +87,6 @@ const AlbumsPaneWrapper = styled.div`
   display: inline-block;
   vertical-align: top;
   overflow: hidden;
-  width: 33%;
   height: 100%;
   border-left: 1px solid ${(props) => props.theme.colors.separator};
   border-right: 1px solid ${(props) => props.theme.colors.separator};

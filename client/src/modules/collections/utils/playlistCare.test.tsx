@@ -1,9 +1,10 @@
-import { libraryInitialState, LibraryStateType } from 'modules/library/store'
+import type { LibraryStateType } from 'modules/library/store'
+import { libraryInitialState } from 'modules/library/store'
 import { findSimilarTracks } from 'modules/collections/utils/playlistCare'
 
-jest.mock('modules/library/api', () => ({
+vi.mock('modules/library/api', () => ({
   libraryAPI: {
-    getLibrary: jest.fn().mockResolvedValue({}),
+    getLibrary: vi.fn().mockResolvedValue({}),
   },
 }))
 
@@ -217,7 +218,7 @@ describe('playlistCare', () => {
       }
 
       const result = findSimilarTracks(toSearch, mockLibraryState)
-      expect(result).toBeArray()
+      expectTypeOf(result).toBeArray()
       expect(result.length).toBe(1)
 
       const toSearch2: Track = {
@@ -242,7 +243,7 @@ describe('playlistCare', () => {
       }
 
       const result2 = findSimilarTracks(toSearch2, mockLibraryState)
-      expect(result2).toBeArray()
+      expectTypeOf(result2).toBeArray()
       expect(result2.length).toBe(1)
     })
 
@@ -271,7 +272,7 @@ describe('playlistCare', () => {
       }
 
       const result = findSimilarTracks(toSearch, mockLibraryState)
-      expect(result).toBeArray()
+      expectTypeOf(result).toBeArray()
       expect(result.length).toBe(1)
 
       const toSearch2: Track = {
@@ -298,7 +299,7 @@ describe('playlistCare', () => {
       }
 
       const result2 = findSimilarTracks(toSearch2, mockLibraryState)
-      expect(result2).toBeArray()
+      expectTypeOf(result2).toBeArray()
       expect(result2.length).toBe(1)
     })
 
@@ -328,7 +329,7 @@ describe('playlistCare', () => {
       }
 
       const result = findSimilarTracks(toSearch, mockLibraryState)
-      expect(result).toBeArray()
+      expectTypeOf(result).toBeArray()
       expect(result.length).toBe(1)
     })
 
@@ -357,7 +358,7 @@ describe('playlistCare', () => {
       }
 
       const result = findSimilarTracks(toSearch, mockLibraryState)
-      expect(result).toBeArray()
+      expectTypeOf(result).toBeArray()
       expect(result.length).toBe(2)
     })
 
@@ -382,7 +383,7 @@ describe('playlistCare', () => {
       }
 
       const result = findSimilarTracks(toSearch, mockLibraryState)
-      expect(result).toBeArray()
+      expectTypeOf(result).toBeArray()
       expect(result.length).toBe(2)
     })
 
@@ -400,7 +401,7 @@ describe('playlistCare', () => {
       }
 
       const result = findSimilarTracks(toSearch, mockLibraryState)
-      expect(result).toBeArray()
+      expectTypeOf(result).toBeArray()
       expect(result.length).toBe(2)
     })
 
@@ -429,7 +430,7 @@ describe('playlistCare', () => {
       }
 
       const result = findSimilarTracks(toSearch, mockLibraryState)
-      expect(result).toBeArray()
+      expectTypeOf(result).toBeArray()
       expect(result.length).toBe(0)
     })
   })

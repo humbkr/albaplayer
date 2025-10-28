@@ -9,7 +9,7 @@
 /server/pkged.go
 /server/build
 !/server/build/prod.alba.yml
+!/server/build/version.md
 /server/alba.db
 /server/alba.yml
-/server/app.log
 /server/albaplayer

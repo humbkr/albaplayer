@@ -1,12 +1,11 @@
 import libraryAPI from 'modules/library/api'
 import { immutableSortTracks } from 'common/utils/utils'
-import playerSlice from 'modules/player/store/player.store'
-import queueSlice from 'modules/player/store/queue.store'
-import { LibraryStateType } from 'modules/library/store'
+import { playerSlice } from 'modules/player/store/player.store'
+import { queueSlice } from 'modules/player/store/queue.store'
+import type { LibraryStateType } from 'modules/library/store'
 import { PlayerPlaybackMode } from 'modules/player/utils'
 
-const reducers = { player: playerSlice.reducer, queue: queueSlice.reducer }
-export default reducers
+export { playerSlice, queueSlice }
 export const {
   playerTogglePlayPause,
   playerToggleShuffle,
@@ -72,11 +71,28 @@ export const playAlbums =
     const { library } = getState()
 
     const tracks = albumIds.flatMap((id) =>
-      immutableSortTracks(getTracksFromAlbum(id, library), 'number')
+      immutableSortTracks(getTracksFromAlbum(id, library), 'album')
     )
 
     dispatch(queueClear())
     dispatch(queueAddTracks(tracks))
+    dispatch(setItemFromQueue(0))
+    dispatch(playerTogglePlayPause(true))
+  }
+
+export const playAlbumDisc = (albumId: string, disc: string) =>
+  playAlbumDiscs(albumId, [disc])
+export const playAlbumDiscs =
+  (albumId: string, discs: string[]): AppThunk =>
+  (dispatch, getState) => {
+    const { library } = getState()
+
+    const tracks = getTracksFromAlbum(albumId, library).filter((track) =>
+      discs.includes(track.disc as string)
+    )
+
+    dispatch(queueClear())
+    dispatch(queueAddTracks(immutableSortTracks(tracks, 'album')))
     dispatch(setItemFromQueue(0))
     dispatch(playerTogglePlayPause(true))
   }
@@ -127,10 +143,28 @@ export const playAlbumsAfterCurrent =
     const { library, player } = getState()
 
     const tracks = albumIds.flatMap((id) =>
-      immutableSortTracks(getTracksFromAlbum(id, library), 'number')
+      immutableSortTracks(getTracksFromAlbum(id, library), 'album')
     )
 
     dispatch(queueAddTracksAfterCurrent(tracks))
+
+    if (!player.track) {
+      dispatch(setItemFromQueue(0))
+    }
+  }
+
+export const playAlbumDiscAfterCurrent = (albumId: string, disc: string) =>
+  playAlbumDiscsAfterCurrent(albumId, [disc])
+export const playAlbumDiscsAfterCurrent =
+  (albumId: string, discs: string[]): AppThunk =>
+  (dispatch, getState) => {
+    const { library, player } = getState()
+
+    const tracks = getTracksFromAlbum(albumId, library).filter((track) =>
+      discs.includes(track.disc as string)
+    )
+
+    dispatch(queueAddTracksAfterCurrent(immutableSortTracks(tracks, 'album')))
 
     if (!player.track) {
       dispatch(setItemFromQueue(0))
@@ -183,10 +217,28 @@ export const addAlbums =
     const { library, player } = getState()
 
     const tracks = albumIds.flatMap((id) =>
-      immutableSortTracks(getTracksFromAlbum(id, library), 'number')
+      immutableSortTracks(getTracksFromAlbum(id, library), 'album')
     )
 
     dispatch(queueAddTracks(tracks))
+
+    if (!player.track) {
+      dispatch(setItemFromQueue(0))
+    }
+  }
+
+export const addAlbumDisc = (albumId: string, disc: string) =>
+  addAlbumDiscs(albumId, [disc])
+export const addAlbumDiscs =
+  (albumId: string, discs: string[] = []): AppThunk =>
+  (dispatch, getState) => {
+    const { library, player } = getState()
+
+    const tracks = getTracksFromAlbum(albumId, library).filter((track) =>
+      discs.includes(track.disc as string)
+    )
+
+    dispatch(queueAddTracks(immutableSortTracks(tracks, 'album')))
 
     if (!player.track) {
       dispatch(setItemFromQueue(0))

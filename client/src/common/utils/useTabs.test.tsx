@@ -1,7 +1,6 @@
-import { render, renderHook, screen } from '@testing-library/react'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
+import { renderHook, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 import { useTabs } from './useTabs'
 
 describe('HOOK: useTabs', () => {
@@ -36,11 +35,7 @@ describe('HOOK: useTabs', () => {
     const { result } = renderHook(() => useTabs(tabs))
     const { TabsComponent } = result.current
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <TabsComponent />
-      </ThemeProvider>
-    )
+    renderWithProviders(<TabsComponent />)
 
     expect(screen.getByText('Tab 1')).toBeInTheDocument()
     expect(screen.getByText('Tab 2')).toBeInTheDocument()
@@ -55,11 +50,7 @@ describe('HOOK: useTabs', () => {
     const { result } = renderHook(() => useTabs(tabs))
     const { TabsComponent } = result.current
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <TabsComponent />
-      </ThemeProvider>
-    )
+    renderWithProviders(<TabsComponent />)
 
     await userEvent.click(screen.getByText('Tab 2'))
 
@@ -76,11 +67,7 @@ describe('HOOK: useTabs', () => {
     const { result } = renderHook(() => useTabs(tabs, undefined, ['tab2']))
     const { TabsComponent } = result.current
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <TabsComponent />
-      </ThemeProvider>
-    )
+    renderWithProviders(<TabsComponent />)
 
     expect(screen.getByText('Tab 1')).toBeInTheDocument()
     expect(screen.getByText('Tab 3')).toBeInTheDocument()

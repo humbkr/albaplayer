@@ -1,8 +1,7 @@
 import styled from 'styled-components'
 import dayjs from 'dayjs'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
-import React from 'react'
-import { useDeleteUserMutation, useGetUserQuery } from 'modules/user/store/api'
+import { useDeleteUserMutation, useGetUserQuery } from 'modules/user/api'
 import { notify } from 'common/utils/notifications'
 import { useTranslation } from 'react-i18next'
 import { USER_ROLE_OWNER } from 'modules/user/constants'
@@ -70,7 +69,7 @@ const Line = styled.div`
   min-height: ${(props) => props.theme.layout.itemHeight};
   border-radius: 3px;
 
-  :hover {
+  &:hover {
     background-color: ${(props) => props.theme.colors.elementHighlight};
   }
 `
@@ -81,7 +80,7 @@ const Actions = styled.div`
 const Action = styled(ActionButtonIcon)`
   color: ${(props) => props.theme.colors.textSecondary};
 
-  :hover {
+  &:hover {
     color: ${(props) => props.theme.colors.textPrimary};
   }
 `

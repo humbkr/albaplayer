@@ -29,13 +29,13 @@ function PlaylistCareListItem({ item, selected = false }: Props) {
       <Result>
         {item.processed && item.similarTracks.length !== 1 && (
           <NotFound>
-            {t('playlists.care.notFound')}
+            {t('collections.playlists.care.notFound')}
             <Icon>close</Icon>
           </NotFound>
         )}
         {item.processed && item.similarTracks.length === 1 && (
           <Found>
-            {t('playlists.care.found')}
+            {t('collections.playlists.care.found')}
             <Icon>done</Icon>
           </Found>
         )}

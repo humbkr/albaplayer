@@ -1,29 +1,29 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import UserActionsMenu from 'modules/user/components/UserActionsMenu'
-import { useGetUserQuery } from 'modules/user/store/api'
+import { useGetUserQuery } from 'modules/user/api'
 import userEvent from '@testing-library/user-event'
 import ROUTES from 'routing'
 import { useNavigate } from 'react-router'
-import { ThemeProvider } from 'styled-components'
-import themeDefault from 'themes/lightGreen'
 import { refreshData } from 'modules/settings/services'
 import { logoutUser } from 'modules/user/services'
+import type { Mock } from 'vitest'
+import { renderWithProviders } from 'common/utils/testing/test-utils'
 
-jest.mock('modules/user/store/api', () => ({
-  useGetUserQuery: jest.fn(),
+vi.mock('modules/user/api', () => ({
+  useGetUserQuery: vi.fn(),
 }))
-const useGetUserQueryMock = useGetUserQuery as jest.Mock
+const useGetUserQueryMock = useGetUserQuery as Mock
 
-jest.mock('react-router')
-const useNavigateMock = useNavigate as jest.Mock
-const mockNavigate = jest.fn()
+vi.mock('react-router')
+const useNavigateMock = useNavigate as Mock
+const mockNavigate = vi.fn()
 
-jest.mock('modules/user/services', () => ({
-  logoutUser: jest.fn(),
+vi.mock('modules/user/services', () => ({
+  logoutUser: vi.fn(),
 }))
 
-jest.mock('modules/settings/services', () => ({
-  refreshData: jest.fn(),
+vi.mock('modules/settings/services', () => ({
+  refreshData: vi.fn(),
 }))
 
 describe('UserActionsMenu', () => {
@@ -36,11 +36,7 @@ describe('UserActionsMenu', () => {
       data: undefined,
     }))
 
-    render(
-      <ThemeProvider theme={themeDefault}>
-        <UserActionsMenu />
-      </ThemeProvider>
-    )
+    renderWithProviders(<UserActionsMenu />)
 
     expect(
       screen.queryByTestId('user-actions-menu-noauth')
@@ -63,11 +59,7 @@ describe('UserActionsMenu', () => {
     })
 
     it('renders correctly', () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       expect(screen.getByTestId('user-actions-menu-noauth')).toBeInTheDocument()
       // Button icons.
@@ -77,11 +69,7 @@ describe('UserActionsMenu', () => {
     })
 
     it('navigate to the correct page when administration button is pressed', async () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       await userEvent.click(screen.getByText('admin_panel_settings'))
 
@@ -89,11 +77,7 @@ describe('UserActionsMenu', () => {
     })
 
     it('navigate to the correct page when settings button is pressed', async () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       await userEvent.click(screen.getByText('settings'))
 
@@ -101,11 +85,7 @@ describe('UserActionsMenu', () => {
     })
 
     it('calls correct action when refresh is pressed', async () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       await userEvent.click(screen.getByText('refresh'))
 
@@ -122,11 +102,7 @@ describe('UserActionsMenu', () => {
         },
       }))
 
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       expect(screen.getByTestId('user-actions-menu-noauth')).toBeInTheDocument()
       expect(screen.getByText('settings')).toBeInTheDocument()
@@ -146,11 +122,7 @@ describe('UserActionsMenu', () => {
     })
 
     it('renders correctly when user has role listener only', () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       expect(screen.getByTestId('user-actions-menu-auth')).toBeInTheDocument()
       expect(screen.getByText('Test User')).toBeInTheDocument()
@@ -167,11 +139,7 @@ describe('UserActionsMenu', () => {
         },
       }))
 
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       expect(screen.getByTestId('user-actions-menu-auth')).toBeInTheDocument()
       expect(screen.getByText('Test User')).toBeInTheDocument()
@@ -188,11 +156,7 @@ describe('UserActionsMenu', () => {
         },
       }))
 
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       await userEvent.click(screen.getByText('Test User'))
       await userEvent.click(screen.getByText('admin_panel_settings'))
@@ -201,11 +165,7 @@ describe('UserActionsMenu', () => {
     })
 
     it('navigate to the correct page when settings button is pressed', async () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       await userEvent.click(screen.getByText('Test User'))
       await userEvent.click(screen.getByText('settings'))
@@ -214,11 +174,7 @@ describe('UserActionsMenu', () => {
     })
 
     it('calls correct action when refresh is pressed', async () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       await userEvent.click(screen.getByText('refresh'))
 
@@ -226,11 +182,7 @@ describe('UserActionsMenu', () => {
     })
 
     it('calls correct action when log out is pressed', async () => {
-      render(
-        <ThemeProvider theme={themeDefault}>
-          <UserActionsMenu />
-        </ThemeProvider>
-      )
+      renderWithProviders(<UserActionsMenu />)
 
       await userEvent.click(screen.getByText('logout'))
 
