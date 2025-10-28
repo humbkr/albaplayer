@@ -37,6 +37,7 @@ RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=x86_64-linux-gnu-gcc go build -a -o
 
 # Copy config files
 RUN cp /app/build/prod.alba.yml /generated/alba.yml
+RUN cp /app/build/version.md /generated/version.md
 
 ## Final image
 FROM debian
