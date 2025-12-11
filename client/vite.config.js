@@ -14,6 +14,9 @@ export default defineConfig(({ command }) => ({
     tsconfigPaths(),
     svgr(),
   ],
+  build: {
+    sourcemap: true,
+  },
   server: {
     open: true,
     port: 3001,

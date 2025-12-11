@@ -1,8 +1,9 @@
-package interfaces
+package datasources
 
 import (
-	"github.com/humbkr/albaplayer/internal/utils"
 	"testing"
+
+	"github.com/humbkr/albaplayer/internal/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"

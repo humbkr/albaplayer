@@ -13,6 +13,7 @@ import isPropValid from '@emotion/is-prop-valid'
 import DesktopLayout from 'common/components/layout/Layout'
 import MobileLayout from 'common/components/layout/Layout.mobile'
 import { isMobileBrowser } from 'common/utils/isMobileBrowser'
+import info from '../package.json'
 
 function AlbaApp() {
   const currentThemeName = useAppSelector((state) => state.settings.theme)
@@ -21,19 +22,21 @@ function AlbaApp() {
 
   // TODO: check the downside of utilizing the shouldForwardProp function vs transient props
   return (
-    <StyleSheetManager
-      shouldForwardProp={(propName, elementToBeRendered) => {
-        return typeof elementToBeRendered === 'string'
-          ? isPropValid(propName)
-          : true
-      }}
-    >
-      <ThemeProvider theme={theme?.config}>
-        <GlobalStyle />
-        {isMobile ? <MobileLayout /> : <DesktopLayout />}
-        <NotificationsContainer />
-      </ThemeProvider>
-    </StyleSheetManager>
+    <div data-version={info.version}>
+      <StyleSheetManager
+        shouldForwardProp={(propName, elementToBeRendered) => {
+          return typeof elementToBeRendered === 'string'
+            ? isPropValid(propName)
+            : true
+        }}
+      >
+        <ThemeProvider theme={theme?.config}>
+          <GlobalStyle />
+          {isMobile ? <MobileLayout /> : <DesktopLayout />}
+          <NotificationsContainer />
+        </ThemeProvider>
+      </StyleSheetManager>
+    </div>
   )
 }
 

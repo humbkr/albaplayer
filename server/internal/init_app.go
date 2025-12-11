@@ -2,12 +2,14 @@ package internal
 
 import (
 	"fmt"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"log"
+	"os"
 
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/humbkr/albaplayer/internal/interfaces"
+	"github.com/humbkr/albaplayer/internal/interfaces/datasources"
 	"github.com/spf13/viper"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func InitApp() (business.LibraryInteractor, business.UsersInteractor, business.InternalVariableInteractor) {
@@ -51,16 +53,29 @@ func InitApp() (business.LibraryInteractor, business.UsersInteractor, business.I
 	}
 
 	// Initialize logging system.
-	log.SetOutput(&lumberjack.Logger{
-		Filename:   viper.GetString("Log.Path") + viper.GetString("Log.File"),
-		MaxSize:    10, // Megabytes.
-		MaxBackups: 3,
-		MaxAge:     15, // Days.
-	})
+	if viper.GetBool("Log.Enabled") {
+		// Check if the log file exists and create it if it does not
+		logFilePath := viper.GetString("Log.Path") + viper.GetString("Log.File")
+		if _, err := os.Stat(logFilePath); os.IsNotExist(err) {
+			file, createErr := os.Create(logFilePath)
+			if createErr != nil {
+				fmt.Println(fmt.Errorf("Failed to create log file: %s", createErr))
+			}
+			if err := file.Close(); err != nil {
+				fmt.Println(fmt.Errorf("Failed to close log file after creation: %s", err))
+			}
+		}
+		log.SetOutput(&lumberjack.Logger{
+			Filename:   logFilePath,
+			MaxSize:    10, // Megabytes.
+			MaxBackups: 3,
+			MaxAge:     15, // Days.
+		})
+	}
 
 	// Create app context.
 	var appContext interfaces.AppContext
-	datasource, err := interfaces.InitAlbaDatasource(viper.GetString("DB.driver"), viper.GetString("DB.file"))
+	datasource, err := datasources.InitAlbaDatasource(viper.GetString("DB.driver"), viper.GetString("DB.file"))
 	if err != nil {
 		panic(fmt.Errorf("Error during the application context creation: %s \n", err))
 	}

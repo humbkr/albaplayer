@@ -5,17 +5,19 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"github.com/humbkr/albaplayer/internal/business"
-	"github.com/humbkr/albaplayer/internal/domain"
-	"github.com/humbkr/albaplayer/internal/utils"
-	_ "github.com/mattn/go-sqlite3"
-	"github.com/stretchr/testify/mock"
 	"io"
 	"log"
 	"math/rand"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/humbkr/albaplayer/internal/domain"
+	"github.com/humbkr/albaplayer/internal/interfaces/datasources"
+	"github.com/humbkr/albaplayer/internal/utils"
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/stretchr/testify/mock"
 )
 
 /*
@@ -37,7 +39,7 @@ const TestFSEmptyLibDir = TestDataDir + "empty_library"
 func createTestDatasource() (ds *sql.DB, err error) {
 	tempDir := utils.GetOSTempDir()
 	log.Println("Create test db: " + tempDir + TestDatasourceFile)
-	return InitAlbaDatasource("sqlite3", tempDir+TestDatasourceFile)
+	return datasources.InitAlbaDatasource("sqlite3", tempDir+TestDatasourceFile)
 }
 
 func clearTestDataSource(ds *sql.DB) error {

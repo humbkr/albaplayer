@@ -3,6 +3,7 @@
 /client/build
 /client/coverage
 /client/node_modules
+/client/.env.local
 /server/test
 /server/tmp
 /server/app.log
