@@ -1,8 +1,6 @@
 import LoaderPulseLogo from 'common/components/LoaderPulseLogo'
 import type React from 'react'
 import styled from 'styled-components'
-import { useTranslation } from 'react-i18next'
-import info from '../../../../package.json'
 
 type Props = {
   isLoading: boolean
@@ -15,8 +13,6 @@ export default function AppLoader({
   isServerReachable,
   children,
 }: Props) {
-  const { t } = useTranslation()
-
   if (isLoading) {
     return (
       <LoadingContainer>
@@ -29,9 +25,6 @@ export default function AppLoader({
         <h2>
           Error: Unable to connect to server, please check your configuration
         </h2>
-        <Version>
-          {t('settings.about.version', { version: info.version })}
-        </Version>
       </GlobalError>
     )
   }
@@ -48,9 +41,4 @@ const LoadingContainer = styled.div`
 const GlobalError = styled.div`
   padding: 20px;
   color: ${(props) => props.theme.colors.textPrimary};
-`
-const Version = styled.div`
-  margin-top: 10px;
-  color: ${(props) => props.theme.colors.textSecondary};
-  font-size: 0.8em;
 `
