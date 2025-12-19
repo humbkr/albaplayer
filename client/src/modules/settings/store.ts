@@ -4,7 +4,10 @@ import { initLibrary } from 'modules/library/store'
 import libraryAPI from 'modules/library/api'
 import { processApiError } from 'api/helpers'
 import { getSettings } from 'api/api'
-import { SETTINGS_BROWSER_ONCLICK } from 'modules/settings/constants'
+import {
+  SETTINGS_BROWSER_ONCLICK,
+  SETTINGS_BROWSER_TRACKS_PANE_DISPLAY,
+} from 'modules/settings/constants'
 import { createAppSlice } from 'store/createAppSlice'
 
 type Settings = {
@@ -23,6 +26,7 @@ export type SettingsStateType = {
   theme: string
   browser: {
     onClickBehavior: SETTINGS_BROWSER_ONCLICK
+    tracksPaneDisplay: SETTINGS_BROWSER_TRACKS_PANE_DISPLAY
   }
 }
 
@@ -35,6 +39,7 @@ export const initialState: SettingsStateType = {
   theme: 'default',
   browser: {
     onClickBehavior: SETTINGS_BROWSER_ONCLICK.play,
+    tracksPaneDisplay: SETTINGS_BROWSER_TRACKS_PANE_DISPLAY.albumInfo,
   },
 }
 

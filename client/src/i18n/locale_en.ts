@@ -26,7 +26,7 @@ const en: Translation = {
     navigation: {
       nowPlaying: 'Now Playing',
       libraryBrowser: 'Library Browser',
-      collections: 'Collections',
+      collections: 'Playlists',
       inspiration: 'Inspiration',
     },
   },
@@ -164,6 +164,11 @@ const en: Translation = {
         play: 'Replace current playlist and play item',
         add: 'Add item to the current playlist',
         none: 'Do nothing',
+      },
+      tracksPaneDisplay: {
+        label: 'When selecting an album:',
+        displayAlbumInfo: 'Display album information',
+        displayTracksOnly: 'Display tracks list only',
       },
     },
     about: {

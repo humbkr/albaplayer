@@ -21,6 +21,7 @@ export declare global {
     buttonBackground: string
     buttonBackgroundHover: string
     buttonText: string
+    selectOptionBackgroundHover: string
     inputBackground: string
     sidebarBackground: string
     sidebarTextPrimary: string

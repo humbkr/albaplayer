@@ -1,10 +1,16 @@
 import styled from 'styled-components'
 import type { SettingsStateType } from 'modules/settings/store'
 import { setBrowserSettings } from 'modules/settings/store'
-import SelectList from 'modules/settings/components/SelectList'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
-import { SETTINGS_BROWSER_ONCLICK } from 'modules/settings/constants'
+import {
+  SETTINGS_BROWSER_ONCLICK,
+  SETTINGS_BROWSER_TRACKS_PANE_DISPLAY,
+} from 'modules/settings/constants'
+import SelectField, {
+  getSelectedOption,
+} from 'common/components/forms/SelectField'
+import FieldGroup from 'common/components/forms/FieldGroup'
 
 function LibraryBrowserSettings() {
   const { t } = useTranslation()
@@ -20,7 +26,13 @@ function LibraryBrowserSettings() {
     onChangeConfig({ onClickBehavior: newValue as SETTINGS_BROWSER_ONCLICK })
   }
 
-  const clickOptions = [
+  const onChangeAlbumSelection = (newValue: string) => {
+    onChangeConfig({
+      tracksPaneDisplay: newValue as SETTINGS_BROWSER_TRACKS_PANE_DISPLAY,
+    })
+  }
+
+  const doubleClickBehaviourOptions = [
     {
       value: SETTINGS_BROWSER_ONCLICK.play,
       label: t('settings.libraryBrowser.clickBehavior.play'),
@@ -35,19 +47,41 @@ function LibraryBrowserSettings() {
     },
   ]
 
+  const albumSelectionOptions = [
+    {
+      value: SETTINGS_BROWSER_TRACKS_PANE_DISPLAY.albumInfo,
+      label: t('settings.libraryBrowser.tracksPaneDisplay.displayAlbumInfo'),
+    },
+    {
+      value: SETTINGS_BROWSER_TRACKS_PANE_DISPLAY.tracksOnly,
+      label: t('settings.libraryBrowser.tracksPaneDisplay.displayTracksOnly'),
+    },
+  ]
+
   return (
     <Block data-testid="settings-theme">
-      <h2>{t('settings.libraryBrowser.clickBehavior.label')}</h2>
-      <Field>
-        <SelectList
-          testId="settings-browser-click-select"
-          options={clickOptions}
-          value={config.onClickBehavior}
-          onChangeHandler={(event) =>
-            onChangeClickBehavior(event.currentTarget.value)
-          }
+      <FieldGroup>
+        <SelectField
+          label={t('settings.libraryBrowser.clickBehavior.label')}
+          data-testid="settings-browser-click-select"
+          options={doubleClickBehaviourOptions}
+          value={getSelectedOption(
+            doubleClickBehaviourOptions,
+            config.onClickBehavior
+          )}
+          onChange={({ value }) => onChangeClickBehavior(value)}
         />
-      </Field>
+        <SelectField
+          label={t('settings.libraryBrowser.tracksPaneDisplay.label')}
+          data-testid="settings-browser-album-select-select"
+          options={albumSelectionOptions}
+          value={getSelectedOption(
+            albumSelectionOptions,
+            config.tracksPaneDisplay
+          )}
+          onChange={({ value }) => onChangeAlbumSelection(value)}
+        />
+      </FieldGroup>
     </Block>
   )
 }
@@ -57,14 +91,7 @@ export default LibraryBrowserSettings
 const Block = styled.div`
   margin-top: 30px;
 
-  > h2 {
-    margin-bottom: 15px;
-  }
-
   > p {
     margin-bottom: 10px;
   }
-`
-const Field = styled.div`
-  max-width: 350px;
 `

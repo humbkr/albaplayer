@@ -12,6 +12,7 @@ import {
   usePlayAlbumDisc,
   usePlayTrack,
 } from 'modules/browser/services'
+import { SETTINGS_BROWSER_TRACKS_PANE_DISPLAY } from 'modules/settings/constants'
 
 export function useTracksPanel() {
   const { t } = useTranslation()
@@ -19,7 +20,12 @@ export function useTracksPanel() {
   const selectedAlbumId = useAppSelector(
     (state) => state.libraryBrowser.selectedAlbums
   )
-  const isInAlbumMode = selectedAlbumId !== '0'
+
+  const config = useAppSelector((state) => state.settings.browser)
+
+  const isInAlbumMode =
+    selectedAlbumId !== '0' &&
+    config.tracksPaneDisplay === SETTINGS_BROWSER_TRACKS_PANE_DISPLAY.albumInfo
 
   const tracks = useAppSelector((state) => getTracksList(state, isInAlbumMode))
   const orderBy = useAppSelector((state) => state.libraryBrowser.sortTracks)

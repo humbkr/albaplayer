@@ -1,21 +1,32 @@
 import type React from 'react'
+import type { InputHTMLAttributes } from 'react'
 import styled from 'styled-components'
 import selectArrowLight from 'common/assets/images/select-arrow-light.svg'
 import selectArrowDark from 'common/assets/images/select-arrow-dark.svg'
+import Label from 'common/components/forms/Label'
 
 export type Option = {
   value: string
   label: string
 }
 
-type Props = {
+type Props = InputHTMLAttributes<HTMLSelectElement> & {
+  label?: string
   value: string
   onChangeHandler: (event: React.MouseEvent<HTMLSelectElement>) => void
   options: Array<Option>
-  tabIndex?: string
+  id?: string
 }
 
-function SelectContainer({ value, onChangeHandler, options, tabIndex }: Props) {
+function SelectContainer({
+  value,
+  onChangeHandler,
+  options,
+  tabIndex,
+  label,
+  id = 'select-field',
+  ...props
+}: Props) {
   const optionsHtml = options.map((option: Option) => (
     <option key={option.value} value={option.value}>
       {option.label}
@@ -24,11 +35,13 @@ function SelectContainer({ value, onChangeHandler, options, tabIndex }: Props) {
 
   return (
     <SelectWrapper>
+      {label && <Label htmlFor={id}>{label}</Label>}
       <Select
         tabIndex={tabIndex}
-        id="select"
+        id={id}
         value={value}
         onChange={onChangeHandler}
+        {...props}
       >
         {optionsHtml}
       </Select>
