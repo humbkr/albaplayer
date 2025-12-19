@@ -1,6 +1,6 @@
 const getBaseURL = () => {
   const url = !import.meta.env.VITE_BACKEND_URL
-    ? window.location.href
+    ? window.location.origin
     : import.meta.env.VITE_BACKEND_URL
   return url.replace(/\/+$/, '')
 }

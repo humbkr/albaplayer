@@ -27,7 +27,7 @@ function GlobalSettings() {
           data-testid="settings-theme-select"
           options={themeOptions}
           value={getSelectedOption(themeOptions, theme)}
-          onChange={({ value }) => dispatch(setTheme(value))}
+          onChange={(selected) => dispatch(setTheme(selected?.value as string))}
         />
       </Field>
     </Block>

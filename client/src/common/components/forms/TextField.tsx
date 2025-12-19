@@ -43,6 +43,7 @@ export default TextField
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 3px;
 `
 const Input = styled.input<{ error: boolean }>`
   height: 30px;
@@ -57,5 +58,4 @@ const Input = styled.input<{ error: boolean }>`
 const Error = styled.p`
   color: ${(props) => props.theme.colors.error};
   font-size: 0.8rem;
-  margin-top: 3px;
 `

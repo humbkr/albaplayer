@@ -90,7 +90,7 @@ var serveCmd = &cobra.Command{
 					http.Error(w, err.Error(), http.StatusBadRequest)
 					return
 				}
-				w.WriteHeader(http.StatusAccepted)
+				w.WriteHeader(http.StatusOK)
 				w.Write(index)
 				return
 			} else if err != nil {

@@ -41,17 +41,34 @@ export default function SelectField<
               ? `0px 0px 3px ${theme.colors.buttonBackgroundHover}`
               : 'none',
           }),
-          valueContainer: (baseStyles) => ({
-            ...baseStyles,
-            height: '30px',
-            marginTop: '-6px',
-          }),
-          singleValue: (baseStyles) => ({
+          dropdownIndicator: (baseStyles) => ({
             ...baseStyles,
             color: theme.colors.buttonBackground,
+            padding: '0 8px',
+            ':hover': {
+              color: theme.colors.buttonBackgroundHover,
+            },
+          }),
+          indicatorsContainer: (baseStyles) => ({
+            ...baseStyles,
             height: '30px',
-            display: 'flex',
-            alignItems: 'center',
+            marginTop: '-1px',
+          }),
+          indicatorSeparator: () => ({
+            display: 'none',
+          }),
+          menu: (baseStyles) => ({
+            ...baseStyles,
+            backgroundColor: theme.colors.background,
+            border: `1px solid ${theme.colors.buttonBackground}`,
+            overflow: 'hidden',
+            width: 'max-content',
+            minWidth: '100%',
+          }),
+          menuList: (provided) => ({
+            ...provided,
+            paddingTop: 0,
+            paddingBottom: 0,
           }),
           option: (baseStyles, state) => ({
             ...baseStyles,
@@ -80,34 +97,17 @@ export default function SelectField<
             color: theme.colors.buttonBackground,
             marginTop: '4px',
           }),
-          indicatorsContainer: (baseStyles) => ({
-            ...baseStyles,
-            height: '30px',
-            marginTop: '-1px',
-          }),
-          indicatorSeparator: () => ({
-            display: 'none',
-          }),
-          dropdownIndicator: (baseStyles) => ({
+          singleValue: (baseStyles) => ({
             ...baseStyles,
             color: theme.colors.buttonBackground,
-            padding: '0 8px',
-            ':hover': {
-              color: theme.colors.buttonBackgroundHover,
-            },
+            height: '30px',
+            display: 'flex',
+            alignItems: 'center',
           }),
-          menu: (baseStyles) => ({
+          valueContainer: (baseStyles) => ({
             ...baseStyles,
-            backgroundColor: theme.colors.background,
-            border: `1px solid ${theme.colors.buttonBackground}`,
-            overflow: 'hidden',
-            width: 'max-content',
-            minWidth: '100%',
-          }),
-          menuList: (provided) => ({
-            ...provided,
-            paddingTop: 0,
-            paddingBottom: 0,
+            height: '30px',
+            marginTop: '-6px',
           }),
         }}
         {...rest}
@@ -116,7 +116,7 @@ export default function SelectField<
   )
 }
 
-export function getSelectedOption(options: Options<any>, value: string) {
+export function getSelectedOption<Option extends { value: string }>(options: Options<Option>, value: string) {
   return options.find((option) => option.value === value)
 }
 

@@ -22,13 +22,15 @@ function LibraryBrowserSettings() {
     dispatch(setBrowserSettings(newConfig))
   }
 
-  const onChangeClickBehavior = (newValue: string) => {
-    onChangeConfig({ onClickBehavior: newValue as SETTINGS_BROWSER_ONCLICK })
+  const onChangeClickBehavior = (newValue: SETTINGS_BROWSER_ONCLICK) => {
+    onChangeConfig({ onClickBehavior: newValue })
   }
 
-  const onChangeAlbumSelection = (newValue: string) => {
+  const onChangeAlbumSelection = (
+    newValue: SETTINGS_BROWSER_TRACKS_PANE_DISPLAY
+  ) => {
     onChangeConfig({
-      tracksPaneDisplay: newValue as SETTINGS_BROWSER_TRACKS_PANE_DISPLAY,
+      tracksPaneDisplay: newValue,
     })
   }
 
@@ -69,7 +71,9 @@ function LibraryBrowserSettings() {
             doubleClickBehaviourOptions,
             config.onClickBehavior
           )}
-          onChange={({ value }) => onChangeClickBehavior(value)}
+          onChange={(selected) =>
+            onChangeClickBehavior(selected?.value as SETTINGS_BROWSER_ONCLICK)
+          }
         />
         <SelectField
           label={t('settings.libraryBrowser.tracksPaneDisplay.label')}
@@ -79,7 +83,8 @@ function LibraryBrowserSettings() {
             albumSelectionOptions,
             config.tracksPaneDisplay
           )}
-          onChange={({ value }) => onChangeAlbumSelection(value)}
+          onChange={(selected) =>
+            onChangeAlbumSelection(selected?.value as SETTINGS_BROWSER_TRACKS_PANE_DISPLAY)}
         />
       </FieldGroup>
     </Block>
