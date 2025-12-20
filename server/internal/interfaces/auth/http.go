@@ -3,12 +3,13 @@ package auth
 import (
 	"context"
 	"encoding/json"
-	"github.com/humbkr/albaplayer/internal/business"
-	"github.com/spf13/viper"
-	"golang.org/x/exp/slices"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/spf13/viper"
+	"golang.org/x/exp/slices"
 )
 
 type AuthHandlers struct {
@@ -122,7 +123,7 @@ func (h AuthHandlers) CreateRootUser(w http.ResponseWriter, r *http.Request) {
 
 	_, err = createRootUser(h.UserInteractor, credentials.Username, credentials.Password)
 	if err != nil {
-		http.Error(w, "unable to create root user", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

@@ -20,6 +20,7 @@ const colors: ThemeColors = {
   buttonBackground: '#009688',
   buttonBackgroundHover: '#00bdab',
   buttonText: '#f3f3f3',
+  selectOptionBackgroundHover: '#d9d9d9',
   inputBackground: '#f3f3f3',
   sidebarBackground: '#2a2a2a',
   sidebarTextPrimary: '#d9d9d9',

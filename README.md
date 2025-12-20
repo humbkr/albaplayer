@@ -107,7 +107,7 @@ yarn start
 
 If you only want to work on the client you can set  
 ```dotenv
-REACT_APP_BACKEND_URL=https://demo.albaplayer.com
+VITE_BACKEND_URL=https://demo.albaplayer.com
 ```
 in /client/.env.development instead of having to run the server locally
 

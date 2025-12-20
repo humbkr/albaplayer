@@ -3,3 +3,8 @@ export enum SETTINGS_BROWSER_ONCLICK {
   play = 'play',
   add = 'add',
 }
+
+export enum SETTINGS_BROWSER_TRACKS_PANE_DISPLAY {
+  tracksOnly = 'tracks',
+  albumInfo = 'albumInfo',
+}

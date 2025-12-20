@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import type { InputHTMLAttributes } from 'react'
+import Label from 'common/components/forms/Label'
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   name: string
@@ -42,10 +43,6 @@ export default TextField
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-`
-const Label = styled.label`
-  margin-bottom: 3px;
-  font-size: 0.9rem;
 `
 const Input = styled.input<{ error: boolean }>`
   height: 30px;

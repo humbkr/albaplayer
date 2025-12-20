@@ -30,7 +30,7 @@ function LibraryBrowserListHeader({
         </Title>
         {orderByOptions && (
           <SelectContainer
-            tabIndex="-1"
+            tabIndex={-1}
             options={orderByOptions}
             value={orderBy}
             onChangeHandler={onChange}

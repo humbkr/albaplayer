@@ -1,9 +1,11 @@
 import styled from 'styled-components'
 import { themes } from 'themes'
 import { setTheme } from 'modules/settings/store'
-import SelectList from 'modules/settings/components/SelectList'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
+import SelectField, {
+  getSelectedOption,
+} from 'common/components/forms/SelectField'
 
 function GlobalSettings() {
   const { t } = useTranslation()
@@ -21,13 +23,11 @@ function GlobalSettings() {
     <Block data-testid="settings-theme">
       <h2>{t('settings.global.theme')}</h2>
       <Field>
-        <SelectList
-          testId="settings-theme-select"
+        <SelectField
+          data-testid="settings-theme-select"
           options={themeOptions}
-          value={theme}
-          onChangeHandler={(event) =>
-            dispatch(setTheme(event.currentTarget.value))
-          }
+          value={getSelectedOption(themeOptions, theme)}
+          onChange={({ value }) => dispatch(setTheme(value))}
         />
       </Field>
     </Block>

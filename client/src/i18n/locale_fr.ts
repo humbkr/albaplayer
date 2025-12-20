@@ -26,7 +26,7 @@ const fr: Translation = {
     navigation: {
       nowPlaying: 'Liste de lecture',
       libraryBrowser: 'Librairie',
-      collections: 'Collections',
+      collections: 'Playlists',
       inspiration: 'Inspiration',
     },
   },
@@ -167,6 +167,11 @@ const fr: Translation = {
         play: "Remplacer la liste de lecture courante et jouer l'item",
         add: "Ajouter l'item à la liste de lecture courante",
         none: 'Ne rien faire',
+      },
+      tracksPaneDisplay: {
+        label: "Lorsqu'un album est sélectionné:",
+        displayAlbumInfo: "Afficher les informations de l'album",
+        displayTracksOnly: 'Afficher la liste des chansons uniquement',
       },
     },
     about: {

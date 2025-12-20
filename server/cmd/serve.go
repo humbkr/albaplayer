@@ -2,19 +2,19 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/humbkr/albaplayer/frontend"
 	"github.com/humbkr/albaplayer/internal"
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/humbkr/albaplayer/internal/interfaces/auth"
 	"github.com/humbkr/albaplayer/internal/interfaces/graph"
-	"io"
-	"log"
-	"mime"
-	"net/http"
-	"path/filepath"
 
 	"github.com/humbkr/albaplayer/internal/interfaces"
-	"github.com/markbates/pkger"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -81,34 +81,25 @@ var serveCmd = &cobra.Command{
 		mux.HandleFunc("/config", appConfigHandler.GetAppConfig)
 
 		// Serve SPA.
-		fileServer := http.FileServer(pkger.Dir("/web"))
 		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			// Will serve requested file if present in the directory, or redirect
-			// to the SPA index file if not.
-			path, err := filepath.Abs(r.URL.Path)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			path = filepath.Join("/web", path)
-
-			_, err = pkger.Stat(path)
-			if err != nil {
-				// File does not exist, let the SPA handle the routing.
-				w.Header().Add("Content-Type", mime.TypeByExtension(".html"))
-				file, err := pkger.Open("/web/index.html")
-				defer file.Close()
-
+			buildPath := "dist"
+			f, err := frontend.FrontendFiles.Open(filepath.Join(buildPath, r.URL.Path))
+			if os.IsNotExist(err) {
+				index, err := frontend.FrontendFiles.ReadFile(filepath.Join(buildPath, "index.html"))
 				if err != nil {
-					http.Error(w, err.Error(), http.StatusNotFound)
+					http.Error(w, err.Error(), http.StatusBadRequest)
 					return
 				}
-				_, _ = io.Copy(w, file)
+				w.WriteHeader(http.StatusAccepted)
+				w.Write(index)
+				return
+			} else if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+			defer f.Close()
 
-			fileServer.ServeHTTP(w, r)
+			http.FileServer(frontend.BuildFrontendFileSystem()).ServeHTTP(w, r)
 		})
 
 		// Create the root handler with CORS to make the server handle cross-domain requests.
