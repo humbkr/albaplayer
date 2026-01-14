@@ -1,5 +1,4 @@
-import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
-import 'react-contexify/dist/ReactContexify.min.css'
+import { Item, Separator, Submenu } from 'react-contexify'
 import {
   addTrack,
   playTrack,
@@ -13,6 +12,7 @@ import {
   useAddTrackToPlaylist,
   useRemoveTrackFromPlaylist,
 } from 'modules/collections/services/services'
+import ContextMenu from 'common/components/ContextMenu'
 import { search, setSearchFilter } from '../../browser/store'
 
 function PlaylistTrackContextMenu() {

@@ -1,5 +1,4 @@
-import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
-import 'react-contexify/dist/ReactContexify.min.css'
+import { Item, Separator, Submenu } from 'react-contexify'
 import {
   playerTogglePlayPause,
   queueRemoveTrack,
@@ -10,6 +9,7 @@ import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
 import { useAddTrackToPlaylist } from 'modules/collections/services/services'
+import ContextMenu from 'common/components/ContextMenu'
 import { search, setSearchFilter } from '../../browser/store'
 
 function QueueItemContextMenu() {

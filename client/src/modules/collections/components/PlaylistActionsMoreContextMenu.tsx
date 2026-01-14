@@ -1,6 +1,4 @@
-import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
-import type { MenuItemEventHandler } from 'react-contexify/lib/types'
-import 'react-contexify/dist/ReactContexify.min.css'
+import { Item, Separator, Submenu } from 'react-contexify'
 import { PLAYLIST_PANE, playlistChangePane } from 'modules/collections/store'
 import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
@@ -10,9 +8,10 @@ import {
 } from 'modules/collections/services/services'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
 import { usePlayPlaylistAfterCurrent } from 'modules/player/services'
+import ContextMenu from 'common/components/ContextMenu'
 import { EditPlaylistContext } from '../scenes/Playlists'
 
-interface MenuItemEventHandlerPlaylist extends MenuItemEventHandler {
+interface MenuItemEventHandlerPlaylist {
   props: {
     playlist: Playlist
   }

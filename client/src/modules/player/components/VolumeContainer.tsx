@@ -78,11 +78,9 @@ function VolumeContainer({ volume, setVolume, forceOverlay }: Props) {
             value={volume * 100}
           />
         </VolumeBarWrapper>
-        <VolumeOverlayEnd>
-          <ControlButton onClick={onClickMaxVolume} size={28} noHoverEffect>
-            <VolumeHighIcon />
-          </ControlButton>
-        </VolumeOverlayEnd>
+        <ControlButton onClick={onClickMaxVolume} size={28} noHoverEffect>
+          <VolumeHighIcon />
+        </ControlButton>
       </VolumeOverlay>
     </VolumeContainerWrapper>
   )
@@ -139,10 +137,5 @@ const VolumeBarWrapper = styled.div`
       width: 16px;
       border-radius: 50%;
     }
-  }
-`
-const VolumeOverlayEnd = styled.div`
-  svg polygon {
-    fill: ${(props) => props.theme.colors.sidebarTextPrimary};
   }
 `

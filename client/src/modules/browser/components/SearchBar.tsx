@@ -22,6 +22,7 @@ export default function SearchBar({ ref }: Props) {
           testId={`search-filter-all${
             searchState.filter === 'all' ? '-active' : ''
           }`}
+          noBackgroundOnHover={searchState.filter === 'all'}
         />
       </FilterButton>
       <FilterButton active={searchState.filter === 'artist'}>

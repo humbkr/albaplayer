@@ -1,8 +1,8 @@
-import { Item, Menu as ContextMenu, Submenu } from 'react-contexify'
-import 'react-contexify/dist/ReactContexify.min.css'
+import { Item, Submenu } from 'react-contexify'
 import { useTranslation } from 'react-i18next'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
 import { useAddCurrentQueueToPlaylist } from 'modules/collections/services/services'
+import ContextMenu from 'common/components/ContextMenu'
 
 function QueueActionsMoreContextMenu() {
   const { t } = useTranslation()

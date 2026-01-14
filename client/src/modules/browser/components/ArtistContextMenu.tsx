@@ -1,5 +1,4 @@
-import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
-import 'react-contexify/dist/ReactContexify.min.css'
+import { Item, Separator, Submenu } from 'react-contexify'
 import { useTranslation } from 'react-i18next'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
 import { useAddArtistToPlaylist } from 'modules/collections/services/services'
@@ -8,6 +7,7 @@ import {
   usePlayArtist,
   usePlayArtistAfterCurrent,
 } from 'modules/browser/services'
+import ContextMenu from 'common/components/ContextMenu'
 
 function ArtistContextMenu() {
   const { t } = useTranslation()

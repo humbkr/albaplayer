@@ -100,6 +100,7 @@ const Header = styled.div`
   height: ${(props) => props.theme.layout.itemHeight};
   display: flex;
   align-items: center;
+  margin-bottom: 5px;
 `
 const AlbumsList = styled.div`
   padding: 0 20px;

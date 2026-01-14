@@ -6,10 +6,10 @@ import styled from 'styled-components'
 import Cover from 'common/components/Cover'
 import SearchLink from 'modules/browser/components/SearchLink'
 import { addAlbum, playAlbum } from 'modules/player/store/store'
-import ActionButtonCircle from 'common/components/buttons/ActionButtonCircle'
 import type React from 'react'
 import { contextMenu } from 'react-contexify'
 import AlbumMoreActionsContextMenu from 'modules/dashboard/components/AlbumMoreActionsContextMenu'
+import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 
 export function AlbumDetailsHeader() {
   const { t } = useTranslation()
@@ -56,21 +56,21 @@ export function AlbumDetailsHeader() {
         </AlbumYearAndArtist>
       </AlbumInfo>
       <Actions>
-        <ActionButtonCircle
+        <ActionButtonIcon
           icon="play_arrow"
-          size={36}
+          size={30}
           onClick={() => dispatch(playAlbum(album.id))}
           data-testid="album-teaser-play-button"
         />
-        <ActionButtonCircle
+        <ActionButtonIcon
           icon="playlist_add"
-          size={36}
+          size={30}
           onClick={() => dispatch(addAlbum(album.id))}
           data-testid="album-teaser-play-button"
         />
-        <ActionButtonCircle
+        <ActionButtonIcon
           icon="more_horiz"
-          size={36}
+          size={30}
           onClick={handleMoreActionsPress}
           data-testid="album-teaser-more-button"
         />
@@ -117,6 +117,6 @@ const AlbumArtist = styled.div`
 const Actions = styled.div`
   margin-top: 15px;
   display: flex;
-  gap: 10px;
+  gap: 5px;
   justify-content: center;
 `

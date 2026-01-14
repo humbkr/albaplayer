@@ -1,5 +1,4 @@
-import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
-import 'react-contexify/dist/ReactContexify.min.css'
+import { Item, Separator, Submenu } from 'react-contexify'
 import {
   addAlbum,
   playAlbum,
@@ -9,6 +8,7 @@ import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
 import { useAddAlbumToPlaylist } from 'modules/collections/services/services'
+import ContextMenu from 'common/components/ContextMenu'
 
 function ConditionalItem({ children, ...props }: any) {
   if (!props.propsFromTrigger.displayAllActions) {
@@ -55,6 +55,7 @@ function AlbumMoreActionsContextMenu({ menuId, onHidden }: Props) {
   )
 
   return (
+    // @ts-ignore
     <ContextMenu id={menuId} onHidden={onHidden}>
       <ConditionalItem
         onClick={(menuItem: any) =>

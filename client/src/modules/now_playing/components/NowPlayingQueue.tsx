@@ -61,6 +61,7 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 5px;
 `
 const QueueTitle = styled.h2`
   display: inline;

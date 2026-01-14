@@ -1,5 +1,4 @@
-import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
-import 'react-contexify/dist/ReactContexify.min.css'
+import { Item, Separator, Submenu } from 'react-contexify'
 import { useAppDispatch } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
@@ -9,6 +8,7 @@ import {
   usePlayTrack,
   usePlayTrackAfterCurrent,
 } from 'modules/browser/services'
+import ContextMenu from 'common/components/ContextMenu'
 import { search, setSearchFilter } from '../store'
 
 function TrackContextMenu() {

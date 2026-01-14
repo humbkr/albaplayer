@@ -21,6 +21,7 @@ export declare global {
     buttonBackground: string
     buttonBackgroundHover: string
     buttonText: string
+    buttonActionBackgroundHover: string
     selectOptionBackgroundHover: string
     inputBackground: string
     sidebarBackground: string
@@ -30,6 +31,12 @@ export declare global {
     playerButtonDisabled: string
     playerTimeline: string
     playerTimelineElapsed: string
+    scrollbarBackground: string
+    scrollbarColor: string
+    contextMenuBackground: string
+    contextMenuSeparator: string
+    contextMenuItemHoverBackground: string
+    contextMenuItemHoverText: string
   }
 }
 

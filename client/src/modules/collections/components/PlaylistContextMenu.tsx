@@ -1,5 +1,4 @@
-import { Item, Menu as ContextMenu, Separator, Submenu } from 'react-contexify'
-import 'react-contexify/dist/ReactContexify.min.css'
+import { Item, Separator, Submenu } from 'react-contexify'
 import { useTranslation } from 'react-i18next'
 import { useAddPlaylistToPlaylist } from 'modules/collections/services/services'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
@@ -8,6 +7,7 @@ import {
   usePlayPlaylist,
   usePlayPlaylistAfterCurrent,
 } from 'modules/player/services'
+import ContextMenu from 'common/components/ContextMenu'
 import { EditPlaylistContext } from '../scenes/Playlists'
 
 function PlaylistContextMenu() {

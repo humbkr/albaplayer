@@ -20,6 +20,7 @@ const colors: ThemeColors = {
   buttonBackground: '#019a8b',
   buttonBackgroundHover: '#00bdab',
   buttonText: '#f3f3f3',
+  buttonActionBackgroundHover: 'rgba(255,255,255,0.05)',
   selectOptionBackgroundHover: '#eee',
   inputBackground: '#eee',
   sidebarBackground: '#2a2a2a',
@@ -29,6 +30,12 @@ const colors: ThemeColors = {
   playerButtonDisabled: '#92929d',
   playerTimeline: '#747474',
   playerTimelineElapsed: '#fff',
+  scrollbarBackground: 'transparent',
+  scrollbarColor: 'rgba(0,0,0,0.5)',
+  contextMenuBackground: '#292c2f',
+  contextMenuSeparator: '#747474',
+  contextMenuItemHoverBackground: '#d9d9d9',
+  contextMenuItemHoverText: '#333333',
 }
 
 const themeDark: DefaultTheme = {

@@ -87,7 +87,9 @@ const Header = styled.div`
   height: ${(props) => props.theme.layout.itemHeight};
   padding: 0 5px 0 20px;
   display: flex;
+  gap: 5px;
   align-items: center;
+  margin-bottom: 5px;
 `
 const RandomizeButton = styled.div`
   color: ${(props) => props.theme.buttons.backgroundColor};
