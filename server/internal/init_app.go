@@ -3,7 +3,6 @@ package internal
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/humbkr/albaplayer/internal/interfaces"
@@ -54,17 +53,7 @@ func InitApp() (business.LibraryInteractor, business.UsersInteractor, business.I
 
 	// Initialize logging system.
 	if viper.GetBool("Log.Enabled") {
-		// Check if the log file exists and create it if it does not
 		logFilePath := viper.GetString("Log.Path") + viper.GetString("Log.File")
-		if _, err := os.Stat(logFilePath); os.IsNotExist(err) {
-			file, createErr := os.Create(logFilePath)
-			if createErr != nil {
-				fmt.Println(fmt.Errorf("Failed to create log file: %s", createErr))
-			}
-			if err := file.Close(); err != nil {
-				fmt.Println(fmt.Errorf("Failed to close log file after creation: %s", err))
-			}
-		}
 		log.SetOutput(&lumberjack.Logger{
 			Filename:   logFilePath,
 			MaxSize:    10, // Megabytes.

@@ -1,5 +1,4 @@
 import type { Ref } from 'react'
-import { forwardRef } from 'react'
 import styled from 'styled-components'
 import { DebounceInput } from 'react-debounce-input'
 import { useTranslation } from 'react-i18next'
@@ -7,10 +6,10 @@ import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import { useSearchBar } from 'modules/browser/hooks/useSearchBar'
 
 type Props = {
-  forwardedRef: Ref<HTMLElement>
+  ref?: Ref<HTMLElement>
 }
 
-function SearchBar({ forwardedRef }: Props) {
+export default function SearchBar({ ref }: Props) {
   const { t } = useTranslation()
   const { searchState, changeFilter, runSearch } = useSearchBar()
 
@@ -54,7 +53,7 @@ function SearchBar({ forwardedRef }: Props) {
       </FilterButton>
       <SearchInputWrapper>
         <SearchInput
-          inputRef={forwardedRef}
+          inputRef={ref}
           debounceTimeout={300}
           onChange={runSearch}
           type="text"
@@ -68,13 +67,10 @@ function SearchBar({ forwardedRef }: Props) {
           onKeyDown={(event) => event.stopPropagation()}
         />
       </SearchInputWrapper>
+      <div />
     </Container>
   )
 }
-
-export default forwardRef<HTMLElement>((props, ref) => (
-  <SearchBar {...props} forwardedRef={ref} />
-))
 
 const Container = styled.div`
   display: flex;
@@ -113,6 +109,8 @@ const SearchInputWrapper = styled.div`
   flex-grow: 1;
   vertical-align: middle;
   padding: 8px;
+  min-width: 120px;
+  max-width: 496px;
   background-color: ${(props) => props.theme.colors.sidebarBackground};
   transition: background-color 0.15s ease-in-out;
 
@@ -126,8 +124,6 @@ const SearchInput = styled(DebounceInput)<{
 }>`
   height: 100%;
   width: 100%;
-  min-width: 100px;
-  max-width: 480px;
   font-size: 1em;
   padding-left: 10px;
   background-color: ${(props) => props.theme.colors.inputBackground};
