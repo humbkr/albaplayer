@@ -20,7 +20,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-
+        with:
+          # Ensure we checkout the tag that triggered this workflow.
+          ref: ${{ github.ref }}
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
