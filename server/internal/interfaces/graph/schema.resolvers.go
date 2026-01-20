@@ -91,6 +91,11 @@ func (r *mutationResolver) UpdateLibrary(ctx context.Context) (*model.LibraryUpd
 		ArtistsNumber: &countArtists,
 	}
 
+	err := ResetLoadersCache(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	return &updateLibraryState, nil
 }
 
@@ -105,6 +110,7 @@ func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpda
 		return nil, fmt.Errorf("library currently updating")
 	}
 
+	// Erase data from databases.
 	r.Library.EraseLibrary()
 
 	countArtists, _ := r.Library.ArtistsCount()
@@ -115,6 +121,11 @@ func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpda
 		TracksNumber:  &countTracks,
 		AlbumsNumber:  &countAlbums,
 		ArtistsNumber: &countArtists,
+	}
+
+	err := ResetLoadersCache(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	return &updateLibraryState, nil
