@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { EditPlaylistContext } from 'modules/collections/PlaylistEditContext'
 import styled from 'styled-components'
 import PlaylistDetailPane from 'modules/collections/components/PlaylistDetailsPane'
 import { useAppSelector } from 'store/hooks'
@@ -7,8 +8,7 @@ import { PLAYLIST_PANE } from 'modules/collections/store'
 import PlaylistListPane from '../components/PlaylistListPane'
 import PlaylistsCarePane from '../components/PlaylistCarePane'
 
-// Playlist edition must be accessible to the children of this component.
-export const EditPlaylistContext = React.createContext<() => void>(() => {})
+export { EditPlaylistContext }
 
 export default function Playlists() {
   const [modalPlaylistIsOpen, setModalPlaylistIsOpen] = useState(false)

@@ -116,7 +116,10 @@ export default function SelectField<
   )
 }
 
-export function getSelectedOption<Option extends { value: string }>(options: Options<Option>, value: string) {
+export function getSelectedOption<Option extends { value: string }>(
+  options: Options<Option>,
+  value: string
+) {
   return options.find((option) => option.value === value)
 }
 

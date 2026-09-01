@@ -57,6 +57,10 @@ const GlobalStyle = createGlobalStyle<{ theme?: DefaultTheme }>`
   
   html {
     overflow: hidden;
+    
+    // Limit user interactions to feel more like an app.
+    touch-action: pan-x pan-y;
+    user-select: none;
   }
 
   :root {

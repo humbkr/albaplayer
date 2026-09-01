@@ -8,8 +8,8 @@ import SearchLink from 'modules/browser/components/SearchLink'
 import { addAlbum, playAlbum } from 'modules/player/store/store'
 import type React from 'react'
 import { contextMenu } from 'react-contexify'
-import AlbumMoreActionsContextMenu from 'modules/dashboard/components/AlbumMoreActionsContextMenu'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
+import AlbumContextMenu from 'modules/browser/components/AlbumContextMenu'
 
 export function AlbumDetailsHeader() {
   const { t } = useTranslation()
@@ -75,10 +75,7 @@ export function AlbumDetailsHeader() {
           data-testid="album-teaser-more-button"
         />
       </Actions>
-      <AlbumMoreActionsContextMenu
-        menuId="album-details-more-actions-context-menu"
-        onHidden={() => null}
-      />
+      <AlbumContextMenu id="album-details-more-actions-context-menu" />
     </Container>
   )
 }

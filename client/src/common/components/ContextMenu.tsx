@@ -1,7 +1,55 @@
-import { Menu } from 'react-contexify'
+import { Item, Menu, Separator, Submenu } from 'react-contexify'
 import styled from 'styled-components'
+import type { ReactNode } from 'react'
 
-const ContextMenu = styled(Menu).attrs({
+type Props = {
+  id: string
+  menuItems: ContextualActionsItem<any>[]
+  onHidden?: () => void
+}
+
+export default function ContextMenu({ id, menuItems, onHidden }: Props) {
+  const onVisibilityChange = (visible: boolean) => {
+    if (!visible && !!onHidden) {
+      onHidden()
+    }
+  }
+
+  return (
+    <ContexifyMenu id={id} onVisibilityChange={onVisibilityChange}>
+      {generateMenuItems(menuItems)}
+    </ContexifyMenu>
+  )
+}
+
+function generateMenuItems(items: ContextualActionsItem[]): ReactNode[] {
+  return items?.map((menuItem) => {
+    if (menuItem.type === 'item') {
+      return (
+        <Item
+          key={menuItem.id}
+          onClick={(contexifyMenuItem) => {
+            if (menuItem.action) {
+              menuItem.action(contexifyMenuItem.props.data)
+            }
+          }}
+        >
+          {menuItem.label}
+        </Item>
+      )
+    } else if (menuItem.type === 'separator') {
+      return <Separator key={menuItem.id} />
+    } else if (menuItem.type === 'subMenu' && menuItem.subActions?.length) {
+      return (
+        <Submenu label={menuItem.label} key={menuItem.id}>
+          {generateMenuItems(menuItem.subActions)}
+        </Submenu>
+      )
+    }
+  })
+}
+
+const ContexifyMenu = styled(Menu).attrs({
   // Custom props
 })`
   --contexify-menu-bgColor: ${(props) =>
@@ -23,5 +71,3 @@ const ContextMenu = styled(Menu).attrs({
   --contexify-activeArrow-color: ${(props) =>
     props.theme.colors.sidebarTextPrimaryHover};
 `
-
-export default ContextMenu

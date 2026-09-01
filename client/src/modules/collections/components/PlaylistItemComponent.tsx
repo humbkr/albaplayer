@@ -10,7 +10,7 @@ type Props = {
   onContextMenu: (p: { scrollToRow: number }) => void
 }
 
-function PlaylistItem({
+function PlaylistItemComponent({
   item,
   handleRemoveTrack,
   onContextMenu,
@@ -55,7 +55,7 @@ function PlaylistItem({
   )
 }
 
-export default PlaylistItem
+export default PlaylistItemComponent
 
 const TrackActions = styled.div`
   display: none;

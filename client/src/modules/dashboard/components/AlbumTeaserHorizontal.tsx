@@ -35,10 +35,7 @@ function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
     contextMenu.show({
       id: 'recent-album-more-actions-context-menu',
       event: e,
-      props: {
-        album,
-        displayAllActions,
-      },
+      props: { data: album },
     })
   }
 

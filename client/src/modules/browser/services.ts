@@ -13,6 +13,7 @@ import {
   playTracks,
   playTracksAfterCurrent,
 } from 'modules/player/store/store'
+import { search, setSearchFilter } from 'modules/browser/store'
 
 function useGetTrackIds() {
   const currentTracks = useAppSelector((state) => state.libraryBrowser.tracks)
@@ -184,5 +185,41 @@ export function useGetAlbumDetails(albumId: string): Album | undefined {
     ...album,
     artist,
     tracks,
+  }
+}
+
+export function useFindAllByArtist() {
+  const dispatch = useAppDispatch()
+  const libraryBrowser = useAppSelector((state) => state.libraryBrowser)
+
+  return (artistId: string) => {
+    const artist = libraryBrowser.artists.find(
+      (artist: Artist) => artist.id === artistId
+    )
+
+    if (!artist) {
+      return
+    }
+
+    dispatch(setSearchFilter('artist'))
+    dispatch(search(artist.name))
+  }
+}
+
+export function useFindAllOnAlbum() {
+  const dispatch = useAppDispatch()
+  const libraryBrowser = useAppSelector((state) => state.libraryBrowser)
+
+  return (albumId: string) => {
+    const album = libraryBrowser.albums.find(
+      (album: Album) => album.id === albumId
+    )
+
+    if (!album) {
+      return
+    }
+
+    dispatch(setSearchFilter('album'))
+    dispatch(search(album.title))
   }
 }

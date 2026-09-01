@@ -1,80 +1,16 @@
-import { Item, Separator, Submenu } from 'react-contexify'
-import { useAppDispatch } from 'store/hooks'
-import { useTranslation } from 'react-i18next'
-import { useGetCollectionsQuery } from 'modules/collections/services/api'
-import { useAddAlbumToPlaylist } from 'modules/collections/services/services'
-import {
-  useAddAlbum,
-  usePlayAlbum,
-  usePlayAlbumAfterCurrent,
-} from 'modules/browser/services'
 import ContextMenu from 'common/components/ContextMenu'
-import { search, setSearchFilter } from '../store'
+import useAlbumContextualActions from 'modules/browser/hooks/useAlbumContextualActions'
 
-function AlbumContextMenu() {
-  const { t } = useTranslation()
-  const { data: { playlists = [] } = {} } = useGetCollectionsQuery()
-  const addAlbumToPlaylist = useAddAlbumToPlaylist()
-  const dispatch = useAppDispatch()
-
-  const playAlbum = usePlayAlbum()
-  const playAlbumAfterCurrent = usePlayAlbumAfterCurrent()
-  const addAlbum = useAddAlbum()
-
-  const playNow = (menuItem: any) => {
-    playAlbum(menuItem.props.data.id)
-  }
-  const playAfter = (menuItem: any) => {
-    playAlbumAfterCurrent(menuItem.props.data.id)
-  }
-  const playLast = (menuItem: any) => {
-    addAlbum(menuItem.props.data.id)
-  }
-
-  const findAllByArtist = (menuItem: any) => {
-    dispatch(setSearchFilter('artist'))
-    dispatch(search(menuItem.props.data.artist?.name))
-  }
-
-  const playlistsItems = playlists.map((item: Playlist) => (
-    <Item
-      key={item.id}
-      onClick={(menuItem: any) =>
-        addAlbumToPlaylist({
-          playlistId: item.id,
-          albumId: menuItem.props.data.id,
-        })
-      }
-    >
-      {item.title}
-    </Item>
-  ))
-  playlistsItems.push(
-    <Item
-      key="new"
-      onClick={(menuItem: any) =>
-        addAlbumToPlaylist({ albumId: menuItem.props.data.id })
-      }
-    >
-      {t('collections.playlists.actions.createNewPlaylist')}
-    </Item>
-  )
-
-  return (
-    <ContextMenu id="album-context-menu">
-      <Item onClick={playNow}>{t('player.actions.playNow')}</Item>
-      <Item onClick={playAfter}>{t('player.actions.playAfter')}</Item>
-      <Item onClick={playLast}>{t('player.actions.addToQueue')}</Item>
-      <Separator />
-      <Submenu label={t('collections.playlists.actions.addToPlaylist')}>
-        {playlistsItems}
-      </Submenu>
-      <Separator />
-      <Item onClick={(menuItem: any) => findAllByArtist(menuItem)}>
-        {t('browser.actions.findAllByArtist')}
-      </Item>
-    </ContextMenu>
-  )
+type Props = {
+  id?: string
+  onHidden?: () => void
 }
 
-export default AlbumContextMenu
+export default function AlbumContextMenu({
+  id = 'album-context-menu',
+  onHidden,
+}: Props) {
+  const actionItems = useAlbumContextualActions()
+
+  return <ContextMenu id={id} menuItems={actionItems} onHidden={onHidden} />
+}

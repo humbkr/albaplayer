@@ -43,6 +43,7 @@
     "react-virtuoso": "4.12.3",
     "reselect": "5.1.1",
     "styled-components": "6.1.15",
+    "use-long-press": "^3.3.0",
     "zod": "3.24.1"
   },
   "devDependencies": {

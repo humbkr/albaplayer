@@ -1,7 +1,12 @@
 import { useTranslation } from 'react-i18next'
-import { useAppSelector } from 'store/hooks'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { COLLECTION_TYPE } from 'modules/collections/utils/constants'
 import { immutableSortTracks } from 'common/utils/utils'
+import {
+  addTracks,
+  playTracks,
+  playTracksAfterCurrent,
+} from 'modules/player/store/store'
 import {
   useCreateCollectionMutation,
   useDeleteCollectionMutation,
@@ -47,7 +52,7 @@ export function useAddTrackToPlaylist() {
     playlistId,
     trackId,
   }: {
-    playlistId?: string
+    playlistId: string | null
     trackId: string
   }) => {
     const track = { ...library.tracks[trackId] }
@@ -72,7 +77,7 @@ export function useAddAlbumToPlaylist() {
     playlistId,
     albumId,
   }: {
-    playlistId?: string
+    playlistId: string | null
     albumId: string
   }) => {
     // Get tracks from album.
@@ -106,7 +111,7 @@ export function useAddAlbumDiscToPlaylist() {
     albumId,
     disc,
   }: {
-    playlistId?: string
+    playlistId: string | null
     albumId: string
     disc: string
   }) => {
@@ -140,7 +145,7 @@ export function useAddArtistToPlaylist() {
     playlistId,
     artistId,
   }: {
-    playlistId?: string
+    playlistId: string | null
     artistId: string
   }) => {
     // Get tracks from artist.
@@ -171,7 +176,7 @@ export function useAddPlaylistToPlaylist() {
     playlistId,
     playlistToAddId,
   }: {
-    playlistId?: string
+    playlistId: string | null
     playlistToAddId: string
   }) => {
     const playlistToAdd = playlistToAddId
@@ -196,7 +201,7 @@ export function useAddCurrentQueueToPlaylist() {
   const addTracksToPlaylist = useAddTracksToPlaylist()
   const queue = useAppSelector((state) => state.queue)
 
-  return (playlistId?: string) => {
+  return (playlistId: string | null) => {
     const tracks = queue.items.map((item: QueueItem) => item.track)
     if (tracks.length === 0) {
       return
@@ -292,6 +297,36 @@ export function useGetTracksFromPlaylist() {
   }
 }
 
+export function usePlayPlaylist() {
+  const dispatch = useAppDispatch()
+  const getTracksFromPlaylist = useGetTracksFromPlaylist()
+
+  return (playlistId: string) => {
+    const tracks = getTracksFromPlaylist(playlistId)
+    dispatch(playTracks(tracks.map((track) => track.id)))
+  }
+}
+
+export function useAddPlaylist() {
+  const dispatch = useAppDispatch()
+  const getTracksFromPlaylist = useGetTracksFromPlaylist()
+
+  return (playlistId: string) => {
+    const tracks = getTracksFromPlaylist(playlistId)
+    dispatch(addTracks(tracks.map((track) => track.id)))
+  }
+}
+
+export function usePlayPlaylistAfterCurrent() {
+  const dispatch = useAppDispatch()
+  const getTracksFromPlaylist = useGetTracksFromPlaylist()
+
+  return (playlistId: string) => {
+    const tracks = getTracksFromPlaylist(playlistId)
+    dispatch(playTracksAfterCurrent(tracks.map((track) => track.id)))
+  }
+}
+
 function getCollection(
   collectionType: COLLECTION_TYPE,
   collectionId: string,
@@ -310,7 +345,7 @@ function useAddTracksToPlaylist() {
   const [createCollection] = useCreateCollectionMutation()
   const [updateCollection] = useUpdateCollectionMutation()
 
-  return (tracks: Track[], playlistId?: string) => {
+  return (tracks: Track[], playlistId: string | null) => {
     // Get collection.
     const playlist = playlistId
       ? getCollection(COLLECTION_TYPE.tracks, playlistId, collections)

@@ -11,7 +11,7 @@ import { useGetUserQuery } from 'modules/user/api'
 import { userHasRole } from 'modules/user/utils'
 import { USER_ROLE_ADMIN } from 'modules/user/constants'
 import { devices } from 'themes/breakpoints'
-import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
+import AlbumContextMenu from 'modules/browser/components/AlbumContextMenu'
 
 export const getRecentlyAddedAlbums = (
   library: LibraryStateType,
@@ -74,8 +74,8 @@ function RecentlyAddedAlbums() {
           </Cell>
         ))}
       </AlbumsList>
-      <AlbumMoreActionsContextMenu
-        menuId="recent-album-more-actions-context-menu"
+      <AlbumContextMenu
+        id="recent-album-more-actions-context-menu"
         onHidden={() => setSelectedAlbum(undefined)}
       />
     </Wrapper>

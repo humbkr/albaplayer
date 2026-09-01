@@ -26,3 +26,8 @@ ehthumbs_vista.db
 
 # project
 /node_modules
+
+.env.local
+.env
+.mcp.json
+CLAUDE.local.md

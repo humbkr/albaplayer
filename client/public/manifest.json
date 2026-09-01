@@ -2,6 +2,7 @@
   "id": "albaplayer",
   "short_name": "Albaplayer",
   "name": "Albaplayer",
+  "version": "3.0.0-rc7",
   "icons": [
     {
       "src": "logo-192px.png",
