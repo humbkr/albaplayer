@@ -85,12 +85,15 @@ function NowPlayingQueueList({
         return (
           <div
             {...provided.draggableProps}
-            {...provided.dragHandleProps}
             ref={provided.innerRef}
             style={{ ...provided.draggableProps.style }}
           >
             <DraggableItem isDragging={isDragging}>
-              <NowPlayingQueueItem item={item} currentIndex={current} />
+              <NowPlayingQueueItem
+                item={item}
+                currentIndex={current}
+                dragHandleProps={provided.dragHandleProps}
+              />
             </DraggableItem>
           </div>
         )

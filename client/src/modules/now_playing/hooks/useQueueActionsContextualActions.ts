@@ -20,7 +20,11 @@ export default function useQueueActionsContextualActions(): ContextualActionsIte
           label: playlist.title,
           action: () => {
             addCurrentQueueToPlaylist(playlist.id)
-            notify(t('notifications.queueAddedToPlaylist', { playlistName: playlist.title }))
+            notify(
+              t('notifications.queueAddedToPlaylist', {
+                playlistName: playlist.title,
+              })
+            )
           },
         })),
         {

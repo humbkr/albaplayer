@@ -18,7 +18,10 @@ export default function usePlaylistContextualActions(): ContextualActionsItem<Pl
     playPlaylist(id)
     notify(t('notifications.nowPlaying', { itemName: title }))
   }
-  const handlePlayItemAfterCurrent: ContextualAction<Playlist> = ({ id, title }) => {
+  const handlePlayItemAfterCurrent: ContextualAction<Playlist> = ({
+    id,
+    title,
+  }) => {
     playPlaylistAfterCurrent(id)
     notify(t('notifications.playingNext', { itemName: title }))
   }

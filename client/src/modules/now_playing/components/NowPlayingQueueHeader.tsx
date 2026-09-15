@@ -13,6 +13,7 @@ function NowPlayingQueueHeader() {
 
   return (
     <QueueHeaderRow>
+      <DragHandleSpacer />
       <TrackPosition>#</TrackPosition>
       {isMD && !isXL && (
         <>
@@ -35,9 +36,10 @@ function NowPlayingQueueHeader() {
 
 export default NowPlayingQueueHeader
 
+const DragHandleSpacer = styled.div``
 const QueueHeaderRow = styled.div`
   display: grid;
-  grid-template-columns: 50px 50% auto 44px;
+  grid-template-columns: 28px 50px 50% auto 44px;
   width: 100%;
   height: ${(props) => props.theme.layout.itemHeight};
   border-top: 1px solid ${(props) => props.theme.colors.separator};
@@ -51,7 +53,7 @@ const QueueHeaderRow = styled.div`
   }
 
   @media only screen and ${devices.xl} {
-    grid-template-columns: 50px 30% 30% auto 44px;
+    grid-template-columns: 28px 50px 30% 30% auto 44px;
   }
 `
 const TrackPosition = styled.div`

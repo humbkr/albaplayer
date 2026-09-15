@@ -56,7 +56,7 @@ const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 100vh;
+  height: 100dvh;
   margin-bottom: 75px;
   color: ${(props) => props.theme.colors.textPrimary};
   overflow: hidden;

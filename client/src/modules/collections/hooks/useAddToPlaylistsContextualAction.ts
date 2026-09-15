@@ -98,9 +98,7 @@ export default function useAddToPlaylistsContextualAction<
     addItemToPlaylist(item)
     const itemName = getItemName(item)
     if (playlistName) {
-      notify(
-        t('notifications.addedToPlaylist', { itemName, playlistName })
-      )
+      notify(t('notifications.addedToPlaylist', { itemName, playlistName }))
     } else {
       notify(t('notifications.addedToNewPlaylist', { itemName }))
     }

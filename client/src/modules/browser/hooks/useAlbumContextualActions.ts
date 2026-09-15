@@ -20,7 +20,10 @@ export default function useAlbumContextualActions(): ContextualActionsItem<Album
     playAlbum(id)
     notify(t('notifications.nowPlaying', { itemName: title }))
   }
-  const handlePlayItemAfterCurrent: ContextualAction<Album> = ({ id, title }) => {
+  const handlePlayItemAfterCurrent: ContextualAction<Album> = ({
+    id,
+    title,
+  }) => {
     playAlbumAfterCurrent(id)
     notify(t('notifications.playingNext', { itemName: title }))
   }

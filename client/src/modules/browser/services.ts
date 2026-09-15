@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import {
   addAlbumDisc,
@@ -190,12 +191,11 @@ export function useGetAlbumDetails(albumId: string): Album | undefined {
 
 export function useFindAllByArtist() {
   const dispatch = useAppDispatch()
-  const libraryBrowser = useAppSelector((state) => state.libraryBrowser)
+  const library = useAppSelector((state) => state.library)
+  const navigate = useNavigate()
 
   return (artistId: string) => {
-    const artist = libraryBrowser.artists.find(
-      (artist: Artist) => artist.id === artistId
-    )
+    const artist = library.artists[artistId]
 
     if (!artist) {
       return
@@ -203,17 +203,17 @@ export function useFindAllByArtist() {
 
     dispatch(setSearchFilter('artist'))
     dispatch(search(artist.name))
+    navigate('/library')
   }
 }
 
 export function useFindAllOnAlbum() {
   const dispatch = useAppDispatch()
-  const libraryBrowser = useAppSelector((state) => state.libraryBrowser)
+  const library = useAppSelector((state) => state.library)
+  const navigate = useNavigate()
 
   return (albumId: string) => {
-    const album = libraryBrowser.albums.find(
-      (album: Album) => album.id === albumId
-    )
+    const album = library.albums[albumId]
 
     if (!album) {
       return
@@ -221,5 +221,6 @@ export function useFindAllOnAlbum() {
 
     dispatch(setSearchFilter('album'))
     dispatch(search(album.title))
+    navigate('/library')
   }
 }

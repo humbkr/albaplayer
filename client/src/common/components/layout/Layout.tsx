@@ -58,7 +58,7 @@ const AppContainer = styled.div`
   display: flex;
   position: fixed;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   color: ${(props) => props.theme.colors.textPrimary};
 `
 const Left = styled.div`
@@ -66,13 +66,13 @@ const Left = styled.div`
   top: 0;
   left: 0;
   width: ${(props) => props.theme.layout.sidebarWidth};
-  height: 100vh;
+  height: 100dvh;
   flex-shrink: 0;
 `
 const Right = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   flex-grow: 1;
 `
 const Top = styled.div`
@@ -84,6 +84,7 @@ const Top = styled.div`
 `
 const Content = styled.div`
   flex-grow: 1;
+  min-height: 0;
   background-color: ${(props) => props.theme.colors.background};
   overflow: hidden;
 `

@@ -22,7 +22,10 @@ export default function useTrackContextualActions(): ContextualActionsItem<Track
     playTrack(id)
     notify(t('notifications.nowPlaying', { itemName: title }))
   }
-  const handlePlayItemAfterCurrent: ContextualAction<Track> = ({ id, title }) => {
+  const handlePlayItemAfterCurrent: ContextualAction<Track> = ({
+    id,
+    title,
+  }) => {
     playTrackAfterCurrent(id)
     notify(t('notifications.playingNext', { itemName: title }))
   }

@@ -7,7 +7,10 @@ import { useAppDispatch } from 'store/hooks'
 import { playAlbum } from 'modules/player/store/store'
 import { useTranslation } from 'react-i18next'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
+import ActionsMenu from 'common/components/ActionsMenu'
 import { isMobileBrowser } from 'common/utils/isMobileBrowser'
+import useLongPress from 'common/hooks/useLongPress'
+import useAlbumContextualActions from 'modules/browser/hooks/useAlbumContextualActions'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
 
@@ -23,13 +26,16 @@ function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
   const dispatch = useAppDispatch()
 
   const [mouseHover, setMouseHover] = useState(false)
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
 
   const isTouchDevice = isMobileBrowser()
+  const actionItems = useAlbumContextualActions()
 
-  const handleMoreActionsPress = (
-    e: React.MouseEvent,
-    displayAllActions: boolean = false
-  ) => {
+  const handlers = useLongPress(() => {
+    setIsActionsMenuOpen(true)
+  })
+
+  const handleMoreActionsPress = (e: React.MouseEvent) => {
     e.preventDefault()
     setSelected(album.id)
     contextMenu.show({
@@ -47,9 +53,10 @@ function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
       onMouseOut={() => setMouseHover(false)}
       onFocus={() => setMouseHover(true)}
       onBlur={() => setMouseHover(false)}
-      onContextMenu={(e) => handleMoreActionsPress(e, true)}
+      onContextMenu={(e) => handleMoreActionsPress(e)}
       visible={isVisible}
       data-testid="album-teaser-horizontal"
+      {...handlers()}
     >
       <CoverWrapper>
         <ActionOverlay
@@ -93,6 +100,12 @@ function AlbumTeaserHorizontal({ album, selected, setSelected }: Props) {
           </ActionButton>
         </SecondaryActions>
       </Info>
+      <ActionsMenu
+        isOpen={isActionsMenuOpen}
+        onClose={() => setIsActionsMenuOpen(false)}
+        items={actionItems}
+        data={album}
+      />
     </Wrapper>
   )
 }

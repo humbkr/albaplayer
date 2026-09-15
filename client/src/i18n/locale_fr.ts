@@ -130,7 +130,8 @@ const fr: Translation = {
     addedToPlaylist: '{{itemName}} ajouté à la playlist {{playlistName}}',
     addedToNewPlaylist: '{{itemName}} ajouté à une nouvelle playlist',
     playlistDuplicated: 'Playlist dupliquée',
-    queueAddedToPlaylist: 'Liste de lecture ajoutée à la playlist {{playlistName}}',
+    queueAddedToPlaylist:
+      'Liste de lecture ajoutée à la playlist {{playlistName}}',
     queueAddedToNewPlaylist: 'Liste de lecture ajoutée à une nouvelle playlist',
     removedFromQueue: '{{itemName}} supprimé de la liste de lecture',
     removedFromPlaylist: '{{itemName}} supprimé de la playlist',

@@ -5,6 +5,8 @@ const VirtualListItem = styled.div<{
   selected: boolean
 }>`
   width: 100%;
+  height: ${(props) => props.theme.layout.itemHeight};
+  box-sizing: border-box;
   ${(props) =>
     props.border
       ? `border-bottom: 1px solid ${props.theme.colors.separator}`

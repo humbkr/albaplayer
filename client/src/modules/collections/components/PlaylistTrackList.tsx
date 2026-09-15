@@ -90,7 +90,6 @@ function PlaylistTrackList({
         return (
           <div
             {...provided.draggableProps}
-            {...provided.dragHandleProps}
             ref={provided.innerRef}
             style={{ ...provided.draggableProps.style }}
           >
@@ -108,6 +107,7 @@ function PlaylistTrackList({
                   // Select item on context click.
                   onContextMenu={() => onItemClick(item.track.id, index)}
                   handleRemoveTrack={handleRemoveTrack}
+                  dragHandleProps={provided.dragHandleProps}
                 />
               </VirtualListItem>
             </DraggableItem>
@@ -222,6 +222,7 @@ export default React.forwardRef<HTMLDivElement, Props>((props, ref) => (
 const Wrapper = styled.div`
   display: flex;
   flex: 1;
+  min-height: 0;
 `
 const DraggableItem = styled.div<{ isDragging: boolean }>`
   ${(props) =>

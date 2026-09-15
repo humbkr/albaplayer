@@ -249,7 +249,7 @@ describe('Collections > services', () => {
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
-        id: undefined,
+        id: null,
         title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
@@ -347,7 +347,7 @@ describe('Collections > services', () => {
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
-        id: undefined,
+        id: null,
         title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
@@ -445,7 +445,7 @@ describe('Collections > services', () => {
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
-        id: undefined,
+        id: null,
         title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
@@ -565,7 +565,7 @@ describe('Collections > services', () => {
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
-        id: undefined,
+        id: null,
         title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
@@ -674,7 +674,7 @@ describe('Collections > services', () => {
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
-        id: undefined,
+        id: null,
         title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([

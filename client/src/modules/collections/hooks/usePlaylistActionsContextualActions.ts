@@ -55,7 +55,12 @@ export default function usePlaylistActionsContextualActions(): ContextualActions
               playlistId: playlist.id,
               playlistToAddId: item.id,
             })
-            notify(t('notifications.addedToPlaylist', { itemName: item.title, playlistName: playlist.title }))
+            notify(
+              t('notifications.addedToPlaylist', {
+                itemName: item.title,
+                playlistName: playlist.title,
+              })
+            )
           },
         })),
         {
@@ -63,7 +68,10 @@ export default function usePlaylistActionsContextualActions(): ContextualActions
           type: 'item' as ContextualActionsItem['type'],
           label: t('collections.playlists.actions.duplicatePlaylist'),
           action: (item: Playlist) => {
-            addPlaylistToPlaylist({ playlistId: null, playlistToAddId: item.id })
+            addPlaylistToPlaylist({
+              playlistId: null,
+              playlistToAddId: item.id,
+            })
             notify(t('notifications.playlistDuplicated'))
           },
         },

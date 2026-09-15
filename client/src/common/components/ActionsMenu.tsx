@@ -20,7 +20,9 @@ export default function ActionsMenu({ isOpen, onClose, items, data }: Props) {
     }
   }, [isOpen])
 
-  if (!isOpen) return null
+  if (!isOpen) {
+    return null
+  }
 
   const handleItemClick = (item: ContextualActionsItem<any>) => {
     if (item.type === 'subMenu') {
@@ -80,6 +82,9 @@ const Overlay = styled.div`
 const Panel = styled.div`
   background-color: ${({ theme }) => theme.colors.contextMenuBackground};
   border-radius: 8px;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
   min-width: 220px;
   max-width: min(80vw, 340px);
   max-height: 70vh;

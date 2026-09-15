@@ -194,6 +194,7 @@ const List = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 `
 const Header = styled.div`
   display: flex;

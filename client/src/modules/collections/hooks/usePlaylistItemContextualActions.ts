@@ -50,7 +50,7 @@ export default function usePlaylistItemContextualActions(): ContextualActionsIte
     track,
   }) => {
     if (playlist) {
-      removeTrackFromPlaylist(position, track.id)
+      removeTrackFromPlaylist(position, playlist.id)
       notify(t('notifications.removedFromPlaylist', { itemName: track.title }))
     }
   }

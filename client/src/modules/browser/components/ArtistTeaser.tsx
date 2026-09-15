@@ -1,10 +1,14 @@
 import type React from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import { useAppSelector } from 'store/hooks'
 import { useAddArtist, usePlayArtist } from 'modules/browser/services'
 import { notify } from 'common/utils/notifications'
 import { useTranslation } from 'react-i18next'
+import ActionsMenu from 'common/components/ActionsMenu'
+import useLongPress from 'common/hooks/useLongPress'
+import useArtistContextualActions from 'modules/browser/hooks/useArtistContextualActions'
 
 type Props = {
   item: Artist
@@ -16,6 +20,11 @@ function ArtistTeaser({ item, index, onContextMenu }: Props) {
   const { onClickBehavior } = useAppSelector((state) => state.settings.browser)
 
   const { t } = useTranslation()
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
+  const actionItems = useArtistContextualActions()
+  const handlers = useLongPress(() => {
+    setIsActionsMenuOpen(true)
+  })
 
   const playArtist = usePlayArtist()
   const addArtist = useAddArtist()
@@ -54,8 +63,15 @@ function ArtistTeaser({ item, index, onContextMenu }: Props) {
     <ArtistTeaserWrapper
       onContextMenu={onRightClick}
       onDoubleClick={onDoubleClick}
+      {...handlers()}
     >
       <ArtistTeaserName>{item.name}</ArtistTeaserName>
+      <ActionsMenu
+        isOpen={isActionsMenuOpen}
+        onClose={() => setIsActionsMenuOpen(false)}
+        items={actionItems}
+        data={item}
+      />
     </ArtistTeaserWrapper>
   )
 }

@@ -18,7 +18,10 @@ export default function useArtistContextualActions(): ContextualActionsItem<Arti
     playArtist(id)
     notify(t('notifications.nowPlaying', { itemName: name }))
   }
-  const handlePlayItemAfterCurrent: ContextualAction<Artist> = ({ id, name }) => {
+  const handlePlayItemAfterCurrent: ContextualAction<Artist> = ({
+    id,
+    name,
+  }) => {
     playArtistAfterCurrent(id)
     notify(t('notifications.playingNext', { itemName: name }))
   }

@@ -20,6 +20,14 @@ export default defineConfig(({ command }) => ({
   server: {
     open: true,
     port: 3001,
+    proxy: {
+      '/graphql': 'http://localhost:8888',
+      '/graphiql': 'http://localhost:8888',
+      '/stream': 'http://localhost:8888',
+      '/covers': 'http://localhost:8888',
+      '/auth': 'http://localhost:8888',
+      '/config': 'http://localhost:8888',
+    },
   },
   test: {
     coverage: {
