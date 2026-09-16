@@ -23,7 +23,7 @@ global.ResizeObserver = require('resize-observer-polyfill')
 
 // Mock audio element
 window.HTMLMediaElement.prototype.load = vi.fn()
-window.HTMLMediaElement.prototype.play = vi.fn()
+window.HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined)
 window.HTMLMediaElement.prototype.pause = vi.fn()
 
 // Mock mediaSession stuff.
