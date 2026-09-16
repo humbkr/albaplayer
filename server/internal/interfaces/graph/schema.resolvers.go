@@ -74,12 +74,13 @@ func (r *artistResolver) Albums(ctx context.Context, obj *model.Artist) ([]*mode
 }
 
 // UpdateLibrary is the resolver for the updateLibrary field.
-func (r *mutationResolver) UpdateLibrary(ctx context.Context) (*model.LibraryUpdateState, error) {
+func (r *mutationResolver) UpdateLibrary(ctx context.Context, force *bool) (*model.LibraryUpdateState, error) {
 	if r.Library.LibraryIsUpdating {
 		return nil, fmt.Errorf("library currently updating")
 	}
 
-	r.Library.UpdateLibrary()
+	forceRescan := force != nil && *force
+	r.Library.UpdateLibrary(forceRescan)
 
 	countArtists, _ := r.Library.ArtistsCount()
 	countAlbums, _ := r.Library.AlbumsCount()

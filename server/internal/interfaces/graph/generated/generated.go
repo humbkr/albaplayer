@@ -88,7 +88,7 @@ type ComplexityRoot struct {
 		DeleteUser       func(childComplexity int, id int) int
 		EraseLibrary     func(childComplexity int) int
 		UpdateCollection func(childComplexity int, id int, input model.CollectionInput) int
-		UpdateLibrary    func(childComplexity int) int
+		UpdateLibrary    func(childComplexity int, force *bool) int
 		UpdateUser       func(childComplexity int, id int, input model.UserInput) int
 	}
 
@@ -154,7 +154,7 @@ type ArtistResolver interface {
 	Albums(ctx context.Context, obj *model.Artist) ([]*model.Album, error)
 }
 type MutationResolver interface {
-	UpdateLibrary(ctx context.Context) (*model.LibraryUpdateState, error)
+	UpdateLibrary(ctx context.Context, force *bool) (*model.LibraryUpdateState, error)
 	EraseLibrary(ctx context.Context) (*model.LibraryUpdateState, error)
 	CreateUser(ctx context.Context, input model.UserInput) (*model.User, error)
 	UpdateUser(ctx context.Context, id int, input model.UserInput) (*model.User, error)
@@ -416,7 +416,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Mutation.UpdateLibrary(childComplexity), true
+		args, err := ec.field_Mutation_updateLibrary_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateLibrary(childComplexity, args["force"].(*bool)), true
 
 	case "Mutation.updateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -931,7 +936,7 @@ input CollectionInput {
 }
 
 type Mutation {
-  updateLibrary: LibraryUpdateState
+  updateLibrary(force: Boolean): LibraryUpdateState
   eraseLibrary: LibraryUpdateState
   createUser(input: UserInput!): User!
   updateUser(id: ID!, input: UserInput!): User!
@@ -1029,6 +1034,21 @@ func (ec *executionContext) field_Mutation_updateCollection_args(ctx context.Con
 		}
 	}
 	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateLibrary_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *bool
+	if tmp, ok := rawArgs["force"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("force"))
+		arg0, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["force"] = arg0
 	return args, nil
 }
 
@@ -2105,7 +2125,7 @@ func (ec *executionContext) _Mutation_updateLibrary(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateLibrary(rctx)
+		return ec.resolvers.Mutation().UpdateLibrary(rctx, fc.Args["force"].(*bool))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2136,6 +2156,17 @@ func (ec *executionContext) fieldContext_Mutation_updateLibrary(ctx context.Cont
 			}
 			return nil, fmt.Errorf("no field named %q was found under type LibraryUpdateState", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateLibrary_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }

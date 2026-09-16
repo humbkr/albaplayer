@@ -525,7 +525,9 @@ type MediaFileRepositoryMock struct {
 	mock.Mock
 }
 
-func (m *MediaFileRepositoryMock) ScanMediaFiles(path string) (int, int, error) { return 0, 0, nil }
+func (m *MediaFileRepositoryMock) ScanMediaFiles(path string, force bool) (int, int, error) {
+	return 0, 0, nil
+}
 func (m *MediaFileRepositoryMock) WriteCoverFile(file *domain.Cover, directory string) error {
 	return nil
 }

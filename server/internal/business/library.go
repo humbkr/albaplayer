@@ -330,12 +330,13 @@ func (interactor *LibraryInteractor) CollectionExists(collectionId int) bool {
 }
 
 // UpdateLibrary populates and update the library.
-func (interactor *LibraryInteractor) UpdateLibrary() {
+// If force is true, all files are re-scanned regardless of whether they changed.
+func (interactor *LibraryInteractor) UpdateLibrary(force bool) {
 	interactor.mutex.Lock()
 	interactor.LibraryIsUpdating = true
 
 	_ = interactor.CreateCompilationArtist()
-	_, _, _ = interactor.MediaFileRepository.ScanMediaFiles(viper.GetString("Library.Path"))
+	_, _, _ = interactor.MediaFileRepository.ScanMediaFiles(viper.GetString("Library.Path"), force)
 	interactor.CleanUpLibrary()
 
 	// Log the last time a scan occurred.

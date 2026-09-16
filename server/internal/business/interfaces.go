@@ -174,7 +174,7 @@ type LibraryRepository interface {
 // MediaFileRepository is an interface describing the storage mechanism for media.
 type MediaFileRepository interface {
 	// TODO Not abstract enough yet, we should not need a path but a reader or something.
-	ScanMediaFiles(path string) (int, int, error)
+	ScanMediaFiles(path string, force bool) (int, int, error)
 	MediaFileExists(filepath string) bool
 	WriteCoverFile(file *domain.Cover, directory string) error
 	RemoveCoverFile(file *domain.Cover, directory string) error

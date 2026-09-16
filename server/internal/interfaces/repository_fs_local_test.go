@@ -72,14 +72,14 @@ func (suite *LocalFSRepoTestSuite) SetupTest() {}
 
 func (suite *LocalFSRepoTestSuite) TestScanMediaFiles() {
 	// Test with non-existing directory.
-	_, _, err := suite.LocalFSRepository.ScanMediaFiles("/what/ever")
+	_, _, err := suite.LocalFSRepository.ScanMediaFiles("/what/ever", true)
 	assert.NotNil(suite.T(), err)
 
 	// Test with empty directory.
-	_, _, err = suite.LocalFSRepository.ScanMediaFiles(TestFSEmptyLibDir)
+	_, _, err = suite.LocalFSRepository.ScanMediaFiles(TestFSEmptyLibDir, true)
 	assert.Nil(suite.T(), err)
 
-	processed, added, err := suite.LocalFSRepository.ScanMediaFiles(TestFSLibDir)
+	processed, added, err := suite.LocalFSRepository.ScanMediaFiles(TestFSLibDir, true)
 	assert.Nil(suite.T(), err)
 	// TODO change test once return values computing is coded.
 	assert.Equal(suite.T(), 0, processed)

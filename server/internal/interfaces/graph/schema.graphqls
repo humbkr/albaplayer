@@ -103,7 +103,7 @@ input CollectionInput {
 }
 
 type Mutation {
-  updateLibrary: LibraryUpdateState
+  updateLibrary(force: Boolean): LibraryUpdateState
   eraseLibrary: LibraryUpdateState
   createUser(input: UserInput!): User!
   updateUser(id: ID!, input: UserInput!): User!
