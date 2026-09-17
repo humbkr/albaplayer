@@ -21,6 +21,12 @@ type Mutation struct {
 type Query struct {
 }
 
+type ScanProgress struct {
+	IsUpdating     bool `json:"isUpdating"`
+	FilesProcessed int  `json:"filesProcessed"`
+	FilesTotal     int  `json:"filesTotal"`
+}
+
 type Settings struct {
 	LibraryPath            *string `json:"libraryPath,omitempty"`
 	CoversPreferredSource  *string `json:"coversPreferredSource,omitempty"`

@@ -162,6 +162,8 @@ const en: Translation = {
         'There are currently {{nbArtists}} artists, {{nbAlbums}} albums, and {{nbTracks}} tracks in the library.',
       updateButton: 'Scan library',
       updateInProgress: 'Library is updating. This could take several minutes.',
+      scanProgress: '{{processed}} / {{total}} files processed',
+      scanProgressComputing: '{{processed}} / computing...',
       clearButton: 'Empty library',
       clearConfirm:
         'Are you sure you wish to empty the library? This cannot be undone.',

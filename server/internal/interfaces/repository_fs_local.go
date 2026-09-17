@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"os"
 	"path"
@@ -16,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/dhowden/tag"
@@ -97,6 +99,9 @@ type scanContext struct {
 	// what mtime/size, so unchanged files can be skipped on re-scan.
 	fileCache      map[string]scanCacheEntry // loaded from DB at start
 	fileCacheDirty map[string]scanCacheEntry // entries to upsert at end
+
+	// Progress counter (atomic, shared with LibraryInteractor for polling).
+	progress *int64
 }
 
 const checkpointInterval = 500 // commit and re-open transaction every N directories
@@ -142,6 +147,7 @@ func (sc *scanContext) loadFileCache() error {
 		}
 		sc.fileCache[p] = entry
 	}
+
 	return rows.Err()
 }
 
@@ -153,6 +159,7 @@ func (sc *scanContext) isFileUnchanged(filePath string, mtime int64, size int64)
 	if cached, ok := sc.fileCache[filePath]; ok {
 		return cached.Mtime == mtime && cached.Size == size
 	}
+
 	return false
 }
 
@@ -177,6 +184,7 @@ func (sc *scanContext) flushFileCache() error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -239,6 +247,7 @@ func (sc *scanContext) checkpoint() error {
 	if err := sc.tx.Commit(); err != nil {
 		return err
 	}
+
 	return sc.beginTransaction()
 }
 
@@ -257,14 +266,16 @@ type LocalFilesystemRepository struct {
 
 // ScanMediaFiles scans a directory and imports media file metadata and covers into the app.
 // If force is true, all files are re-scanned regardless of whether they changed since the last scan.
+// The progress pointer, if non-nil, is atomically incremented as files are processed.
 // TODO: compute return values.
-func (r LocalFilesystemRepository) ScanMediaFiles(scanPath string, force bool) (processed int, added int, err error) {
+func (r LocalFilesystemRepository) ScanMediaFiles(scanPath string, force bool, progress *int64) (processed int, added int, err error) {
 	log.Println("scan folder " + scanPath)
 
 	sc, err := newScanContext(r.AppContext.DB, force)
 	if err != nil {
 		return 0, 0, err
 	}
+	sc.progress = progress
 
 	// Get the artist id of "Various artists" (always created before we start scanning).
 	err = sc.tx.
@@ -374,6 +385,18 @@ func scanDirectory(dirPath string, sc *scanContext) (err error) {
 
 	processMediaFiles(mediaFiles, potentialAlbumCover, sc)
 
+	// Update progress counter: count ALL audio files in this directory (including
+	// unchanged/skipped ones) so the progress bar reaches 100%.
+	if sc.progress != nil {
+		var audioCount int64
+		for _, entry := range entries {
+			if !entry.IsDir() && isAudioFile(entry.Name()) {
+				audioCount++
+			}
+		}
+		atomic.AddInt64(sc.progress, audioCount)
+	}
+
 	// Checkpoint: commit and re-open transaction periodically.
 	sc.dirsProcessed++
 	if sc.dirsProcessed%checkpointInterval == 0 {
@@ -443,6 +466,7 @@ func readMetadataConcurrently(paths []string) []mediaMetadata {
 			out = append(out, r.meta)
 		}
 	}
+
 	return out
 }
 
@@ -547,6 +571,24 @@ func (r LocalFilesystemRepository) RemoveCoverFile(file *domain.Cover, directory
 // DeleteCovers deletes all covers
 func (r LocalFilesystemRepository) DeleteCovers() error {
 	return os.RemoveAll(viper.GetString("Covers.Directory"))
+}
+
+// CountAudioFiles counts all audio files under the given path, recursively.
+// This is a fast directory walk (no file I/O) used for progress estimation.
+func (r LocalFilesystemRepository) CountAudioFiles(rootPath string) int {
+	count := 0
+	_ = filepath.WalkDir(rootPath, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return nil
+		}
+		if !d.IsDir() && isAudioFile(d.Name()) {
+			count++
+		}
+
+		return nil
+	})
+
+	return count
 }
 
 // processArtist saves an artist info in the database, using the in-memory cache
@@ -667,6 +709,7 @@ func saveArtistWithStmt(sc *scanContext, entity *domain.Artist) error {
 		return err
 	}
 	entity.Id = int(lastId)
+
 	return nil
 }
 
@@ -686,6 +729,7 @@ func saveAlbumWithStmt(sc *scanContext, entity *domain.Album) error {
 		return err
 	}
 	entity.Id = int(lastId)
+
 	return nil
 }
 
@@ -713,6 +757,7 @@ func saveTrackWithStmt(sc *scanContext, entity *domain.Track) error {
 		return err
 	}
 	entity.Id = int(lastId)
+
 	return nil
 }
 
@@ -731,6 +776,7 @@ func saveCoverWithStmt(sc *scanContext, entity *domain.Cover) error {
 		return err
 	}
 	entity.Id = int(lastId)
+
 	return nil
 }
 

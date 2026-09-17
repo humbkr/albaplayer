@@ -93,18 +93,25 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Album       func(childComplexity int, id int) int
-		Albums      func(childComplexity int) int
-		Artist      func(childComplexity int, id int) int
-		Artists     func(childComplexity int) int
-		Collection  func(childComplexity int, id int) int
-		Collections func(childComplexity int) int
-		Settings    func(childComplexity int) int
-		Track       func(childComplexity int, id int) int
-		Tracks      func(childComplexity int) int
-		User        func(childComplexity int, id *int) int
-		Users       func(childComplexity int) int
-		Variable    func(childComplexity int, key string) int
+		Album        func(childComplexity int, id int) int
+		Albums       func(childComplexity int) int
+		Artist       func(childComplexity int, id int) int
+		Artists      func(childComplexity int) int
+		Collection   func(childComplexity int, id int) int
+		Collections  func(childComplexity int) int
+		ScanProgress func(childComplexity int) int
+		Settings     func(childComplexity int) int
+		Track        func(childComplexity int, id int) int
+		Tracks       func(childComplexity int) int
+		User         func(childComplexity int, id *int) int
+		Users        func(childComplexity int) int
+		Variable     func(childComplexity int, key string) int
+	}
+
+	ScanProgress struct {
+		FilesProcessed func(childComplexity int) int
+		FilesTotal     func(childComplexity int) int
+		IsUpdating     func(childComplexity int) int
 	}
 
 	Settings struct {
@@ -173,6 +180,7 @@ type QueryResolver interface {
 	Track(ctx context.Context, id int) (*model.Track, error)
 	Tracks(ctx context.Context) ([]*model.Track, error)
 	Settings(ctx context.Context) (*model.Settings, error)
+	ScanProgress(ctx context.Context) (*model.ScanProgress, error)
 	Variable(ctx context.Context, key string) (*model.Variable, error)
 	User(ctx context.Context, id *int) (*model.User, error)
 	Users(ctx context.Context) ([]*model.User, error)
@@ -492,6 +500,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Collections(childComplexity), true
 
+	case "Query.scanProgress":
+		if e.complexity.Query.ScanProgress == nil {
+			break
+		}
+
+		return e.complexity.Query.ScanProgress(childComplexity), true
+
 	case "Query.settings":
 		if e.complexity.Query.Settings == nil {
 			break
@@ -548,6 +563,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Variable(childComplexity, args["key"].(string)), true
+
+	case "ScanProgress.filesProcessed":
+		if e.complexity.ScanProgress.FilesProcessed == nil {
+			break
+		}
+
+		return e.complexity.ScanProgress.FilesProcessed(childComplexity), true
+
+	case "ScanProgress.filesTotal":
+		if e.complexity.ScanProgress.FilesTotal == nil {
+			break
+		}
+
+		return e.complexity.ScanProgress.FilesTotal(childComplexity), true
+
+	case "ScanProgress.isUpdating":
+		if e.complexity.ScanProgress.IsUpdating == nil {
+			break
+		}
+
+		return e.complexity.ScanProgress.IsUpdating(childComplexity), true
 
 	case "Settings.adminUserCreated":
 		if e.complexity.Settings.AdminUserCreated == nil {
@@ -904,6 +940,12 @@ type LibraryUpdateState {
   artistsNumber: Int
 }
 
+type ScanProgress {
+  isUpdating: Boolean!
+  filesProcessed: Int!
+  filesTotal: Int!
+}
+
 type Query {
   album(id: ID!): Album
   albums: [Album]
@@ -914,6 +956,7 @@ type Query {
   track(id: ID!): Track
   tracks: [Track]
   settings: Settings
+  scanProgress: ScanProgress!
   variable(key: String!): Variable
   user(id: ID): User
   users: [User]
@@ -3161,6 +3204,58 @@ func (ec *executionContext) fieldContext_Query_settings(ctx context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_scanProgress(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_scanProgress(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ScanProgress(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.ScanProgress)
+	fc.Result = res
+	return ec.marshalNScanProgress2ᚖgithubᚗcomᚋhumbkrᚋalbaplayerᚋinternalᚋinterfacesᚋgraphᚋmodelᚐScanProgress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_scanProgress(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "isUpdating":
+				return ec.fieldContext_ScanProgress_isUpdating(ctx, field)
+			case "filesProcessed":
+				return ec.fieldContext_ScanProgress_filesProcessed(ctx, field)
+			case "filesTotal":
+				return ec.fieldContext_ScanProgress_filesTotal(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ScanProgress", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_variable(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_variable(ctx, field)
 	if err != nil {
@@ -3468,6 +3563,138 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ScanProgress_isUpdating(ctx context.Context, field graphql.CollectedField, obj *model.ScanProgress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ScanProgress_isUpdating(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsUpdating, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ScanProgress_isUpdating(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ScanProgress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ScanProgress_filesProcessed(ctx context.Context, field graphql.CollectedField, obj *model.ScanProgress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ScanProgress_filesProcessed(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FilesProcessed, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ScanProgress_filesProcessed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ScanProgress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ScanProgress_filesTotal(ctx context.Context, field graphql.CollectedField, obj *model.ScanProgress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ScanProgress_filesTotal(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FilesTotal, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ScanProgress_filesTotal(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ScanProgress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -7036,6 +7263,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "scanProgress":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_scanProgress(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "variable":
 			field := field
 
@@ -7101,6 +7350,55 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var scanProgressImplementors = []string{"ScanProgress"}
+
+func (ec *executionContext) _ScanProgress(ctx context.Context, sel ast.SelectionSet, obj *model.ScanProgress) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, scanProgressImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ScanProgress")
+		case "isUpdating":
+			out.Values[i] = ec._ScanProgress_isUpdating(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "filesProcessed":
+			out.Values[i] = ec._ScanProgress_filesProcessed(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "filesTotal":
+			out.Values[i] = ec._ScanProgress_filesTotal(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7822,6 +8120,35 @@ func (ec *executionContext) marshalNID2int(ctx context.Context, sel ast.Selectio
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNScanProgress2githubᚗcomᚋhumbkrᚋalbaplayerᚋinternalᚋinterfacesᚋgraphᚋmodelᚐScanProgress(ctx context.Context, sel ast.SelectionSet, v model.ScanProgress) graphql.Marshaler {
+	return ec._ScanProgress(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNScanProgress2ᚖgithubᚗcomᚋhumbkrᚋalbaplayerᚋinternalᚋinterfacesᚋgraphᚋmodelᚐScanProgress(ctx context.Context, sel ast.SelectionSet, v *model.ScanProgress) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ScanProgress(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
