@@ -23,9 +23,10 @@ export default function useLongPress(callback: () => void) {
     {
       cancelOnMovement: true,
       // Use pointer events in dev mode for easier testing with a mouse.
-      detect: import.meta.env.VITE_DEV_MODE
-        ? LongPressEventType.Pointer
-        : LongPressEventType.Touch,
+      detect:
+        import.meta.env.VITE_DEV_MODE === 'true'
+          ? LongPressEventType.Pointer
+          : LongPressEventType.Touch,
       filterEvents,
     }
   )
