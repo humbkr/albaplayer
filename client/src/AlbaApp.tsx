@@ -14,6 +14,7 @@ import DesktopLayout from 'common/components/layout/Layout'
 import MobileLayout from 'common/components/layout/Layout.mobile'
 import { isMobileBrowser } from 'common/utils/isMobileBrowser'
 import info from '../package.json'
+import 'react-contexify/ReactContexify.css'
 
 function AlbaApp() {
   const currentThemeName = useAppSelector((state) => state.settings.theme)
@@ -56,6 +57,10 @@ const GlobalStyle = createGlobalStyle<{ theme?: DefaultTheme }>`
   
   html {
     overflow: hidden;
+    
+    // Limit user interactions to feel more like an app.
+    touch-action: pan-x pan-y;
+    user-select: none;
   }
 
   :root {
@@ -67,6 +72,11 @@ const GlobalStyle = createGlobalStyle<{ theme?: DefaultTheme }>`
     padding: 0;
     margin: 0;
     letter-spacing: 0.3px;
+
+    scrollbar-color: ${(props) =>
+      props.theme.colors
+        .scrollbarColor} ${(props) => props.theme.colors.scrollbarBackground};
+    scrollbar-width: thin;
   }
 
   *:focus {
@@ -77,10 +87,6 @@ const GlobalStyle = createGlobalStyle<{ theme?: DefaultTheme }>`
     font-family: sans-serif;
     overflow-x: hidden;
     background-color: ${(props) => props.theme.colors.background};
-  }
-
-  .react-contexify {
-    z-index: 666;
   }
 
   @keyframes transition-slide-in-right {

@@ -10,8 +10,8 @@ import { useGetUserQuery } from 'modules/user/api'
 import { USER_ROLE_ADMIN } from 'modules/user/constants'
 import routing from 'routing'
 import { devices } from 'themes/breakpoints'
+import AlbumContextMenu from 'modules/browser/components/AlbumContextMenu'
 import { getRandomAlbums } from '../store'
-import AlbumMoreActionsContextMenu from './AlbumMoreActionsContextMenu'
 
 function RandomAlbums() {
   const { t } = useTranslation()
@@ -68,8 +68,8 @@ function RandomAlbums() {
           ))}
         </AlbumsList>
       )}
-      <AlbumMoreActionsContextMenu
-        menuId="random-album-more-actions-context-menu"
+      <AlbumContextMenu
+        id="random-album-more-actions-context-menu"
         onHidden={() => setSelectedAlbum(undefined)}
       />
     </Wrapper>
@@ -87,7 +87,9 @@ const Header = styled.div`
   height: ${(props) => props.theme.layout.itemHeight};
   padding: 0 5px 0 20px;
   display: flex;
+  gap: 5px;
   align-items: center;
+  margin-bottom: 5px;
 `
 const RandomizeButton = styled.div`
   color: ${(props) => props.theme.buttons.backgroundColor};

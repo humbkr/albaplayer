@@ -6,6 +6,7 @@ const LibraryBrowserPane = styled.div`
   flex-flow: column;
   height: 100%;
   width: 100%;
+  min-height: 0;
 
   &:focus-within {
     // Can't find a way to manage that directly in the

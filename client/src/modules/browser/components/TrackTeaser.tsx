@@ -1,10 +1,14 @@
 import type React from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import { useAppSelector } from 'store/hooks'
 import { useAddTrack, usePlayTrack } from 'modules/browser/services'
 import { notify } from 'common/utils/notifications'
 import { useTranslation } from 'react-i18next'
+import ActionsMenu from 'common/components/ActionsMenu'
+import useLongPress from 'common/hooks/useLongPress'
+import useTrackContextualActions from 'modules/browser/hooks/useTrackContextualActions'
 
 type Props = {
   item: Track
@@ -17,6 +21,11 @@ function TrackTeaser({ item, index, selected, onContextMenu }: Props) {
   const { onClickBehavior } = useAppSelector((state) => state.settings.browser)
 
   const { t } = useTranslation()
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
+  const actionItems = useTrackContextualActions()
+  const handlers = useLongPress(() => {
+    setIsActionsMenuOpen(true)
+  })
 
   const playTrack = usePlayTrack()
   const addTrack = useAddTrack()
@@ -52,11 +61,21 @@ function TrackTeaser({ item, index, selected, onContextMenu }: Props) {
   }
 
   return (
-    <TrackWrapper onContextMenu={onRightClick} onDoubleClick={onDoubleClick}>
+    <TrackWrapper
+      onContextMenu={onRightClick}
+      onDoubleClick={onDoubleClick}
+      {...handlers()}
+    >
       <TrackTeaserNumber className={selected ? 'selected' : ''}>
         {item.number}
       </TrackTeaserNumber>
       <TrackTeaserName>{item.title}</TrackTeaserName>
+      <ActionsMenu
+        isOpen={isActionsMenuOpen}
+        onClose={() => setIsActionsMenuOpen(false)}
+        items={actionItems}
+        data={item}
+      />
     </TrackWrapper>
   )
 }

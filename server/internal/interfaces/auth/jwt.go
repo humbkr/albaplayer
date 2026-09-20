@@ -58,7 +58,7 @@ func jwtGenerateAuthToken(user business.User) (string, error) {
 		user.Email,
 		userRoles,
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(ACCESS_TOKEN_EXPIRATION)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(getAccessTokenExpiration())),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
@@ -77,7 +77,7 @@ func jwtGenerateRefreshToken(user business.User) (string, error) {
 	refreshToken := jwt.New(jwt.SigningMethodHS256)
 	claims := refreshToken.Claims.(jwt.MapClaims)
 	claims["ID"] = user.Id
-	claims["exp"] = jwt.NewNumericDate(time.Now().Add(REFRESH_TOKEN_EXPIRATION))
+	claims["exp"] = jwt.NewNumericDate(time.Now().Add(getRefreshTokenExpiration()))
 
 	token, err := refreshToken.SignedString(jwtSecret)
 	if err != nil {

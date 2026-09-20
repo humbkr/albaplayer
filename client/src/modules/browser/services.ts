@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import {
   addAlbumDisc,
@@ -13,6 +14,7 @@ import {
   playTracks,
   playTracksAfterCurrent,
 } from 'modules/player/store/store'
+import { search, setSearchFilter } from 'modules/browser/store'
 
 function useGetTrackIds() {
   const currentTracks = useAppSelector((state) => state.libraryBrowser.tracks)
@@ -184,5 +186,41 @@ export function useGetAlbumDetails(albumId: string): Album | undefined {
     ...album,
     artist,
     tracks,
+  }
+}
+
+export function useFindAllByArtist() {
+  const dispatch = useAppDispatch()
+  const library = useAppSelector((state) => state.library)
+  const navigate = useNavigate()
+
+  return (artistId: string) => {
+    const artist = library.artists[artistId]
+
+    if (!artist) {
+      return
+    }
+
+    dispatch(setSearchFilter('artist'))
+    dispatch(search(artist.name))
+    navigate('/library')
+  }
+}
+
+export function useFindAllOnAlbum() {
+  const dispatch = useAppDispatch()
+  const library = useAppSelector((state) => state.library)
+  const navigate = useNavigate()
+
+  return (albumId: string) => {
+    const album = library.albums[albumId]
+
+    if (!album) {
+      return
+    }
+
+    dispatch(setSearchFilter('album'))
+    dispatch(search(album.title))
+    navigate('/library')
   }
 }

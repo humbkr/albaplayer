@@ -245,11 +245,11 @@ describe('Collections > services', () => {
     test('adds track to a new playlist', () => {
       const { result } = renderHook(() => useAddTrackToPlaylist())
 
-      result.current({ trackId: 'track02' })
+      result.current({ playlistId: null, trackId: 'track02' })
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
-        id: undefined,
+        id: null,
         title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
@@ -343,11 +343,11 @@ describe('Collections > services', () => {
     test('adds album to a new playlist', () => {
       const { result } = renderHook(() => useAddAlbumToPlaylist())
 
-      result.current({ albumId: 'album02' })
+      result.current({ playlistId: null, albumId: 'album02' })
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
-        id: undefined,
+        id: null,
         title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
@@ -441,11 +441,11 @@ describe('Collections > services', () => {
     test('adds artist to a new playlist', () => {
       const { result } = renderHook(() => useAddArtistToPlaylist())
 
-      result.current({ artistId: 'artist02' })
+      result.current({ playlistId: null, artistId: 'artist02' })
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
-        id: undefined,
+        id: null,
         title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
@@ -561,11 +561,11 @@ describe('Collections > services', () => {
     test('adds playlist to a new playlist', () => {
       const { result } = renderHook(() => useAddPlaylistToPlaylist())
 
-      result.current({ playlistToAddId: 'playlist02' })
+      result.current({ playlistId: null, playlistToAddId: 'playlist02' })
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
-        id: undefined,
+        id: null,
         title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([
@@ -588,7 +588,7 @@ describe('Collections > services', () => {
     test('does nothing if playlist to add does not exist', () => {
       const { result } = renderHook(() => useAddPlaylistToPlaylist())
 
-      result.current({ playlistToAddId: 'whatever' })
+      result.current({ playlistId: null, playlistToAddId: 'whatever' })
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).not.toHaveBeenCalled()
@@ -670,11 +670,11 @@ describe('Collections > services', () => {
     test('adds current queue to a new playlist', () => {
       const { result } = renderHook(() => useAddCurrentQueueToPlaylist())
 
-      result.current()
+      result.current(null)
 
       expect(mockUpdateCollection).not.toHaveBeenCalled()
       expect(mockCreateCollection).toHaveBeenCalledWith({
-        id: undefined,
+        id: null,
         title: 'collections.playlists.defaultPlaylistName',
         type: COLLECTION_TYPE.tracks,
         items: JSON.stringify([

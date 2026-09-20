@@ -5,6 +5,6 @@ export default {
     'eslint',
     'prettier --write',
     'eslint --fix',
-    'bash -c tsc --noEmit',
+    () => 'tsc --noEmit',
   ],
 }

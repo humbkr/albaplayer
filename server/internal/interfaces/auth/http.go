@@ -201,7 +201,7 @@ func addAuthCookiesToResponse(w http.ResponseWriter, tokens TokenPair) {
 		Value:    tokens.access,
 		Path:     "/",
 		HttpOnly: true,
-		Expires:  time.Now().Add(ACCESS_TOKEN_EXPIRATION),
+		Expires:  time.Now().Add(getAccessTokenExpiration()),
 		SameSite: http.SameSiteLaxMode,
 	}
 
@@ -210,7 +210,7 @@ func addAuthCookiesToResponse(w http.ResponseWriter, tokens TokenPair) {
 		Value:    tokens.refresh,
 		Path:     "/",
 		HttpOnly: true,
-		Expires:  time.Now().Add(REFRESH_TOKEN_EXPIRATION),
+		Expires:  time.Now().Add(getRefreshTokenExpiration()),
 		SameSite: http.SameSiteLaxMode,
 	}
 

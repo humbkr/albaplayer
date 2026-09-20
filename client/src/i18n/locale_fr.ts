@@ -123,6 +123,20 @@ const fr: Translation = {
       discAddedToQueue: 'Disque {{itemName}} ajouté à la liste de lecture',
     },
   },
+  notifications: {
+    nowPlaying: 'Lecture en cours : {{itemName}}',
+    playingNext: '{{itemName}} sera joué après',
+    addedToQueue: '{{itemName}} ajouté à la liste de lecture',
+    addedToPlaylist: '{{itemName}} ajouté à la playlist {{playlistName}}',
+    addedToNewPlaylist: '{{itemName}} ajouté à une nouvelle playlist',
+    playlistDuplicated: 'Playlist dupliquée',
+    queueAddedToPlaylist:
+      'Liste de lecture ajoutée à la playlist {{playlistName}}',
+    queueAddedToNewPlaylist: 'Liste de lecture ajoutée à une nouvelle playlist',
+    removedFromQueue: '{{itemName}} supprimé de la liste de lecture',
+    removedFromPlaylist: '{{itemName}} supprimé de la playlist',
+    playlistDeleted: 'Playlist supprimée',
+  },
   dashboard: {
     noAlbumsFound: 'Aucun album trouvé dans la librairie.',
     scanLibrary: 'Scanner la librairie',

@@ -107,6 +107,7 @@ const UserButton = styled.button<{ active: boolean }>`
   border: 0;
   border-radius: 3px;
   font-weight: bold;
+  font-size: 0.9em;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -133,13 +134,14 @@ const Menu = styled.div<{ isOpen: boolean }>`
   padding: 5px 0;
 `
 const MenuItem = styled.button`
-  height: 33px;
+  height: 40px;
   width: 100%;
   text-align: left;
   padding: 0 10px;
   background-color: transparent;
   border: 0;
   color: ${(props) => props.theme.colors.sidebarTextPrimary};
+  font-size: 0.9em;
   font-weight: bold;
   cursor: pointer;
   display: flex;

@@ -18,8 +18,8 @@ vi.mock('modules/dashboard/components/AlbumTeaserHorizontal', () => ({
   default: () => <div data-testid="AlbumTeaserHorizontal" />,
 }))
 
-vi.mock('modules/dashboard/components/AlbumMoreActionsContextMenu', () => ({
-  default: () => <div data-testid="AlbumMoreActionsContextMenu" />,
+vi.mock('modules/browser/components/AlbumContextMenu', () => ({
+  default: () => <div data-testid="AlbumContextMenu" />,
 }))
 
 vi.mock('modules/user/api', () => ({

@@ -1,10 +1,14 @@
 import type React from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import { useAppSelector } from 'store/hooks'
 import { useAddAlbum, usePlayAlbum } from 'modules/browser/services'
 import { notify } from 'common/utils/notifications'
 import { useTranslation } from 'react-i18next'
+import ActionsMenu from 'common/components/ActionsMenu'
+import useLongPress from 'common/hooks/useLongPress'
+import useAlbumContextualActions from 'modules/browser/hooks/useAlbumContextualActions'
 
 type Props = {
   item: Album
@@ -17,6 +21,11 @@ function AlbumTeaser({ item, selected = false, index, onContextMenu }: Props) {
   const { onClickBehavior } = useAppSelector((state) => state.settings.browser)
 
   const { t } = useTranslation()
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
+  const actionItems = useAlbumContextualActions()
+  const handlers = useLongPress(() => {
+    setIsActionsMenuOpen(true)
+  })
 
   const playAlbum = usePlayAlbum()
   const addAlbum = useAddAlbum()
@@ -55,6 +64,7 @@ function AlbumTeaser({ item, selected = false, index, onContextMenu }: Props) {
     <AlbumTeaserWrapper
       onContextMenu={onRightClick}
       onDoubleClick={onDoubleClick}
+      {...handlers()}
     >
       <div>
         <AlbumTeaserTitle>{item.title}</AlbumTeaserTitle>
@@ -64,6 +74,12 @@ function AlbumTeaser({ item, selected = false, index, onContextMenu }: Props) {
           <AlbumTeaserArtist>{item.artist?.name}</AlbumTeaserArtist>
         </AlbumSubInfo>
       </div>
+      <ActionsMenu
+        isOpen={isActionsMenuOpen}
+        onClose={() => setIsActionsMenuOpen(false)}
+        items={actionItems}
+        data={item}
+      />
     </AlbumTeaserWrapper>
   )
 }

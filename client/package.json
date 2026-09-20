@@ -1,7 +1,7 @@
 {
   "name": "albaplayer",
   "private": true,
-  "version": "3.0.0-rc6",
+  "version": "3.0.0-rc8",
   "type": "module",
   "scripts": {
     "dev": "yarn install && vite",
@@ -28,7 +28,7 @@
     "graphql-request": "7.1.2",
     "i18next": "24.2.2",
     "react": "19.0.0",
-    "react-contexify": "4.1.1",
+    "react-contexify": "6.0.0",
     "react-debounce-input": "3.3.0",
     "react-dom": "19.0.0",
     "react-hook-form": "7.54.2",
@@ -43,6 +43,7 @@
     "react-virtuoso": "4.12.3",
     "reselect": "5.1.1",
     "styled-components": "6.1.15",
+    "use-long-press": "^3.3.0",
     "zod": "3.24.1"
   },
   "devDependencies": {

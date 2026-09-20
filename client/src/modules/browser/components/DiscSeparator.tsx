@@ -1,10 +1,14 @@
 import type React from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
 import { notify } from 'common/utils/notifications'
 import { useAppSelector } from 'store/hooks'
 import { useAddAlbumDisc, usePlayAlbumDisc } from 'modules/browser/services'
+import ActionsMenu from 'common/components/ActionsMenu'
+import useLongPress from 'common/hooks/useLongPress'
+import useDiscContextualActions from 'modules/browser/hooks/useDiscContextualActions'
 
 type Props = {
   discNumber: number | string
@@ -27,6 +31,11 @@ export default function DiscSeparator({
 
   const playAlbumDisc = usePlayAlbumDisc()
   const addAlbumDisc = useAddAlbumDisc()
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
+  const actionItems = useDiscContextualActions()
+  const handlers = useLongPress(() => {
+    setIsActionsMenuOpen(true)
+  })
 
   const onDoubleClick = () => {
     switch (onClickBehavior) {
@@ -66,8 +75,15 @@ export default function DiscSeparator({
       selected={selected}
       onContextMenu={onRightClick}
       onDoubleClick={onDoubleClick}
+      {...handlers()}
     >
       {t('browser.album.disc', { disc: discNumber })}
+      <ActionsMenu
+        isOpen={isActionsMenuOpen}
+        onClose={() => setIsActionsMenuOpen(false)}
+        items={actionItems}
+        data={{ albumId: selectedAlbumId, disc: discNumber.toString() }}
+      />
     </Container>
   )
 }

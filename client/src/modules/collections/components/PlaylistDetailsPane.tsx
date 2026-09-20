@@ -8,12 +8,13 @@ import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
 import {
+  useAddPlaylist,
   useGetCurrentPlaylist,
+  usePlayPlaylist,
   useRemoveTrackFromPlaylist,
   useUpdatePlaylistItems,
 } from 'modules/collections/services/services'
 import { playlistSelectTrack } from 'modules/collections/store'
-import { useAddPlaylist, usePlayPlaylist } from 'modules/player/services'
 import dayjs from 'dayjs'
 import PlaylistTrackList from './PlaylistTrackList'
 import PlaylistTrackContextMenu from './PlaylistTrackContextMenu'
@@ -100,7 +101,7 @@ function PlaylistDetailsPane({
       id: 'playlist-actions-more-menu',
       event: e,
       props: {
-        playlist,
+        data: playlist,
       },
     })
   }
@@ -193,6 +194,7 @@ const List = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 `
 const Header = styled.div`
   display: flex;

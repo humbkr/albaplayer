@@ -19,9 +19,14 @@ export function useSearchBar() {
     navigate('/library')
   }
 
+  const clearSearch = () => {
+    dispatch(search(''))
+  }
+
   return {
     searchState,
     changeFilter,
     runSearch,
+    clearSearch,
   }
 }

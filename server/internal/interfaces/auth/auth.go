@@ -4,12 +4,24 @@ import (
 	"context"
 	"errors"
 	"github.com/humbkr/albaplayer/internal/business"
+	"github.com/spf13/viper"
 	"net/http"
 	"time"
 )
 
-const ACCESS_TOKEN_EXPIRATION = 10 * time.Minute
-const REFRESH_TOKEN_EXPIRATION = 168 * time.Hour
+func getAccessTokenExpiration() time.Duration {
+	if viper.GetBool("DevMode.Enabled") {
+		return 24 * time.Hour
+	}
+	return 10 * time.Minute
+}
+
+func getRefreshTokenExpiration() time.Duration {
+	if viper.GetBool("DevMode.Enabled") {
+		return 365 * 24 * time.Hour
+	}
+	return 168 * time.Hour
+}
 
 func GetUserFromContext(ctx context.Context) *business.User {
 	raw, _ := ctx.Value(userCtxKey).(*business.User)

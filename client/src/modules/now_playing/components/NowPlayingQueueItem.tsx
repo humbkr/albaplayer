@@ -1,7 +1,11 @@
 import type React from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { contextMenu } from 'react-contexify'
+import type { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
+import ActionsMenu from 'common/components/ActionsMenu'
+import Icon from 'common/components/Icon'
 import {
   playerTogglePlayPause,
   queueRemoveTrack,
@@ -12,17 +16,25 @@ import AnimatedEQ from 'common/components/AnimatedEQ'
 import { useTranslation } from 'react-i18next'
 import { devices } from 'themes/breakpoints'
 import useBreakpoints from 'common/utils/useLayoutBreakpoints'
+import useLongPress from 'common/hooks/useLongPress'
+import useQueueItemContextualActions from 'modules/now_playing/hooks/useQueueItemContextualActions'
 
 type Props = {
   item: QueueItemDisplay
   currentIndex: number
+  dragHandleProps?: DraggableProvidedDragHandleProps | null
 }
 
-function NowPlayingQueueItem({ item, currentIndex }: Props) {
+function NowPlayingQueueItem({ item, currentIndex, dragHandleProps }: Props) {
   const { t } = useTranslation()
   const isPlaying = useAppSelector((state) => state.player.playing)
   const dispatch = useAppDispatch()
   const { isMD, isXL } = useBreakpoints()
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
+  const actionItems = useQueueItemContextualActions()
+  const handlers = useLongPress(() => {
+    setIsActionsMenuOpen(true)
+  })
 
   const handlePlayBackButton = () => {
     const isCurrent = currentIndex + 1 === item.position
@@ -58,7 +70,14 @@ function NowPlayingQueueItem({ item, currentIndex }: Props) {
   const playbackButtonIcon = isCurrent && isPlaying ? 'pause' : 'play_arrow'
 
   return (
-    <QueueItemWrapper isCurrent={isCurrent} onContextMenu={onRightClick}>
+    <QueueItemWrapper
+      isCurrent={isCurrent}
+      onContextMenu={onRightClick}
+      {...handlers()}
+    >
+      <DragHandle {...dragHandleProps}>
+        <Icon size={20}>drag_indicator</Icon>
+      </DragHandle>
       <QueueItemFirstColumn>
         {(!isPlaying || !isCurrent) && (
           <QueueItemPosition>{item.position}</QueueItemPosition>
@@ -115,6 +134,12 @@ function NowPlayingQueueItem({ item, currentIndex }: Props) {
       <QueueItemActions>
         <ActionButtonIcon icon="delete" onClick={handleRemoveTrack} />
       </QueueItemActions>
+      <ActionsMenu
+        isOpen={isActionsMenuOpen}
+        onClose={() => setIsActionsMenuOpen(false)}
+        items={actionItems}
+        data={item}
+      />
     </QueueItemWrapper>
   )
 }
@@ -141,13 +166,26 @@ const QueueItemActions = styled.div`
 `
 const QueueItemPosition = styled.div``
 const CurrentPlaying = styled.div``
+const DragHandle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: ${(props) => props.theme.colors.textSecondary};
+  touch-action: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+`
 const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   display: grid;
-  grid-template-columns: 50px 50% auto 44px;
+  grid-template-columns: 28px 50px 50% auto 44px;
   height: ${(props) => props.theme.layout.itemHeight};
   color: ${(props) => props.theme.colors.textPrimary};
   border-bottom: 1px solid ${(props) => props.theme.colors.separator};
   ${(props) => (props.isCurrent ? 'font-weight: bold' : '')};
+  padding-right: 5px;
 
   > * {
     align-self: center;
@@ -155,7 +193,6 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
 
   &:hover {
     background-color: ${(props) => props.theme.colors.elementHighlight};
-    cursor: grab;
 
     ${QueueItemPosition},
     ${CurrentPlaying} {
@@ -168,7 +205,7 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   }
 
   @media only screen and ${devices.xl} {
-    grid-template-columns: 50px 30% 30% auto 44px;
+    grid-template-columns: 28px 50px 30% 30% auto 44px;
   }
 `
 const QueueItemFirstColumn = styled.div`

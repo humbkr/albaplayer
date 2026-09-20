@@ -1,3 +1,4 @@
+import type React from 'react'
 import type { Ref } from 'react'
 import styled from 'styled-components'
 import { DebounceInput } from 'react-debounce-input'
@@ -11,7 +12,7 @@ type Props = {
 
 export default function SearchBar({ ref }: Props) {
   const { t } = useTranslation()
-  const { searchState, changeFilter, runSearch } = useSearchBar()
+  const { searchState, changeFilter, runSearch, clearSearch } = useSearchBar()
 
   return (
     <Container data-testid="search-bar">
@@ -22,6 +23,7 @@ export default function SearchBar({ ref }: Props) {
           testId={`search-filter-all${
             searchState.filter === 'all' ? '-active' : ''
           }`}
+          noBackgroundOnHover={searchState.filter === 'all'}
         />
       </FilterButton>
       <FilterButton active={searchState.filter === 'artist'}>
@@ -65,9 +67,18 @@ export default function SearchBar({ ref }: Props) {
           // We need to stop propagation of the keydown event to prevent the space key from
           // triggering the play/pause action in the player.
           onKeyDown={(event) => event.stopPropagation()}
+          onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
+            const input = event.target
+            const len = input.value.length
+            input.setSelectionRange(len, len)
+          }}
         />
+        {searchState.term && (
+          <ClearButton onClick={clearSearch}>
+            <ActionButtonIcon icon="close" size={18} />
+          </ClearButton>
+        )}
       </SearchInputWrapper>
-      <div />
     </Container>
   )
 }
@@ -106,8 +117,10 @@ const FilterButton = styled.div<{
   `}
 `
 const SearchInputWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
   flex-grow: 1;
-  vertical-align: middle;
   padding: 8px;
   min-width: 120px;
   max-width: 496px;
@@ -118,9 +131,18 @@ const SearchInputWrapper = styled.div`
     background-color: ${(props) => props.theme.colors.elementHighlightFocus};
   }
 `
+const ClearButton = styled.div`
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  color: ${(props) => props.theme.colors.textSecondary};
+  cursor: pointer;
+`
 const SearchInput = styled(DebounceInput)<{
   id: string
   autoComplete: string
+  onFocus?: React.FocusEventHandler<HTMLInputElement>
 }>`
   height: 100%;
   width: 100%;

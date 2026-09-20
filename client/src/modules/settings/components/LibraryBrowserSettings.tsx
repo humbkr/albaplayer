@@ -84,7 +84,10 @@ function LibraryBrowserSettings() {
             config.tracksPaneDisplay
           )}
           onChange={(selected) =>
-            onChangeAlbumSelection(selected?.value as SETTINGS_BROWSER_TRACKS_PANE_DISPLAY)}
+            onChangeAlbumSelection(
+              selected?.value as SETTINGS_BROWSER_TRACKS_PANE_DISPLAY
+            )
+          }
         />
       </FieldGroup>
     </Block>
