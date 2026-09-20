@@ -11,7 +11,7 @@ import {
   setNextTrack,
   setPreviousTrack,
 } from 'modules/player/store/store'
-import { PlayerPlaybackMode, setCycleNumPos } from 'modules/player/utils'
+import { PlayerPlaybackMode } from 'modules/player/utils'
 import APIConstants from 'api/constants'
 import { useInterval } from 'common/utils/useInterval'
 import { useTranslation } from 'react-i18next'
@@ -19,6 +19,9 @@ import { useTranslation } from 'react-i18next'
 function getListeningVolume(volumeBarValue: number) {
   return volumeBarValue ** 2
 }
+
+const STALL_RECOVERY_DELAY_MS = 10_000
+const MAX_RECOVERY_ATTEMPTS = 3
 
 // TODO https://stackoverflow.com/questions/48277432/load-html5-audio-from-dynamic-content-provider-with-authentication
 export default function usePlayer() {
@@ -31,7 +34,11 @@ export default function usePlayer() {
 
   const onPlay = useCallback(async () => {
     dispatch(playerTogglePlayPause(true))
-    await playerRef.current?.play()
+    try {
+      await playerRef.current?.play()
+    } catch {
+      dispatch(playerTogglePlayPause(false))
+    }
   }, [dispatch])
 
   const onPause = useCallback(async () => {
@@ -42,12 +49,6 @@ export default function usePlayer() {
   const onStop = useCallback(async () => {
     dispatch(playerTogglePlayPause(false))
     await playerRef.current?.pause()
-    console.log('stopped by media session')
-    console.log('seekable', playerRef.current?.seekable)
-    console.log('buffered', playerRef.current?.buffered)
-    console.log('error', playerRef.current?.error)
-    console.log('networkState', playerRef.current?.networkState)
-    console.log('readyState', playerRef.current?.readyState)
   }, [dispatch])
 
   const handleTogglePlayPause = useCallback(async () => {
@@ -96,11 +97,12 @@ export default function usePlayer() {
     [dispatch, onPlay, repeat]
   )
 
+  // Keep a ref to handleSetNextTrack so the audio element's onended callback
+  // always calls the latest version without recreating the element.
+  const handleSetNextTrackRef = useRef(handleSetNextTrack)
+  handleSetNextTrackRef.current = handleSetNextTrack
+
   const handleToggleRepeat = () => {
-    // We need to update the audio element callback with the new repeat mode manually otherwise
-    // the callback will keep its original repeat value.
-    const nextRepeatMode = setCycleNumPos(repeat, 1, 3)
-    playerRef.current.onended = () => handleSetNextTrack(true, nextRepeatMode)
     dispatch(playerToggleRepeat())
   }
 
@@ -112,16 +114,57 @@ export default function usePlayer() {
     const audio = document.createElement('audio')
     audio.volume = getListeningVolume(volume)
 
-    // Playback callbacks.
-    audio.onended = () => handleSetNextTrack(true)
+    audio.onended = () => handleSetNextTrackRef.current(true)
     audio.onloadedmetadata = () => dispatch(playerSetDuration(audio.duration))
 
     return audio
-    // We want to set volume only at first load.
+    // Audio element is created once. Volume is only set at first load.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, handleSetNextTrack])
+  }, [])
 
   const playerRef = useRef(audioElement)
+
+  // Stall recovery state.
+  const stallTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const recoveryAttemptsRef = useRef(0)
+
+  const clearStallRecovery = useCallback(() => {
+    if (stallTimeoutRef.current) {
+      clearTimeout(stallTimeoutRef.current)
+      stallTimeoutRef.current = null
+    }
+  }, [])
+
+  const scheduleStallRecovery = useCallback(() => {
+    clearStallRecovery()
+
+    const audio = playerRef.current
+    if (!audio || audio.paused) {
+      return
+    }
+
+    if (recoveryAttemptsRef.current >= MAX_RECOVERY_ATTEMPTS) {
+      dispatch(playerTogglePlayPause(false))
+      recoveryAttemptsRef.current = 0
+
+      return
+    }
+
+    stallTimeoutRef.current = setTimeout(() => {
+      if (
+        !audio.paused &&
+        audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA
+      ) {
+        recoveryAttemptsRef.current += 1
+        // Force re-buffering from the current position.
+        // eslint-disable-next-line no-self-assign
+        audio.currentTime = audio.currentTime
+        audio.play().catch(() => {
+          dispatch(playerTogglePlayPause(false))
+        })
+      }
+    }, STALL_RECOVERY_DELAY_MS)
+  }, [clearStallRecovery, dispatch])
 
   // Synchronises the audioElement state to redux state external changes.
   useEffect(() => {
@@ -130,12 +173,14 @@ export default function usePlayer() {
       !playerRef.current?.ended &&
       0 < playerRef.current?.currentTime
 
-    if (playing && !isPlaying) {
-      playerRef.current?.play()
+    if (playing && !isPlaying && playerRef.current?.src) {
+      playerRef.current.play()?.catch(() => {
+        dispatch(playerTogglePlayPause(false))
+      })
     } else if (!playing && isPlaying) {
       playerRef.current?.pause()
     }
-  }, [playing])
+  }, [playing, dispatch])
 
   // Changes audioElement source when redux track changes.
   useEffect(() => {
@@ -143,37 +188,20 @@ export default function usePlayer() {
       playerRef.current.src = APIConstants.BACKEND_BASE_URL + track.src
       playerRef.current.load()
 
-      playerRef.current.onwaiting = () => {
-        console.log('onwaiting')
-        console.log('seekable', playerRef.current?.seekable)
-        console.log('buffered', playerRef.current?.buffered)
-        console.log('error', playerRef.current?.error)
-        console.log('networkState', playerRef.current?.networkState)
-        console.log('readyState', playerRef.current?.readyState)
+      // Reset recovery state for new track.
+      recoveryAttemptsRef.current = 0
+      clearStallRecovery()
+
+      // Recovery handlers: schedule re-buffering if audio stalls too long.
+      playerRef.current.onwaiting = () => scheduleStallRecovery()
+      playerRef.current.onstalled = () => scheduleStallRecovery()
+      playerRef.current.onplaying = () => {
+        clearStallRecovery()
+        recoveryAttemptsRef.current = 0
       }
       playerRef.current.onerror = () => {
-        console.log('onerror')
-        console.log('seekable', playerRef.current?.seekable)
-        console.log('buffered', playerRef.current?.buffered)
-        console.log('error', playerRef.current?.error)
-        console.log('networkState', playerRef.current?.networkState)
-        console.log('readyState', playerRef.current?.readyState)
-      }
-      playerRef.current.oninvalid = () => {
-        console.log('oninvalid')
-        console.log('seekable', playerRef.current?.seekable)
-        console.log('buffered', playerRef.current?.buffered)
-        console.log('error', playerRef.current?.error)
-        console.log('networkState', playerRef.current?.networkState)
-        console.log('readyState', playerRef.current?.readyState)
-      }
-      playerRef.current.onsuspend = () => {
-        console.log('onsuspend')
-        console.log('seekable', playerRef.current?.seekable)
-        console.log('buffered', playerRef.current?.buffered)
-        console.log('error', playerRef.current?.error)
-        console.log('networkState', playerRef.current?.networkState)
-        console.log('readyState', playerRef.current?.readyState)
+        clearStallRecovery()
+        dispatch(playerTogglePlayPause(false))
       }
 
       /* istanbul ignore next */
@@ -200,6 +228,11 @@ export default function usePlayer() {
     dispatch(playerSetProgress(0))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, track])
+
+  // Cleanup stall recovery timeout on unmount.
+  useEffect(() => {
+    return () => clearStallRecovery()
+  }, [clearStallRecovery])
 
   useEffect(() => {
     /* istanbul ignore next */
