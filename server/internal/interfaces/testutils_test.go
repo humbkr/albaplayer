@@ -421,7 +421,10 @@ type mediaRepositoryMock struct {
 }
 
 // Not needed.
-func (m *mediaRepositoryMock) ScanMediaFiles(path string) (int, int, error)               { return 0, 0, nil }
+func (m *mediaRepositoryMock) ScanMediaFiles(path string, force bool, progress *int64) (int, int, error) {
+	return 0, 0, nil
+}
+func (m *mediaRepositoryMock) CountAudioFiles(path string) int                            { return 0 }
 func (m *mediaRepositoryMock) MediaFileExists(filepath string) bool                       { return true }
 func (m *mediaRepositoryMock) WriteCoverFile(file *domain.Cover, directory string) error  { return nil }
 func (m *mediaRepositoryMock) RemoveCoverFile(file *domain.Cover, directory string) error { return nil }

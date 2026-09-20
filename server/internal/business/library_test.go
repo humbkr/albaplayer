@@ -638,7 +638,7 @@ func (suite *MediaFilesInteractorTestSuite) SetupSuite() {
 }
 
 func (suite *MediaFilesInteractorTestSuite) TestUpdateLibrary() {
-	suite.Library.UpdateLibrary()
+	suite.Library.UpdateLibrary(false)
 }
 
 func (suite *MediaFilesInteractorTestSuite) TestEraseLibrary() {

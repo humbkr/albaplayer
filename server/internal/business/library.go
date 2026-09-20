@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/humbkr/albaplayer/internal/domain"
@@ -28,6 +29,18 @@ type LibraryInteractor struct {
 	InternalVariableRepository InternalVariableRepository
 	mutex                      sync.Mutex
 	LibraryIsUpdating          bool
+
+	// Scan progress counters (accessed atomically from multiple goroutines).
+	scanFilesProcessed int64
+	scanFilesTotal     int64
+}
+
+// ScanProgress returns the current scan progress.
+func (interactor *LibraryInteractor) ScanProgress() (filesProcessed int64, filesTotal int64) {
+	filesProcessed = atomic.LoadInt64(&interactor.scanFilesProcessed)
+	filesTotal = atomic.LoadInt64(&interactor.scanFilesTotal)
+
+	return
 }
 
 // GetArtist gets an artist by id.
@@ -330,12 +343,23 @@ func (interactor *LibraryInteractor) CollectionExists(collectionId int) bool {
 }
 
 // UpdateLibrary populates and update the library.
-func (interactor *LibraryInteractor) UpdateLibrary() {
+// If force is true, all files are re-scanned regardless of whether they changed.
+func (interactor *LibraryInteractor) UpdateLibrary(force bool) {
 	interactor.mutex.Lock()
 	interactor.LibraryIsUpdating = true
 
+	// Reset progress counters.
+	atomic.StoreInt64(&interactor.scanFilesProcessed, 0)
+	atomic.StoreInt64(&interactor.scanFilesTotal, 0)
+
 	_ = interactor.CreateCompilationArtist()
-	_, _, _ = interactor.MediaFileRepository.ScanMediaFiles(viper.GetString("Library.Path"))
+
+	// Count audio files for progress reporting (fast directory walk, no file I/O).
+	libraryPath := viper.GetString("Library.Path")
+	total := interactor.MediaFileRepository.CountAudioFiles(libraryPath)
+	atomic.StoreInt64(&interactor.scanFilesTotal, int64(total))
+
+	_, _, _ = interactor.MediaFileRepository.ScanMediaFiles(libraryPath, force, &interactor.scanFilesProcessed)
 	interactor.CleanUpLibrary()
 
 	// Log the last time a scan occurred.

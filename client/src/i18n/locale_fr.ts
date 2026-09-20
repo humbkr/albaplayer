@@ -166,6 +166,8 @@ const fr: Translation = {
       updateButton: 'Scanner la librairie',
       updateInProgress:
         'La librairie est en train de se mettre à jour. Cela peut prendre quelques minutes.',
+      scanProgress: '{{processed}} / {{total}} fichiers traités',
+      scanProgressComputing: '{{processed}} / calcul en cours...',
       clearButton: 'Vider la librairie',
       clearConfirm:
         'Etes-vous sûr(e) de vouloir vider la librairie ? Cette action ne peut pas être annulée.',

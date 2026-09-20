@@ -74,24 +74,17 @@ func (r *artistResolver) Albums(ctx context.Context, obj *model.Artist) ([]*mode
 }
 
 // UpdateLibrary is the resolver for the updateLibrary field.
-func (r *mutationResolver) UpdateLibrary(ctx context.Context) (*model.LibraryUpdateState, error) {
+func (r *mutationResolver) UpdateLibrary(ctx context.Context, force *bool) (*model.LibraryUpdateState, error) {
 	if r.Library.LibraryIsUpdating {
 		return nil, fmt.Errorf("library currently updating")
 	}
 
-	r.Library.UpdateLibrary()
+	r.Library.LibraryIsUpdating = true
 
-	countArtists, _ := r.Library.ArtistsCount()
-	countAlbums, _ := r.Library.AlbumsCount()
-	countTracks, _ := r.Library.TracksCount()
+	forceRescan := force != nil && *force
+	go r.Library.UpdateLibrary(forceRescan)
 
-	updateLibraryState := model.LibraryUpdateState{
-		TracksNumber:  &countTracks,
-		AlbumsNumber:  &countAlbums,
-		ArtistsNumber: &countArtists,
-	}
-
-	return &updateLibraryState, nil
+	return &model.LibraryUpdateState{}, nil
 }
 
 // EraseLibrary is the resolver for the eraseLibrary field.
@@ -444,6 +437,21 @@ func (r *queryResolver) Settings(ctx context.Context) (*model.Settings, error) {
 		Version:                &r.Version,
 		AuthEnabled:            &settings.AuthEnabled,
 		AdminUserCreated:       &settings.AdminUserCreated,
+	}, nil
+}
+
+// ScanProgress is the resolver for the scanProgress field.
+func (r *queryResolver) ScanProgress(ctx context.Context) (*model.ScanProgress, error) {
+	filesProcessed, filesTotal := r.Library.ScanProgress()
+	isUpdating := r.Library.LibraryIsUpdating
+
+	fp := int(filesProcessed)
+	ft := int(filesTotal)
+
+	return &model.ScanProgress{
+		IsUpdating:     isUpdating,
+		FilesProcessed: fp,
+		FilesTotal:     ft,
 	}, nil
 }
 

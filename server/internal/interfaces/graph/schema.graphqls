@@ -71,6 +71,12 @@ type LibraryUpdateState {
   artistsNumber: Int
 }
 
+type ScanProgress {
+  isUpdating: Boolean!
+  filesProcessed: Int!
+  filesTotal: Int!
+}
+
 type Query {
   album(id: ID!): Album
   albums: [Album]
@@ -81,6 +87,7 @@ type Query {
   track(id: ID!): Track
   tracks: [Track]
   settings: Settings
+  scanProgress: ScanProgress!
   variable(key: String!): Variable
   user(id: ID): User
   users: [User]
@@ -103,7 +110,7 @@ input CollectionInput {
 }
 
 type Mutation {
-  updateLibrary: LibraryUpdateState
+  updateLibrary(force: Boolean): LibraryUpdateState
   eraseLibrary: LibraryUpdateState
   createUser(input: UserInput!): User!
   updateUser(id: ID!, input: UserInput!): User!

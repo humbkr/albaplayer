@@ -10,10 +10,12 @@ import (
 
 func init() {
 	scanCmd.Flags().BoolVar(&reset, "reset", false, "Erase the library before scanning the source folder")
+	scanCmd.Flags().BoolVar(&force, "force", false, "Force a full rescan, ignoring file modification timestamps")
 	rootCmd.AddCommand(scanCmd)
 }
 
 var reset bool
+var force bool
 
 var scanCmd = &cobra.Command{
 	Use:   "scan",
@@ -27,7 +29,7 @@ var scanCmd = &cobra.Command{
 		if reset {
 			libraryInteractor.EraseLibrary()
 		}
-		libraryInteractor.UpdateLibrary()
+		libraryInteractor.UpdateLibrary(force)
 
 		fmt.Println("Scan finished.")
 		os.Exit(0)

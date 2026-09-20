@@ -17,9 +17,15 @@ type Settings = {
   version: string
 }
 
+export type ScanProgress = {
+  filesProcessed: number
+  filesTotal: number
+}
+
 export type SettingsStateType = {
   library: {
     isUpdating: boolean
+    scanProgress: ScanProgress
     error: string
     config: Settings | object
   }
@@ -33,6 +39,7 @@ export type SettingsStateType = {
 export const initialState: SettingsStateType = {
   library: {
     isUpdating: false,
+    scanProgress: { filesProcessed: 0, filesTotal: 0 },
     error: '',
     config: {},
   },
@@ -45,12 +52,8 @@ export const initialState: SettingsStateType = {
 
 const updateLibrary = createAsyncThunk(
   'settings/updateLibrary',
-  async (_, thunkAPI) => {
+  async () => {
     const response = await libraryAPI.scanLibrary()
-
-    // TODO: reset rtkQuery cache.
-
-    thunkAPI.dispatch(initLibrary(true))
 
     return response.data
   }
@@ -88,20 +91,22 @@ export const settingsSlice = createAppSlice({
     ) {
       state.browser = { ...state.browser, ...action.payload }
     },
+    setScanProgress(state, action: PayloadAction<ScanProgress>) {
+      state.library.scanProgress = action.payload
+      state.library.isUpdating = true
+    },
+    setLibraryNotUpdating(state) {
+      state.library.isUpdating = false
+      state.library.scanProgress = { filesProcessed: 0, filesTotal: 0 }
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(initSettings.pending, (state) => {
-      state.library.error = ''
-      state.library.isUpdating = true
-    })
     builder.addCase(initSettings.fulfilled, (state, action) => {
       state.library.error = ''
       state.library.config = action.payload
-      state.library.isUpdating = false
     })
     builder.addCase(initSettings.rejected, (state, action) => {
       state.library.error = processApiError(action.payload)
-      state.library.isUpdating = false
     })
     builder.addCase(updateLibrary.pending, (state) => {
       state.library.error = ''
@@ -109,7 +114,8 @@ export const settingsSlice = createAppSlice({
     })
     builder.addCase(updateLibrary.fulfilled, (state) => {
       state.library.error = ''
-      state.library.isUpdating = false
+      // isUpdating stays true — the scan runs asynchronously on the server.
+      // Polling will set it to false when the scan completes.
     })
     builder.addCase(updateLibrary.rejected, (state, action) => {
       state.library.error = processApiError(action.payload)
@@ -131,4 +137,9 @@ export const settingsSlice = createAppSlice({
 })
 
 export { initSettings, updateLibrary, eraseLibrary }
-export const { setTheme, setBrowserSettings } = settingsSlice.actions
+export const {
+  setTheme,
+  setBrowserSettings,
+  setScanProgress,
+  setLibraryNotUpdating,
+} = settingsSlice.actions

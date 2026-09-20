@@ -125,6 +125,20 @@ const scanLibrary = () => {
   return request(scanLibraryMutation)
 }
 
+const getScanProgress = () => {
+  const query = gql`
+    query {
+      scanProgress {
+        isUpdating
+        filesProcessed
+        filesTotal
+      }
+    }
+  `
+
+  return request(query)
+}
+
 const emptyLibrary = () => {
   const emptyLibraryMutation = gql`
     mutation eraseLibrary {
@@ -143,5 +157,6 @@ export default {
   getLibrary,
   getFullTrackInfo,
   scanLibrary,
+  getScanProgress,
   emptyLibrary,
 }
