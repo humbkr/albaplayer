@@ -98,7 +98,6 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   margin-right: 10px;
-  padding: 8px 0;
 `
 const UserButton = styled.button<{ active: boolean }>`
   background-color: ${(props) =>

@@ -2,6 +2,8 @@ import type { Ref } from 'react'
 import { forwardRef } from 'react'
 import styled from 'styled-components'
 import SearchBar from 'modules/browser/components/SearchBar'
+import LibraryUpdateButton from 'modules/library/components/LibraryUpdateButton'
+import AppUpdateButton from 'modules/settings/components/AppUpdateButton'
 import UserActionsMenu from 'modules/user/components/UserActionsMenu'
 
 type Props = {
@@ -14,7 +16,11 @@ function ActionBar({ forwardedRef }: Props) {
       <Search>
         <SearchBar ref={forwardedRef} />
       </Search>
-      <UserActionsMenu />
+      <Actions>
+        <LibraryUpdateButton />
+        <AppUpdateButton />
+        <UserActionsMenu />
+      </Actions>
     </Container>
   )
 }
@@ -38,4 +44,9 @@ const Container = styled.div`
 `
 const Search = styled.div`
   flex-grow: 1;
+`
+const Actions = styled.div`
+  display: flex;
+  padding: 8px 0;
+  gap: 10px;
 `

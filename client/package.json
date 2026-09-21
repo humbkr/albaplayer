@@ -1,7 +1,7 @@
 {
   "name": "albaplayer",
   "private": true,
-  "version": "3.0.0-rc8",
+  "version": "3.0.0-rc10",
   "type": "module",
   "scripts": {
     "dev": "yarn install && vite",
@@ -40,6 +40,7 @@
     "react-select": "^5.10.2",
     "react-slider": "2.0.6",
     "react-toastify": "11.0.3",
+    "react-tooltip": "6.0.8",
     "react-virtuoso": "4.12.3",
     "reselect": "5.1.1",
     "styled-components": "6.1.15",

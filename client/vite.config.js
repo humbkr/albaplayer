@@ -27,6 +27,8 @@ export default defineConfig(({ command }) => ({
       '/covers': 'http://localhost:8888',
       '/auth': 'http://localhost:8888',
       '/config': 'http://localhost:8888',
+      '/version': 'http://localhost:8888',
+      '/library-last-updated': 'http://localhost:8888',
     },
   },
   test: {
