@@ -191,6 +191,8 @@ const en: Translation = {
       version: 'Version: {{version}}',
     },
     refreshAppData: 'Synchronise',
+    updateAvailable: 'A new version is available. Click to update.',
+    libraryUpdateAvailable: 'The library has been updated. Click to refresh.',
   },
   user: {
     login: {

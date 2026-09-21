@@ -24,8 +24,12 @@ COPY --from=build_client /app/dist/ /app/frontend/dist/
 # Install dependencies
 RUN go mod download
 
-# Build app
-RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=x86_64-linux-gnu-gcc go build -a -o /generated/alba .
+# Read version from the client package.json (single source of truth).
+COPY --from=build_client /app/package.json /tmp/client_package.json
+RUN APP_VERSION=$(grep '"version"' /tmp/client_package.json | head -1 | sed 's/.*: *"//;s/".*//' ) \
+    && CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=x86_64-linux-gnu-gcc \
+       go build -a -ldflags "-X github.com/humbkr/albaplayer/internal/version.Version=${APP_VERSION}" \
+       -o /generated/alba .
 
 # Copy default config files
 RUN cp /app/build/prod.alba.yml /generated/alba.yml

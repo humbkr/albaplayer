@@ -195,6 +195,10 @@ const fr: Translation = {
       version: 'Version: {{version}}',
     },
     refreshAppData: 'Synchroniser',
+    updateAvailable:
+      'Une nouvelle version est disponible. Cliquez pour mettre à jour.',
+    libraryUpdateAvailable:
+      'La bibliothèque a été mise à jour. Cliquez pour rafraîchir.',
   },
   user: {
     login: {

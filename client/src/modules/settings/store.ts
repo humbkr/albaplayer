@@ -50,14 +50,11 @@ export const initialState: SettingsStateType = {
   },
 }
 
-const updateLibrary = createAsyncThunk(
-  'settings/updateLibrary',
-  async () => {
-    const response = await libraryAPI.scanLibrary()
+const updateLibrary = createAsyncThunk('settings/updateLibrary', async () => {
+  const response = await libraryAPI.scanLibrary()
 
-    return response.data
-  }
-)
+  return response.data
+})
 
 const eraseLibrary = createAsyncThunk(
   'settings/eraseLibrary',
@@ -114,7 +111,7 @@ export const settingsSlice = createAppSlice({
     })
     builder.addCase(updateLibrary.fulfilled, (state) => {
       state.library.error = ''
-      // isUpdating stays true — the scan runs asynchronously on the server.
+      // IsUpdating stays true — the scan runs asynchronously on the server.
       // Polling will set it to false when the scan completes.
     })
     builder.addCase(updateLibrary.rejected, (state, action) => {

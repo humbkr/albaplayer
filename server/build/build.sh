@@ -2,8 +2,9 @@
 
 project_root="$(dirname "$(pwd)")"
 
-echo "Enter version number: "
-read version_number
+# Read version from client/package.json (single source of truth).
+version_number=$(grep '"version"' "${project_root}/../client/package.json" | head -1 | sed 's/.*: *"//;s/".*//')
+echo "Building version: ${version_number}"
 
 
 # Clean previously generated files.
@@ -14,12 +15,12 @@ mkdir ${project_root}/build/linux ${project_root}/build/macos ${project_root}/bu
 
 # Build for Linux.
 echo "Start build for Linux..."
-env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o ${project_root}/build/linux/alba ${project_root}/main.go
+env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -ldflags "-X github.com/humbkr/albaplayer/internal/version.Version=${version_number}" -o ${project_root}/build/linux/alba ${project_root}/main.go
 echo "Finished."
 
 # Build for MacOs.
 echo "Start build for MacOs..."
-env CC=o64-clang GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build -o ${project_root}/build/macos/alba ${project_root}/main.go
+env CC=o64-clang GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build -ldflags "-X github.com/humbkr/albaplayer/internal/version.Version=${version_number}" -o ${project_root}/build/macos/alba ${project_root}/main.go
 echo "Finished."
 
 # Build for MacOs on Apple Silicon.
@@ -29,7 +30,7 @@ echo "Finished."
 
 # Build for Windows.
 echo "Start build for Windows..."
-env CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 CGO_ENABLED=1 go build -o ${project_root}/build/windows/alba.exe ${project_root}/main.go
+env CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 CGO_ENABLED=1 go build -ldflags "-X github.com/humbkr/albaplayer/internal/version.Version=${version_number}" -o ${project_root}/build/windows/alba.exe ${project_root}/main.go
 echo "Finished."
 
 echo "Generate archives..."
