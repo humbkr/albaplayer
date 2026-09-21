@@ -7,11 +7,11 @@ import { renderWithProviders } from 'common/utils/testing/test-utils'
 vi.mock('modules/browser/components/SearchBar', () => ({
   default: () => <div data-testid="search-bar" />,
 }))
-vi.mock('common/components/layout/LibraryUpdateButton', () => ({
+vi.mock('modules/library/components/LibraryUpdateButton', () => ({
   default: () => <div data-testid="library-update-button" />,
 }))
-vi.mock('common/components/layout/UpdateButton', () => ({
-  default: () => <div data-testid="update-button" />,
+vi.mock('modules/settings/components/AppUpdateButton', () => ({
+  default: () => <div data-testid="app-update-button" />,
 }))
 vi.mock('modules/user/components/UserActionsMenu', () => ({
   default: () => <div data-testid="user-action-menu" />,
