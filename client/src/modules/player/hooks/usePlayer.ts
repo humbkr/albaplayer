@@ -246,6 +246,8 @@ export default function usePlayer() {
       navigator.mediaSession.setActionHandler('nexttrack', () =>
         handleSetNextTrack()
       )
+      navigator.mediaSession.setActionHandler('seekbackward', null)
+      navigator.mediaSession.setActionHandler('seekforward', null)
     }
 
     return () => {

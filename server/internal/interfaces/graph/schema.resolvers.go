@@ -82,7 +82,10 @@ func (r *mutationResolver) UpdateLibrary(ctx context.Context, force *bool) (*mod
 	r.Library.LibraryIsUpdating = true
 
 	forceRescan := force != nil && *force
-	go r.Library.UpdateLibrary(forceRescan)
+	go func() {
+		r.Library.UpdateLibrary(forceRescan)
+		r.DataLoaders.ClearAll()
+	}()
 
 	return &model.LibraryUpdateState{}, nil
 }
@@ -99,6 +102,7 @@ func (r *mutationResolver) EraseLibrary(ctx context.Context) (*model.LibraryUpda
 	}
 
 	r.Library.EraseLibrary()
+	r.DataLoaders.ClearAll()
 
 	countArtists, _ := r.Library.ArtistsCount()
 	countAlbums, _ := r.Library.AlbumsCount()

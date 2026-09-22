@@ -3,16 +3,19 @@ import styled from 'styled-components'
 const VirtualListItem = styled.div<{
   border: boolean
   selected: boolean
+  fixedHeight?: boolean
 }>`
   width: 100%;
-  height: ${(props) => props.theme.layout.itemHeight};
+  ${(props) =>
+    props.fixedHeight === false
+      ? `min-height: ${props.theme.layout.itemHeight};`
+      : `height: ${props.theme.layout.itemHeight}; overflow: hidden;`}
   box-sizing: border-box;
   ${(props) =>
     props.border
       ? `border-bottom: 1px solid ${props.theme.colors.separator}`
       : ''};
 
-  overflow: hidden;
   transition: background-color 0.15s ease-in-out;
 
   &:hover {

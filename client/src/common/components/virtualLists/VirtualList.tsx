@@ -105,6 +105,7 @@ export default function VirtualList({
               className={selected ? 'selected' : ''}
               selected={selected}
               border
+              fixedHeight={fixedItemHeight}
               key={item.id}
               onClick={() => onItemClick(item.id)}
             >

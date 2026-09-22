@@ -49,6 +49,12 @@ func Middleware(loaders *Loaders, next http.Handler) http.Handler {
 	})
 }
 
+// ClearAll clears the cache of all data loaders
+func (l *Loaders) ClearAll() {
+	l.ArtistLoader.ClearAll()
+	l.AlbumLoader.ClearAll()
+}
+
 // For returns the dataloader for a given context
 func For(ctx context.Context) *Loaders {
 	return ctx.Value(loadersKey).(*Loaders)

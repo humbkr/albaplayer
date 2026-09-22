@@ -14,4 +14,5 @@ type Resolver struct {
 	UsersInteractor            *business.UsersInteractor
 	InternalVariableInteractor *business.InternalVariableInteractor
 	Version                    string
+	DataLoaders                *Loaders
 }
