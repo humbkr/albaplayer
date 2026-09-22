@@ -74,7 +74,7 @@ const NowPlayingQueueWrapper = styled.div<{ headerIsPinned: boolean }>`
   ${({ headerIsPinned }) =>
     headerIsPinned &&
     `
-    padding: 210px 50px 30px;
+    padding: 30px 50px 30px;
   `}
 
   > h2 {

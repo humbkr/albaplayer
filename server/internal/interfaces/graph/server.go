@@ -16,6 +16,9 @@ type GraphQLServerInitialData struct {
 }
 
 func InitGraphQLServer(initialData GraphQLServerInitialData) http.Handler {
+	// Create graphql data loaders for performance (shared across requests)
+	dataLoaders := NewDataLoaders(initialData.LibraryInteractor)
+
 	// Create the graphql handler
 	graphQLHandler := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &Resolver{
 		Library:                    initialData.LibraryInteractor,
@@ -23,10 +26,8 @@ func InitGraphQLServer(initialData GraphQLServerInitialData) http.Handler {
 		UsersInteractor:            initialData.UsersInteractor,
 		InternalVariableInteractor: initialData.InternalVariableInteractor,
 		Version:                    version.Version,
+		DataLoaders:                dataLoaders,
 	}}))
-
-	// Create graphql data loaders for performance
-	dataLoaders := NewDataLoaders(initialData.LibraryInteractor)
 
 	// Wrap the graphql handler with middleware to inject data loaders
 	dataloaderHandler := Middleware(dataLoaders, graphQLHandler)
