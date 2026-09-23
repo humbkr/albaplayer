@@ -34,6 +34,7 @@ const collectionApi = graphqlAPISlice
           const mutation = gql`
             mutation CreateCollection($input: CollectionInput!) {
               createCollection(input: $input) {
+                id
                 title
                 type
                 items
@@ -54,8 +55,8 @@ const collectionApi = graphqlAPISlice
             variables,
           }
         },
-        transformResponse: (response: GetCollectionResponse) =>
-          response.collection,
+        transformResponse: (response: { createCollection: ApiCollection }) =>
+          response.createCollection,
         invalidatesTags: ['Collections', 'Collection'],
       }),
       updateCollection: builder.mutation<ApiCollection, ApiCollectionForUpdate>(
@@ -86,8 +87,8 @@ const collectionApi = graphqlAPISlice
               variables,
             }
           },
-          transformResponse: (response: GetCollectionResponse) =>
-            response.collection,
+          transformResponse: (response: { updateCollection: ApiCollection }) =>
+            response.updateCollection,
           invalidatesTags: ['Collections', 'Collection'],
         }
       ),

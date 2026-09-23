@@ -153,9 +153,24 @@ const emptyLibrary = () => {
   return request(emptyLibraryMutation)
 }
 
+const getLibraryLastUpdated = async (): Promise<string | null> => {
+  const query = gql`
+    query {
+      settings {
+        libraryLastUpdated
+      }
+    }
+  `
+
+  const response = await request(query)
+
+  return response.data?.settings?.libraryLastUpdated ?? null
+}
+
 export default {
   getLibrary,
   getFullTrackInfo,
+  getLibraryLastUpdated,
   scanLibrary,
   getScanProgress,
   emptyLibrary,

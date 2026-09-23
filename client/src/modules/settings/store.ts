@@ -15,6 +15,7 @@ type Settings = {
   coversPreferredSource: string
   disableLibrarySettings: boolean
   version: string
+  libraryLastUpdated: string
 }
 
 export type ScanProgress = {

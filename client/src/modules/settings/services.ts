@@ -4,7 +4,7 @@ import { initLibrary } from 'modules/library/store'
 
 // Refresh app data.
 export async function refreshData() {
-  store.dispatch(initLibrary(true))
+  await store.dispatch(initLibrary(true))
   store.dispatch({
     type: `${graphqlAPISlice.reducerPath}/invalidateTags`,
     payload: ['Collections', 'Users'],

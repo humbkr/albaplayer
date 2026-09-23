@@ -67,13 +67,15 @@ var serveCmd = &cobra.Command{
 		coverFilesHandler := interfaces.NewCoverStreamHandler(&libraryInteractor)
 		mux.Handle("/covers/", http.StripPrefix("/covers/", middleware(coverFilesHandler)))
 
+		authHandlers := &auth.AuthHandlers{UserInteractor: &usersInteractor, LibraryInteractor: &libraryInteractor}
+		// Root user creation must always be available (used at first launch even
+		// when auth is disabled, so the account exists for later use).
+		mux.HandleFunc("/auth/create-root", authHandlers.CreateRootUser)
+
 		if viper.GetBool("Users.AuthEnabled") {
-			// Serve auth endpoints
-			auth := &auth.AuthHandlers{UserInteractor: &usersInteractor, LibraryInteractor: &libraryInteractor}
-			mux.HandleFunc("/auth/login", auth.Login)
-			mux.HandleFunc("/auth/logout", auth.Logout)
-			mux.HandleFunc("/auth/refresh-token", auth.RefreshToken)
-			mux.HandleFunc("/auth/create-root", auth.CreateRootUser)
+			mux.HandleFunc("/auth/login", authHandlers.Login)
+			mux.HandleFunc("/auth/logout", authHandlers.Logout)
+			mux.HandleFunc("/auth/refresh-token", authHandlers.RefreshToken)
 		}
 
 		// Serve app config.

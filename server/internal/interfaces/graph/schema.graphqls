@@ -63,6 +63,7 @@ type Settings {
   version: String
   authEnabled: Boolean
   adminUserCreated: Boolean
+  libraryLastUpdated: String
 }
 
 type LibraryUpdateState {

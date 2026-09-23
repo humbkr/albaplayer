@@ -434,14 +434,21 @@ func (r *queryResolver) Tracks(ctx context.Context) ([]*model.Track, error) {
 func (r *queryResolver) Settings(ctx context.Context) (*model.Settings, error) {
 	settings := r.ClientSettings.GetSettings()
 
-	return &model.Settings{
+	result := &model.Settings{
 		LibraryPath:            &settings.LibraryPath,
 		CoversPreferredSource:  &settings.CoversPreferredSource,
 		DisableLibrarySettings: &settings.DisableLibraryConfiguration,
 		Version:                &r.Version,
 		AuthEnabled:            &settings.AuthEnabled,
 		AdminUserCreated:       &settings.AdminUserCreated,
-	}, nil
+	}
+
+	variable, err := r.InternalVariableInteractor.GetInternalVariable("library_last_updated")
+	if err == nil {
+		result.LibraryLastUpdated = &variable.Value
+	}
+
+	return result, nil
 }
 
 // ScanProgress is the resolver for the scanProgress field.

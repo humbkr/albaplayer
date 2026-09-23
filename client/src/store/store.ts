@@ -1,5 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
+import {
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist'
 import { graphqlAPISlice, restAPISlice } from 'api/api'
 import rootReducer from './rootReducer'
 
@@ -11,10 +20,11 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
     // Adding the api middleware enables caching, invalidation, polling,
     // and other useful features of `rtk-query`.
     middleware: (getDefaultMiddleware) => {
-      return getDefaultMiddleware().concat(
-        graphqlAPISlice.middleware,
-        restAPISlice.middleware
-      )
+      return getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        },
+      }).concat(graphqlAPISlice.middleware, restAPISlice.middleware)
     },
     preloadedState,
   })
@@ -26,3 +36,4 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
 }
 
 export const store = makeStore()
+export const persistor = persistStore(store)

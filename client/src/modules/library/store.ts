@@ -76,6 +76,13 @@ export const librarySlice = createAppSlice({
       state.isInitialized = false
       state.initHasFailed = true
     })
+    builder.addCase(initLibrary.fulfilled, (state) => {
+      // When the persisted library is up-to-date, mark as initialized
+      // without re-fetching.
+      if (!state.isFetching && state.lastScan) {
+        state.isInitialized = true
+      }
+    })
   },
 })
 
@@ -91,6 +98,7 @@ const initLibrary = createAsyncThunk(
       return thunkAPI.dispatch(fetchLibrary())
     }
 
+    // Library is up-to-date, mark as initialized from persisted state.
     return null
   }
 )
@@ -105,8 +113,9 @@ const fetchLibrary = createAsyncThunk('library/fetch', async (_, thunkAPI) => {
   return response?.data
 })
 
-// TODO: recode this
-export const shouldFetchLibrary = async (libraryState: LibraryStateType) => {
+export const shouldFetchLibrary = async (
+  libraryState: LibraryStateType
+): Promise<boolean> => {
   // If the library is currently fetching, nothing to do.
   if (libraryState.isFetching) {
     return false
@@ -117,5 +126,17 @@ export const shouldFetchLibrary = async (libraryState: LibraryStateType) => {
     return true
   }
 
-  return true
+  // Compare local lastScan with the server's libraryLastUpdated.
+  try {
+    const serverLastUpdated = await libraryAPI.getLibraryLastUpdated()
+
+    if (!serverLastUpdated) {
+      return true
+    }
+
+    return serverLastUpdated !== libraryState.lastScan
+  } catch {
+    // If we can't reach the server, use the persisted library.
+    return false
+  }
 }

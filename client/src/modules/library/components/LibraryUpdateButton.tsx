@@ -7,15 +7,21 @@ import { refreshData } from 'modules/settings/services'
 
 function LibraryUpdateButton() {
   const { t } = useTranslation()
-  const { libraryUpdateAvailable } = useLibraryUpdateAvailable()
+  const { libraryUpdateAvailable, refetchServerLastUpdated } =
+    useLibraryUpdateAvailable()
 
   if (!libraryUpdateAvailable) {
     return null
   }
 
+  const handleClick = async () => {
+    await refreshData()
+    refetchServerLastUpdated()
+  }
+
   return (
     <Button
-      onClick={refreshData}
+      onClick={handleClick}
       data-tooltip-id="library-update-tooltip"
       data-testid="library-update-available-button"
     >
