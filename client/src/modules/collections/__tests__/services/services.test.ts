@@ -87,6 +87,9 @@ const mockState = {
 
 describe('Collections > services', () => {
   beforeEach(() => {
+    mockCreateCollection.mockReturnValue({
+      unwrap: vi.fn().mockResolvedValue({ id: 'new-id' }),
+    })
     useCreateCollectionMutationMock.mockReturnValue([mockCreateCollection])
     useUpdateCollectionMutationMock.mockReturnValue([mockUpdateCollection])
   })
@@ -128,12 +131,12 @@ describe('Collections > services', () => {
   })
 
   describe('useCreatePlaylist', () => {
-    test('should prepare the correct data to send to the API when creating a playlist with no tracks', () => {
+    test('should prepare the correct data to send to the API when creating a playlist with no tracks', async () => {
       useCreateCollectionMutationMock.mockReturnValue([mockCreateCollection])
 
       const { result } = renderHook(() => useCreatePlaylist())
 
-      result.current({ title: 'playlistTitle', tracks: [] })
+      await result.current({ title: 'playlistTitle', tracks: [] })
 
       expect(mockCreateCollection).toHaveBeenCalledWith({
         title: 'playlistTitle',
@@ -142,12 +145,12 @@ describe('Collections > services', () => {
       })
     })
 
-    test('should prepare the correct data to send to the API when creating a playlist with tracks', () => {
+    test('should prepare the correct data to send to the API when creating a playlist with tracks', async () => {
       useCreateCollectionMutationMock.mockReturnValue([mockCreateCollection])
 
       const { result } = renderHook(() => useCreatePlaylist())
 
-      result.current({
+      await result.current({
         title: 'playlistTitle',
         tracks: [
           { id: 'track01', title: 'trackTitle01', src: 'trackSrc01' },

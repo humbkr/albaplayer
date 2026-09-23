@@ -77,6 +77,7 @@ vi.mock(import('i18n/i18n'), async (importOriginal) => {
 vi.mock('modules/library/api', () => ({
   default: {
     getLibrary: vi.fn().mockResolvedValue({}),
+    getLibraryLastUpdated: vi.fn().mockResolvedValue(null),
     scanLibrary: vi.fn().mockResolvedValue({}),
     emptyLibrary: vi.fn().mockResolvedValue({}),
   },

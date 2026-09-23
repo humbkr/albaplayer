@@ -34,6 +34,7 @@ type Settings struct {
 	Version                *string `json:"version,omitempty"`
 	AuthEnabled            *bool   `json:"authEnabled,omitempty"`
 	AdminUserCreated       *bool   `json:"adminUserCreated,omitempty"`
+	LibraryLastUpdated     *string `json:"libraryLastUpdated,omitempty"`
 }
 
 type UserInput struct {

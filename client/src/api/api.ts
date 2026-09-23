@@ -134,6 +134,7 @@ export const getSettings = () => {
         coversPreferredSource
         disableLibrarySettings
         version
+        libraryLastUpdated
       }
     }
   `

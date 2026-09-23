@@ -8,6 +8,8 @@ import {
   useGetCurrentPlaylist,
   useUpdatePlaylistInfo,
 } from 'modules/collections/services/services'
+import { useAppDispatch } from 'store/hooks'
+import { playlistSelectPlaylist } from 'modules/collections/store'
 
 type Props = {
   addMode: boolean
@@ -17,6 +19,7 @@ type Props = {
 
 function PlaylistEditModal({ addMode, isOpen, onClose }: Props) {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const createPlaylist = useCreatePlaylist()
   const updateInfo = useUpdatePlaylistInfo()
 
@@ -37,7 +40,10 @@ function PlaylistEditModal({ addMode, isOpen, onClose }: Props) {
         title: data.title,
       })
     } else {
-      createPlaylist({ title: data.title, tracks: [] })
+      const created = await createPlaylist({ title: data.title, tracks: [] })
+      if (created?.id) {
+        dispatch(playlistSelectPlaylist(created.id))
+      }
     }
 
     onClose()

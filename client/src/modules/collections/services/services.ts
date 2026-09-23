@@ -24,7 +24,7 @@ export function useGetCurrentPlaylist() {
 export function useCreatePlaylist() {
   const [createCollection] = useCreateCollectionMutation()
 
-  return ({ title, tracks }: { title: string; tracks: Track[] }) => {
+  return async ({ title, tracks }: { title: string; tracks: Track[] }) => {
     const playlistItems = tracks.map((item: Track, index: number) => ({
       track: item,
       position: index + 1,
@@ -36,7 +36,9 @@ export function useCreatePlaylist() {
       items: JSON.stringify(playlistItems),
     }
 
-    createCollection(collection)
+    const result = await createCollection(collection).unwrap()
+
+    return result
   }
 }
 
