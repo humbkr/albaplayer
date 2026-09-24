@@ -15,6 +15,7 @@ import { PlayerPlaybackMode } from 'modules/player/utils'
 import APIConstants from 'api/constants'
 import { useInterval } from 'common/utils/useInterval'
 import { useTranslation } from 'react-i18next'
+import { refreshToken } from 'modules/user/authApi'
 
 function getListeningVolume(volumeBarValue: number) {
   return volumeBarValue ** 2
@@ -127,6 +128,8 @@ export default function usePlayer() {
   // Stall recovery state.
   const stallTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const recoveryAttemptsRef = useRef(0)
+  // Prevents infinite retry loops when refreshing the auth token on error.
+  const authRetryRef = useRef(false)
 
   const clearStallRecovery = useCallback(() => {
     if (stallTimeoutRef.current) {
@@ -150,12 +153,17 @@ export default function usePlayer() {
       return
     }
 
-    stallTimeoutRef.current = setTimeout(() => {
+    stallTimeoutRef.current = setTimeout(async () => {
       if (
         !audio.paused &&
         audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA
       ) {
         recoveryAttemptsRef.current += 1
+
+        // The stall may be caused by an expired auth token, so refresh it
+        // before re-buffering.
+        await refreshToken()
+
         // Force re-buffering from the current position.
         // eslint-disable-next-line no-self-assign
         audio.currentTime = audio.currentTime
@@ -190,6 +198,7 @@ export default function usePlayer() {
 
       // Reset recovery state for new track.
       recoveryAttemptsRef.current = 0
+      authRetryRef.current = false
       clearStallRecovery()
 
       // Recovery handlers: schedule re-buffering if audio stalls too long.
@@ -198,9 +207,26 @@ export default function usePlayer() {
       playerRef.current.onplaying = () => {
         clearStallRecovery()
         recoveryAttemptsRef.current = 0
+        authRetryRef.current = false
       }
-      playerRef.current.onerror = () => {
+      playerRef.current.onerror = async () => {
         clearStallRecovery()
+
+        if (!authRetryRef.current && track) {
+          authRetryRef.current = true
+          const refreshResult = await refreshToken()
+
+          if (!refreshResult.error) {
+            playerRef.current.src = APIConstants.BACKEND_BASE_URL + track.src
+            playerRef.current.load()
+            playerRef.current.play().catch(() => {
+              dispatch(playerTogglePlayPause(false))
+            })
+
+            return
+          }
+        }
+
         dispatch(playerTogglePlayPause(false))
       }
 
