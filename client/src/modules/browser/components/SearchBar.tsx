@@ -1,5 +1,5 @@
 import type React from 'react'
-import type { Ref } from 'react'
+import type { Ref, RefObject } from 'react'
 import styled from 'styled-components'
 import { DebounceInput } from 'react-debounce-input'
 import { useTranslation } from 'react-i18next'
@@ -74,7 +74,12 @@ export default function SearchBar({ ref }: Props) {
           }}
         />
         {searchState.term && (
-          <ClearButton onClick={clearSearch}>
+          <ClearButton
+            onClick={() => {
+              clearSearch()
+              ;(ref as RefObject<HTMLElement>)?.current?.focus()
+            }}
+          >
             <ActionButtonIcon icon="close" size={18} />
           </ClearButton>
         )}

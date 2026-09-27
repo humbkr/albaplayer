@@ -1,5 +1,5 @@
 import type { Ref } from 'react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { addTrack, playTrack } from 'modules/player/store/store'
 import PlaylistsListHeader from 'modules/collections/components/PlaylistListHeader'
@@ -34,6 +34,16 @@ function PlaylistListPane({
   const { data: { playlists = [] } = {} } = useGetCollectionsQuery()
 
   const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    const hasValidSelection = playlists.some(
+      (item) => item.id === currentPlaylistId
+    )
+
+    if (!hasValidSelection && playlists.length > 0) {
+      dispatch(playlistSelectPlaylist(playlists[0].id))
+    }
+  }, [playlists, currentPlaylistId, dispatch])
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.code === 'Enter') {

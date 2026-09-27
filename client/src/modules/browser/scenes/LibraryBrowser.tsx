@@ -30,6 +30,26 @@ export default function LibraryBrowser({ ref }: Props) {
     ;(ref as RefObject<HTMLElement>)?.current?.focus()
   }, [dispatch, ref])
 
+  useEffect(() => {
+    const searchInput = (ref as RefObject<HTMLElement>)?.current
+    if (!searchInput) {
+      return
+    }
+
+    const handleTabToArtists = (e: KeyboardEvent) => {
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        ;(artistsPaneRef.current?.children[0] as HTMLElement)?.focus()
+      }
+    }
+
+    searchInput.addEventListener('keydown', handleTabToArtists)
+
+    return () => {
+      searchInput.removeEventListener('keydown', handleTabToArtists)
+    }
+  }, [ref])
+
   const handleSwitchPaneArtists = (e: KeyboardEvent) => {
     if (e.code === 'ArrowRight') {
       ;(albumsPaneRef.current?.children[0] as HTMLElement).focus()
