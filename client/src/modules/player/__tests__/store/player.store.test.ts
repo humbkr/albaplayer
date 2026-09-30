@@ -14,6 +14,7 @@ const {
   playerSetProgress,
   playerSetDuration,
   playerSetVolume,
+  playerSetLoading,
 } = playerSlice.actions
 
 vi.mock('modules/library/api', () => ({
@@ -322,6 +323,27 @@ describe('player reducer', () => {
     ).toEqual({
       ...playerInitialState,
       progress: 120,
+    })
+  })
+
+  it('should handle playerSetLoading action', () => {
+    const loadingState = playerSlice.reducer(playerInitialState, {
+      type: playerSetLoading.type,
+      payload: true,
+    })
+    expect(loadingState).toEqual({
+      ...playerInitialState,
+      loading: true,
+    })
+
+    expect(
+      playerSlice.reducer(loadingState, {
+        type: playerSetLoading.type,
+        payload: false,
+      })
+    ).toEqual({
+      ...playerInitialState,
+      loading: false,
     })
   })
 })

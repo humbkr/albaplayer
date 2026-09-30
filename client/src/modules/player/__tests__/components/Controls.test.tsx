@@ -20,6 +20,7 @@ describe('Controls', () => {
   it('displays correctly when paused / no repeat / no shuffle / no track', () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack={false}
         hasPreviousTrack={false}
         hasTrack={false}
@@ -55,6 +56,7 @@ describe('Controls', () => {
   it('displays correctly when paused / no repeat / no shuffle / track / no previous track / no next track', () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack={false}
         hasPreviousTrack={false}
         hasTrack
@@ -90,6 +92,7 @@ describe('Controls', () => {
   it('displays correctly when paused / no repeat / no shuffle / track / previous track / no next track', () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack={false}
         hasPreviousTrack
         hasTrack
@@ -125,6 +128,7 @@ describe('Controls', () => {
   it('displays correctly when paused / no repeat / no shuffle / track / no previous track / next track', () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack
         hasPreviousTrack={false}
         hasTrack
@@ -160,6 +164,7 @@ describe('Controls', () => {
   it('displays correctly when paused / no repeat / no shuffle / track / previous track / next track', () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -195,6 +200,7 @@ describe('Controls', () => {
   it('displays correctly when playing / no repeat / no shuffle / track / previous track / next track', () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -230,6 +236,7 @@ describe('Controls', () => {
   it('displays correctly when playing / no repeat / shuffle / track / previous track / next track', () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -265,6 +272,7 @@ describe('Controls', () => {
   it('displays correctly when playing / repeat all / shuffle / track / previous track / next track', () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -300,6 +308,7 @@ describe('Controls', () => {
   it('displays correctly when playing / repeat one / shuffle / track / previous track / next track', () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -335,6 +344,7 @@ describe('Controls', () => {
   it('triggers the right changes when play / pause button is clicked', async () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -355,9 +365,41 @@ describe('Controls', () => {
     expect(mockTogglePlayPause).toHaveBeenCalledTimes(1)
   })
 
+  it('displays a spinner and disables play / pause while a track is loading', async () => {
+    renderWithProviders(
+      <Controls
+        loading
+        hasNextTrack
+        hasPreviousTrack
+        hasTrack
+        playing
+        repeat={PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT}
+        setVolume={mockSetVolume}
+        shuffle={false}
+        skipToNext={mockSkipToNext}
+        skipToPrevious={mockSkipToPrevious}
+        togglePlayPause={mockTogglePlayPause}
+        toggleRepeat={mockToggleRepeat}
+        toggleShuffle={mockToggleShuffle}
+        volume={1}
+      />
+    )
+
+    // The spinner replaces the play / pause icon.
+    expect(screen.getByTestId('player-loading-spinner')).toBeInTheDocument()
+    expect(screen.queryByTestId('player-pause-icon')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('player-play-icon')).not.toBeInTheDocument()
+    // The play / pause button is disabled even though a track is loaded.
+    expect(screen.getByTestId('play-pause-button')).toBeDisabled()
+
+    await userEvent.click(screen.getByTestId('play-pause-button'))
+    expect(mockTogglePlayPause).not.toHaveBeenCalled()
+  })
+
   it('triggers the right changes when previous / next buttons are clicked', async () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -384,6 +426,7 @@ describe('Controls', () => {
   it('triggers the right changes when repeat button is clicked', async () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -407,6 +450,7 @@ describe('Controls', () => {
   it('triggers the right changes when shuffle button is clicked', async () => {
     renderWithProviders(
       <Controls
+        loading={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack

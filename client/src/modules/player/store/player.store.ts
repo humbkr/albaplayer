@@ -56,6 +56,9 @@ export const playerSlice = createAppSlice({
     playerSetProgress(state, action: PayloadAction<number>) {
       state.progress = action.payload
     },
+    playerSetLoading(state, action: PayloadAction<boolean>) {
+      state.loading = action.payload
+    },
   },
 })
 
@@ -67,4 +70,5 @@ export const {
   playerSetTrack,
   playerSetDuration,
   playerSetProgress,
+  playerSetLoading,
 } = playerSlice.actions

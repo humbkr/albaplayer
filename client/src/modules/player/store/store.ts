@@ -14,6 +14,7 @@ export const {
   playerSetTrack,
   playerSetDuration,
   playerSetProgress,
+  playerSetLoading,
 } = playerSlice.actions
 export const {
   queueAddTracks,
@@ -47,7 +48,7 @@ export const setItemFromQueue = (itemPosition: number): AppThunk =>
 export const playTrack = (id: string) => playTracks([id])
 export const playTracks =
   (trackIds: string[]): AppThunk =>
-  (dispatch, getState) => {
+  async (dispatch, getState) => {
     const { library } = getState()
 
     const tracks = trackIds.map((id) => {
@@ -58,25 +59,35 @@ export const playTracks =
       return track
     })
 
+    dispatch(playerSetLoading(true))
     dispatch(queueClear())
     dispatch(queueAddTracks(tracks))
-    dispatch(setItemFromQueue(0))
+    try {
+      await dispatch(setItemFromQueue(0))
+    } finally {
+      dispatch(playerSetLoading(false))
+    }
     dispatch(playerTogglePlayPause(true))
   }
 
 export const playAlbum = (id: string) => playAlbums([id])
 export const playAlbums =
   (albumIds: string[]): AppThunk =>
-  (dispatch, getState) => {
+  async (dispatch, getState) => {
     const { library } = getState()
 
     const tracks = albumIds.flatMap((id) =>
       immutableSortTracks(getTracksFromAlbum(id, library), 'album')
     )
 
+    dispatch(playerSetLoading(true))
     dispatch(queueClear())
     dispatch(queueAddTracks(tracks))
-    dispatch(setItemFromQueue(0))
+    try {
+      await dispatch(setItemFromQueue(0))
+    } finally {
+      dispatch(playerSetLoading(false))
+    }
     dispatch(playerTogglePlayPause(true))
   }
 
@@ -84,32 +95,42 @@ export const playAlbumDisc = (albumId: string, disc: string) =>
   playAlbumDiscs(albumId, [disc])
 export const playAlbumDiscs =
   (albumId: string, discs: string[]): AppThunk =>
-  (dispatch, getState) => {
+  async (dispatch, getState) => {
     const { library } = getState()
 
     const tracks = getTracksFromAlbum(albumId, library).filter((track) =>
       discs.includes(track.disc as string)
     )
 
+    dispatch(playerSetLoading(true))
     dispatch(queueClear())
     dispatch(queueAddTracks(immutableSortTracks(tracks, 'album')))
-    dispatch(setItemFromQueue(0))
+    try {
+      await dispatch(setItemFromQueue(0))
+    } finally {
+      dispatch(playerSetLoading(false))
+    }
     dispatch(playerTogglePlayPause(true))
   }
 
 export const playArtist = (id: string) => playArtists([id])
 export const playArtists =
   (artistIds: string[]): AppThunk =>
-  (dispatch, getState) => {
+  async (dispatch, getState) => {
     const { library } = getState()
 
     const tracks = artistIds.flatMap((id) =>
       immutableSortTracks(getTracksFromArtist(id, library), 'number')
     )
 
+    dispatch(playerSetLoading(true))
     dispatch(queueClear())
     dispatch(queueAddTracks(tracks))
-    dispatch(setItemFromQueue(0))
+    try {
+      await dispatch(setItemFromQueue(0))
+    } finally {
+      dispatch(playerSetLoading(false))
+    }
     dispatch(playerTogglePlayPause(true))
   }
 
@@ -311,14 +332,19 @@ export const setNextTrack = (endOfTrack: boolean): AppThunk =>
     }
 
     // Make API call to get the track full info.
-    return libraryAPI.getFullTrackInfo(nextTrackId).then((response) => {
-      dispatch(playerSetTrack(response.data.track))
-      dispatch(queueSetCurrent(newQueuePosition))
+    dispatch(playerSetLoading(true))
 
-      if (state.player.playing || endOfTrack) {
-        dispatch(playerTogglePlayPause(true))
-      }
-    })
+    return libraryAPI
+      .getFullTrackInfo(nextTrackId)
+      .then((response) => {
+        dispatch(playerSetTrack(response.data.track))
+        dispatch(queueSetCurrent(newQueuePosition))
+
+        if (state.player.playing || endOfTrack) {
+          dispatch(playerTogglePlayPause(true))
+        }
+      })
+      .finally(() => dispatch(playerSetLoading(false)))
   }
 
 /*
@@ -359,10 +385,15 @@ export const setPreviousTrack = (): AppThunk =>
     }
 
     // Make API call to get the track full info.
-    return libraryAPI.getFullTrackInfo(prevTrackId).then((response) => {
-      dispatch(playerSetTrack(response.data.track))
-      dispatch(queueSetCurrent(newQueuePosition))
-    })
+    dispatch(playerSetLoading(true))
+
+    return libraryAPI
+      .getFullTrackInfo(prevTrackId)
+      .then((response) => {
+        dispatch(playerSetTrack(response.data.track))
+        dispatch(queueSetCurrent(newQueuePosition))
+      })
+      .finally(() => dispatch(playerSetLoading(false)))
   }
 
 export const getTracksFromAlbum = (

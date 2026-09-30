@@ -29,8 +29,16 @@ export default function usePlayer() {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
 
-  const { shuffle, repeat, volume, track, playing, progress, duration } =
-    useAppSelector(playerSelector)
+  const {
+    shuffle,
+    repeat,
+    volume,
+    track,
+    playing,
+    loading,
+    progress,
+    duration,
+  } = useAppSelector(playerSelector)
   const queue = useAppSelector(queueSelector)
 
   const onPlay = useCallback(async () => {
@@ -192,6 +200,9 @@ export default function usePlayer() {
 
   // Changes audioElement source when redux track changes.
   useEffect(() => {
+    // Cancels a pending auth-retry seek if the track changes before it fires.
+    const authRetryAbort = new AbortController()
+
     if (track) {
       playerRef.current.src = APIConstants.BACKEND_BASE_URL + track.src
       playerRef.current.load()
@@ -217,9 +228,21 @@ export default function usePlayer() {
           const refreshResult = await refreshToken()
 
           if (!refreshResult.error) {
-            playerRef.current.src = APIConstants.BACKEND_BASE_URL + track.src
-            playerRef.current.load()
-            playerRef.current.play().catch(() => {
+            const audio = playerRef.current
+            const resumeAt = audio.currentTime
+
+            // One-shot listener: the permanent onloadedmetadata handler keeps
+            // updating the duration.
+            audio.addEventListener(
+              'loadedmetadata',
+              () => {
+                audio.currentTime = resumeAt
+              },
+              { once: true, signal: authRetryAbort.signal }
+            )
+            audio.src = APIConstants.BACKEND_BASE_URL + track.src
+            audio.load()
+            audio.play().catch(() => {
               dispatch(playerTogglePlayPause(false))
             })
 
@@ -252,6 +275,8 @@ export default function usePlayer() {
     }
 
     dispatch(playerSetProgress(0))
+
+    return () => authRetryAbort.abort()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, track])
 
@@ -299,6 +324,7 @@ export default function usePlayer() {
   return {
     queue,
     playing,
+    loading,
     progress,
     duration,
     volume,

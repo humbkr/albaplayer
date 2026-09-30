@@ -8,6 +8,7 @@ function Player() {
   const {
     queue,
     playing,
+    loading,
     progress,
     duration,
     volume,
@@ -33,6 +34,7 @@ function Player() {
       />
       <Controls
         playing={playing}
+        loading={loading}
         shuffle={shuffle}
         repeat={repeat}
         volume={volume}
