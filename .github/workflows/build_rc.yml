@@ -46,3 +46,15 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  deploy_rc:
+    runs-on: ubuntu-latest
+    needs: build_and_push_image
+    steps:
+      - name: Deploy RC via SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.REMOTE_ADDRESS }}
+          port: ${{ secrets.REMOTE_PORT }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_SSH_KEY }}
+          script: upalbarc ${{ needs.build_and_push_image.outputs.version }}
