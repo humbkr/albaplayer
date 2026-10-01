@@ -8,8 +8,8 @@ import ActionsMenu from 'common/components/ActionsMenu'
 import Icon from 'common/components/Icon'
 import {
   playerTogglePlayPause,
+  playItemFromQueue,
   queueRemoveTrack,
-  setItemFromQueue,
 } from 'modules/player/store/store'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import AnimatedEQ from 'common/components/AnimatedEQ'
@@ -28,6 +28,7 @@ type Props = {
 function NowPlayingQueueItem({ item, currentIndex, dragHandleProps }: Props) {
   const { t } = useTranslation()
   const isPlaying = useAppSelector((state) => state.player.playing)
+  const isLoading = useAppSelector((state) => state.player.loading)
   const dispatch = useAppDispatch()
   const { isMD, isXL } = useBreakpoints()
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
@@ -39,6 +40,11 @@ function NowPlayingQueueItem({ item, currentIndex, dragHandleProps }: Props) {
   const handlePlayBackButton = () => {
     const isCurrent = currentIndex + 1 === item.position
 
+    if (isCurrent && isLoading) {
+      // Playback is locked while another track is being fetched.
+      return
+    }
+
     if (isCurrent && isPlaying) {
       // Pause playback.
       dispatch(playerTogglePlayPause(false))
@@ -46,8 +52,7 @@ function NowPlayingQueueItem({ item, currentIndex, dragHandleProps }: Props) {
       // Resume playback.
       dispatch(playerTogglePlayPause(true))
     } else {
-      dispatch(setItemFromQueue(item.position - 1))
-      dispatch(playerTogglePlayPause(true))
+      dispatch(playItemFromQueue(item.position - 1))
     }
   }
 

@@ -21,6 +21,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack={false}
         hasPreviousTrack={false}
         hasTrack={false}
@@ -57,6 +58,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack={false}
         hasPreviousTrack={false}
         hasTrack
@@ -93,6 +95,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack={false}
         hasPreviousTrack
         hasTrack
@@ -129,6 +132,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack={false}
         hasTrack
@@ -165,6 +169,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -201,6 +206,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -237,6 +243,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -273,6 +280,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -309,6 +317,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -345,6 +354,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -365,10 +375,11 @@ describe('Controls', () => {
     expect(mockTogglePlayPause).toHaveBeenCalledTimes(1)
   })
 
-  it('displays a spinner and disables play / pause while a track is loading', async () => {
+  it('keeps the play / pause icon but locks it while a load has just started', async () => {
     renderWithProviders(
       <Controls
         loading
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -385,8 +396,44 @@ describe('Controls', () => {
       />
     )
 
-    // The spinner replaces the play / pause icon.
-    expect(screen.getByTestId('player-loading-spinner')).toBeInTheDocument()
+    // No loader yet: the icon stays, so fast loads cause no visual change.
+    expect(screen.getByTestId('player-pause-icon')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('player-loading-spinner')
+    ).not.toBeInTheDocument()
+    // Playback is locked anyway.
+    expect(screen.getByTestId('play-pause-button')).toBeDisabled()
+
+    await userEvent.click(screen.getByTestId('play-pause-button'))
+    expect(mockTogglePlayPause).not.toHaveBeenCalled()
+  })
+
+  it('displays a spinner and locks play / pause while a track is slow to load', async () => {
+    renderWithProviders(
+      <Controls
+        loading
+        showLoader
+        hasNextTrack
+        hasPreviousTrack
+        hasTrack
+        playing
+        repeat={PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT}
+        setVolume={mockSetVolume}
+        shuffle={false}
+        skipToNext={mockSkipToNext}
+        skipToPrevious={mockSkipToPrevious}
+        togglePlayPause={mockTogglePlayPause}
+        toggleRepeat={mockToggleRepeat}
+        toggleShuffle={mockToggleShuffle}
+        volume={1}
+      />
+    )
+
+    // The spinner replaces the play / pause icon, at the icon's size.
+    expect(screen.getByTestId('player-loading-spinner')).toHaveStyle({
+      width: '50px',
+      height: '50px',
+    })
     expect(screen.queryByTestId('player-pause-icon')).not.toBeInTheDocument()
     expect(screen.queryByTestId('player-play-icon')).not.toBeInTheDocument()
     // The play / pause button is disabled even though a track is loaded.
@@ -400,6 +447,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -427,6 +475,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack
@@ -451,6 +500,7 @@ describe('Controls', () => {
     renderWithProviders(
       <Controls
         loading={false}
+        showLoader={false}
         hasNextTrack
         hasPreviousTrack
         hasTrack

@@ -1,5 +1,5 @@
 import type { FunctionComponent, SVGProps } from 'react'
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 import VolumeContainer from 'modules/player/components/VolumeContainer'
 import { PlayerPlaybackMode } from '../utils'
 import PlayIcon from '../assets/play.svg?react'
@@ -10,10 +10,14 @@ import ShuffleIcon from '../assets/shuffle.svg?react'
 import RepeatAllIcon from '../assets/repeat.svg?react'
 import RepeatOneIcon from '../assets/repeat_one.svg?react'
 import ControlButton from './ControlButton'
+import LoadingSpinner from './LoadingSpinner'
 
 type Props = {
   playing: boolean
+  // A track is loading: play / pause is locked.
   loading: boolean
+  // The load is slow enough to show the loader.
+  showLoader: boolean
   shuffle: boolean
   repeat: PlayerPlaybackMode
   volume: number
@@ -31,6 +35,7 @@ type Props = {
 function Controls({
   playing,
   loading,
+  showLoader,
   togglePlayPause,
   shuffle,
   toggleShuffle,
@@ -92,14 +97,11 @@ function Controls({
         <ControlButton
           onClick={() => togglePlayPause()}
           size={50}
-          disabled={!hasTrack || loading}
+          disabled={!hasTrack}
+          inactive={loading}
           testId={'play-pause-button'}
         >
-          {loading ? (
-            <Spinner size={50} data-testid="player-loading-spinner" />
-          ) : (
-            <PlayPauseIcon />
-          )}
+          {showLoader ? <LoadingSpinner size={50} /> : <PlayPauseIcon />}
         </ControlButton>
         <ControlButton
           onClick={onSkipToNext}
@@ -157,21 +159,6 @@ const ControlsPrimary = styled.div`
   gap: 15px;
   justify-content: center;
   margin-bottom: 20px;
-`
-
-const spin = keyframes`
-  to {
-    transform: rotate(360deg);
-  }
-`
-
-const Spinner = styled.div<{ size: number }>`
-  width: ${(props) => props.size * 0.5}px;
-  height: ${(props) => props.size * 0.5}px;
-  border: 3px solid ${(props) => props.theme.player.buttons.colorDisabled};
-  border-top-color: ${(props) => props.theme.player.buttons.color};
-  border-radius: 50%;
-  animation: ${spin} 0.8s linear infinite;
 `
 
 const ControlsSecondary = styled.div`

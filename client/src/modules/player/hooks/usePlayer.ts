@@ -14,6 +14,7 @@ import {
 import { PlayerPlaybackMode } from 'modules/player/utils'
 import APIConstants from 'api/constants'
 import { useInterval } from 'common/utils/useInterval'
+import useDelayedFlag from 'common/hooks/useDelayedFlag'
 import { useTranslation } from 'react-i18next'
 import { refreshToken } from 'modules/user/authApi'
 
@@ -23,6 +24,8 @@ function getListeningVolume(volumeBarValue: number) {
 
 const STALL_RECOVERY_DELAY_MS = 10_000
 const MAX_RECOVERY_ATTEMPTS = 3
+// Most tracks load faster than this: the loader only shows for slow ones.
+export const LOADER_DELAY_MS = 1000
 
 // TODO https://stackoverflow.com/questions/48277432/load-html5-audio-from-dynamic-content-provider-with-authentication
 export default function usePlayer() {
@@ -40,6 +43,8 @@ export default function usePlayer() {
     duration,
   } = useAppSelector(playerSelector)
   const queue = useAppSelector(queueSelector)
+  // `loading` locks playback immediately; the loader itself is delayed.
+  const showLoader = useDelayedFlag(loading, LOADER_DELAY_MS)
 
   const onPlay = useCallback(async () => {
     dispatch(playerTogglePlayPause(true))
@@ -161,7 +166,9 @@ export default function usePlayer() {
       return
     }
 
-    stallTimeoutRef.current = setTimeout(async () => {
+    // This attempt stays current while stallTimeoutRef holds its id: a track
+    // change, resumed playback or a newer stall clears or replaces it.
+    const timeoutId = setTimeout(async () => {
       if (
         !audio.paused &&
         audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA
@@ -172,14 +179,25 @@ export default function usePlayer() {
         // before re-buffering.
         await refreshToken()
 
+        // Cancelled during the refresh, or paused by the user meanwhile:
+        // leave the shared audio element alone.
+        if (stallTimeoutRef.current !== timeoutId || audio.paused) {
+          return
+        }
+
         // Force re-buffering from the current position.
         // eslint-disable-next-line no-self-assign
         audio.currentTime = audio.currentTime
         audio.play().catch(() => {
-          dispatch(playerTogglePlayPause(false))
+          // A track change interrupts this play() with an AbortError: it
+          // must not pause the new track.
+          if (stallTimeoutRef.current === timeoutId) {
+            dispatch(playerTogglePlayPause(false))
+          }
         })
       }
     }, STALL_RECOVERY_DELAY_MS)
+    stallTimeoutRef.current = timeoutId
   }, [clearStallRecovery, dispatch])
 
   // Synchronises the audioElement state to redux state external changes.
@@ -200,7 +218,8 @@ export default function usePlayer() {
 
   // Changes audioElement source when redux track changes.
   useEffect(() => {
-    // Cancels a pending auth-retry seek if the track changes before it fires.
+    // Aborted when the track changes, so a pending auth retry for the previous
+    // track never touches the shared audio element or the playback state.
     const authRetryAbort = new AbortController()
 
     if (track) {
@@ -227,6 +246,10 @@ export default function usePlayer() {
           authRetryRef.current = true
           const refreshResult = await refreshToken()
 
+          if (authRetryAbort.signal.aborted) {
+            return
+          }
+
           if (!refreshResult.error) {
             const audio = playerRef.current
             const resumeAt = audio.currentTime
@@ -243,7 +266,11 @@ export default function usePlayer() {
             audio.src = APIConstants.BACKEND_BASE_URL + track.src
             audio.load()
             audio.play().catch(() => {
-              dispatch(playerTogglePlayPause(false))
+              // A track change interrupts this play() with an AbortError: it
+              // must not pause the new track.
+              if (!authRetryAbort.signal.aborted) {
+                dispatch(playerTogglePlayPause(false))
+              }
             })
 
             return
@@ -288,8 +315,19 @@ export default function usePlayer() {
   useEffect(() => {
     /* istanbul ignore next */
     if ('mediaSession' in navigator) {
-      navigator.mediaSession.setActionHandler('play', () => onPlay())
-      navigator.mediaSession.setActionHandler('pause', () => onPause())
+      // OS media controls must respect the playback lock while the next track
+      // is being fetched. onPlay itself stays unguarded: it also auto-plays the
+      // new track, which happens before loading is cleared.
+      navigator.mediaSession.setActionHandler('play', () => {
+        if (!loading) {
+          onPlay()
+        }
+      })
+      navigator.mediaSession.setActionHandler('pause', () => {
+        if (!loading) {
+          onPause()
+        }
+      })
       navigator.mediaSession.setActionHandler('stop', () => onStop())
       navigator.mediaSession.setActionHandler('previoustrack', () =>
         handleSetPreviousTrack()
@@ -311,7 +349,14 @@ export default function usePlayer() {
         navigator.mediaSession.setActionHandler('nexttrack', null)
       }
     }
-  }, [handleSetNextTrack, handleSetPreviousTrack, onPause, onPlay, onStop])
+  }, [
+    handleSetNextTrack,
+    handleSetPreviousTrack,
+    loading,
+    onPause,
+    onPlay,
+    onStop,
+  ])
 
   // Synchronises the redux progress state to the audioElement one.
   useInterval(
@@ -325,6 +370,7 @@ export default function usePlayer() {
     queue,
     playing,
     loading,
+    showLoader,
     progress,
     duration,
     volume,

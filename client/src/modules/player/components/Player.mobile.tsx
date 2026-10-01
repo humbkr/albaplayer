@@ -1,7 +1,8 @@
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 import usePlayer from 'modules/player/hooks/usePlayer'
 import { useTranslation } from 'react-i18next'
 import ControlButton from 'modules/player/components/ControlButton'
+import LoadingSpinner from 'modules/player/components/LoadingSpinner'
 import { PlayerPlaybackMode } from 'modules/player/utils'
 
 import type { FunctionComponent, SVGProps } from 'react'
@@ -16,6 +17,7 @@ function Player() {
     queue,
     playing,
     loading,
+    showLoader,
     repeat,
     track,
     handleTogglePlayPause,
@@ -59,10 +61,11 @@ function Player() {
           <ControlButton
             onClick={() => handleTogglePlayPause()}
             size={25}
-            disabled={!track || loading}
+            disabled={!track}
+            inactive={loading}
             testId={'play-pause-button'}
           >
-            {loading ? <Spinner size={25} /> : <PlayPauseIcon />}
+            {showLoader ? <LoadingSpinner size={25} /> : <PlayPauseIcon />}
           </ControlButton>
           <ControlButton
             onClick={onSkipToNext}
@@ -138,21 +141,6 @@ const ArtistName = styled.h2`
   text-overflow: ellipsis;
   white-space: nowrap;
 `
-const spin = keyframes`
-  to {
-    transform: rotate(360deg);
-  }
-`
-
-const Spinner = styled.div<{ size: number }>`
-  width: ${(props) => props.size * 0.5}px;
-  height: ${(props) => props.size * 0.5}px;
-  border: 2px solid ${(props) => props.theme.player.buttons.colorDisabled};
-  border-top-color: ${(props) => props.theme.player.buttons.color};
-  border-radius: 50%;
-  animation: ${spin} 0.8s linear infinite;
-`
-
 const Controls = styled.div`
   display: flex;
   height: 50px;

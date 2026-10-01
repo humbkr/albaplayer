@@ -14,7 +14,8 @@ const {
   playerSetProgress,
   playerSetDuration,
   playerSetVolume,
-  playerSetLoading,
+  playerStartLoading,
+  playerFinishLoading,
 } = playerSlice.actions
 
 vi.mock('modules/library/api', () => ({
@@ -326,24 +327,49 @@ describe('player reducer', () => {
     })
   })
 
-  it('should handle playerSetLoading action', () => {
-    const loadingState = playerSlice.reducer(playerInitialState, {
-      type: playerSetLoading.type,
-      payload: true,
-    })
-    expect(loadingState).toEqual({
+  it('should handle playerStartLoading action', () => {
+    const firstLoad = playerSlice.reducer(
+      playerInitialState,
+      playerStartLoading(3)
+    )
+    expect(firstLoad).toEqual({
       ...playerInitialState,
       loading: true,
+      loadingRequestId: 1,
+      loadingQueuePosition: 3,
     })
 
-    expect(
-      playerSlice.reducer(loadingState, {
-        type: playerSetLoading.type,
-        payload: false,
-      })
-    ).toEqual({
+    // Each load gets a new request id and records its own target position.
+    expect(playerSlice.reducer(firstLoad, playerStartLoading(4))).toEqual({
       ...playerInitialState,
+      loading: true,
+      loadingRequestId: 2,
+      loadingQueuePosition: 4,
+    })
+  })
+
+  it('should handle playerFinishLoading action for the current request', () => {
+    const loadingState = {
+      ...playerInitialState,
+      loading: true,
+      loadingRequestId: 2,
+    }
+
+    expect(playerSlice.reducer(loadingState, playerFinishLoading(2))).toEqual({
+      ...loadingState,
       loading: false,
     })
+  })
+
+  it('should ignore playerFinishLoading action for a superseded request', () => {
+    const loadingState = {
+      ...playerInitialState,
+      loading: true,
+      loadingRequestId: 2,
+    }
+
+    expect(playerSlice.reducer(loadingState, playerFinishLoading(1))).toEqual(
+      loadingState
+    )
   })
 })

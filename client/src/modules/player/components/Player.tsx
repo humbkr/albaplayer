@@ -9,6 +9,7 @@ function Player() {
     queue,
     playing,
     loading,
+    showLoader,
     progress,
     duration,
     volume,
@@ -24,9 +25,17 @@ function Player() {
     handleToggleShuffle,
   } = usePlayer()
 
+  // The previous track stays set while the next one loads, so playback must
+  // stay locked through the artwork as well as through the controls.
+  const handleTrackInfoClick = () => {
+    if (!loading) {
+      handleTogglePlayPause()
+    }
+  }
+
   return (
     <PlayerWrapper>
-      <TrackInfo track={track} onClick={handleTogglePlayPause} />
+      <TrackInfo track={track} onClick={handleTrackInfoClick} />
       <ProgressBar
         position={progress}
         duration={duration}
@@ -35,6 +44,7 @@ function Player() {
       <Controls
         playing={playing}
         loading={loading}
+        showLoader={showLoader}
         shuffle={shuffle}
         repeat={repeat}
         volume={volume}
