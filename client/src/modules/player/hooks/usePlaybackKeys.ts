@@ -1,14 +1,17 @@
 import { useEffect } from 'react'
-import { useAppDispatch } from 'store/hooks'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { playerTogglePlayPause } from 'modules/player/store/store'
+import { playerSelector } from 'modules/player/store/selectors'
 
 export default function usePlaybackKeys() {
   const dispatch = useAppDispatch()
+  const { loading } = useAppSelector(playerSelector)
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       e.preventDefault()
-      if (e.code === 'Space') {
+      // Playback is locked while the next track is being fetched.
+      if (e.code === 'Space' && !loading) {
         dispatch(playerTogglePlayPause())
       }
     }
@@ -19,5 +22,5 @@ export default function usePlaybackKeys() {
     return function cleanup() {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [dispatch])
+  }, [dispatch, loading])
 }

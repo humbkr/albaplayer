@@ -10,9 +10,14 @@ import ShuffleIcon from '../assets/shuffle.svg?react'
 import RepeatAllIcon from '../assets/repeat.svg?react'
 import RepeatOneIcon from '../assets/repeat_one.svg?react'
 import ControlButton from './ControlButton'
+import LoadingSpinner from './LoadingSpinner'
 
 type Props = {
   playing: boolean
+  // A track is loading: play / pause is locked.
+  loading: boolean
+  // The load is slow enough to show the loader.
+  showLoader: boolean
   shuffle: boolean
   repeat: PlayerPlaybackMode
   volume: number
@@ -29,6 +34,8 @@ type Props = {
 
 function Controls({
   playing,
+  loading,
+  showLoader,
   togglePlayPause,
   shuffle,
   toggleShuffle,
@@ -91,9 +98,10 @@ function Controls({
           onClick={() => togglePlayPause()}
           size={50}
           disabled={!hasTrack}
+          inactive={loading}
           testId={'play-pause-button'}
         >
-          <PlayPauseIcon />
+          {showLoader ? <LoadingSpinner size={50} /> : <PlayPauseIcon />}
         </ControlButton>
         <ControlButton
           onClick={onSkipToNext}

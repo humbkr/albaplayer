@@ -31,3 +31,4 @@ ehthumbs_vista.db
 .env
 .mcp.json
 CLAUDE.local.md
+.claude/settings.local.json

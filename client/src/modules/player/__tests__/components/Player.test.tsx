@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import type { Mock } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
@@ -65,6 +65,16 @@ vi.mock(import('api/helpers'), async (importOriginal) => {
     getAuthAssetURL: vi.fn(),
   }
 })
+
+// Returns the last handler registered for a media session action.
+function getMediaSessionHandler(action: MediaSessionAction) {
+  const calls = (navigator.mediaSession.setActionHandler as Mock).mock.calls
+  const registrations = calls.filter(
+    ([name, handler]) => name === action && handler !== null
+  )
+
+  return registrations[registrations.length - 1][1]
+}
 
 describe('Player', () => {
   beforeEach(() => {
@@ -172,6 +182,197 @@ describe('Player', () => {
 
     expect(playerTogglePlayPause).toHaveBeenCalledWith(false)
     expect(window.HTMLMediaElement.prototype.pause).toHaveBeenCalled()
+  })
+
+  it('toggles play / pause when the track info is clicked', async () => {
+    playerSelectorMock.mockReturnValue({
+      playing: false,
+      loading: false,
+      duration: 100,
+      progress: 0,
+      repeat: PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT,
+      shuffle: false,
+      volume: 1,
+      volumeMuted: 0.5,
+      track: {
+        id: '1',
+        title: 'title',
+        src: '/stream/1',
+        duration: 100,
+        number: 1,
+      },
+    })
+    queueSelectorMock.mockReturnValue({
+      items: [],
+      current: undefined,
+    })
+
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
+    )
+
+    await userEvent.click(screen.getByTestId('player-track-info'))
+
+    expect(playerTogglePlayPause).toHaveBeenCalledWith(true)
+  })
+
+  it('shows the loader only once a track has been loading for 1 second', () => {
+    vi.useFakeTimers()
+    playerSelectorMock.mockReturnValue({
+      playing: false,
+      loading: true,
+      duration: 100,
+      progress: 0,
+      repeat: PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT,
+      shuffle: false,
+      volume: 1,
+      volumeMuted: 0.5,
+      track: {
+        id: '1',
+        title: 'title',
+        src: '/stream/1',
+        duration: 100,
+        number: 1,
+      },
+    })
+    queueSelectorMock.mockReturnValue({
+      items: [],
+      current: undefined,
+    })
+
+    try {
+      renderWithProviders(
+        <BrowserRouter>
+          <Player />
+        </BrowserRouter>
+      )
+
+      act(() => {
+        vi.advanceTimersByTime(999)
+      })
+      expect(screen.getByTestId('player-play-icon')).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('player-loading-spinner')
+      ).not.toBeInTheDocument()
+
+      act(() => {
+        vi.advanceTimersByTime(1)
+      })
+      expect(screen.getByTestId('player-loading-spinner')).toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('does not toggle play / pause from the track info while a track is loading', async () => {
+    playerSelectorMock.mockReturnValue({
+      playing: false,
+      loading: true,
+      duration: 100,
+      progress: 0,
+      repeat: PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT,
+      shuffle: false,
+      volume: 1,
+      volumeMuted: 0.5,
+      // The previous track stays set while the next one is fetched.
+      track: {
+        id: '1',
+        title: 'title',
+        src: '/stream/1',
+        duration: 100,
+        number: 1,
+      },
+    })
+    queueSelectorMock.mockReturnValue({
+      items: [],
+      current: undefined,
+    })
+
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
+    )
+
+    await userEvent.click(screen.getByTestId('player-track-info'))
+
+    expect(playerTogglePlayPause).not.toHaveBeenCalled()
+    expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled()
+  })
+
+  it('handles OS media controls play / pause', () => {
+    playerSelectorMock.mockReturnValue({
+      playing: false,
+      loading: false,
+      duration: 100,
+      progress: 0,
+      repeat: PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT,
+      shuffle: false,
+      volume: 1,
+      volumeMuted: 0.5,
+      track: {
+        id: '1',
+        title: 'title',
+        src: '/stream/1',
+        duration: 100,
+        number: 1,
+      },
+    })
+    queueSelectorMock.mockReturnValue({
+      items: [],
+      current: undefined,
+    })
+
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
+    )
+
+    getMediaSessionHandler('play')()
+    expect(playerTogglePlayPause).toHaveBeenLastCalledWith(true)
+
+    getMediaSessionHandler('pause')()
+    expect(playerTogglePlayPause).toHaveBeenLastCalledWith(false)
+  })
+
+  it('ignores OS media controls play / pause while a track is loading', () => {
+    playerSelectorMock.mockReturnValue({
+      playing: false,
+      loading: true,
+      duration: 100,
+      progress: 0,
+      repeat: PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT,
+      shuffle: false,
+      volume: 1,
+      volumeMuted: 0.5,
+      track: {
+        id: '1',
+        title: 'title',
+        src: '/stream/1',
+        duration: 100,
+        number: 1,
+      },
+    })
+    queueSelectorMock.mockReturnValue({
+      items: [],
+      current: undefined,
+    })
+
+    renderWithProviders(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
+    )
+
+    getMediaSessionHandler('play')()
+    getMediaSessionHandler('pause')()
+
+    expect(playerTogglePlayPause).not.toHaveBeenCalled()
+    expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled()
+    expect(window.HTMLMediaElement.prototype.pause).not.toHaveBeenCalled()
   })
 
   it('dispatches correct actions on repeat button press', async () => {

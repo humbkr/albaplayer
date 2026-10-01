@@ -1,11 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useAppDispatch } from 'store/hooks'
 import { useNavigate } from 'react-router'
-import {
-  playerTogglePlayPause,
-  queueRemoveTrack,
-  setItemFromQueue,
-} from 'modules/player/store/store'
+import { playItemFromQueue, queueRemoveTrack } from 'modules/player/store/store'
 import { search, setSearchFilter } from 'modules/browser/store'
 import { notify } from 'common/utils/notifications'
 import useAddToPlaylistsContextualAction from 'modules/collections/hooks/useAddToPlaylistsContextualAction'
@@ -19,8 +15,7 @@ export default function useQueueItemContextualActions(): ContextualActionsItem<Q
     position,
     track,
   }) => {
-    dispatch(setItemFromQueue(position - 1))
-    dispatch(playerTogglePlayPause(true))
+    dispatch(playItemFromQueue(position - 1))
     notify(t('notifications.nowPlaying', { itemName: track.title }))
   }
 

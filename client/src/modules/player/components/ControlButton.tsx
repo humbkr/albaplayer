@@ -5,6 +5,9 @@ import styled from 'styled-components'
 type StyleProps = {
   active?: boolean
   disabled?: boolean
+  // Not clickable, but drawn as enabled: for short locks where greying the
+  // button out would only cause a flash.
+  inactive?: boolean
   size?: number
   noHoverEffect?: boolean
 }
@@ -20,6 +23,7 @@ function ControlButton({
   active,
   size,
   disabled,
+  inactive,
   noHoverEffect,
   testId = 'control-button',
   children,
@@ -29,8 +33,10 @@ function ControlButton({
       onClick={onClick}
       active={active}
       size={size}
-      disabled={disabled}
-      noHoverEffect={noHoverEffect}
+      disabled={disabled || inactive}
+      // A genuinely disabled button keeps its disabled look.
+      inactive={inactive && !disabled}
+      noHoverEffect={noHoverEffect || inactive}
       data-testid={testId}
     >
       {children}
@@ -41,10 +47,16 @@ function ControlButton({
 export default ControlButton
 
 function getButtonColor(
-  { theme, disabled, active, noHoverEffect }: StyleProps & ExecutionContext,
+  {
+    theme,
+    disabled,
+    inactive,
+    active,
+    noHoverEffect,
+  }: StyleProps & ExecutionContext,
   hover?: boolean
 ): string {
-  if (disabled) {
+  if (disabled && !inactive) {
     return theme.player.buttons.colorDisabled
   }
 

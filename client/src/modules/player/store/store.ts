@@ -14,6 +14,8 @@ export const {
   playerSetTrack,
   playerSetDuration,
   playerSetProgress,
+  playerStartLoading,
+  playerFinishLoading,
 } = playerSlice.actions
 export const {
   queueAddTracks,
@@ -24,29 +26,88 @@ export const {
   queueAddTracksAfterCurrent,
 } = queueSlice.actions
 
-export const setItemFromQueue = (itemPosition: number): AppThunk =>
-  function (dispatch, getState) {
-    const state = getState()
+/*
+ * Fetches a track's full info and makes it the current track.
+ *
+ * Track loads can overlap (next / previous stay enabled while loading, and
+ * library actions can start another one), so only the most recent load is
+ * applied: an older response is dropped and can neither replace the newer
+ * track nor clear its loading state.
+ *
+ * Resolves to true if the track was applied.
+ */
+const loadTrack =
+  (trackId: string, queuePosition: number): AppThunk<Promise<boolean>> =>
+  async (dispatch, getState) => {
+    dispatch(playerStartLoading(queuePosition))
+    const requestId = getState().player.loadingRequestId
 
-    if (
-      state.queue.items.length === 0 ||
-      state.queue.items.length <= itemPosition
-    ) {
-      return null
+    try {
+      const response = await libraryAPI.getFullTrackInfo(trackId)
+
+      if (getState().player.loadingRequestId !== requestId) {
+        return false
+      }
+
+      dispatch(playerSetTrack(response.data.track))
+      dispatch(queueSetCurrent(queuePosition))
+
+      return true
+    } finally {
+      dispatch(playerFinishLoading(requestId))
+    }
+  }
+
+/*
+ * Queue position that next / previous navigate from: the target of the
+ * pending load if there is one, so that repeated presses chain instead of all
+ * targeting the same track. Otherwise the current item, i.e. the last track
+ * actually loaded, which is also where navigation resumes after a failed load.
+ */
+const getNavigationPosition = (state: RootState) =>
+  state.player.loading ? state.player.loadingQueuePosition : state.queue.current
+
+export const setItemFromQueue =
+  (itemPosition: number): AppThunk<Promise<boolean>> =>
+  async (dispatch, getState) => {
+    const { queue } = getState()
+
+    if (queue.items.length === 0 || queue.items.length <= itemPosition) {
+      return false
     }
 
-    // Make API call to get the track full info.
-    return libraryAPI
-      .getFullTrackInfo(state.queue.items[itemPosition].track.id)
-      .then((response) => {
-        dispatch(playerSetTrack(response.data.track))
-        dispatch(queueSetCurrent(itemPosition))
-      })
+    return dispatch(loadTrack(queue.items[itemPosition].track.id, itemPosition))
+  }
+
+/*
+ * Loads a queue item and plays it once loaded, unless a newer load superseded
+ * it in the meantime. Playback is not toggled before the load completes,
+ * otherwise the previous track would resume while the new one is fetched.
+ */
+export const playItemFromQueue =
+  (itemPosition: number): AppThunk<Promise<void>> =>
+  async (dispatch) => {
+    const applied = await dispatch(setItemFromQueue(itemPosition))
+    if (applied) {
+      dispatch(playerTogglePlayPause(true))
+    }
+  }
+
+/*
+ * Replaces the queue and plays its first track.
+ */
+const replaceQueueAndPlay =
+  (tracks: Track[]): AppThunk<Promise<void>> =>
+  (dispatch) => {
+    dispatch(queueClear())
+    dispatch(queueAddTracks(tracks))
+
+    return dispatch(playItemFromQueue(0))
   }
 
 export const playTrack = (id: string) => playTracks([id])
 export const playTracks =
-  (trackIds: string[]): AppThunk =>
+  (trackIds: string[]): AppThunk<Promise<void>> =>
   (dispatch, getState) => {
     const { library } = getState()
 
@@ -58,15 +119,12 @@ export const playTracks =
       return track
     })
 
-    dispatch(queueClear())
-    dispatch(queueAddTracks(tracks))
-    dispatch(setItemFromQueue(0))
-    dispatch(playerTogglePlayPause(true))
+    return dispatch(replaceQueueAndPlay(tracks))
   }
 
 export const playAlbum = (id: string) => playAlbums([id])
 export const playAlbums =
-  (albumIds: string[]): AppThunk =>
+  (albumIds: string[]): AppThunk<Promise<void>> =>
   (dispatch, getState) => {
     const { library } = getState()
 
@@ -74,16 +132,13 @@ export const playAlbums =
       immutableSortTracks(getTracksFromAlbum(id, library), 'album')
     )
 
-    dispatch(queueClear())
-    dispatch(queueAddTracks(tracks))
-    dispatch(setItemFromQueue(0))
-    dispatch(playerTogglePlayPause(true))
+    return dispatch(replaceQueueAndPlay(tracks))
   }
 
 export const playAlbumDisc = (albumId: string, disc: string) =>
   playAlbumDiscs(albumId, [disc])
 export const playAlbumDiscs =
-  (albumId: string, discs: string[]): AppThunk =>
+  (albumId: string, discs: string[]): AppThunk<Promise<void>> =>
   (dispatch, getState) => {
     const { library } = getState()
 
@@ -91,15 +146,12 @@ export const playAlbumDiscs =
       discs.includes(track.disc as string)
     )
 
-    dispatch(queueClear())
-    dispatch(queueAddTracks(immutableSortTracks(tracks, 'album')))
-    dispatch(setItemFromQueue(0))
-    dispatch(playerTogglePlayPause(true))
+    return dispatch(replaceQueueAndPlay(immutableSortTracks(tracks, 'album')))
   }
 
 export const playArtist = (id: string) => playArtists([id])
 export const playArtists =
-  (artistIds: string[]): AppThunk =>
+  (artistIds: string[]): AppThunk<Promise<void>> =>
   (dispatch, getState) => {
     const { library } = getState()
 
@@ -107,10 +159,7 @@ export const playArtists =
       immutableSortTracks(getTracksFromArtist(id, library), 'number')
     )
 
-    dispatch(queueClear())
-    dispatch(queueAddTracks(tracks))
-    dispatch(setItemFromQueue(0))
-    dispatch(playerTogglePlayPause(true))
+    return dispatch(replaceQueueAndPlay(tracks))
   }
 
 export const playTrackAfterCurrent = (id: string) =>
@@ -269,6 +318,7 @@ export const addArtists =
 export const setNextTrack = (endOfTrack: boolean): AppThunk =>
   function (dispatch, getState) {
     const state = getState() as RootState
+    const position = getNavigationPosition(state)
 
     let nextTrackId = '0'
     let newQueuePosition = 0
@@ -288,9 +338,9 @@ export const setNextTrack = (endOfTrack: boolean): AppThunk =>
       // TODO: shuffle functionality is currently shit.
       newQueuePosition = Math.floor(Math.random() * state.queue.items.length)
       nextTrackId = state.queue.items[newQueuePosition].track.id
-    } else if (state.queue.current + 1 < state.queue.items.length) {
+    } else if (position + 1 < state.queue.items.length) {
       // Get next song in queue.
-      newQueuePosition = state.queue.current + 1
+      newQueuePosition = position + 1
       nextTrackId = state.queue.items[newQueuePosition].track.id
     } else if (
       state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL
@@ -310,15 +360,13 @@ export const setNextTrack = (endOfTrack: boolean): AppThunk =>
       return null
     }
 
-    // Make API call to get the track full info.
-    return libraryAPI.getFullTrackInfo(nextTrackId).then((response) => {
-      dispatch(playerSetTrack(response.data.track))
-      dispatch(queueSetCurrent(newQueuePosition))
-
-      if (state.player.playing || endOfTrack) {
-        dispatch(playerTogglePlayPause(true))
+    return dispatch(loadTrack(nextTrackId, newQueuePosition)).then(
+      (applied) => {
+        if (applied && (state.player.playing || endOfTrack)) {
+          dispatch(playerTogglePlayPause(true))
+        }
       }
-    })
+    )
   }
 
 /*
@@ -328,6 +376,7 @@ export const setNextTrack = (endOfTrack: boolean): AppThunk =>
 export const setPreviousTrack = (): AppThunk =>
   function (dispatch, getState) {
     const state = getState()
+    const position = getNavigationPosition(state)
 
     let prevTrackId = '0'
     let newQueuePosition = 0
@@ -342,9 +391,9 @@ export const setPreviousTrack = (): AppThunk =>
       // TODO: shuffle functionality is currently shit.
       newQueuePosition = Math.floor(Math.random() * state.queue.items.length)
       prevTrackId = state.queue.items[newQueuePosition].track.id
-    } else if (state.queue.current - 1 >= 0) {
+    } else if (position - 1 >= 0) {
       // Get previous song in queue.
-      newQueuePosition = state.queue.current - 1
+      newQueuePosition = position - 1
       prevTrackId = state.queue.items[newQueuePosition].track.id
     } else if (
       state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL
@@ -358,11 +407,7 @@ export const setPreviousTrack = (): AppThunk =>
       return null
     }
 
-    // Make API call to get the track full info.
-    return libraryAPI.getFullTrackInfo(prevTrackId).then((response) => {
-      dispatch(playerSetTrack(response.data.track))
-      dispatch(queueSetCurrent(newQueuePosition))
-    })
+    return dispatch(loadTrack(prevTrackId, newQueuePosition))
   }
 
 export const getTracksFromAlbum = (

@@ -6,6 +6,11 @@ export type PlayerStateType = {
   // Controls and audio state.
   playing: boolean
   loading: boolean
+  // Id of the most recent track load. Only that load may clear `loading`.
+  loadingRequestId: number
+  // Queue position targeted by the most recent track load. Only meaningful
+  // while `loading` is true.
+  loadingQueuePosition?: number
   duration: number
   progress: number
   repeat: PlayerPlaybackMode
@@ -19,6 +24,8 @@ export type PlayerStateType = {
 export const playerInitialState: PlayerStateType = {
   playing: false,
   loading: false,
+  loadingRequestId: 0,
+  loadingQueuePosition: undefined,
   duration: 0,
   progress: 0,
   repeat: PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT,
@@ -56,6 +63,17 @@ export const playerSlice = createAppSlice({
     playerSetProgress(state, action: PayloadAction<number>) {
       state.progress = action.payload
     },
+    playerStartLoading(state, action: PayloadAction<number>) {
+      state.loadingRequestId += 1
+      state.loadingQueuePosition = action.payload
+      state.loading = true
+    },
+    // Ignored if a newer load started since: that load still owns `loading`.
+    playerFinishLoading(state, action: PayloadAction<number>) {
+      if (action.payload === state.loadingRequestId) {
+        state.loading = false
+      }
+    },
   },
 })
 
@@ -67,4 +85,6 @@ export const {
   playerSetTrack,
   playerSetDuration,
   playerSetProgress,
+  playerStartLoading,
+  playerFinishLoading,
 } = playerSlice.actions
