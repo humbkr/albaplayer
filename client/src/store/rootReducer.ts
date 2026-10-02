@@ -9,12 +9,26 @@ import { playlistSlice } from 'modules/collections/store'
 import { settingsSlice } from 'modules/settings/store'
 import { dashboardSlice } from 'modules/dashboard/store'
 
+// Only persist the library data: transient flags like `isFetching` must
+// always start from their initial values, otherwise a page reload during a
+// fetch would leave the app stuck on the loading screen.
+const libraryPersistConfig = {
+  key: 'library',
+  storage,
+  whitelist: ['lastScan', 'artists', 'albums', 'tracks'],
+}
+
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we don't need to call `combineReducers`.
 const combinedReducer = combineSlices(
   browserSlice,
   dashboardSlice,
-  librarySlice,
+  {
+    [librarySlice.reducerPath]: persistReducer(
+      libraryPersistConfig,
+      librarySlice.reducer
+    ),
+  },
   playerSlice,
   playlistSlice,
   queueSlice,
@@ -26,7 +40,7 @@ const combinedReducer = combineSlices(
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['library', 'settings'],
+  whitelist: ['settings'],
 }
 
 const rootReducer = persistReducer(persistConfig, combinedReducer)
