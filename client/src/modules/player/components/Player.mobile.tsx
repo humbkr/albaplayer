@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import usePlayer from 'modules/player/hooks/usePlayer'
 import { useTranslation } from 'react-i18next'
 import ControlButton from 'modules/player/components/ControlButton'
+import LoadingSpinner from 'modules/player/components/LoadingSpinner'
 import { PlayerPlaybackMode } from 'modules/player/utils'
 
 import type { FunctionComponent, SVGProps } from 'react'
@@ -15,6 +16,8 @@ function Player() {
   const {
     queue,
     playing,
+    loading,
+    showLoader,
     repeat,
     track,
     handleTogglePlayPause,
@@ -59,9 +62,10 @@ function Player() {
             onClick={() => handleTogglePlayPause()}
             size={25}
             disabled={!track}
+            inactive={loading}
             testId={'play-pause-button'}
           >
-            <PlayPauseIcon />
+            {showLoader ? <LoadingSpinner size={25} /> : <PlayPauseIcon />}
           </ControlButton>
           <ControlButton
             onClick={onSkipToNext}
