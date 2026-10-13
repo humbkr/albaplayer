@@ -4,11 +4,12 @@ import info from '../../../../package.json'
 const POLLING_INTERVAL = 5 * 60 * 1000
 
 export default function useUpdateAvailable() {
-  const { data: serverVersion } = useGetServerVersionQuery(undefined, {
+  const { data } = useGetServerVersionQuery(undefined, {
     pollingInterval: POLLING_INTERVAL,
     refetchOnFocus: true,
     refetchOnReconnect: true,
   })
+  const serverVersion = data?.version
 
   const updateAvailable =
     !!serverVersion && serverVersion !== 'dev' && serverVersion !== info.version

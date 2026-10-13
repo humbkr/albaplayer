@@ -14,11 +14,18 @@ import {
   useUpdateCollectionMutation,
 } from './api'
 
+/**
+ * Returns the selected playlist, or the first one if the selection is empty or not in the
+ * collections yet (e.g. a newly created playlist waiting for the collections refetch).
+ */
 export function useGetCurrentPlaylist() {
   const { data: collections } = useGetCollectionsQuery()
   const playlistId = useAppSelector((state) => state.playlist.currentPlaylist)
 
-  return getCollection(COLLECTION_TYPE.tracks, playlistId, collections)
+  return (
+    getCollection(COLLECTION_TYPE.tracks, playlistId, collections) ??
+    collections?.playlists[0]
+  )
 }
 
 export function useCreatePlaylist() {

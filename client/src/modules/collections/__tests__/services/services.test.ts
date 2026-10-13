@@ -121,7 +121,37 @@ describe('Collections > services', () => {
       })
     })
 
-    test('should return undefined when no playlist is found', () => {
+    test('should fall back to the first playlist when the selected one is not in the collections', () => {
+      const playlists = [
+        { id: 'playlist01', title: 'First', items: [] },
+        { id: 'playlist02', title: 'Second', items: [] },
+      ]
+      useGetCollectionsQueryMock.mockReturnValue({ data: { playlists } })
+      useAppSelectorMock.mockReturnValue('newPlaylistId')
+
+      const { result } = renderHook(() => useGetCurrentPlaylist())
+
+      expect(result.current).toBe(playlists[0])
+    })
+
+    test('should return the selected playlist once it appears in the collections', () => {
+      const newPlaylist = { id: 'newPlaylistId', title: 'New', items: [] }
+      const playlists = [{ id: 'playlist01', title: 'First', items: [] }]
+      useGetCollectionsQueryMock.mockReturnValue({ data: { playlists } })
+      useAppSelectorMock.mockReturnValue('newPlaylistId')
+
+      const { result, rerender } = renderHook(() => useGetCurrentPlaylist())
+      expect(result.current).toBe(playlists[0])
+
+      useGetCollectionsQueryMock.mockReturnValue({
+        data: { playlists: [...playlists, newPlaylist] },
+      })
+      rerender()
+
+      expect(result.current).toBe(newPlaylist)
+    })
+
+    test('should return undefined when there is no playlist', () => {
       useGetCollectionsQueryMock.mockReturnValue({ data: { playlists: [] } })
 
       const { result } = renderHook(() => useGetCurrentPlaylist())

@@ -9,10 +9,7 @@ type AppConfigResponse = {
 
 type VersionResponse = {
   version: string
-}
-
-type LibraryLastUpdatedResponse = {
-  lastUpdated: string
+  libraryLastUpdated: string
 }
 
 type getVariableResponse = {
@@ -35,24 +32,14 @@ const settingsApi = restAPISlice.injectEndpoints({
         rootUserCreated: response.root_user_created,
       }),
     }),
-    getServerVersion: builder.query<string, void>({
+    getServerVersion: builder.query<VersionResponse, void>({
       query: () => '/version',
-      transformResponse: (response: VersionResponse) => response.version,
-    }),
-    getLibraryLastUpdated: builder.query<string, void>({
-      query: () => '/library-last-updated',
-      transformResponse: (response: LibraryLastUpdatedResponse) =>
-        response.lastUpdated,
     }),
   }),
   overrideExisting: false,
 })
 
-export const {
-  useGetAppConfigQuery,
-  useGetServerVersionQuery,
-  useGetLibraryLastUpdatedQuery,
-} = settingsApi
+export const { useGetAppConfigQuery, useGetServerVersionQuery } = settingsApi
 
 const variableApi = graphqlAPISlice.injectEndpoints({
   endpoints: (builder) => ({
