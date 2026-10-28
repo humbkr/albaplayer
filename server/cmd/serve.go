@@ -82,12 +82,9 @@ var serveCmd = &cobra.Command{
 		appConfigHandler := interfaces.NewAppConfigHandler(&usersInteractor)
 		mux.HandleFunc("/config", appConfigHandler.GetAppConfig)
 
-		// Serve app version (no auth required, used for update checks).
-		mux.HandleFunc("/version", interfaces.GetVersion)
-
-		// Serve library last updated date (no auth required, used for update checks).
-		libraryLastUpdatedHandler := interfaces.NewLibraryLastUpdatedHandler(&internalVariablesInteractor)
-		mux.HandleFunc("/library-last-updated", libraryLastUpdatedHandler.GetLibraryLastUpdated)
+		// Serve app version and library last updated date (no auth required, used for update checks).
+		versionHandler := interfaces.NewVersionHandler(&internalVariablesInteractor)
+		mux.HandleFunc("/version", versionHandler.GetVersion)
 
 		// Serve SPA.
 		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

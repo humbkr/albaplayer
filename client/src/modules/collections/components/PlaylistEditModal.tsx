@@ -49,11 +49,11 @@ function PlaylistEditModal({ addMode, isOpen, onClose }: Props) {
     onClose()
   }
 
-  const title =
-    playlist && !addMode
-      ? t('collections.playlists.actions.editPlaylist')
-      : t('collections.playlists.actions.createANewPlaylist')
-  const actionLabel = playlist ? t('common.edit') : t('common.create')
+  const isEditMode = !addMode && !!playlist
+  const title = isEditMode
+    ? t('collections.playlists.actions.editPlaylist')
+    : t('collections.playlists.actions.createANewPlaylist')
+  const actionLabel = isEditMode ? t('common.edit') : t('common.create')
 
   return (
     <Modal

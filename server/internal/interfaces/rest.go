@@ -98,29 +98,28 @@ func (a appConfigHandler) GetAppConfig(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResp)
 }
 
-type libraryLastUpdatedHandler struct {
+type versionHandler struct {
 	Interactor *business.InternalVariableInteractor
 }
 
-func NewLibraryLastUpdatedHandler(vi *business.InternalVariableInteractor) *libraryLastUpdatedHandler {
-	return &libraryLastUpdatedHandler{Interactor: vi}
+func NewVersionHandler(vi *business.InternalVariableInteractor) *versionHandler {
+	return &versionHandler{Interactor: vi}
 }
 
-func (h libraryLastUpdatedHandler) GetLibraryLastUpdated(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	w.WriteHeader(http.StatusOK)
-
-	value := ""
+// GetVersion returns the app version and the library last updated date.
+func (h versionHandler) GetVersion(w http.ResponseWriter, r *http.Request) {
+	libraryLastUpdated := ""
 	variable, err := h.Interactor.GetInternalVariable("library_last_updated")
 	if err == nil {
-		value = variable.Value
+		libraryLastUpdated = variable.Value
 	}
 
 	resp := struct {
-		LastUpdated string `json:"lastUpdated"`
+		Version            string `json:"version"`
+		LibraryLastUpdated string `json:"libraryLastUpdated"`
 	}{
-		LastUpdated: value,
+		Version:            version.Version,
+		LibraryLastUpdated: libraryLastUpdated,
 	}
 
 	jsonResp, err := json.Marshal(resp)
@@ -129,25 +128,9 @@ func (h libraryLastUpdatedHandler) GetLibraryLastUpdated(w http.ResponseWriter, 
 
 		return
 	}
-	w.Write(jsonResp)
-}
 
-func GetVersion(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	w.WriteHeader(http.StatusOK)
-
-	resp := struct {
-		Version string `json:"version"`
-	}{
-		Version: version.Version,
-	}
-
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-
-		return
-	}
 	w.Write(jsonResp)
 }

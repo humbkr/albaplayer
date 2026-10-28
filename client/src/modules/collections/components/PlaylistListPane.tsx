@@ -1,16 +1,20 @@
 import type { Ref } from 'react'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { addTrack, playTrack } from 'modules/player/store/store'
 import PlaylistsListHeader from 'modules/collections/components/PlaylistListHeader'
 import { playlistSelectPlaylist } from 'modules/collections/store'
 import PlaylistContextMenu from 'modules/collections/components/PlaylistContextMenu'
-import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useAppDispatch } from 'store/hooks'
 import VirtualList from 'common/components/virtualLists/VirtualList'
 import PlaylistTeaser from 'modules/collections/components/PlaylistTeaser'
 import VirtualListItem from 'common/components/virtualLists/VirtualListItem'
 import KeyboardNavPlayModal from 'common/components/KeyboardNavPlayModal'
 import { useGetCollectionsQuery } from 'modules/collections/services/api'
+import {
+  useAddPlaylist,
+  useGetCurrentPlaylist,
+  usePlayPlaylist,
+} from 'modules/collections/services/services'
 
 type Props = {
   switchPaneHandler: (e: KeyboardEvent) => void
@@ -28,22 +32,12 @@ function PlaylistListPane({
 }: InternalProps) {
   const [modalPlayerIsOpen, setModalPlayerIsOpen] = useState(false)
 
-  const currentPlaylistId = useAppSelector(
-    (state) => state.playlist.currentPlaylist
-  )
+  const currentPlaylist = useGetCurrentPlaylist()
   const { data: { playlists = [] } = {} } = useGetCollectionsQuery()
+  const playPlaylist = usePlayPlaylist()
+  const addPlaylist = useAddPlaylist()
 
   const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    const hasValidSelection = playlists.some(
-      (item) => item.id === currentPlaylistId
-    )
-
-    if (!hasValidSelection && playlists.length > 0) {
-      dispatch(playlistSelectPlaylist(playlists[0].id))
-    }
-  }, [playlists, currentPlaylistId, dispatch])
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.code === 'Enter') {
@@ -53,11 +47,17 @@ function PlaylistListPane({
     }
   }
 
-  const handlePlayNow = (trackId: string) => {
-    dispatch(playTrack(trackId))
+  const currentPlaylistHasTracks = (currentPlaylist?.items?.length ?? 0) > 0
+
+  const handlePlayNow = (playlistId: string) => {
+    if (currentPlaylistHasTracks) {
+      playPlaylist(playlistId)
+    }
   }
-  const handleAddToQueue = (trackId: string) => {
-    dispatch(addTrack(trackId))
+  const handleAddToQueue = (playlistId: string) => {
+    if (currentPlaylistHasTracks) {
+      addPlaylist(playlistId)
+    }
   }
 
   const onItemClick = (itemId: string) => {
@@ -67,7 +67,7 @@ function PlaylistListPane({
   }
 
   const currentIndex = playlists.findIndex(
-    (item) => item.id === currentPlaylistId
+    (item) => item.id === currentPlaylist?.id
   )
   const currentPosition = currentIndex === -1 ? 0 : currentIndex
 
@@ -87,7 +87,7 @@ function PlaylistListPane({
           id="playlists-nav-modal"
           isOpen={modalPlayerIsOpen}
           onClose={() => setModalPlayerIsOpen(false)}
-          itemId={currentPlaylistId}
+          itemId={currentPlaylist?.id ?? ''}
           handlePlayNow={handlePlayNow}
           handleAddToQueue={handleAddToQueue}
         />

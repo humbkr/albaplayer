@@ -14,7 +14,10 @@ import {
   useRemoveTrackFromPlaylist,
   useUpdatePlaylistItems,
 } from 'modules/collections/services/services'
-import { playlistSelectTrack } from 'modules/collections/store'
+import {
+  playlistSelectPlaylist,
+  playlistSelectTrack,
+} from 'modules/collections/store'
 import dayjs from 'dayjs'
 import PlaylistTrackList from './PlaylistTrackList'
 import PlaylistTrackContextMenu from './PlaylistTrackContextMenu'
@@ -38,12 +41,18 @@ function PlaylistDetailsPane({
   const updatePlaylist = useUpdatePlaylistItems()
 
   const playlist = useGetCurrentPlaylist()
-  const currentPosition = useAppSelector(
-    (state) => state.playlist.currentTrack?.position
+  const selectedPlaylistId = useAppSelector(
+    (state) => state.playlist.currentPlaylist
   )
-  const currentTrackId = useAppSelector(
-    (state) => state.playlist.currentTrack?.id
-  )
+  const selectedTrack = useAppSelector((state) => state.playlist.currentTrack)
+  // The track selection belongs to the selected playlist, which differs from the
+  // displayed one when it has been deleted or is awaiting the collections refetch.
+  const playlistTrack =
+    playlist?.id === selectedPlaylistId ? selectedTrack : undefined
+  // Default to the first track so keyboard navigation works before any click.
+  const currentPosition = playlistTrack?.position ?? 0
+  const currentTrackId =
+    playlistTrack?.id ?? playlist?.items?.[0]?.track.id ?? ''
 
   const playPlaylist = usePlayPlaylist()
   const addPlaylist = useAddPlaylist()
@@ -67,6 +76,10 @@ function PlaylistDetailsPane({
     // Probably because of the drag'n'drop lib.
     // @ts-ignore
     forwardedRef.current.children[0].focus()
+    if (playlist && playlist.id !== selectedPlaylistId) {
+      // Adopt the displayed fallback playlist so the track selection belongs to it.
+      dispatch(playlistSelectPlaylist(playlist.id))
+    }
     dispatch(playlistSelectTrack({ trackId, trackIndex }))
   }
 
