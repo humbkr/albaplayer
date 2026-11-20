@@ -24,6 +24,9 @@ function getListeningVolume(volumeBarValue: number) {
 
 const STALL_RECOVERY_DELAY_MS = 10_000
 const MAX_RECOVERY_ATTEMPTS = 3
+// Playback ending more than this before the track duration is treated as a
+// failed stream request rather than the end of the track.
+const EARLY_END_TOLERANCE_S = 2
 // Most tracks load faster than this: the loader only shows for slow ones.
 export const LOADER_DELAY_MS = 1000
 
@@ -124,12 +127,28 @@ export default function usePlayer() {
     dispatch(playerToggleShuffle())
   }
 
+  // Last playback position seen while media data was loaded. Recovery uses it
+  // because `currentTime` is not reliable once the element has failed: it can
+  // read 0, and it reads 0 during the reload anyway.
+  const lastPositionRef = useRef(0)
+  // Track duration as reported by its metadata, i.e. before any early end.
+  const metadataDurationRef = useRef(NaN)
+  // Position of the last early end recovered from for the current track.
+  const earlyEndPositionRef = useRef<number | null>(null)
+
   const audioElement = useMemo(() => {
     const audio = document.createElement('audio')
     audio.volume = getListeningVolume(volume)
 
-    audio.onended = () => handleSetNextTrackRef.current(true)
-    audio.onloadedmetadata = () => dispatch(playerSetDuration(audio.duration))
+    audio.onloadedmetadata = () => {
+      metadataDurationRef.current = audio.duration
+      dispatch(playerSetDuration(audio.duration))
+    }
+    audio.ontimeupdate = () => {
+      if (audio.readyState >= HTMLMediaElement.HAVE_METADATA && !audio.error) {
+        lastPositionRef.current = audio.currentTime
+      }
+    }
 
     return audio
     // Audio element is created once. Volume is only set at first load.
@@ -223,12 +242,16 @@ export default function usePlayer() {
     const authRetryAbort = new AbortController()
 
     if (track) {
-      playerRef.current.src = APIConstants.BACKEND_BASE_URL + track.src
+      const trackUrl = APIConstants.BACKEND_BASE_URL + track.src
+      playerRef.current.src = trackUrl
       playerRef.current.load()
 
       // Reset recovery state for new track.
       recoveryAttemptsRef.current = 0
       authRetryRef.current = false
+      lastPositionRef.current = 0
+      metadataDurationRef.current = NaN
+      earlyEndPositionRef.current = null
       clearStallRecovery()
 
       // Recovery handlers: schedule re-buffering if audio stalls too long.
@@ -239,10 +262,12 @@ export default function usePlayer() {
         recoveryAttemptsRef.current = 0
         authRetryRef.current = false
       }
-      playerRef.current.onerror = async () => {
+      // A stream request failed, most likely because the auth token expired
+      // during a long pause: refresh it, then reload the track at `resumeAt`.
+      const recoverStream = async (resumeAt: number) => {
         clearStallRecovery()
 
-        if (!authRetryRef.current && track) {
+        if (!authRetryRef.current) {
           authRetryRef.current = true
           const refreshResult = await refreshToken()
 
@@ -252,7 +277,6 @@ export default function usePlayer() {
 
           if (!refreshResult.error) {
             const audio = playerRef.current
-            const resumeAt = audio.currentTime
 
             // One-shot listener: the permanent onloadedmetadata handler keeps
             // updating the duration.
@@ -263,7 +287,7 @@ export default function usePlayer() {
               },
               { once: true, signal: authRetryAbort.signal }
             )
-            audio.src = APIConstants.BACKEND_BASE_URL + track.src
+            audio.src = trackUrl
             audio.load()
             audio.play().catch(() => {
               // A track change interrupts this play() with an AbortError: it
@@ -278,6 +302,32 @@ export default function usePlayer() {
         }
 
         dispatch(playerTogglePlayPause(false))
+      }
+
+      // Read the saved position now: `currentTime` is unreliable once failed.
+      playerRef.current.onerror = () => recoverStream(lastPositionRef.current)
+
+      // Chrome can end playback when a later stream request fails instead of
+      // firing an error, which would silently skip the rest of the track.
+      playerRef.current.onended = () => {
+        const endedAt = playerRef.current.currentTime
+        const endedEarly =
+          metadataDurationRef.current - endedAt > EARLY_END_TOLERANCE_S
+        // Ending early again at the same spot means the metadata duration is
+        // wrong (e.g. a VBR file), not a failed request: accept the end.
+        const sameSpotAsLastEarlyEnd =
+          earlyEndPositionRef.current !== null &&
+          Math.abs(endedAt - earlyEndPositionRef.current) <=
+            EARLY_END_TOLERANCE_S
+
+        if (endedEarly && !sameSpotAsLastEarlyEnd) {
+          earlyEndPositionRef.current = endedAt
+          recoverStream(endedAt)
+
+          return
+        }
+
+        handleSetNextTrackRef.current(true)
       }
 
       /* istanbul ignore next */
