@@ -1,7 +1,8 @@
-import { useAppDispatch, useAppSelector } from 'store/hooks'
+import { useAppDispatch, useAppSelector, useAppStore } from 'store/hooks'
 import { playerSelector, queueSelector } from 'modules/player/store/selectors'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import {
+  getNextQueueStep,
   playerSetDuration,
   playerSetProgress,
   playerSetVolume,
@@ -22,6 +23,11 @@ function getListeningVolume(volumeBarValue: number) {
   return volumeBarValue ** 2
 }
 
+// Same URL as the `src` the API returns for a track.
+function getStreamUrl(trackId: string) {
+  return `${APIConstants.BACKEND_BASE_URL}/stream/${trackId}`
+}
+
 const STALL_RECOVERY_DELAY_MS = 10_000
 const MAX_RECOVERY_ATTEMPTS = 3
 // Playback ending more than this before the track duration is treated as a
@@ -34,6 +40,7 @@ export const LOADER_DELAY_MS = 1000
 export default function usePlayer() {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const store = useAppStore()
 
   const {
     shuffle,
@@ -114,11 +121,6 @@ export default function usePlayer() {
     [dispatch, onPlay, repeat]
   )
 
-  // Keep a ref to handleSetNextTrack so the audio element's onended callback
-  // always calls the latest version without recreating the element.
-  const handleSetNextTrackRef = useRef(handleSetNextTrack)
-  handleSetNextTrackRef.current = handleSetNextTrack
-
   const handleToggleRepeat = () => {
     dispatch(playerToggleRepeat())
   }
@@ -162,6 +164,8 @@ export default function usePlayer() {
   const recoveryAttemptsRef = useRef(0)
   // Prevents infinite retry loops when refreshing the auth token on error.
   const authRetryRef = useRef(false)
+  // Stream started by handleTrackEnded before its track reached the store.
+  const startedStreamUrlRef = useRef<string | null>(null)
 
   const clearStallRecovery = useCallback(() => {
     if (stallTimeoutRef.current) {
@@ -219,6 +223,45 @@ export default function usePlayer() {
     stallTimeoutRef.current = timeoutId
   }, [clearStallRecovery, dispatch])
 
+  const handleTrackEnded = () => {
+    const state = store.getState()
+
+    if (state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ONE) {
+      handleSetNextTrack(true)
+
+      return
+    }
+
+    // IOS suspends a locked PWA as soon as playback stops, so the next track
+    // must start within this event, before its info is fetched and rendered.
+    const nextStep = getNextQueueStep(state)
+    if (nextStep !== null) {
+      const audio = playerRef.current
+      const streamUrl = getStreamUrl(
+        state.queue.items[nextStep.position].track.id
+      )
+
+      recoveryAttemptsRef.current = 0
+      authRetryRef.current = false
+      lastPositionRef.current = 0
+      metadataDurationRef.current = NaN
+      earlyEndPositionRef.current = null
+      clearStallRecovery()
+
+      startedStreamUrlRef.current = streamUrl
+      audio.src = streamUrl
+      // If it is blocked anyway, the track effect plays it once loaded.
+      audio.play().catch(() => {})
+    }
+
+    dispatch(setNextTrack(true, nextStep))
+  }
+
+  // Keep a ref to handleTrackEnded so the audio element's onended callback
+  // always calls the latest version without recreating the element.
+  const handleTrackEndedRef = useRef(handleTrackEnded)
+  handleTrackEndedRef.current = handleTrackEnded
+
   // Synchronises the audioElement state to redux state external changes.
   useEffect(() => {
     const isPlaying =
@@ -242,16 +285,21 @@ export default function usePlayer() {
     const authRetryAbort = new AbortController()
 
     if (track) {
-      const trackUrl = APIConstants.BACKEND_BASE_URL + track.src
-      playerRef.current.src = trackUrl
-      playerRef.current.load()
+      const streamUrl = APIConstants.BACKEND_BASE_URL + track.src
+      // Already started by handleTrackEnded, which reset its playback state:
+      // reloading would restart it.
+      if (startedStreamUrlRef.current !== streamUrl) {
+        playerRef.current.src = streamUrl
+        playerRef.current.load()
+        lastPositionRef.current = 0
+        metadataDurationRef.current = NaN
+        earlyEndPositionRef.current = null
+      }
+      startedStreamUrlRef.current = null
 
       // Reset recovery state for new track.
       recoveryAttemptsRef.current = 0
       authRetryRef.current = false
-      lastPositionRef.current = 0
-      metadataDurationRef.current = NaN
-      earlyEndPositionRef.current = null
       clearStallRecovery()
 
       // Recovery handlers: schedule re-buffering if audio stalls too long.
@@ -287,7 +335,8 @@ export default function usePlayer() {
               },
               { once: true, signal: authRetryAbort.signal }
             )
-            audio.src = trackUrl
+            // Reloads the current source rather than track.src: it can be the
+            // next track, started by handleTrackEnded before reaching the store.
             audio.load()
             audio.play().catch(() => {
               // A track change interrupts this play() with an AbortError: it
@@ -327,7 +376,7 @@ export default function usePlayer() {
           return
         }
 
-        handleSetNextTrackRef.current(true)
+        handleTrackEndedRef.current()
       }
 
       /* istanbul ignore next */

@@ -4,11 +4,19 @@ import { Provider } from 'react-redux'
 import { makeStore } from 'store/store'
 import usePlayer from 'modules/player/hooks/usePlayer'
 import { playerInitialState } from 'modules/player/store/player.store'
+import { queueInitialState } from 'modules/player/store/queue.store'
 import { playerSetTrack } from 'modules/player/store/store'
 import { refreshToken } from 'modules/user/authApi'
+import libraryAPI from 'modules/library/api'
+import { PlayerPlaybackMode } from 'modules/player/utils'
 
 vi.mock('modules/user/authApi', () => ({
   refreshToken: vi.fn(),
+}))
+vi.mock('modules/library/api', () => ({
+  default: {
+    getFullTrackInfo: vi.fn(),
+  },
 }))
 
 type RefreshResult = Awaited<ReturnType<typeof refreshToken>>
@@ -402,5 +410,124 @@ describe('usePlayer stream failure recovery position', () => {
       expect(mockRefreshToken).toHaveBeenCalledTimes(1)
       expect(store.getState().player.playing).toBe(false)
     })
+  })
+})
+
+describe('usePlayer end of track', () => {
+  type TrackInfoResponse = Awaited<
+    ReturnType<typeof libraryAPI.getFullTrackInfo>
+  >
+  const mockGetFullTrackInfo = vi.mocked(libraryAPI.getFullTrackInfo)
+  const playMock = () => vi.mocked(HTMLMediaElement.prototype.play)
+
+  beforeEach(() => {
+    vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {})
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined)
+    vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  function setupWithQueue(
+    tracks: Track[],
+    playerState: Partial<typeof playerInitialState> = {}
+  ) {
+    const store = makeStore({
+      player: {
+        ...playerInitialState,
+        track: track1,
+        playing: true,
+        ...playerState,
+      },
+      queue: {
+        ...queueInitialState,
+        items: tracks.map((track) => ({ id: `item-${track.id}`, track })),
+        current: 0,
+      },
+    })
+    const wrapper = ({ children }: PropsWithChildren) => (
+      <Provider store={store}>{children}</Provider>
+    )
+    renderHook(() => usePlayer(), { wrapper })
+
+    const loadMock = vi.mocked(HTMLMediaElement.prototype.load)
+    const audio = loadMock.mock.contexts[0] as HTMLAudioElement
+
+    return { store, audio, loadMock }
+  }
+
+  it('starts the next track before its info is fetched', async () => {
+    const trackInfo = deferred<TrackInfoResponse>()
+    mockGetFullTrackInfo.mockReturnValue(trackInfo.promise)
+    const { store, audio, loadMock } = setupWithQueue([track1, track2])
+    const playCalls = playMock().mock.calls.length
+
+    act(() => {
+      audio.dispatchEvent(new Event('ended'))
+    })
+
+    expect(audio.src).toContain('/stream/2')
+    expect(playMock().mock.calls.length).toBe(playCalls + 1)
+    expect(store.getState().player.track?.id).toBe('1')
+
+    const loadCalls = loadMock.mock.calls.length
+    await act(async () => {
+      trackInfo.resolve({ status: 200, data: { track: track2 } })
+    })
+
+    expect(store.getState().player.track?.id).toBe('2')
+    expect(store.getState().queue.current).toBe(1)
+    expect(store.getState().player.playing).toBe(true)
+    // The already started track is not reloaded.
+    expect(loadMock.mock.calls.length).toBe(loadCalls)
+  })
+
+  it('loads the same shuffled track it started', async () => {
+    const track3: Track = { ...track1, id: '3', src: '/stream/3' }
+    // Picks the last of the unplayed candidates (tracks 2 and 3), then the
+    // first one if the thunk ever picked again.
+    vi.spyOn(Math, 'random').mockReturnValueOnce(0.99).mockReturnValue(0)
+    mockGetFullTrackInfo.mockResolvedValue({
+      status: 200,
+      data: { track: track3 },
+    })
+    const { store, audio } = setupWithQueue([track1, track2, track3], {
+      shuffle: true,
+    })
+
+    await act(async () => {
+      audio.dispatchEvent(new Event('ended'))
+    })
+
+    expect(audio.src).toContain('/stream/3')
+    expect(mockGetFullTrackInfo).toHaveBeenCalledWith('3')
+    expect(store.getState().queue.shuffleHistory).toEqual(['item-1', 'item-3'])
+  })
+
+  it('stops playback at the end of the queue', () => {
+    const { store, audio } = setupWithQueue([track1])
+
+    act(() => {
+      audio.dispatchEvent(new Event('ended'))
+    })
+
+    expect(audio.src).toContain('/stream/1')
+    expect(mockGetFullTrackInfo).not.toHaveBeenCalled()
+    expect(store.getState().player.playing).toBe(false)
+  })
+
+  it('replays the current track in repeat one mode', () => {
+    const { audio } = setupWithQueue([track1, track2], {
+      repeat: PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ONE,
+    })
+
+    act(() => {
+      audio.dispatchEvent(new Event('ended'))
+    })
+
+    expect(audio.src).toContain('/stream/1')
+    expect(mockGetFullTrackInfo).not.toHaveBeenCalled()
   })
 })

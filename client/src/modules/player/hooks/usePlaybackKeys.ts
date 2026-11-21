@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { playerTogglePlayPause } from 'modules/player/store/store'
-import { playerSelector } from 'modules/player/store/selectors'
 
 export default function usePlaybackKeys() {
   const dispatch = useAppDispatch()
-  const { loading } = useAppSelector(playerSelector)
+  // Select only `loading`: the player state changes every second (progress),
+  // and this hook runs in the layout, which would re-render the whole app.
+  const loading = useAppSelector((state) => state.player.loading)
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {

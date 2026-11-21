@@ -17,6 +17,8 @@ const fr: Translation = {
     clear: 'Réinitialiser',
     validate: 'Valider',
     unknown: 'Inconnu',
+    fullscreen: 'Plein écran',
+    exitFullscreen: 'Quitter le plein écran',
     errors: {
       unknown:
         "Une erreur inconnue s'est produite. Veuillez réesayer ultérieurement.",

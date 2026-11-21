@@ -37,6 +37,7 @@ function AppUpdateButton() {
         id="update-tooltip"
         content={t('settings.updateAvailable')}
         place="bottom"
+        style={{ fontSize: '1rem' }}
       />
     </Button>
   )

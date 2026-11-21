@@ -18,6 +18,8 @@ const en: Translation = {
     clear: 'Clear',
     validate: 'Validate',
     unknown: 'Unknown',
+    fullscreen: 'Fullscreen',
+    exitFullscreen: 'Exit fullscreen',
     errors: {
       unknown: 'An unknown error occurred, please try again later.',
     },
