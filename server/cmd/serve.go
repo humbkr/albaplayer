@@ -30,6 +30,14 @@ var serveCmd = &cobra.Command{
 	Long:  `Launch all services, create all endpoints, and serve UI web app.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		libraryInteractor, usersInteractor, internalVariablesInteractor := internal.InitApp()
+
+		// Needs the configuration loaded by InitApp.
+		if viper.GetBool("Users.AuthEnabled") {
+			if err := auth.InitJWTSecret(&internalVariablesInteractor); err != nil {
+				panic(fmt.Errorf("Fatal error loading the JWT secret: %s \n", err))
+			}
+		}
+
 		settingsInteractor := business.ClientSettingsInteractor{
 			UserInteractor: usersInteractor,
 		}

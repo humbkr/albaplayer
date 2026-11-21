@@ -30,7 +30,7 @@ func InitApp() (business.LibraryInteractor, business.UsersInteractor, business.I
 	viper.SetDefault("Server.Https.KeyFile", "")
 	// Users.
 	viper.SetDefault("Users.AuthEnabled", true)
-	viper.SetDefault("Users.JWTSecret", "arandomstring")
+	// No default for Users.JWTSecret: it must be set (see auth.InitJWTSecret).
 	viper.SetDefault("Users.DefaultUserRoles", []string{"root", "admin", "listener"})
 
 	// Dev mode.
