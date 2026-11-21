@@ -30,6 +30,7 @@ function LibraryUpdateButton() {
         id="library-update-tooltip"
         content={t('settings.libraryUpdateAvailable')}
         place="bottom"
+        style={{ fontSize: '1rem' }}
       />
     </Button>
   )

@@ -5,6 +5,7 @@ import SearchBar from 'modules/browser/components/SearchBar'
 import LibraryUpdateButton from 'modules/library/components/LibraryUpdateButton'
 import AppUpdateButton from 'modules/settings/components/AppUpdateButton'
 import UserActionsMenu from 'modules/user/components/UserActionsMenu'
+import FullscreenButton from 'common/components/layout/FullscreenButton'
 
 type Props = {
   forwardedRef: Ref<HTMLElement>
@@ -19,6 +20,7 @@ function ActionBar({ forwardedRef }: Props) {
       <Actions>
         <LibraryUpdateButton />
         <AppUpdateButton />
+        <FullscreenButton />
         <UserActionsMenu />
       </Actions>
     </Container>

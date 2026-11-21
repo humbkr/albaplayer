@@ -316,69 +316,91 @@ export const addArtists =
     }
   }
 
+type NextQueueStep = {
+  // Queue position to play.
+  position: number
+  // Shuffle history to save once that position is played, in shuffle mode.
+  shuffleHistory?: string[]
+}
+
+/*
+ * Picks the track to play after the current one, or null if there is no
+ * further track to play.
+ */
+export const getNextQueueStep = (state: RootState): NextQueueStep | null => {
+  const { items } = state.queue
+
+  if (items.length === 0) {
+    return null
+  }
+
+  if (!state.player.track) {
+    // First play after launch: start with the first track of the queue.
+    return { position: 0 }
+  }
+
+  const position = getNavigationPosition(state)
+  const loopAll =
+    state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL
+
+  if (state.player.shuffle) {
+    // A random track not played yet in the shuffle round.
+    const shuffleStep = getNextShuffleStep(
+      items,
+      position,
+      state.queue.shuffleHistory,
+      loopAll
+    )
+
+    return shuffleStep
+      ? { position: shuffleStep.position, shuffleHistory: shuffleStep.history }
+      : null
+  }
+
+  if (position + 1 < items.length) {
+    return { position: position + 1 }
+  }
+
+  if (loopAll) {
+    // End of the queue: loop back to the first track.
+    return { position: 0 }
+  }
+
+  return null
+}
+
 /*
  * Selects the next track to play from the queue, get its info,
  * and dispatch required actions.
+ *
+ * nextStep lets the caller apply a step it already picked (e.g. a shuffled
+ * one) instead of picking a new one.
  */
-export const setNextTrack = (endOfTrack: boolean): AppThunk =>
+export const setNextTrack = (
+  endOfTrack: boolean,
+  nextStep?: NextQueueStep | null
+): AppThunk =>
   function (dispatch, getState) {
     const state = getState() as RootState
-    const position = getNavigationPosition(state)
+    const step = nextStep === undefined ? getNextQueueStep(state) : nextStep
 
-    let nextTrackId = '0'
-    let newQueuePosition = 0
-
-    const stopAtEndOfQueue = () => {
+    if (step === null) {
+      // No further track to play.
       if (endOfTrack) {
         // If the last track of the queue finished playing reset the player
         dispatch(playerSetProgress(0))
         dispatch(playerTogglePlayPause(false))
       }
       // Else setNextTrack call is the result of a user action so do nothing.
-
       return null
     }
 
-    if (!state.player.track) {
-      // First play after launch.
-      if (state.queue.items.length > 0) {
-        // Get first track of the queue.
-        newQueuePosition = 0
-        nextTrackId = state.queue.items[newQueuePosition].track.id
-      } else {
-        // No track to play, do nothing.
-        return null
-      }
-    } else if (state.player.shuffle) {
-      // Get a random track not played yet in the shuffle round.
-      const shuffleStep = getNextShuffleStep(
-        state.queue.items,
-        position,
-        state.queue.shuffleHistory,
-        state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL
-      )
-      if (!shuffleStep) {
-        return stopAtEndOfQueue()
-      }
-
-      dispatch(queueSetShuffleHistory(shuffleStep.history))
-      newQueuePosition = shuffleStep.position
-      nextTrackId = state.queue.items[newQueuePosition].track.id
-    } else if (position + 1 < state.queue.items.length) {
-      // Get next song in queue.
-      newQueuePosition = position + 1
-      nextTrackId = state.queue.items[newQueuePosition].track.id
-    } else if (
-      state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL
-    ) {
-      // End of the queue.
-      // Loop back to the first track of the queue.
-      newQueuePosition = 0
-      nextTrackId = state.queue.items[newQueuePosition].track.id
-    } else {
-      // No further track to play.
-      return stopAtEndOfQueue()
+    if (step.shuffleHistory) {
+      dispatch(queueSetShuffleHistory(step.shuffleHistory))
     }
+
+    const newQueuePosition = step.position
+    const nextTrackId = state.queue.items[newQueuePosition].track.id
 
     return dispatch(loadTrack(nextTrackId, newQueuePosition)).then(
       (applied) => {

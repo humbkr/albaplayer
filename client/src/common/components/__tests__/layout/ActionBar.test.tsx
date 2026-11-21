@@ -13,6 +13,9 @@ vi.mock('modules/library/components/LibraryUpdateButton', () => ({
 vi.mock('modules/settings/components/AppUpdateButton', () => ({
   default: () => <div data-testid="app-update-button" />,
 }))
+vi.mock('common/components/layout/FullscreenButton', () => ({
+  default: () => <div data-testid="fullscreen-button" />,
+}))
 vi.mock('modules/user/components/UserActionsMenu', () => ({
   default: () => <div data-testid="user-action-menu" />,
 }))
@@ -30,6 +33,7 @@ describe('ActionBar', () => {
     renderWithProviders(<ActionBar />)
 
     expect(screen.getByTestId('search-bar')).toBeInTheDocument()
+    expect(screen.getByTestId('fullscreen-button')).toBeInTheDocument()
     expect(screen.getByTestId('user-action-menu')).toBeInTheDocument()
   })
 })

@@ -30,6 +30,7 @@ export default defineConfig(({ command }) => ({
       '/version': 'http://localhost:8888',
       '/library-last-updated': 'http://localhost:8888',
     },
+    host: true,
   },
   test: {
     coverage: {
