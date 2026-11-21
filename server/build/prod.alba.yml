@@ -29,7 +29,9 @@
 #  # or if you don't care about users roles management.
 #  # Note that by disabling this you lose the ability to have multiple users.
 #  AuthEnabled: true
-#  # Put a random string here
+#  # Secret used to sign authentication tokens: a long random string, e.g. the
+#  # output of `openssl rand -base64 48`. If not set, one is generated on first
+#  # start and stored in the database. Changing it logs every user out.
 #  JWTSecret: arandomstring
 #  # When AuthEnabled is false, a default user will de used. Select here its roles.
 #  # Available roles are: root, admin, listener

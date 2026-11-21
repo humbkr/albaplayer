@@ -1,10 +1,13 @@
 package auth
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/spf13/viper"
+	"log"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -28,10 +31,82 @@ type TokenPair struct {
 	refresh string
 }
 
-var jwtSecret = []byte(getJwtSecret())
+// Example value from alba.yml.example: as good as public, so never used.
+const exampleJWTSecret = "arandomstring"
 
-func getJwtSecret() string {
-	return viper.GetString("Auth.JWTSecret")
+// Shorter secrets can be brute-forced offline from a single captured token.
+const recommendedJWTSecretLength = 32
+
+// Internal variable holding the secret generated when none is configured.
+const generatedJWTSecretKey = "jwt_secret"
+
+// Set by InitJWTSecret once the configuration is loaded. Tokens are never
+// signed nor verified while it is empty: anyone could forge them.
+var jwtSecret []byte
+
+type secretStore interface {
+	InternalVariableExists(key string) bool
+	GetInternalVariable(key string) (business.InternalVariable, error)
+	SaveInternalVariable(entity *business.InternalVariable) error
+}
+
+// InitJWTSecret loads the JWT signing secret. It must be called after the
+// configuration file is loaded, and before serving requests.
+//
+// Users.JWTSecret is used when configured. Otherwise, so that default
+// installs need no configuration, a random secret is generated on first
+// start and stored in the database.
+func InitJWTSecret(store secretStore) error {
+	secret := viper.GetString("Users.JWTSecret")
+	if secret != "" && secret != exampleJWTSecret {
+		if len(secret) < recommendedJWTSecretLength {
+			log.Printf("WARNING: Users.JWTSecret is shorter than %d characters, use a longer random string\n", recommendedJWTSecretLength)
+		}
+		jwtSecret = []byte(secret)
+
+		return nil
+	}
+
+	secret, err := loadOrGenerateSecret(store)
+	if err != nil {
+		return err
+	}
+	jwtSecret = []byte(secret)
+
+	return nil
+}
+
+func loadOrGenerateSecret(store secretStore) (string, error) {
+	if store.InternalVariableExists(generatedJWTSecretKey) {
+		variable, err := store.GetInternalVariable(generatedJWTSecretKey)
+		if err != nil {
+			return "", fmt.Errorf("cannot load the generated JWT secret: %w", err)
+		}
+		if variable.Value != "" {
+			return variable.Value, nil
+		}
+	}
+
+	randomBytes := make([]byte, 32)
+	if _, err := rand.Read(randomBytes); err != nil {
+		return "", fmt.Errorf("cannot generate a JWT secret: %w", err)
+	}
+	secret := base64.StdEncoding.EncodeToString(randomBytes)
+
+	if err := store.SaveInternalVariable(&business.InternalVariable{Key: generatedJWTSecretKey, Value: secret}); err != nil {
+		return "", fmt.Errorf("cannot save the generated JWT secret: %w", err)
+	}
+	log.Println("No Users.JWTSecret configured: generated one and stored it in the database")
+
+	return secret, nil
+}
+
+func signingKey() ([]byte, error) {
+	if len(jwtSecret) == 0 {
+		return nil, errors.New("JWT secret is not initialized")
+	}
+
+	return jwtSecret, nil
 }
 
 func JWTGenerateTokenPair(user business.User) (tokenPair TokenPair, err error) {
@@ -65,7 +140,11 @@ func jwtGenerateAuthToken(user business.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signedToken, err := token.SignedString(jwtSecret)
+	key, err := signingKey()
+	if err != nil {
+		return "", err
+	}
+	signedToken, err := token.SignedString(key)
 	if err != nil {
 		return "", err
 	}
@@ -79,7 +158,11 @@ func jwtGenerateRefreshToken(user business.User) (string, error) {
 	claims["ID"] = user.Id
 	claims["exp"] = jwt.NewNumericDate(time.Now().Add(getRefreshTokenExpiration()))
 
-	token, err := refreshToken.SignedString(jwtSecret)
+	key, err := signingKey()
+	if err != nil {
+		return "", err
+	}
+	token, err := refreshToken.SignedString(key)
 	if err != nil {
 		return "", err
 	}
@@ -93,7 +176,7 @@ func JWTValidateAccessToken(tokenString string) (*jwt.Token, *JwtCustomClaim, er
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return jwtSecret, nil
+		return signingKey()
 	})
 
 	if err != nil {
@@ -114,7 +197,7 @@ func JWTValidateRefreshToken(tokenString string) (int, error) {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return jwtSecret, nil
+		return signingKey()
 	})
 
 	if err != nil {
