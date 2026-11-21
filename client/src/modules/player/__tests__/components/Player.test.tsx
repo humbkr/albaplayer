@@ -375,6 +375,101 @@ describe('Player', () => {
     expect(window.HTMLMediaElement.prototype.pause).not.toHaveBeenCalled()
   })
 
+  describe('OS media controls registration', () => {
+    const playerState = (overrides: {
+      playing?: boolean
+      loading?: boolean
+    }) => ({
+      playing: false,
+      loading: false,
+      duration: 100,
+      progress: 0,
+      repeat: PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT,
+      shuffle: false,
+      volume: 1,
+      volumeMuted: 0.5,
+      track: {
+        id: '1',
+        title: 'title',
+        src: '/stream/1',
+        duration: 100,
+        number: 1,
+      },
+      ...overrides,
+    })
+    // A new element each time: re-rendering the same element object is
+    // skipped by React, so selector changes would never be seen.
+    const player = () => (
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
+    )
+    const setActionHandlerMock = () =>
+      navigator.mediaSession.setActionHandler as Mock
+    const registrations = (action: MediaSessionAction) =>
+      setActionHandlerMock().mock.calls.filter(
+        ([name, handler]) => name === action && handler !== null
+      ).length
+    const clearings = (action: MediaSessionAction) =>
+      setActionHandlerMock().mock.calls.filter(
+        ([name, handler]) => name === action && handler === null
+      ).length
+
+    beforeEach(() => {
+      queueSelectorMock.mockReturnValue({ items: [], current: undefined })
+    })
+
+    it('keeps the previous / next handlers registered across track loads', () => {
+      playerSelectorMock.mockReturnValue(playerState({ loading: false }))
+      const { rerender } = renderWithProviders(player())
+
+      playerSelectorMock.mockReturnValue(playerState({ loading: true }))
+      rerender(player())
+      playerSelectorMock.mockReturnValue(playerState({ loading: false }))
+      rerender(player())
+
+      // IOS falls back to -10s / +10s if the handlers churn.
+      expect(clearings('previoustrack')).toBe(0)
+      expect(clearings('nexttrack')).toBe(0)
+      // The handlers registered once still reach the latest callbacks.
+      getMediaSessionHandler('nexttrack')()
+      expect(setNextTrack).toHaveBeenCalled()
+    })
+
+    it('registers the handlers again when playback starts', () => {
+      playerSelectorMock.mockReturnValue(playerState({}))
+      renderWithProviders(player())
+      const audio = vi.mocked(HTMLMediaElement.prototype.load).mock
+        .contexts[0] as HTMLAudioElement
+      const nextTrackRegistrations = registrations('nexttrack')
+
+      audio.dispatchEvent(new Event('play'))
+
+      expect(registrations('nexttrack')).toBe(nextTrackRegistrations + 1)
+      expect(registrations('previoustrack')).toBe(nextTrackRegistrations + 1)
+    })
+
+    it('tells the OS whether playback is playing', () => {
+      playerSelectorMock.mockReturnValue(playerState({ playing: true }))
+      const { rerender } = renderWithProviders(player())
+      expect(navigator.mediaSession.playbackState).toBe('playing')
+
+      playerSelectorMock.mockReturnValue(playerState({ playing: false }))
+      rerender(player())
+      expect(navigator.mediaSession.playbackState).toBe('paused')
+    })
+
+    it('clears the handlers when the player unmounts', () => {
+      playerSelectorMock.mockReturnValue(playerState({}))
+      const { unmount } = renderWithProviders(player())
+
+      unmount()
+
+      expect(clearings('previoustrack')).toBe(1)
+      expect(clearings('nexttrack')).toBe(1)
+    })
+  })
+
   it('dispatches correct actions on repeat button press', async () => {
     playerSelectorMock.mockReturnValue({
       playing: true,

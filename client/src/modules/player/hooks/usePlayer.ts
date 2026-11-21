@@ -362,51 +362,84 @@ export default function usePlayer() {
     return () => clearStallRecovery()
   }, [clearStallRecovery])
 
+  // Latest values for the OS media controls handlers, which are registered
+  // once and must not be cleared and re-registered on every render.
+  const mediaSessionStateRef = useRef({
+    loading,
+    onPlay,
+    onPause,
+    onStop,
+    handleSetPreviousTrack,
+    handleSetNextTrack,
+  })
+  mediaSessionStateRef.current = {
+    loading,
+    onPlay,
+    onPause,
+    onStop,
+    handleSetPreviousTrack,
+    handleSetNextTrack,
+  }
+
+  // OS media controls (lock screen, media keys). iOS decides which buttons
+  // to show (previous / next vs -10s / +10s) from the handlers registered
+  // when playback starts, and ignores later churn: keep the handlers
+  // registered for the whole player lifetime, and register them again each
+  // time playback starts.
   useEffect(() => {
     /* istanbul ignore next */
-    if ('mediaSession' in navigator) {
+    if (!('mediaSession' in navigator)) {
+      return
+    }
+
+    const registerHandlers = () => {
+      const state = () => mediaSessionStateRef.current
+
       // OS media controls must respect the playback lock while the next track
-      // is being fetched. onPlay itself stays unguarded: it also auto-plays the
-      // new track, which happens before loading is cleared.
+      // is being fetched. onPlay itself stays unguarded: it also auto-plays
+      // the new track, which happens before loading is cleared.
       navigator.mediaSession.setActionHandler('play', () => {
-        if (!loading) {
-          onPlay()
+        if (!state().loading) {
+          state().onPlay()
         }
       })
       navigator.mediaSession.setActionHandler('pause', () => {
-        if (!loading) {
-          onPause()
+        if (!state().loading) {
+          state().onPause()
         }
       })
-      navigator.mediaSession.setActionHandler('stop', () => onStop())
+      navigator.mediaSession.setActionHandler('stop', () => state().onStop())
       navigator.mediaSession.setActionHandler('previoustrack', () =>
-        handleSetPreviousTrack()
+        state().handleSetPreviousTrack()
       )
       navigator.mediaSession.setActionHandler('nexttrack', () =>
-        handleSetNextTrack()
+        state().handleSetNextTrack()
       )
       navigator.mediaSession.setActionHandler('seekbackward', null)
       navigator.mediaSession.setActionHandler('seekforward', null)
     }
 
+    const audio = playerRef.current
+    registerHandlers()
+    audio.addEventListener('play', registerHandlers)
+
     return () => {
-      /* istanbul ignore next */
-      if ('mediaSession' in navigator) {
-        navigator.mediaSession.setActionHandler('play', null)
-        navigator.mediaSession.setActionHandler('pause', null)
-        navigator.mediaSession.setActionHandler('stop', null)
-        navigator.mediaSession.setActionHandler('previoustrack', null)
-        navigator.mediaSession.setActionHandler('nexttrack', null)
-      }
+      audio.removeEventListener('play', registerHandlers)
+      navigator.mediaSession.setActionHandler('play', null)
+      navigator.mediaSession.setActionHandler('pause', null)
+      navigator.mediaSession.setActionHandler('stop', null)
+      navigator.mediaSession.setActionHandler('previoustrack', null)
+      navigator.mediaSession.setActionHandler('nexttrack', null)
     }
-  }, [
-    handleSetNextTrack,
-    handleSetPreviousTrack,
-    loading,
-    onPause,
-    onPlay,
-    onStop,
-  ])
+  }, [])
+
+  // Tells the OS whether we are playing rather than letting it infer it.
+  useEffect(() => {
+    /* istanbul ignore next */
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = playing ? 'playing' : 'paused'
+    }
+  }, [playing])
 
   // Synchronises the redux progress state to the audioElement one.
   useInterval(
