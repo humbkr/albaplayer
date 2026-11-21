@@ -250,3 +250,157 @@ describe('usePlayer stall recovery', () => {
     expect(store.getState().player.playing).toBe(true)
   })
 })
+
+describe('usePlayer stream failure recovery position', () => {
+  const mockRefreshToken = vi.mocked(refreshToken)
+  const refreshed: RefreshResult = {
+    status: 200,
+    data: undefined,
+    error: undefined,
+  }
+
+  beforeEach(() => {
+    mockRefreshToken.mockResolvedValue(refreshed)
+    vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {})
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined)
+    vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  // Jsdom does not play media: the test drives the state the hook reads, and
+  // records the positions the hook seeks to.
+  function setupWithMedia() {
+    const { store, audio } = setup()
+    const media = {
+      readyState: HTMLMediaElement.HAVE_NOTHING as number,
+      currentTime: 0,
+      duration: NaN,
+      error: null as MediaError | null,
+    }
+    const seeks: number[] = []
+    Object.defineProperty(audio, 'readyState', { get: () => media.readyState })
+    Object.defineProperty(audio, 'duration', { get: () => media.duration })
+    Object.defineProperty(audio, 'error', { get: () => media.error })
+    Object.defineProperty(audio, 'currentTime', {
+      get: () => media.currentTime,
+      set: (value: number) => {
+        seeks.push(value)
+        media.currentTime = value
+      },
+    })
+
+    const fire = (type: string) =>
+      act(() => {
+        audio.dispatchEvent(new Event(type))
+      })
+    const loadMetadata = (duration: number) => {
+      media.readyState = HTMLMediaElement.HAVE_METADATA
+      media.duration = duration
+      fire('loadedmetadata')
+    }
+    const playUntil = (position: number) => {
+      media.readyState = HTMLMediaElement.HAVE_ENOUGH_DATA
+      media.currentTime = position
+      fire('timeupdate')
+    }
+
+    return { store, media, seeks, fire, loadMetadata, playUntil }
+  }
+
+  describe('on a stream error', () => {
+    it('resumes at the last position played, not the failed element position', async () => {
+      const { media, seeks, fire, loadMetadata, playUntil } = setupWithMedia()
+      loadMetadata(200)
+      playUntil(42)
+
+      // Once failed, the element reports 0, including in its last timeupdate.
+      media.currentTime = 0
+      // Jsdom has no MediaError global: 2 is MEDIA_ERR_NETWORK.
+      media.error = { code: 2 } as MediaError
+      fire('timeupdate')
+      await act(async () => {
+        media.readyState = HTMLMediaElement.HAVE_NOTHING
+        fire('error')
+      })
+
+      // The reloaded track seeks back to where playback was.
+      media.error = null
+      loadMetadata(200)
+      expect(seeks).toEqual([42])
+    })
+
+    it('ignores positions reported while no media data is loaded', async () => {
+      const { media, seeks, fire, loadMetadata, playUntil } = setupWithMedia()
+      loadMetadata(200)
+      playUntil(42)
+
+      media.readyState = HTMLMediaElement.HAVE_NOTHING
+      media.currentTime = 0
+      fire('timeupdate')
+      await act(async () => {
+        fire('error')
+      })
+
+      loadMetadata(200)
+      expect(seeks).toEqual([42])
+    })
+  })
+
+  describe('on playback ending', () => {
+    it('recovers instead of skipping when it ends well before the track duration', async () => {
+      const { store, media, seeks, fire, loadMetadata, playUntil } =
+        setupWithMedia()
+      loadMetadata(200)
+      playUntil(42)
+
+      await act(async () => {
+        fire('ended')
+      })
+      expect(mockRefreshToken).toHaveBeenCalledTimes(1)
+
+      media.readyState = HTMLMediaElement.HAVE_NOTHING
+      loadMetadata(200)
+      expect(seeks).toEqual([42])
+      // Not treated as the end of the queue.
+      expect(store.getState().player.playing).toBe(true)
+    })
+
+    it('moves on when it reaches the end of the track', async () => {
+      const { store, fire, loadMetadata, playUntil } = setupWithMedia()
+      loadMetadata(200)
+      playUntil(199.5)
+
+      await act(async () => {
+        fire('ended')
+      })
+
+      expect(mockRefreshToken).not.toHaveBeenCalled()
+      // End of an empty queue: playback stops.
+      expect(store.getState().player.playing).toBe(false)
+    })
+
+    it('accepts an early end at the same spot as the previous one', async () => {
+      const { store, media, fire, loadMetadata, playUntil } = setupWithMedia()
+      loadMetadata(200)
+      playUntil(42)
+      await act(async () => {
+        fire('ended')
+      })
+      media.readyState = HTMLMediaElement.HAVE_NOTHING
+      loadMetadata(200)
+      playUntil(42)
+      fire('playing')
+
+      // A wrong metadata duration (e.g. VBR file) ends at the same spot again.
+      await act(async () => {
+        fire('ended')
+      })
+
+      expect(mockRefreshToken).toHaveBeenCalledTimes(1)
+      expect(store.getState().player.playing).toBe(false)
+    })
+  })
+})
