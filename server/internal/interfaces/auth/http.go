@@ -78,8 +78,19 @@ func (h AuthHandlers) Logout(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteLaxMode,
 	}
 
+	// Same path as when it was set, otherwise the browser keeps it.
+	streamTokenCookie := &http.Cookie{
+		Name:     streamTokenCookieName,
+		Value:    "",
+		Path:     streamTokenCookiePath,
+		HttpOnly: true,
+		MaxAge:   -1,
+		SameSite: http.SameSiteLaxMode,
+	}
+
 	http.SetCookie(w, accessTokenCookie)
 	http.SetCookie(w, refreshTokenCookie)
+	http.SetCookie(w, streamTokenCookie)
 }
 
 // RefreshToken allows a user to refresh its JWT token.
@@ -165,6 +176,54 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 	}
 }
 
+const (
+	streamTokenCookieName = "stream_token"
+	streamTokenCookiePath = "/stream"
+)
+
+type userGetter interface {
+	GetUser(id int) (business.User, error)
+}
+
+// StreamAuthMiddleware guards the media streaming endpoint. Besides the access
+// token, it accepts the longer-lived stream token: audio elements fetch the
+// stream on their own, without the app being able to refresh an expired access
+// token first (e.g. a locked iPad starting the next track).
+func StreamAuthMiddleware(users userGetter) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if cookie, err := r.Cookie("access_token"); err == nil {
+				if user, err := validateCurrentUser(cookie); err == nil {
+					next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), userCtxKey, &user)))
+					return
+				}
+			}
+
+			cookie, err := r.Cookie(streamTokenCookieName)
+			if err != nil {
+				http.Error(w, "No authentication token found", http.StatusUnauthorized)
+				return
+			}
+
+			userID, err := JWTValidateStreamToken(cookie.Value)
+			if err != nil {
+				http.Error(w, "Authentication failed", http.StatusUnauthorized)
+				return
+			}
+
+			// A stream token outlives access tokens: make sure the user still exists.
+			user, err := users.GetUser(userID)
+			if err != nil {
+				http.Error(w, "Authentication failed", http.StatusUnauthorized)
+				return
+			}
+			user.Password = ""
+
+			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), userCtxKey, &user)))
+		})
+	}
+}
+
 // NoAuthMiddleware creates a default user that will be used for subsequent operations.
 // if auth is disabled.
 func NoAuthMiddleware() func(http.Handler) http.Handler {
@@ -214,6 +273,17 @@ func addAuthCookiesToResponse(w http.ResponseWriter, tokens TokenPair) {
 		SameSite: http.SameSiteLaxMode,
 	}
 
+	// Only sent to the streaming endpoint.
+	streamTokenCookie := &http.Cookie{
+		Name:     streamTokenCookieName,
+		Value:    tokens.stream,
+		Path:     streamTokenCookiePath,
+		HttpOnly: true,
+		Expires:  time.Now().Add(getStreamTokenExpiration()),
+		SameSite: http.SameSiteLaxMode,
+	}
+
 	http.SetCookie(w, accessTokenCookie)
 	http.SetCookie(w, refreshTokenCookie)
+	http.SetCookie(w, streamTokenCookie)
 }

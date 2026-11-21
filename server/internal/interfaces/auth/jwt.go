@@ -8,6 +8,7 @@ import (
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/spf13/viper"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -18,6 +19,17 @@ type JwtCustomClaim struct {
 	Name  string   `json:"name"`
 	Email string   `json:"email"`
 	Roles []string `json:"roles"`
+	// Only set on stream tokens for now, read to reject them as access tokens.
+	Typ string `json:"typ,omitempty"`
+	jwt.RegisteredClaims
+}
+
+const streamTokenType = "stream"
+
+// JwtStreamClaim is carried by stream tokens, which only grant access to the
+// media streaming endpoint.
+type JwtStreamClaim struct {
+	Typ string `json:"typ"`
 	jwt.RegisteredClaims
 }
 
@@ -29,6 +41,7 @@ type JwtCustomClaimRefresh struct {
 type TokenPair struct {
 	access  string
 	refresh string
+	stream  string
 }
 
 // Example value from alba.yml.example: as good as public, so never used.
@@ -111,13 +124,21 @@ func signingKey() ([]byte, error) {
 
 func JWTGenerateTokenPair(user business.User) (tokenPair TokenPair, err error) {
 	accessToken, err := jwtGenerateAuthToken(user)
+	if err != nil {
+		return
+	}
 	refreshToken, err := jwtGenerateRefreshToken(user)
+	if err != nil {
+		return
+	}
+	streamToken, err := jwtGenerateStreamToken(user)
 	if err != nil {
 		return
 	}
 
 	tokenPair.access = accessToken
 	tokenPair.refresh = refreshToken
+	tokenPair.stream = streamToken
 	return
 }
 
@@ -128,11 +149,11 @@ func jwtGenerateAuthToken(user business.User) (string, error) {
 	}
 
 	claims := JwtCustomClaim{
-		user.Id,
-		user.Name,
-		user.Email,
-		userRoles,
-		jwt.RegisteredClaims{
+		ID:    user.Id,
+		Name:  user.Name,
+		Email: user.Email,
+		Roles: userRoles,
+		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(getAccessTokenExpiration())),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
@@ -170,6 +191,51 @@ func jwtGenerateRefreshToken(user business.User) (string, error) {
 	return token, nil
 }
 
+func jwtGenerateStreamToken(user business.User) (string, error) {
+	claims := JwtStreamClaim{
+		streamTokenType,
+		jwt.RegisteredClaims{
+			Subject:   strconv.Itoa(user.Id),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(getStreamTokenExpiration())),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	}
+
+	key, err := signingKey()
+	if err != nil {
+		return "", err
+	}
+
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(key)
+}
+
+// JWTValidateStreamToken returns the id of the user a stream token was issued
+// to. Access and refresh tokens are rejected.
+func JWTValidateStreamToken(tokenString string) (int, error) {
+	claims := &JwtStreamClaim{}
+	jwtToken, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return signingKey()
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	if !jwtToken.Valid || claims.Typ != streamTokenType {
+		return 0, errors.New("invalid stream token")
+	}
+
+	userID, err := strconv.Atoi(claims.Subject)
+	if err != nil {
+		return 0, errors.New("invalid user id")
+	}
+
+	return userID, nil
+}
+
 func JWTValidateAccessToken(tokenString string) (*jwt.Token, *JwtCustomClaim, error) {
 	jwtToken, err := jwt.ParseWithClaims(tokenString, &JwtCustomClaim{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -184,7 +250,8 @@ func JWTValidateAccessToken(tokenString string) (*jwt.Token, *JwtCustomClaim, er
 	}
 
 	claims, ok := jwtToken.Claims.(*JwtCustomClaim)
-	if !ok || !jwtToken.Valid {
+	// A stream token must only open the streaming endpoint.
+	if !ok || !jwtToken.Valid || claims.Typ == streamTokenType {
 		return nil, nil, fmt.Errorf("Invalid token")
 	}
 
@@ -205,7 +272,7 @@ func JWTValidateRefreshToken(tokenString string) (int, error) {
 	}
 
 	claims, ok := jwtToken.Claims.(jwt.MapClaims)
-	if !ok || !jwtToken.Valid {
+	if !ok || !jwtToken.Valid || claims["typ"] == streamTokenType {
 		return 0, errors.New("invalid refresh token")
 	}
 
