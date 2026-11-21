@@ -3,7 +3,11 @@ import { immutableSortTracks } from 'common/utils/utils'
 import { playerSlice } from 'modules/player/store/player.store'
 import { queueSlice } from 'modules/player/store/queue.store'
 import type { LibraryStateType } from 'modules/library/store'
-import { PlayerPlaybackMode } from 'modules/player/utils'
+import {
+  PlayerPlaybackMode,
+  getNextShuffleStep,
+  getPreviousShuffleStep,
+} from 'modules/player/utils'
 
 export { playerSlice, queueSlice }
 export const {
@@ -24,6 +28,7 @@ export const {
   queueReplace,
   queueSetCurrent,
   queueAddTracksAfterCurrent,
+  queueSetShuffleHistory,
 } = queueSlice.actions
 
 /*
@@ -323,6 +328,17 @@ export const setNextTrack = (endOfTrack: boolean): AppThunk =>
     let nextTrackId = '0'
     let newQueuePosition = 0
 
+    const stopAtEndOfQueue = () => {
+      if (endOfTrack) {
+        // If the last track of the queue finished playing reset the player
+        dispatch(playerSetProgress(0))
+        dispatch(playerTogglePlayPause(false))
+      }
+      // Else setNextTrack call is the result of a user action so do nothing.
+
+      return null
+    }
+
     if (!state.player.track) {
       // First play after launch.
       if (state.queue.items.length > 0) {
@@ -334,9 +350,19 @@ export const setNextTrack = (endOfTrack: boolean): AppThunk =>
         return null
       }
     } else if (state.player.shuffle) {
-      // Get the next track to play.
-      // TODO: shuffle functionality is currently shit.
-      newQueuePosition = Math.floor(Math.random() * state.queue.items.length)
+      // Get a random track not played yet in the shuffle round.
+      const shuffleStep = getNextShuffleStep(
+        state.queue.items,
+        position,
+        state.queue.shuffleHistory,
+        state.player.repeat === PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL
+      )
+      if (!shuffleStep) {
+        return stopAtEndOfQueue()
+      }
+
+      dispatch(queueSetShuffleHistory(shuffleStep.history))
+      newQueuePosition = shuffleStep.position
       nextTrackId = state.queue.items[newQueuePosition].track.id
     } else if (position + 1 < state.queue.items.length) {
       // Get next song in queue.
@@ -351,13 +377,7 @@ export const setNextTrack = (endOfTrack: boolean): AppThunk =>
       nextTrackId = state.queue.items[newQueuePosition].track.id
     } else {
       // No further track to play.
-      if (endOfTrack) {
-        // If the last track of the queue finished playing reset the player
-        dispatch(playerSetProgress(0))
-        dispatch(playerTogglePlayPause(false))
-      }
-      // Else setNextTrack call is the result of a user action so do nothing.
-      return null
+      return stopAtEndOfQueue()
     }
 
     return dispatch(loadTrack(nextTrackId, newQueuePosition)).then(
@@ -388,8 +408,18 @@ export const setPreviousTrack = (): AppThunk =>
     }
 
     if (state.player.shuffle) {
-      // TODO: shuffle functionality is currently shit.
-      newQueuePosition = Math.floor(Math.random() * state.queue.items.length)
+      // Go back to the track played before in the shuffle round.
+      const shuffleStep = getPreviousShuffleStep(
+        state.queue.items,
+        position,
+        state.queue.shuffleHistory
+      )
+      if (!shuffleStep) {
+        return null
+      }
+
+      dispatch(queueSetShuffleHistory(shuffleStep.history))
+      newQueuePosition = shuffleStep.position
       prevTrackId = state.queue.items[newQueuePosition].track.id
     } else if (position - 1 >= 0) {
       // Get previous song in queue.

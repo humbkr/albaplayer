@@ -43,7 +43,10 @@ function setupStore(queuePosition = 1) {
     player: { ...playerInitialState, track: track1 },
     queue: {
       ...queueInitialState,
-      items: [{ track: track1 }, { track: track2 }],
+      items: [
+        { id: 'item-1', track: track1 },
+        { id: 'item-2', track: track2 },
+      ],
       current: queuePosition,
     },
   })
@@ -128,7 +131,11 @@ describe('player thunks overlapping loads', () => {
     current: number,
     repeat = PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT
   ) {
-    const items = [{ track: track1 }, { track: track2 }, { track: track3 }]
+    const items = [
+      { id: 'item-1', track: track1 },
+      { id: 'item-2', track: track2 },
+      { id: 'item-3', track: track3 },
+    ]
 
     return makeStore({
       player: { ...playerInitialState, track: items[current].track, repeat },
@@ -147,7 +154,11 @@ describe('player thunks overlapping loads', () => {
         tracks: { 1: track1, 2: track2, 3: track3 },
       },
       player: { ...playerInitialState, track: track1 },
-      queue: { ...queueInitialState, items: [{ track: track1 }], current: 0 },
+      queue: {
+        ...queueInitialState,
+        items: [{ id: 'item-1', track: track1 }],
+        current: 0,
+      },
     })
   }
 
@@ -195,7 +206,9 @@ describe('player thunks overlapping loads', () => {
 
     expect(store.getState().player.loading).toBe(false)
     expect(store.getState().player.track).toEqual(track3)
-    expect(store.getState().queue.items).toEqual([{ track: track3 }])
+    expect(store.getState().queue.items).toEqual([
+      { id: expect.any(String), track: track3 },
+    ])
   })
 
   it('starts playing a queue item only once it is loaded', async () => {
@@ -293,5 +306,91 @@ describe('player thunks overlapping loads', () => {
 
     expect(store.getState().player.track).toEqual(track1)
     expect(store.getState().queue.current).toBe(0)
+  })
+})
+
+describe('player thunks shuffle', () => {
+  const track3: Track = {
+    ...track1,
+    id: '3',
+    title: 'Track 3',
+    src: '/stream/3',
+  }
+  const tracks: Record<string, Track> = { 1: track1, 2: track2, 3: track3 }
+
+  // Queue [track1, track2, track3] in shuffle mode, with track1 loaded.
+  function setupShuffleStore(
+    repeat = PlayerPlaybackMode.PLAYER_REPEAT_NO_REPEAT
+  ) {
+    return makeStore({
+      player: { ...playerInitialState, track: track1, shuffle: true, repeat },
+      queue: {
+        ...queueInitialState,
+        items: [
+          { id: 'item-1', track: track1 },
+          { id: 'item-2', track: track2 },
+          { id: 'item-3', track: track3 },
+        ],
+        current: 0,
+      },
+    })
+  }
+
+  beforeEach(() => {
+    mockGetFullTrackInfo.mockReset()
+    mockGetFullTrackInfo.mockImplementation(async (trackId: string) => ({
+      status: 200,
+      data: { track: tracks[trackId] },
+    }))
+  })
+
+  it('plays every track once, then stops at the end of the round', async () => {
+    const store = setupShuffleStore()
+    const played = [store.getState().queue.current]
+
+    await store.dispatch(setNextTrack(true))
+    played.push(store.getState().queue.current)
+    await store.dispatch(setNextTrack(true))
+    played.push(store.getState().queue.current)
+
+    expect([...played].sort()).toEqual([0, 1, 2])
+
+    await store.dispatch(setNextTrack(true))
+
+    expect(store.getState().queue.current).toBe(played[2])
+    expect(store.getState().player.playing).toBe(false)
+    expect(mockGetFullTrackInfo).toHaveBeenCalledTimes(2)
+  })
+
+  it('starts a new round at the end of the queue with loop all', async () => {
+    const store = setupShuffleStore(PlayerPlaybackMode.PLAYER_REPEAT_LOOP_ALL)
+
+    await store.dispatch(setNextTrack(true))
+    await store.dispatch(setNextTrack(true))
+    const lastOfRound = store.getState().queue.current
+    await store.dispatch(setNextTrack(true))
+
+    expect(mockGetFullTrackInfo).toHaveBeenCalledTimes(3)
+    expect(store.getState().queue.current).not.toBe(lastOfRound)
+    expect(store.getState().player.playing).toBe(true)
+  })
+
+  it('goes back through the shuffle history on previous', async () => {
+    const store = setupShuffleStore()
+
+    await store.dispatch(setNextTrack(false))
+    const secondPlayed = store.getState().queue.current
+    await store.dispatch(setNextTrack(false))
+
+    await store.dispatch(setPreviousTrack())
+    expect(store.getState().queue.current).toBe(secondPlayed)
+
+    await store.dispatch(setPreviousTrack())
+    expect(store.getState().queue.current).toBe(0)
+
+    // Nothing played before the first track.
+    await store.dispatch(setPreviousTrack())
+    expect(store.getState().queue.current).toBe(0)
+    expect(mockGetFullTrackInfo).toHaveBeenCalledTimes(4)
   })
 })

@@ -18,12 +18,23 @@ const libraryPersistConfig = {
   whitelist: ['lastScan', 'artists', 'albums', 'tracks'],
 }
 
+// Remember the random albums shown today so that they are not shown again
+// after a page reload.
+const dashboardPersistConfig = {
+  key: 'dashboard',
+  storage,
+  whitelist: ['shownRandomAlbums'],
+}
+
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we don't need to call `combineReducers`.
 const combinedReducer = combineSlices(
   browserSlice,
-  dashboardSlice,
   {
+    [dashboardSlice.reducerPath]: persistReducer(
+      dashboardPersistConfig,
+      dashboardSlice.reducer
+    ),
     [librarySlice.reducerPath]: persistReducer(
       libraryPersistConfig,
       librarySlice.reducer

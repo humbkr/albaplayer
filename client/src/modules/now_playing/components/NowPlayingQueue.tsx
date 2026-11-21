@@ -28,7 +28,10 @@ function NowPlayingQueue({ contentElement }: Props) {
     newCurrentTrackIndex: number
   ) => {
     // Cast QueueItemDisplay[] to QueueItem[].
-    const queueItems = newQueue.map((item) => ({ track: item.track }))
+    const queueItems = newQueue.map((item) => ({
+      id: item.id,
+      track: item.track,
+    }))
 
     dispatch(queueReplace(queueItems))
     dispatch(queueSetCurrent(newCurrentTrackIndex))

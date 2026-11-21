@@ -1,5 +1,6 @@
 import type { QueueStateType } from 'modules/player/store/queue.store'
 import { queueSlice, queueInitialState } from 'modules/player/store/queue.store'
+import { playerSlice } from 'modules/player/store/player.store'
 
 const {
   queueSetCurrent,
@@ -8,6 +9,7 @@ const {
   queueReplace,
   queueAddTracks,
   queueAddTracksAfterCurrent,
+  queueSetShuffleHistory,
 } = queueSlice.actions
 
 describe('queue reducer', () => {
@@ -45,7 +47,10 @@ describe('queue reducer', () => {
       })
     ).toEqual({
       ...queueInitialState,
-      items: tracksToAdd.map((item) => ({ track: item })),
+      items: tracksToAdd.map((item) => ({
+        id: expect.any(String),
+        track: item,
+      })),
     })
   })
 
@@ -56,6 +61,7 @@ describe('queue reducer', () => {
       current: 1,
       items: [
         {
+          id: 'item-1',
           track: {
             id: '1',
             title: 'Track 1',
@@ -67,6 +73,7 @@ describe('queue reducer', () => {
           },
         },
         {
+          id: 'item-2',
           track: {
             id: '2',
             title: 'Track 2',
@@ -90,6 +97,7 @@ describe('queue reducer', () => {
       current: 0,
       items: [
         {
+          id: 'item-2',
           track: {
             id: '2',
             title: 'Track 2',
@@ -109,6 +117,7 @@ describe('queue reducer', () => {
       current: 0,
       items: [
         {
+          id: 'item-1',
           track: {
             id: '1',
             title: 'Track 1',
@@ -120,6 +129,7 @@ describe('queue reducer', () => {
           },
         },
         {
+          id: 'item-2',
           track: {
             id: '2',
             title: 'Track 2',
@@ -143,6 +153,7 @@ describe('queue reducer', () => {
       current: 0,
       items: [
         {
+          id: 'item-1',
           track: {
             id: '1',
             title: 'Track 1',
@@ -163,6 +174,7 @@ describe('queue reducer', () => {
       current: 1,
       items: [
         {
+          id: 'item-1',
           track: {
             id: '1',
             title: 'Track 1',
@@ -189,6 +201,7 @@ describe('queue reducer', () => {
       current: 1,
       items: [
         {
+          id: 'item-1',
           track: {
             id: '1',
             title: 'Track 1',
@@ -204,6 +217,7 @@ describe('queue reducer', () => {
 
     const replacementItems = [
       {
+        id: 'item-2',
         track: {
           id: '2',
           title: 'Track 2',
@@ -246,6 +260,7 @@ describe('queue reducer', () => {
       current: 0,
       items: [
         {
+          id: 'item-1',
           track: {
             id: '1',
             title: 'Track 1',
@@ -257,6 +272,7 @@ describe('queue reducer', () => {
           },
         },
         {
+          id: 'item-2',
           track: {
             id: '2',
             title: 'Track 2',
@@ -300,7 +316,10 @@ describe('queue reducer', () => {
       ...testState,
       items: [
         testState.items[0],
-        ...tracksToAdd.map((item) => ({ track: item })),
+        ...tracksToAdd.map((item) => ({
+          id: expect.any(String),
+          track: item,
+        })),
         testState.items[1],
       ],
     })
@@ -320,8 +339,51 @@ describe('queue reducer', () => {
       ...testStateNoCurrent,
       items: [
         ...testStateNoCurrent.items,
-        ...tracksToAdd.map((item) => ({ track: item })),
+        ...tracksToAdd.map((item) => ({
+          id: expect.any(String),
+          track: item,
+        })),
       ],
     })
+  })
+
+  it('gives a distinct id to each item, even for the same track', () => {
+    const track: Track = {
+      id: '1',
+      title: 'Track 1',
+      src: '/stream/1',
+      number: 1,
+      disc: '',
+      duration: 123,
+      cover: '',
+    }
+
+    const state = queueSlice.reducer(
+      queueInitialState,
+      queueAddTracks([track, track])
+    )
+
+    expect(state.items[0].id).not.toEqual(state.items[1].id)
+  })
+
+  it('should handle queueSetShuffleHistory action', () => {
+    expect(
+      queueSlice.reducer(
+        queueInitialState,
+        queueSetShuffleHistory(['item-1', 'item-2'])
+      )
+    ).toEqual({
+      ...queueInitialState,
+      shuffleHistory: ['item-1', 'item-2'],
+    })
+  })
+
+  it('resets the shuffle history when shuffle is toggled', () => {
+    expect(
+      queueSlice.reducer(
+        { ...queueInitialState, shuffleHistory: ['item-1'] },
+        playerSlice.actions.playerToggleShuffle()
+      )
+    ).toEqual(queueInitialState)
   })
 })

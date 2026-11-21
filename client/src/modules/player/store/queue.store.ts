@@ -1,24 +1,31 @@
 import type { PayloadAction } from '@reduxjs/toolkit'
+import { nanoid } from '@reduxjs/toolkit'
 import { immutableRemove } from 'common/utils/utils'
 import { createAppSlice } from 'store/createAppSlice'
+import { playerSlice } from 'modules/player/store/player.store'
 
 export type QueueStateType = {
   items: QueueItem[]
   current?: number
+  // Ids of the queue items played in the current shuffle round, oldest first.
+  shuffleHistory: string[]
 }
 
 export const queueInitialState: QueueStateType = {
   items: [],
   current: undefined,
+  shuffleHistory: [],
 }
+
+const createQueueItems = (tracks: Track[]): QueueItem[] =>
+  tracks.map((track) => ({ id: nanoid(), track }))
 
 export const queueSlice = createAppSlice({
   name: 'queue',
   initialState: queueInitialState,
   reducers: {
     queueAddTracks(state, action: PayloadAction<Track[]>) {
-      const queueItems = action.payload.map((track) => ({ track }))
-      state.items.push(...queueItems)
+      state.items.push(...createQueueItems(action.payload))
     },
     queueRemoveTrack(state, action: PayloadAction<number>) {
       const itemIndex = action.payload
@@ -43,7 +50,7 @@ export const queueSlice = createAppSlice({
       state.current = action.payload
     },
     queueAddTracksAfterCurrent(state, action: PayloadAction<Track[]>) {
-      const queueItems = action.payload.map((track) => ({ track }))
+      const queueItems = createQueueItems(action.payload)
 
       if (state.current !== undefined) {
         state.items.splice(state.current + 1, 0, ...queueItems)
@@ -52,5 +59,14 @@ export const queueSlice = createAppSlice({
         state.items.push(...queueItems)
       }
     },
+    queueSetShuffleHistory(state, action: PayloadAction<string[]>) {
+      state.shuffleHistory = action.payload
+    },
+  },
+  extraReducers: (builder) => {
+    // Toggling shuffle starts a new shuffle round.
+    builder.addCase(playerSlice.actions.playerToggleShuffle, (state) => {
+      state.shuffleHistory = []
+    })
   },
 })

@@ -135,6 +135,20 @@ export const getRandomInt = (min: number, max: number): number => {
   return Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal
 }
 
+/**
+ * Returns a shuffled copy of an array (Fisher–Yates), every permutation
+ * being equally likely.
+ */
+export const immutableShuffle = <T>(array: readonly T[]): T[] => {
+  const result = [...array]
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = getRandomInt(0, i)
+    ;[result[i], result[j]] = [result[j], result[i]]
+  }
+
+  return result
+}
+
 export function arrayMoveMutable(
   array: unknown[],
   fromIndex: number,
