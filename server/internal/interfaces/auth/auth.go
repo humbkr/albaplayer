@@ -16,6 +16,13 @@ func getAccessTokenExpiration() time.Duration {
 	return 10 * time.Minute
 }
 
+// Stream tokens let audio keep streaming while the app cannot run code to
+// refresh its access token (e.g. a locked iPad switching tracks). They are
+// renewed with the other tokens, so 24h only bounds the use of a stolen one.
+func getStreamTokenExpiration() time.Duration {
+	return 24 * time.Hour
+}
+
 func getRefreshTokenExpiration() time.Duration {
 	if viper.GetBool("DevMode.Enabled") {
 		return 365 * 24 * time.Hour

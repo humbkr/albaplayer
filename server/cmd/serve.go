@@ -54,10 +54,13 @@ var serveCmd = &cobra.Command{
 		mux := http.NewServeMux()
 
 		var middleware func(http.Handler) http.Handler
+		var streamMiddleware func(http.Handler) http.Handler
 		if viper.GetBool("Users.AuthEnabled") {
 			middleware = auth.AuthMiddleware()
+			streamMiddleware = auth.StreamAuthMiddleware(&usersInteractor)
 		} else {
 			middleware = auth.NoAuthMiddleware()
+			streamMiddleware = middleware
 		}
 
 		mux.Handle("/graphql", middleware(graphQLHandler))
@@ -69,7 +72,7 @@ var serveCmd = &cobra.Command{
 
 		// Serve media files streaming endpoint.
 		mediaFilesHandler := interfaces.NewMediaStreamHandler(&libraryInteractor)
-		mux.Handle("/stream/", http.StripPrefix("/stream/", middleware(mediaFilesHandler)))
+		mux.Handle("/stream/", http.StripPrefix("/stream/", streamMiddleware(mediaFilesHandler)))
 
 		// Serve media files streaming endpoint.
 		coverFilesHandler := interfaces.NewCoverStreamHandler(&libraryInteractor)

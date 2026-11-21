@@ -140,6 +140,22 @@ func TestTokensAreRejectedWithoutASecret(t *testing.T) {
 	if _, _, err := JWTValidateAccessToken(forgeRootToken(t, []byte(""))); err == nil {
 		t.Error("an access token must not be verified with an empty secret")
 	}
+	if _, err := jwtGenerateStreamToken(secretTestUser); err == nil {
+		t.Error("a stream token must not be signed with an empty secret")
+	}
+	forgedStreamToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, JwtStreamClaim{
+		Typ: streamTokenType,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   "1",
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+		},
+	}).SignedString([]byte(""))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := JWTValidateStreamToken(forgedStreamToken); err == nil {
+		t.Error("a stream token must not be verified with an empty secret")
+	}
 }
 
 // Regression: the secret used to be empty in production, so anyone could
