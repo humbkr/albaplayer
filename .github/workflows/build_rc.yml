@@ -23,6 +23,10 @@ jobs:
         with:
           # Ensure we checkout the tag that triggered this workflow.
           ref: ${{ github.ref }}
+
+      - name: Check tag matches client/package.json version
+        run: ./scripts/check-tag-version.sh "${GITHUB_REF_NAME}"
+
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:

@@ -1,3 +1,14 @@
+# Refuse to push a release tag that does not match client/package.json.
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$local_ref" in
+    refs/tags/v*)
+      if [ "$local_sha" != "0000000000000000000000000000000000000000" ]; then
+        ./scripts/check-tag-version.sh "${local_ref#refs/tags/}" "$local_sha"
+      fi
+      ;;
+  esac
+done
+
 cd client
 yarn test:c
 

@@ -19,6 +19,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Check tag matches client/package.json version
+        run: ./scripts/check-tag-version.sh "${GITHUB_REF_NAME}"
+
       - name: Generate build files
         uses: thatisuday/go-cross-build@v1
         with:

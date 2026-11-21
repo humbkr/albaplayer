@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "release": "sh scripts/release.sh"
   },
   "dependencies": {},
   "devDependencies": {
