@@ -11,7 +11,7 @@ import { arrayMoveImmutable } from 'common/utils/utils'
 
 type ItemProps = {
   provided: DraggableProvided
-  item: QueueItemDisplay
+  item: PlaylistItem
   index: number
   isDragging: boolean
 }
