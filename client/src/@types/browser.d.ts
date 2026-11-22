@@ -11,9 +11,6 @@ export declare global {
     artists: Artist[]
     albums: Album[]
     tracks: Track[]
-    sortArtists: ArtistsSortOptions
-    sortAlbums: AlbumsSortOptions
-    sortTracks: TracksSortOptions
     selectedArtists: string
     selectedAlbums: string
     selectedTracks: string

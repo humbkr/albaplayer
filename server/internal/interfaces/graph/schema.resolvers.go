@@ -499,6 +499,12 @@ func (r *queryResolver) User(ctx context.Context, id *int) (*model.User, error) 
 			Roles:         roles,
 			IsDefaultUser: true,
 		}
+
+		// The default user config is stored on the root user, which always exists.
+		if rootUser, err := r.UsersInteractor.GetUser(1); err == nil {
+			defaultUser.Data = rootUser.Data
+		}
+
 		result := convertUser(defaultUser, false)
 
 		return &result, nil

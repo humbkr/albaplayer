@@ -1,9 +1,5 @@
 import { useAppDispatch, useAppSelector } from 'store/hooks'
-import {
-  getTracksList,
-  libraryBrowserSelectTrack,
-  libraryBrowserSortTracks,
-} from 'modules/browser/store'
+import { getTracksList, libraryBrowserSelectTrack } from 'modules/browser/store'
 import type React from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -13,6 +9,10 @@ import {
   usePlayTrack,
 } from 'modules/browser/services'
 import { SETTINGS_BROWSER_TRACKS_PANE_DISPLAY } from 'modules/settings/constants'
+import {
+  selectUserConfig,
+  updateBrowserConfig,
+} from 'modules/settings/userConfig'
 
 export function useTracksPanel() {
   const { t } = useTranslation()
@@ -21,14 +21,16 @@ export function useTracksPanel() {
     (state) => state.libraryBrowser.selectedAlbums
   )
 
-  const config = useAppSelector((state) => state.settings.browser)
+  const config = useAppSelector((state) => selectUserConfig(state).browser)
 
   const isInAlbumMode =
     selectedAlbumId !== '0' &&
     config.tracksPaneDisplay === SETTINGS_BROWSER_TRACKS_PANE_DISPLAY.albumInfo
 
-  const tracks = useAppSelector((state) => getTracksList(state, isInAlbumMode))
-  const orderBy = useAppSelector((state) => state.libraryBrowser.sortTracks)
+  const orderBy = config.sortTracks
+  const tracks = useAppSelector((state) =>
+    getTracksList(state, orderBy, isInAlbumMode)
+  )
   const currentItem = useAppSelector(
     (state) => state.libraryBrowser.selectedTracks
   )
@@ -49,7 +51,9 @@ export function useTracksPanel() {
   // Change event handler for LibraryBrowserListHeader.
   const onSortChangeHandler = (event: React.MouseEvent<HTMLSelectElement>) => {
     dispatch(
-      libraryBrowserSortTracks(event.currentTarget.value as TracksSortOptions)
+      updateBrowserConfig({
+        sortTracks: event.currentTarget.value as TracksSortOptions,
+      })
     )
   }
 

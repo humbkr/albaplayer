@@ -12,6 +12,7 @@ import {
   usePlayPlaylist,
 } from 'modules/collections/services/services'
 import usePlaylistContextualActions from 'modules/collections/hooks/usePlaylistContextualActions'
+import { selectUserConfig } from 'modules/settings/userConfig'
 
 type Props = {
   item: Playlist
@@ -21,7 +22,9 @@ type Props = {
 
 function PlaylistTeaser({ item, index, onContextMenu }: Props) {
   const { t } = useTranslation()
-  const { onClickBehavior } = useAppSelector((state) => state.settings.browser)
+  const { onClickBehavior } = useAppSelector(
+    (state) => selectUserConfig(state).browser
+  )
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
   const actionItems = usePlaylistContextualActions()
   const handlers = useLongPress(() => {

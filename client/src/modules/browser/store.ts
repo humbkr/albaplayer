@@ -9,9 +9,6 @@ export const browserInitialState: BrowserState = {
   artists: [],
   albums: [],
   tracks: [],
-  sortArtists: 'name',
-  sortAlbums: 'title',
-  sortTracks: 'number',
   selectedArtists: '0',
   selectedAlbums: '0',
   selectedTracks: '0',
@@ -67,24 +64,6 @@ export const browserSlice = createAppSlice({
     ) {
       state.selectedTracks = action.payload.trackId
     },
-    libraryBrowserSortArtists(
-      state: BrowserState,
-      action: PayloadAction<ArtistsSortOptions>
-    ) {
-      state.sortArtists = action.payload
-    },
-    libraryBrowserSortAlbums(
-      state: BrowserState,
-      action: PayloadAction<AlbumsSortOptions>
-    ) {
-      state.sortAlbums = action.payload
-    },
-    libraryBrowserSortTracks(
-      state: BrowserState,
-      action: PayloadAction<TracksSortOptions>
-    ) {
-      state.sortTracks = action.payload
-    },
     libraryBrowserSearchUpdateInput(
       state: BrowserState,
       action: PayloadAction<string>
@@ -134,9 +113,6 @@ export const {
   libraryBrowserSetFilter,
   libraryBrowserInitArtists,
   libraryBrowserSelectTrack,
-  libraryBrowserSortArtists,
-  libraryBrowserSortAlbums,
-  libraryBrowserSortTracks,
 } = browserSlice.actions
 
 /*
@@ -534,8 +510,8 @@ export const getArtist = (state: RootState, artistId: string): Artist =>
   state.libraryBrowser.artists.find((artist: Artist) => artist.id === artistId)
 
 const getArtists = (state: RootState) => state.libraryBrowser.artists
-const getArtistsSortOrder = (state: RootState) =>
-  state.libraryBrowser.sortArtists
+const getArtistsSortOrder = (state: RootState, sortOrder: ArtistsSortOptions) =>
+  sortOrder
 export const getArtistsList = createSelector(
   [getArtists, getArtistsSortOrder],
   (list: Artist[], sortOrder: SortOrder) => {
@@ -556,7 +532,8 @@ export const getArtistsList = createSelector(
 )
 
 const getAlbums = (state: RootState) => state.libraryBrowser.albums
-const getAlbumsSortOrder = (state: RootState) => state.libraryBrowser.sortAlbums
+const getAlbumsSortOrder = (state: RootState, sortOrder: AlbumsSortOptions) =>
+  sortOrder
 export const getAlbumsList = createSelector(
   [getAlbums, getAlbumsSortOrder],
   (list: Album[], sortOrder: SortOrder, artistId) => {
@@ -580,9 +557,13 @@ export const getAlbumsList = createSelector(
 )
 
 const getTracks = (state: RootState) => state.libraryBrowser.tracks
-const getTracksSortOrder = (state: RootState) => state.libraryBrowser.sortTracks
-export const getIsInAlbumMode = (state: RootState, isInAlbumMode: boolean) =>
-  isInAlbumMode
+const getTracksSortOrder = (state: RootState, sortOrder: TracksSortOptions) =>
+  sortOrder
+export const getIsInAlbumMode = (
+  state: RootState,
+  sortOrder: TracksSortOptions,
+  isInAlbumMode: boolean
+) => isInAlbumMode
 export const getTracksList = createSelector(
   [getTracks, getTracksSortOrder, getIsInAlbumMode],
   (list: Track[], sortOrder: TracksSortOptions, isInAlbumMode) => {

@@ -26,6 +26,13 @@ const dashboardPersistConfig = {
   whitelist: ['shownRandomAlbums'],
 }
 
+// Playback preferences are kept per device.
+const playerPersistConfig = {
+  key: 'player',
+  storage,
+  whitelist: ['volume', 'repeat', 'shuffle'],
+}
+
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we don't need to call `combineReducers`.
 const combinedReducer = combineSlices(
@@ -39,8 +46,11 @@ const combinedReducer = combineSlices(
       libraryPersistConfig,
       librarySlice.reducer
     ),
+    [playerSlice.reducerPath]: persistReducer(
+      playerPersistConfig,
+      playerSlice.reducer
+    ),
   },
-  playerSlice,
   playlistSlice,
   queueSlice,
   settingsSlice,

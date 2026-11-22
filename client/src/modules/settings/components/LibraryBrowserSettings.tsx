@@ -1,6 +1,9 @@
 import styled from 'styled-components'
-import type { SettingsStateType } from 'modules/settings/store'
-import { setBrowserSettings } from 'modules/settings/store'
+import type { UserConfig } from 'modules/settings/userConfig'
+import {
+  selectUserConfig,
+  updateBrowserConfig,
+} from 'modules/settings/userConfig'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { useTranslation } from 'react-i18next'
 import {
@@ -15,11 +18,11 @@ import FieldGroup from 'common/components/forms/FieldGroup'
 function LibraryBrowserSettings() {
   const { t } = useTranslation()
 
-  const config = useAppSelector((state) => state.settings.browser)
+  const config = useAppSelector((state) => selectUserConfig(state).browser)
   const dispatch = useAppDispatch()
 
-  const onChangeConfig = (newConfig: Partial<SettingsStateType['browser']>) => {
-    dispatch(setBrowserSettings(newConfig))
+  const onChangeConfig = (newConfig: Partial<UserConfig['browser']>) => {
+    dispatch(updateBrowserConfig(newConfig))
   }
 
   const onChangeClickBehavior = (newValue: SETTINGS_BROWSER_ONCLICK) => {

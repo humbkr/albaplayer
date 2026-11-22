@@ -9,6 +9,7 @@ import { useAddAlbumDisc, usePlayAlbumDisc } from 'modules/browser/services'
 import ActionsMenu from 'common/components/ActionsMenu'
 import useLongPress from 'common/hooks/useLongPress'
 import useDiscContextualActions from 'modules/browser/hooks/useDiscContextualActions'
+import { selectUserConfig } from 'modules/settings/userConfig'
 
 type Props = {
   discNumber: number | string
@@ -24,7 +25,9 @@ export default function DiscSeparator({
   onContextMenu,
 }: Props) {
   const { t } = useTranslation()
-  const { onClickBehavior } = useAppSelector((state) => state.settings.browser)
+  const { onClickBehavior } = useAppSelector(
+    (state) => selectUserConfig(state).browser
+  )
   const selectedAlbumId = useAppSelector(
     (state) => state.libraryBrowser.selectedAlbums
   )
