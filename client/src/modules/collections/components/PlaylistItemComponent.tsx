@@ -12,6 +12,7 @@ import { useAppSelector } from 'store/hooks'
 import { useAddTrack, usePlayTrack } from 'modules/browser/services'
 import useLongPress from 'common/hooks/useLongPress'
 import usePlaylistItemContextualActions from 'modules/collections/hooks/usePlaylistItemContextualActions'
+import { selectUserConfig } from 'modules/settings/userConfig'
 
 type Props = {
   item: PlaylistItem
@@ -30,7 +31,9 @@ function PlaylistItemComponent({
 }: Props) {
   const { track, position } = item
   const { t } = useTranslation()
-  const { onClickBehavior } = useAppSelector((state) => state.settings.browser)
+  const { onClickBehavior } = useAppSelector(
+    (state) => selectUserConfig(state).browser
+  )
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
   const actionItems = usePlaylistItemContextualActions()
   const handlers = useLongPress(() => {

@@ -4,10 +4,6 @@ import { initLibrary } from 'modules/library/store'
 import libraryAPI from 'modules/library/api'
 import { processApiError } from 'api/helpers'
 import { getSettings } from 'api/api'
-import {
-  SETTINGS_BROWSER_ONCLICK,
-  SETTINGS_BROWSER_TRACKS_PANE_DISPLAY,
-} from 'modules/settings/constants'
 import { createAppSlice } from 'store/createAppSlice'
 
 type Settings = {
@@ -31,10 +27,6 @@ export type SettingsStateType = {
     config: Settings | object
   }
   theme: string
-  browser: {
-    onClickBehavior: SETTINGS_BROWSER_ONCLICK
-    tracksPaneDisplay: SETTINGS_BROWSER_TRACKS_PANE_DISPLAY
-  }
 }
 
 export const initialState: SettingsStateType = {
@@ -45,10 +37,6 @@ export const initialState: SettingsStateType = {
     config: {},
   },
   theme: 'default',
-  browser: {
-    onClickBehavior: SETTINGS_BROWSER_ONCLICK.play,
-    tracksPaneDisplay: SETTINGS_BROWSER_TRACKS_PANE_DISPLAY.albumInfo,
-  },
 }
 
 const updateLibrary = createAsyncThunk('settings/updateLibrary', async () => {
@@ -82,12 +70,6 @@ export const settingsSlice = createAppSlice({
   reducers: {
     setTheme(state, action: PayloadAction<string>) {
       state.theme = action.payload
-    },
-    setBrowserSettings(
-      state,
-      action: PayloadAction<Partial<SettingsStateType['browser']>>
-    ) {
-      state.browser = { ...state.browser, ...action.payload }
     },
     setScanProgress(state, action: PayloadAction<ScanProgress>) {
       state.library.scanProgress = action.payload
@@ -135,9 +117,5 @@ export const settingsSlice = createAppSlice({
 })
 
 export { initSettings, updateLibrary, eraseLibrary }
-export const {
-  setTheme,
-  setBrowserSettings,
-  setScanProgress,
-  setLibraryNotUpdating,
-} = settingsSlice.actions
+export const { setTheme, setScanProgress, setLibraryNotUpdating } =
+  settingsSlice.actions

@@ -162,6 +162,28 @@ const userApi = graphqlAPISlice
     overrideExisting: false,
   })
 
+// Saving goes through `updateBrowserConfig` (modules/settings/userConfig),
+// which runs the saves one at a time and updates the cached user optimistically.
+export const userConfigApi = userApi.injectEndpoints({
+  endpoints: (builder) => ({
+    updateUserConfig: builder.mutation<void, { userId: number; data: string }>({
+      query: ({ userId, data }) => ({
+        document: gql`
+          mutation UpdateUserConfig($id: ID!, $input: UserInput!) {
+            updateUser(id: $id, input: $input) {
+              id
+            }
+          }
+        `,
+        variables: { id: userId, input: { data } },
+      }),
+    }),
+  }),
+  overrideExisting: false,
+})
+
+export const selectCurrentUser = userApi.endpoints.getUser.select(undefined)
+
 export const {
   useGetUsersQuery,
   useGetUserQuery,

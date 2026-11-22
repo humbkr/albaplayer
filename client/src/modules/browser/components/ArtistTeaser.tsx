@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import ActionsMenu from 'common/components/ActionsMenu'
 import useLongPress from 'common/hooks/useLongPress'
 import useArtistContextualActions from 'modules/browser/hooks/useArtistContextualActions'
+import { selectUserConfig } from 'modules/settings/userConfig'
 
 type Props = {
   item: Artist
@@ -17,7 +18,9 @@ type Props = {
 }
 
 function ArtistTeaser({ item, index, onContextMenu }: Props) {
-  const { onClickBehavior } = useAppSelector((state) => state.settings.browser)
+  const { onClickBehavior } = useAppSelector(
+    (state) => selectUserConfig(state).browser
+  )
 
   const { t } = useTranslation()
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)

@@ -1,19 +1,20 @@
 import { useAppDispatch, useAppSelector } from 'store/hooks'
-import {
-  getAlbumsList,
-  libraryBrowserSortAlbums,
-  selectAlbum,
-} from 'modules/browser/store'
+import { getAlbumsList, selectAlbum } from 'modules/browser/store'
 import type React from 'react'
 import { addAlbum, playAlbum } from 'modules/player/store/store'
 import { useTranslation } from 'react-i18next'
+import {
+  selectUserConfig,
+  updateBrowserConfig,
+} from 'modules/settings/userConfig'
 
 export function useAlbumsPanel() {
   const { t } = useTranslation()
 
-  const albums = useAppSelector((state) => getAlbumsList(state))
-
-  const orderBy = useAppSelector((state) => state.libraryBrowser.sortAlbums)
+  const orderBy = useAppSelector(
+    (state) => selectUserConfig(state).browser.sortAlbums
+  )
+  const albums = useAppSelector((state) => getAlbumsList(state, orderBy))
   const currentAlbum = useAppSelector(
     (state) => state.libraryBrowser.selectedAlbums
   )
@@ -28,7 +29,9 @@ export function useAlbumsPanel() {
   // Change event handler for LibraryBrowserListHeader.
   const onSortChangeHandler = (event: React.MouseEvent<HTMLSelectElement>) => {
     dispatch(
-      libraryBrowserSortAlbums(event.currentTarget.value as AlbumsSortOptions)
+      updateBrowserConfig({
+        sortAlbums: event.currentTarget.value as AlbumsSortOptions,
+      })
     )
   }
 
