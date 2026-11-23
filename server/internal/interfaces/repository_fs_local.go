@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -20,10 +21,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dhowden/tag"
 	"github.com/humbkr/albaplayer/internal/business"
 	"github.com/humbkr/albaplayer/internal/domain"
 	"github.com/spf13/viper"
+	"go.senan.xyz/taglib"
 )
 
 var validCoverExtensions = []string{
@@ -59,9 +60,15 @@ type mediaMetadata struct {
 	Year        string
 	Track       int
 	Disc        string // Format: <number>/<total>
-	Picture     *tag.Picture
-	Duration    int
+	Picture     *embeddedPicture
+	Duration    int // Duration in seconds.
 	Path        string
+}
+
+// embeddedPicture is a cover image stored in the tags of a media file.
+type embeddedPicture struct {
+	Ext  string // Without leading dot, e.g. "jpg".
+	Data []byte
 }
 
 // scanCacheEntry stores the last-known modification time and size of a scanned file.
@@ -552,9 +559,11 @@ func processMediaFiles(mediaFiles map[string][]mediaMetadata, cover string, sc *
 	}
 }
 
-// MediaFileExists checks if a media file physically exists.
+// MediaFileExists checks if a media file physically exists and is still
+// considered an audio file, so that files now ignored by the scanner are
+// removed from the library.
 func (r LocalFilesystemRepository) MediaFileExists(filepath string) bool {
-	return fileExists(filepath)
+	return isAudioFile(filepath) && fileExists(filepath)
 }
 
 // WriteCoverFile writes a cover image.
@@ -785,46 +794,75 @@ func timeNow() int64 {
 }
 
 // isAudioFile checks if a filename has a supported audio extension.
+// macOS metadata files ("._<name>", created on non-HFS volumes) are excluded.
 func isAudioFile(filename string) bool {
+	if strings.HasPrefix(filepath.Base(filename), "._") {
+		return false
+	}
 	ext := strings.ToLower(filepath.Ext(filename))
+
 	return validAudioExtensions[ext]
 }
 
 // getMetadataFromFile gets media metadata from a file.
-// Uses the dhowden/tag library which supports MP3, FLAC, OGG, and M4A.
+// Uses TagLib (go-taglib), which computes the duration from the audio stream
+// instead of trusting the length stored in the tags.
 func getMetadataFromFile(filePath string) (info mediaMetadata, err error) {
-	file, err := os.OpenFile(filePath, os.O_RDONLY, 0666)
-	if err != nil {
+	if _, err = os.Stat(filePath); err != nil {
 		return
 	}
-	defer file.Close()
 
-	tags, errTags := tag.ReadFrom(file)
+	props, errProps := taglib.ReadProperties(filePath)
+	// TagLib returns empty properties without an error for files it can't parse.
+	if errProps == nil && props.SampleRate == 0 {
+		errProps = errors.New("unsupported or corrupted audio file")
+	}
+	if errProps != nil {
+		log.Println("ERROR - Can't read audio properties of " + filePath)
+	} else {
+		info.Format = props.Format
+		info.Duration = int(props.Length.Round(time.Second).Seconds())
+	}
+
+	tags, errTags := taglib.ReadTags(filePath)
 	if errTags != nil {
 		log.Println("ERROR - Can't read tags of " + filePath)
 	}
 
 	if errTags == nil {
-		var artist = sanitizeString(tags.Artist())
+		var artist = firstTagValue(tags, taglib.Artist)
 		if len(artist) == 0 {
 			artist = business.LibraryDefaultArtist
 		}
 
-		info.Format = string(tags.FileType())
-		info.Title = sanitizeString(tags.Title())
-		info.Album = sanitizeString(tags.Album())
-		info.AlbumArtist = sanitizeString(tags.AlbumArtist())
+		info.Title = firstTagValue(tags, taglib.Title)
+		info.Album = firstTagValue(tags, taglib.Album)
+		info.AlbumArtist = firstTagValue(tags, taglib.AlbumArtist)
 		info.Artist = artist
-		info.Genre = sanitizeString(tags.Genre())
-		if tags.Year() != 0 {
-			info.Year = strconv.Itoa(tags.Year())
+		info.Genre = joinTagValues(tags, taglib.Genre)
+		if year := parseYear(firstTagValue(tags, taglib.Date)); year != 0 {
+			info.Year = strconv.Itoa(year)
 		}
-		info.Track, _ = tags.Track()
-		info.Picture = tags.Picture()
+		info.Track, _ = parseNumberAndTotal(firstTagValue(tags, taglib.TrackNumber))
 
-		number, total := tags.Disc()
+		number, total := parseNumberAndTotal(firstTagValue(tags, taglib.DiscNumber))
+		if total == 0 {
+			total, _ = strconv.Atoi(firstTagValue(tags, "DISCTOTAL"))
+		}
 		if total > 1 {
 			info.Disc = strconv.Itoa(number) + "/" + strconv.Itoa(total)
+		}
+	}
+
+	// Only read the image when there is one, as each read parses the file again.
+	if errProps == nil && len(props.Images) > 0 {
+		data, errImage := taglib.ReadImage(filePath)
+		if errImage == nil && len(data) > 0 {
+			if ext, ok := imageExtension(data, props.Images[0].MIMEType); ok {
+				info.Picture = &embeddedPicture{Ext: ext, Data: data}
+			} else {
+				log.Println("ERROR - Unsupported embedded image type in " + filePath)
+			}
 		}
 	}
 
@@ -881,11 +919,7 @@ func getMediaCoverFromTrackMetadata(trackMetadata mediaMetadata) (cover domain.C
 		reader := bytes.NewReader(trackMetadata.Picture.Data)
 		hash, errSum := md5Checksum(reader)
 		if errSum == nil {
-			if trackMetadata.Picture.Ext == "" {
-				cover.Ext = ".jpg"
-			} else {
-				cover.Ext = "." + trackMetadata.Picture.Ext
-			}
+			cover.Ext = "." + trackMetadata.Picture.Ext
 			cover.Hash = hash
 			cover.Content = trackMetadata.Picture.Data
 
@@ -923,4 +957,69 @@ func md5Checksum(reader io.Reader) (hash string, err error) {
 
 func sanitizeString(s string) string {
 	return strings.Trim(strings.TrimSpace(s), "\x00")
+}
+
+// firstTagValue returns the first sanitized value of a tag, or "" if absent.
+func firstTagValue(tags map[string][]string, key string) string {
+	if values := tags[key]; len(values) > 0 {
+		return sanitizeString(values[0])
+	}
+
+	return ""
+}
+
+// joinTagValues returns all the non-empty sanitized values of a tag joined
+// with "; ", or "" if absent.
+func joinTagValues(tags map[string][]string, key string) string {
+	var values []string
+	for _, value := range tags[key] {
+		if value = sanitizeString(value); value != "" {
+			values = append(values, value)
+		}
+	}
+
+	return strings.Join(values, "; ")
+}
+
+// parseNumberAndTotal parses tag values formatted as "<number>" or "<number>/<total>".
+func parseNumberAndTotal(value string) (number int, total int) {
+	numberPart, totalPart, _ := strings.Cut(value, "/")
+	number, _ = strconv.Atoi(strings.TrimSpace(numberPart))
+	total, _ = strconv.Atoi(strings.TrimSpace(totalPart))
+
+	return
+}
+
+// parseYear extracts the year from a date tag such as "2017" or "2017-05-21".
+func parseYear(date string) int {
+	if len(date) < 4 {
+		return 0
+	}
+	year, _ := strconv.Atoi(date[:4])
+
+	return year
+}
+
+// coverImageExtensions maps the image types accepted for embedded covers to the
+// extension they are saved with, which determines the Content-Type they are
+// served with. SVG is deliberately excluded as it can embed scripts.
+var coverImageExtensions = map[string]string{
+	"image/jpeg": "jpg",
+	"image/png":  "png",
+	"image/gif":  "gif",
+	"image/webp": "webp",
+	"image/bmp":  "bmp",
+	"image/avif": "avif",
+}
+
+// imageExtension returns the extension of an embedded image, derived from its
+// content, or from its declared MIME type for formats that can't be sniffed
+// (e.g. AVIF). Returns false if the image type is unsupported or unknown.
+func imageExtension(data []byte, mimeType string) (string, bool) {
+	if ext, ok := coverImageExtensions[http.DetectContentType(data)]; ok {
+		return ext, true
+	}
+	ext, ok := coverImageExtensions[strings.ToLower(strings.TrimSpace(mimeType))]
+
+	return ext, ok
 }

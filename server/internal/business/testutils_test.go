@@ -158,7 +158,7 @@ func (m *ArtistRepositoryMock) Save(entity *domain.Artist) (err error) {
 	}
 
 	// Else this is a new entity, fill the Id.
-	entity.Id = rand.Intn(50)
+	entity.Id = rand.Intn(50) + 1 // 0 means "not saved", so never return it.
 	return
 }
 
@@ -321,7 +321,7 @@ func (m *AlbumRepositoryMock) Save(entity *domain.Album) (err error) {
 	}
 
 	// Else this is a new entity, fill the Id.
-	entity.Id = rand.Intn(50)
+	entity.Id = rand.Intn(50) + 1 // 0 means "not saved", so never return it.
 	return
 }
 
@@ -446,7 +446,7 @@ func (m *TrackRepositoryMock) Save(entity *domain.Track) (err error) {
 	}
 
 	// Else this is a new entity, fill the Id.
-	entity.Id = rand.Intn(50)
+	entity.Id = rand.Intn(50) + 1 // 0 means "not saved", so never return it.
 	return
 }
 
@@ -495,7 +495,7 @@ func (m *CoverRepositoryMock) Save(entity *domain.Cover) (err error) {
 	}
 
 	// Else this is a new entity, fill the Id.
-	entity.Id = rand.Intn(50)
+	entity.Id = rand.Intn(50) + 1 // 0 means "not saved", so never return it.
 	return
 }
 
@@ -621,7 +621,7 @@ func (m *UserRepositoryMock) Save(entity *User) (err error) {
 	}
 
 	// Else this is a new entity, fill the Id.
-	entity.Id = rand.Intn(50)
+	entity.Id = rand.Intn(50) + 1 // 0 means "not saved", so never return it.
 	return
 }
 
@@ -729,7 +729,7 @@ func (m *CollectionRepositoryMock) Save(entity *domain.Collection) (err error) {
 	}
 
 	// Else this is a new entity, fill the Id.
-	entity.Id = rand.Intn(50)
+	entity.Id = rand.Intn(50) + 1 // 0 means "not saved", so never return it.
 
 	if entity.UserId == 0 || entity.Type == "" || entity.Title == "" {
 		return errors.New("invalid entity")

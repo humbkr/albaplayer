@@ -5,6 +5,7 @@ import { useTabs } from 'common/utils/useTabs'
 import SettingsPageContainer from 'modules/settings/components/SettingsPageContainer'
 import { useGetAppConfigQuery } from 'modules/settings/api'
 import LibraryBrowserSettings from 'modules/settings/components/LibraryBrowserSettings'
+import PlayerSettings from 'modules/settings/components/PlayerSettings'
 
 function Preferences() {
   const { t } = useTranslation()
@@ -15,6 +16,7 @@ function Preferences() {
     [
       { id: 'global', label: t('settings.global.title') },
       { id: 'library-browser', label: t('settings.libraryBrowser.title') },
+      { id: 'player', label: t('settings.player.title') },
       { id: 'profile', label: t('user.profile.title') },
     ],
     'global',
@@ -27,6 +29,7 @@ function Preferences() {
       <TabsComponent />
       {currentTab === 'global' && <GlobalSettings />}
       {currentTab === 'library-browser' && <LibraryBrowserSettings />}
+      {currentTab === 'player' && <PlayerSettings />}
       {currentTab === 'profile' && <ProfileSettingsForm />}
     </SettingsPageContainer>
   )

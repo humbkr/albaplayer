@@ -6,17 +6,20 @@ type Props = {
   position: number
   duration: number
   seek: (position: number) => void
+  onHoverChange?: (isHovered: boolean) => void
 }
 
-function ProgressBar({ position, duration, seek }: Props) {
+function ProgressBar({ position, duration, seek, onHoverChange }: Props) {
   const [mouseHoverBox, setMouseHoverBox] = useState(false)
 
   const onMouseEnter = () => {
     setMouseHoverBox(true)
+    onHoverChange?.(true)
   }
 
   const onMouseLeave = () => {
     setMouseHoverBox(false)
+    onHoverChange?.(false)
   }
 
   return (

@@ -17,6 +17,10 @@ export const formatDuration = (duration: number): string => {
   const minutesToDisplay = minutes < 10 ? `0${minutes}` : minutes.toString(10)
   const secondsToDisplay = seconds < 10 ? `0${seconds}` : seconds.toString(10)
 
+  if (hours > 0) {
+    return `${hours}:${minutesToDisplay}:${secondsToDisplay}`
+  }
+
   return `${minutesToDisplay}:${secondsToDisplay}`
 }
 

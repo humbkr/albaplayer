@@ -413,6 +413,33 @@ describe('usePlayer stream failure recovery position', () => {
   })
 })
 
+describe('usePlayer duration', () => {
+  beforeEach(() => {
+    vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {})
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined)
+    vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('resets the previous track duration when the track changes', () => {
+    const { store, audio } = setup()
+    Object.defineProperty(audio, 'duration', { get: () => 432 })
+    act(() => {
+      audio.dispatchEvent(new Event('loadedmetadata'))
+    })
+    expect(store.getState().player.duration).toBe(432)
+
+    act(() => {
+      store.dispatch(playerSetTrack(track2))
+    })
+
+    expect(store.getState().player.duration).toBe(0)
+  })
+})
+
 describe('usePlayer end of track', () => {
   type TrackInfoResponse = Awaited<
     ReturnType<typeof libraryAPI.getFullTrackInfo>
@@ -461,7 +488,9 @@ describe('usePlayer end of track', () => {
   it('starts the next track before its info is fetched', async () => {
     const trackInfo = deferred<TrackInfoResponse>()
     mockGetFullTrackInfo.mockReturnValue(trackInfo.promise)
-    const { store, audio, loadMock } = setupWithQueue([track1, track2])
+    const { store, audio, loadMock } = setupWithQueue([track1, track2], {
+      duration: 432,
+    })
     const playCalls = playMock().mock.calls.length
 
     act(() => {
@@ -471,6 +500,14 @@ describe('usePlayer end of track', () => {
     expect(audio.src).toContain('/stream/2')
     expect(playMock().mock.calls.length).toBe(playCalls + 1)
     expect(store.getState().player.track?.id).toBe('1')
+    // The previous track duration is not displayed for the new one.
+    expect(store.getState().player.duration).toBe(0)
+
+    // Locked IOS devices may load it before the track info is rendered.
+    Object.defineProperty(audio, 'duration', { get: () => 185 })
+    act(() => {
+      audio.dispatchEvent(new Event('loadedmetadata'))
+    })
 
     const loadCalls = loadMock.mock.calls.length
     await act(async () => {
@@ -482,6 +519,7 @@ describe('usePlayer end of track', () => {
     expect(store.getState().player.playing).toBe(true)
     // The already started track is not reloaded.
     expect(loadMock.mock.calls.length).toBe(loadCalls)
+    expect(store.getState().player.duration).toBe(185)
   })
 
   it('loads the same shuffled track it started', async () => {

@@ -281,7 +281,7 @@ func (m *artistRepositoryMock) Save(entity *domain.Artist) (err error) {
 	}
 
 	// Else this is a new entity, fill the Id.
-	entity.Id = rand.Intn(50)
+	entity.Id = rand.Intn(50) + 1 // 0 means "not saved", so never return it.
 	return
 }
 
@@ -335,7 +335,7 @@ func (m *albumRepositoryMock) Save(entity *domain.Album) (err error) {
 	}
 
 	// Else this is a new entity, fill the Id.
-	entity.Id = rand.Intn(50)
+	entity.Id = rand.Intn(50) + 1 // 0 means "not saved", so never return it.
 	return
 }
 
@@ -393,7 +393,7 @@ func (m *trackRepositoryMock) Save(entity *domain.Track) (err error) {
 	}
 
 	// Else this is a new entity, fill the Id.
-	entity.Id = rand.Intn(50)
+	entity.Id = rand.Intn(50) + 1 // 0 means "not saved", so never return it.
 	return
 }
 

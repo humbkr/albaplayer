@@ -49,4 +49,22 @@ describe('ProgressBar', () => {
       'background-color: rgba(0, 0, 0, 0)'
     )
   })
+
+  it('reports when it is hovered', async () => {
+    const onHoverChange = vi.fn()
+    renderWithProviders(
+      <ProgressBar
+        position={45}
+        duration={100}
+        seek={mockSeek}
+        onHoverChange={onHoverChange}
+      />
+    )
+
+    await userEvent.hover(screen.getByTestId('player-progress-bar'))
+    expect(onHoverChange).toHaveBeenLastCalledWith(true)
+
+    await userEvent.unhover(screen.getByTestId('player-progress-bar'))
+    expect(onHoverChange).toHaveBeenLastCalledWith(false)
+  })
 })

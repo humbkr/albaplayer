@@ -59,6 +59,9 @@ export default function TracksPaneContainer({ switchPaneHandler, ref }: Props) {
         )}
         {items.length > 1 && (
           <VirtualList
+            // Remount when the mode changes: the virtual list doesn't support
+            // switching between fixed and variable item heights once mounted.
+            key={isInAlbumMode ? 'album-mode' : 'tracks-mode'}
             ref={ref}
             items={items}
             itemDisplay={AlbumDetailsListItem}
