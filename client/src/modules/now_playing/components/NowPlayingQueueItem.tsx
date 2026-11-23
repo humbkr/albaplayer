@@ -16,6 +16,7 @@ import AnimatedEQ from 'common/components/AnimatedEQ'
 import { useTranslation } from 'react-i18next'
 import { devices } from 'themes/breakpoints'
 import useBreakpoints from 'common/utils/useLayoutBreakpoints'
+import { formatDuration } from 'common/utils/utils'
 import useLongPress from 'common/hooks/useLongPress'
 import useQueueItemContextualActions from 'modules/now_playing/hooks/useQueueItemContextualActions'
 
@@ -136,9 +137,16 @@ function NowPlayingQueueItem({ item, currentIndex, dragHandleProps }: Props) {
           </QueueItemInfo>
         </>
       )}
-      <QueueItemActions>
-        <ActionButtonIcon icon="delete" onClick={handleRemoveTrack} />
-      </QueueItemActions>
+      <QueueItemLastColumn>
+        {!!item.track.duration && (
+          <QueueItemDuration>
+            {formatDuration(item.track.duration)}
+          </QueueItemDuration>
+        )}
+        <QueueItemActions>
+          <ActionButtonIcon icon="delete" onClick={handleRemoveTrack} />
+        </QueueItemActions>
+      </QueueItemLastColumn>
       <ActionsMenu
         isOpen={isActionsMenuOpen}
         onClose={() => setIsActionsMenuOpen(false)}
@@ -169,6 +177,14 @@ const QueueItemActions = styled.div`
     color: ${(props) => props.theme.colors.textPrimary};
   }
 `
+const QueueItemDuration = styled.div`
+  font-size: 0.8em;
+  font-weight: normal;
+  color: ${(props) => props.theme.colors.textSecondary};
+`
+const QueueItemLastColumn = styled.div`
+  justify-self: end;
+`
 const QueueItemPosition = styled.div``
 const CurrentPlaying = styled.div``
 const DragHandle = styled.div`
@@ -185,7 +201,7 @@ const DragHandle = styled.div`
 `
 const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   display: grid;
-  grid-template-columns: 28px 50px 50% auto 44px;
+  grid-template-columns: 28px 50px 50% auto minmax(44px, max-content);
   height: ${(props) => props.theme.layout.itemHeight};
   color: ${(props) => props.theme.colors.textPrimary};
   border-bottom: 1px solid ${(props) => props.theme.colors.separator};
@@ -200,7 +216,8 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
     background-color: ${(props) => props.theme.colors.elementHighlight};
 
     ${QueueItemPosition},
-    ${CurrentPlaying} {
+    ${CurrentPlaying},
+    ${QueueItemDuration} {
       display: none;
     }
 
@@ -210,7 +227,7 @@ const QueueItemWrapper = styled.div<{ isCurrent: boolean }>`
   }
 
   @media only screen and ${devices.xl} {
-    grid-template-columns: 28px 50px 30% 30% auto 44px;
+    grid-template-columns: 28px 50px 30% 30% auto minmax(44px, max-content);
   }
 `
 const QueueItemFirstColumn = styled.div`

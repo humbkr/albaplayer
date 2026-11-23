@@ -10,6 +10,7 @@ import ActionsMenu from 'common/components/ActionsMenu'
 import useLongPress from 'common/hooks/useLongPress'
 import useTrackContextualActions from 'modules/browser/hooks/useTrackContextualActions'
 import { selectUserConfig } from 'modules/settings/userConfig'
+import { formatDuration } from 'common/utils/utils'
 
 type Props = {
   item: Track
@@ -73,6 +74,11 @@ function TrackTeaser({ item, index, selected, onContextMenu }: Props) {
         {item.number}
       </TrackTeaserNumber>
       <TrackTeaserName>{item.title}</TrackTeaserName>
+      {!!item.duration && (
+        <TrackTeaserDuration className={selected ? 'selected' : ''}>
+          {formatDuration(item.duration)}
+        </TrackTeaserDuration>
+      )}
       <ActionsMenu
         isOpen={isActionsMenuOpen}
         onClose={() => setIsActionsMenuOpen(false)}
@@ -92,12 +98,21 @@ const TrackTeaserNumber = styled.div`
   vertical-align: middle;
   font-size: 0.8em;
   color: ${(props) => props.theme.colors.textSecondary};
+  flex-shrink: 0;
 `
 const TrackTeaserName = styled.h2`
   display: table-cell;
+  min-width: 0;
   font-size: 1em;
   font-weight: normal;
   vertical-align: middle;
+`
+const TrackTeaserDuration = styled.div`
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 10px;
+  font-size: 0.8em;
+  color: ${(props) => props.theme.colors.textSecondary};
 `
 const TrackWrapper = styled.div`
   display: flex;

@@ -3,6 +3,7 @@ import { libraryInitialState } from 'modules/library/store'
 import {
   arrayMoveImmutable,
   arrayMoveMutable,
+  formatDuration,
   immutableSortTracks,
 } from './utils'
 
@@ -227,6 +228,21 @@ describe('common utils', () => {
       expect(arrayMoveImmutable(fixture, 5, 6)).toEqual([1, 2, 3, 4, 5])
       expect(arrayMoveImmutable(fixture, -1000, 0)).toEqual(fixture)
       expect(arrayMoveImmutable(fixture, 1000, 0)).toEqual(fixture)
+    })
+  })
+
+  describe('formatDuration', () => {
+    it('formats durations under an hour as mm:ss', () => {
+      expect(formatDuration(0)).toBe('00:00')
+      expect(formatDuration(7)).toBe('00:07')
+      expect(formatDuration(205)).toBe('03:25')
+      expect(formatDuration(3599)).toBe('59:59')
+    })
+
+    it('formats durations of an hour or more as h:mm:ss', () => {
+      expect(formatDuration(3600)).toBe('1:00:00')
+      expect(formatDuration(3905)).toBe('1:05:05')
+      expect(formatDuration(36000)).toBe('10:00:00')
     })
   })
 })

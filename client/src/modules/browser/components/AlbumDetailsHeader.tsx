@@ -10,6 +10,7 @@ import type React from 'react'
 import { contextMenu } from 'react-contexify'
 import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import AlbumContextMenu from 'modules/browser/components/AlbumContextMenu'
+import { formatDuration } from 'common/utils/utils'
 
 export function AlbumDetailsHeader() {
   const { t } = useTranslation()
@@ -23,6 +24,11 @@ export function AlbumDetailsHeader() {
   if (!album) {
     return null
   }
+
+  const totalDuration = (album.tracks ?? []).reduce(
+    (total, track) => total + (track.duration ?? 0),
+    0
+  )
 
   const handleMoreActionsPress = (
     e: React.MouseEvent,
@@ -52,7 +58,15 @@ export function AlbumDetailsHeader() {
           <AlbumArtist>
             <SearchLink type="artist" searchString={album.artist?.name} />
           </AlbumArtist>
-          {album.year && <div>{album.year}</div>}
+          {(album.year || totalDuration > 0) && (
+            <div>
+              {album.year}
+              {album.year && totalDuration > 0 && ' · '}
+              {totalDuration > 0 && (
+                <AlbumDuration>{formatDuration(totalDuration)}</AlbumDuration>
+              )}
+            </div>
+          )}
         </AlbumYearAndArtist>
       </AlbumInfo>
       <Actions>
@@ -110,6 +124,9 @@ const AlbumYearAndArtist = styled.div`
 `
 const AlbumArtist = styled.div`
   font-weight: 600;
+`
+const AlbumDuration = styled.span`
+  font-style: italic;
 `
 const Actions = styled.div`
   margin-top: 15px;

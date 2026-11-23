@@ -8,6 +8,7 @@ import ActionButtonIcon from 'common/components/buttons/ActionButtonIcon'
 import ActionsMenu from 'common/components/ActionsMenu'
 import Icon from 'common/components/Icon'
 import { notify } from 'common/utils/notifications'
+import { formatDuration } from 'common/utils/utils'
 import { useAppSelector } from 'store/hooks'
 import { useAddTrack, usePlayTrack } from 'modules/browser/services'
 import useLongPress from 'common/hooks/useLongPress'
@@ -94,12 +95,19 @@ function PlaylistItemComponent({
           </AlbumInfo>
         </TrackInfo>
       </div>
-      <TrackActions className={selected ? 'selected' : ''}>
-        <ActionButtonIcon
-          icon="delete"
-          onClick={() => handleRemoveTrack(position)}
-        />
-      </TrackActions>
+      <TrackLastColumn>
+        {!!track.duration && (
+          <TrackDuration className={selected ? 'selected' : ''}>
+            {formatDuration(track.duration)}
+          </TrackDuration>
+        )}
+        <TrackActions className={selected ? 'selected' : ''}>
+          <ActionButtonIcon
+            icon="delete"
+            onClick={() => handleRemoveTrack(position)}
+          />
+        </TrackActions>
+      </TrackLastColumn>
       <ActionsMenu
         isOpen={isActionsMenuOpen}
         onClose={() => setIsActionsMenuOpen(false)}
@@ -117,15 +125,25 @@ const TrackActions = styled.div`
   vertical-align: middle;
   text-align: right;
   color: ${(props) => props.theme.colors.textSecondary};
+  padding-right: 6px;
 
   &.selected button:hover {
     color: ${(props) => props.theme.colors.textPrimary};
   }
 `
+const TrackDuration = styled.div`
+  font-size: 0.8em;
+  color: ${(props) => props.theme.colors.textSecondary};
+  padding-right: 15px;
+`
+const TrackLastColumn = styled.div`
+  justify-self: end;
+`
 const DragHandle = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  //justify-content: center;
+  padding-left: 10px;
   cursor: grab;
   color: ${(props) => props.theme.colors.textSecondary};
   touch-action: none;
@@ -140,7 +158,7 @@ const DragHandle = styled.div`
 `
 const TrackWrapper = styled.div`
   display: grid;
-  grid-template-columns: 28px 60px auto 44px;
+  grid-template-columns: 28px 50px auto minmax(44px, max-content);
   height: ${(props) => props.theme.layout.itemHeight};
   color: ${(props) => props.theme.colors.textPrimary};
   cursor: pointer;
@@ -150,6 +168,10 @@ const TrackWrapper = styled.div`
   }
 
   &:hover {
+    ${TrackDuration} {
+      display: none;
+    }
+
     ${TrackActions} {
       display: block;
     }
