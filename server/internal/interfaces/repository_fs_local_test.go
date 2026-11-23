@@ -288,9 +288,30 @@ func (suite *LocalFSRepoTestSuite) TestParseYear() {
 	assert.Equal(suite.T(), 0, parseYear(""))
 }
 
-func (suite *LocalFSRepoTestSuite) TestImageExtensionFromMIME() {
-	assert.Equal(suite.T(), "png", imageExtensionFromMIME("image/png"))
-	assert.Equal(suite.T(), "gif", imageExtensionFromMIME("image/gif"))
-	assert.Equal(suite.T(), "jpg", imageExtensionFromMIME("image/jpeg"))
-	assert.Equal(suite.T(), "jpg", imageExtensionFromMIME(""))
+func (suite *LocalFSRepoTestSuite) TestImageExtension() {
+	cases := []struct {
+		name     string
+		data     string
+		mimeType string
+		ext      string
+		ok       bool
+	}{
+		{"jpeg", "\xFF\xD8\xFF\xE0", "", "jpg", true},
+		{"png", "\x89PNG\r\n\x1a\n", "", "png", true},
+		{"gif", "GIF89a", "", "gif", true},
+		{"bmp", "BM\x00\x00", "", "bmp", true},
+		// The content wins over a wrong declared type.
+		{"webp declared as jpeg", "RIFF\x00\x00\x00\x00WEBPVP8 ", "image/jpeg", "webp", true},
+		// AVIF can't be sniffed: rely on the declared type.
+		{"avif", "\x00\x00\x00\x1cftypavif", "image/avif", "avif", true},
+		{"declared type is case insensitive", "unknown", " Image/PNG ", "png", true},
+		{"unknown", "unknown", "", "", false},
+		{"unknown with unsupported type", "unknown", "image/tiff", "", false},
+		{"svg", "<svg xmlns=\"http://www.w3.org/2000/svg\"/>", "image/svg+xml", "", false},
+	}
+	for _, c := range cases {
+		ext, ok := imageExtension([]byte(c.data), c.mimeType)
+		assert.Equal(suite.T(), c.ok, ok, c.name)
+		assert.Equal(suite.T(), c.ext, ext, c.name)
+	}
 }

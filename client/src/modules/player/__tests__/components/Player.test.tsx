@@ -36,6 +36,10 @@ Object.defineProperty(global.navigator, 'mediaSession', {
 })
 
 vi.mock('store/hooks')
+// Reads the user config from the store, which these tests don't provide.
+vi.mock('modules/player/components/PlaybackTime', () => ({
+  default: () => null,
+}))
 const useAppDispatchMock = useAppDispatch as unknown as Mock
 const useAppSelectorMock = useAppSelector as unknown as Mock
 

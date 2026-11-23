@@ -52,6 +52,7 @@ const fr: Translation = {
     queueItem: {
       disc: 'disque {{disc}}',
     },
+    toggleTimeDisplay: 'Basculer entre le temps écoulé et le temps restant',
   },
   collections: {
     title: 'Collections',
@@ -190,6 +191,15 @@ const fr: Translation = {
         label: "Lorsqu'un album est sélectionné:",
         displayAlbumInfo: "Afficher les informations de l'album",
         displayTracksOnly: 'Afficher la liste des chansons uniquement',
+      },
+    },
+    player: {
+      title: 'Lecteur',
+      timeVisibility: {
+        label: 'Afficher la durée de lecture :',
+        always: 'Toujours',
+        progressBarHover: 'Uniquement au survol de la barre de progression',
+        never: 'Jamais',
       },
     },
     about: {

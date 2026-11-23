@@ -3,13 +3,25 @@ import coverPlaceholder from 'common/assets/images/cover_placeholder.png'
 import { useTranslation } from 'react-i18next'
 import Cover from '../../../common/components/Cover'
 import SearchLink from '../../browser/components/SearchLink'
+import PlaybackTime from './PlaybackTime'
 
 type Props = {
   track: Track
+  // Playback position in seconds.
+  progress: number
+  // Track duration in seconds.
+  duration: number
+  isProgressBarHovered?: boolean
   onClick: () => void
 }
 
-function TrackInfo({ track, onClick }: Props) {
+function TrackInfo({
+  track,
+  progress,
+  duration,
+  isProgressBarHovered = false,
+  onClick,
+}: Props) {
   const { t } = useTranslation()
 
   const trackTitle = track?.title || t('library.unknownTitle')
@@ -26,6 +38,13 @@ function TrackInfo({ track, onClick }: Props) {
             by <SearchLink type="artist" searchString={trackArtist} />
           </ArtistName>
         </OverlayText>
+      )}
+      {track && (
+        <PlaybackTime
+          position={progress}
+          duration={duration}
+          isProgressBarHovered={isProgressBarHovered}
+        />
       )}
     </TrackInfoWrapper>
   )

@@ -5,10 +5,13 @@ import {
   parseUserConfig,
   selectUserConfig,
   updateBrowserConfig,
+  updatePlayerConfig,
 } from 'modules/settings/userConfig'
 import {
   SETTINGS_BROWSER_ONCLICK,
   SETTINGS_BROWSER_TRACKS_PANE_DISPLAY,
+  SETTINGS_PLAYER_TIME_DISPLAY,
+  SETTINGS_PLAYER_TIME_VISIBILITY,
 } from 'modules/settings/constants'
 
 const user: User = { id: 1, name: 'root', roles: ['root'] }
@@ -80,6 +83,33 @@ describe('userConfig', () => {
         expect(parseUserConfig(data)).toEqual(defaultUserConfig)
       }
     )
+
+    it('parses the player config', () => {
+      const config = parseUserConfig(
+        JSON.stringify({
+          player: {
+            timeDisplay: SETTINGS_PLAYER_TIME_DISPLAY.remaining,
+            timeVisibility: SETTINGS_PLAYER_TIME_VISIBILITY.never,
+          },
+        })
+      )
+
+      expect(config.player).toEqual({
+        timeDisplay: SETTINGS_PLAYER_TIME_DISPLAY.remaining,
+        timeVisibility: SETTINGS_PLAYER_TIME_VISIBILITY.never,
+      })
+      expect(config.browser).toEqual(defaultUserConfig.browser)
+    })
+
+    it('replaces an unknown player option value with the default', () => {
+      const config = parseUserConfig(
+        JSON.stringify({
+          player: { timeDisplay: 'unknown', timeVisibility: 'unknown' },
+        })
+      )
+
+      expect(config.player).toEqual(defaultUserConfig.player)
+    })
   })
 
   describe('updateBrowserConfig', () => {
@@ -275,6 +305,47 @@ describe('userConfig', () => {
           SETTINGS_BROWSER_ONCLICK.add
         )
       })
+    })
+  })
+
+  describe('updatePlayerConfig', () => {
+    it('updates the player config and keeps the browser config', async () => {
+      // Two saves are made: each needs its own response, as a body can only
+      // be read once.
+      const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(
+        async () =>
+          new Response(JSON.stringify({ data: { updateUser: { id: 1 } } }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+      )
+      const store = await makeStoreWithUser()
+      store.dispatch(updateBrowserConfig({ sortAlbums: 'year' }))
+      await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+      await vi.waitFor(() =>
+        expect(
+          Object.values(store.getState().graphqlApi.mutations)[0]?.status
+        ).toBe('fulfilled')
+      )
+
+      store.dispatch(
+        updatePlayerConfig({
+          timeDisplay: SETTINGS_PLAYER_TIME_DISPLAY.remaining,
+        })
+      )
+
+      const config = selectUserConfig(store.getState())
+      expect(config.player.timeDisplay).toBe(
+        SETTINGS_PLAYER_TIME_DISPLAY.remaining
+      )
+      expect(config.browser.sortAlbums).toBe('year')
+
+      await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+      await vi.waitFor(() =>
+        Object.values(store.getState().graphqlApi.mutations).forEach(
+          (mutation) => expect(mutation?.status).toBe('fulfilled')
+        )
+      )
     })
   })
 })

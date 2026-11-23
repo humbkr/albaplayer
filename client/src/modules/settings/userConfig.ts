@@ -2,6 +2,8 @@ import { createSelector } from '@reduxjs/toolkit'
 import {
   SETTINGS_BROWSER_ONCLICK,
   SETTINGS_BROWSER_TRACKS_PANE_DISPLAY,
+  SETTINGS_PLAYER_TIME_DISPLAY,
+  SETTINGS_PLAYER_TIME_VISIBILITY,
 } from 'modules/settings/constants'
 import { selectCurrentUser, userConfigApi } from 'modules/user/api'
 
@@ -17,6 +19,10 @@ export type UserConfig = {
     sortAlbums: AlbumsSortOptions
     sortTracks: TracksSortOptions
   }
+  player: {
+    timeDisplay: SETTINGS_PLAYER_TIME_DISPLAY
+    timeVisibility: SETTINGS_PLAYER_TIME_VISIBILITY
+  }
 }
 
 export const defaultUserConfig: UserConfig = {
@@ -27,18 +33,30 @@ export const defaultUserConfig: UserConfig = {
     sortAlbums: 'title',
     sortTracks: 'number',
   },
+  player: {
+    timeDisplay: SETTINGS_PLAYER_TIME_DISPLAY.elapsed,
+    timeVisibility: SETTINGS_PLAYER_TIME_VISIBILITY.always,
+  },
 }
 
-type BrowserConfig = UserConfig['browser']
+type ConfigSection = keyof UserConfig
 
-const browserOptions: {
-  [K in keyof BrowserConfig]: readonly BrowserConfig[K][]
+const configOptions: {
+  [S in ConfigSection]: {
+    [K in keyof UserConfig[S]]: readonly UserConfig[S][K][]
+  }
 } = {
-  onClickBehavior: Object.values(SETTINGS_BROWSER_ONCLICK),
-  tracksPaneDisplay: Object.values(SETTINGS_BROWSER_TRACKS_PANE_DISPLAY),
-  sortArtists: ['name'],
-  sortAlbums: ['title', 'year', 'artistName'],
-  sortTracks: ['title', 'number', 'album', 'artistId'],
+  browser: {
+    onClickBehavior: Object.values(SETTINGS_BROWSER_ONCLICK),
+    tracksPaneDisplay: Object.values(SETTINGS_BROWSER_TRACKS_PANE_DISPLAY),
+    sortArtists: ['name'],
+    sortAlbums: ['title', 'year', 'artistName'],
+    sortTracks: ['title', 'number', 'album', 'artistId'],
+  },
+  player: {
+    timeDisplay: Object.values(SETTINGS_PLAYER_TIME_DISPLAY),
+    timeVisibility: Object.values(SETTINGS_PLAYER_TIME_VISIBILITY),
+  },
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -46,16 +64,20 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 // Stored values are not trusted: they may come from an older version of the
 // app or have been written by another client.
-const getBrowserOption = <K extends keyof BrowserConfig>(
+const getOption = <S extends ConfigSection, K extends keyof UserConfig[S]>(
+  section: S,
   stored: Record<string, unknown>,
   key: K
-): BrowserConfig[K] => {
-  const value = stored[key]
+): UserConfig[S][K] => {
+  const value = stored[key as string]
 
-  return (browserOptions[key] as readonly unknown[]).includes(value)
-    ? (value as BrowserConfig[K])
-    : defaultUserConfig.browser[key]
+  return (configOptions[section][key] as readonly unknown[]).includes(value)
+    ? (value as UserConfig[S][K])
+    : defaultUserConfig[section][key]
 }
+
+const getStoredSection = (stored: unknown, section: ConfigSection) =>
+  isRecord(stored) && isRecord(stored[section]) ? stored[section] : {}
 
 export function parseUserConfig(data?: string): UserConfig {
   if (!data) {
@@ -69,16 +91,24 @@ export function parseUserConfig(data?: string): UserConfig {
     return defaultUserConfig
   }
 
-  const storedBrowser =
-    isRecord(stored) && isRecord(stored.browser) ? stored.browser : {}
+  const storedBrowser = getStoredSection(stored, 'browser')
+  const storedPlayer = getStoredSection(stored, 'player')
 
   return {
     browser: {
-      onClickBehavior: getBrowserOption(storedBrowser, 'onClickBehavior'),
-      tracksPaneDisplay: getBrowserOption(storedBrowser, 'tracksPaneDisplay'),
-      sortArtists: getBrowserOption(storedBrowser, 'sortArtists'),
-      sortAlbums: getBrowserOption(storedBrowser, 'sortAlbums'),
-      sortTracks: getBrowserOption(storedBrowser, 'sortTracks'),
+      onClickBehavior: getOption('browser', storedBrowser, 'onClickBehavior'),
+      tracksPaneDisplay: getOption(
+        'browser',
+        storedBrowser,
+        'tracksPaneDisplay'
+      ),
+      sortArtists: getOption('browser', storedBrowser, 'sortArtists'),
+      sortAlbums: getOption('browser', storedBrowser, 'sortAlbums'),
+      sortTracks: getOption('browser', storedBrowser, 'sortTracks'),
+    },
+    player: {
+      timeDisplay: getOption('player', storedPlayer, 'timeDisplay'),
+      timeVisibility: getOption('player', storedPlayer, 'timeVisibility'),
     },
   }
 }
@@ -141,8 +171,11 @@ const saveUserConfig =
     }
   }
 
-export const updateBrowserConfig =
-  (changes: Partial<UserConfig['browser']>): AppThunk =>
+const updateUserConfig =
+  <S extends ConfigSection>(
+    section: S,
+    changes: Partial<UserConfig[S]>
+  ): AppThunk =>
   (dispatch, getState) => {
     const state = getState()
     const user = selectCurrentUser(state).data
@@ -156,7 +189,7 @@ export const updateBrowserConfig =
       setCachedUserData(
         JSON.stringify({
           ...config,
-          browser: { ...config.browser, ...changes },
+          [section]: { ...config[section], ...changes },
         })
       )
     )
@@ -174,3 +207,11 @@ export const updateBrowserConfig =
     }
     void dispatch(saveUserConfig(activeQueue))
   }
+
+export const updateBrowserConfig = (
+  changes: Partial<UserConfig['browser']>
+): AppThunk => updateUserConfig('browser', changes)
+
+export const updatePlayerConfig = (
+  changes: Partial<UserConfig['player']>
+): AppThunk => updateUserConfig('player', changes)

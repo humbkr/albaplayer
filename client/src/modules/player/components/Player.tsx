@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import styled from 'styled-components'
 import TrackInfo from 'modules/player/components/TrackInfo'
 import Controls from 'modules/player/components/Controls'
@@ -25,6 +26,9 @@ function Player() {
     handleToggleShuffle,
   } = usePlayer()
 
+  // The track time can be set to show only while the progress bar is hovered.
+  const [isProgressBarHovered, setIsProgressBarHovered] = useState(false)
+
   // The previous track stays set while the next one loads, so playback must
   // stay locked through the artwork as well as through the controls.
   const handleTrackInfoClick = () => {
@@ -35,11 +39,18 @@ function Player() {
 
   return (
     <PlayerWrapper>
-      <TrackInfo track={track} onClick={handleTrackInfoClick} />
+      <TrackInfo
+        track={track}
+        progress={progress}
+        duration={duration}
+        isProgressBarHovered={isProgressBarHovered}
+        onClick={handleTrackInfoClick}
+      />
       <ProgressBar
         position={progress}
         duration={duration}
         seek={handleSetProgress}
+        onHoverChange={setIsProgressBarHovered}
       />
       <Controls
         playing={playing}

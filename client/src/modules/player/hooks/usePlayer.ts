@@ -247,6 +247,8 @@ export default function usePlayer() {
       metadataDurationRef.current = NaN
       earlyEndPositionRef.current = null
       clearStallRecovery()
+      // Reset before loading, so it cannot erase the new track duration.
+      dispatch(playerSetDuration(0))
 
       startedStreamUrlRef.current = streamUrl
       audio.src = streamUrl
@@ -294,6 +296,8 @@ export default function usePlayer() {
         lastPositionRef.current = 0
         metadataDurationRef.current = NaN
         earlyEndPositionRef.current = null
+        // The previous track duration stays until the new metadata is loaded.
+        dispatch(playerSetDuration(0))
       }
       startedStreamUrlRef.current = null
 

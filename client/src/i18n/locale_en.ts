@@ -52,6 +52,7 @@ const en: Translation = {
     queueItem: {
       disc: 'disc {{disc}}',
     },
+    toggleTimeDisplay: 'Switch between elapsed and remaining time',
   },
   collections: {
     title: 'Collections',
@@ -186,6 +187,15 @@ const en: Translation = {
         label: 'When selecting an album:',
         displayAlbumInfo: 'Display album information',
         displayTracksOnly: 'Display tracks list only',
+      },
+    },
+    player: {
+      title: 'Player',
+      timeVisibility: {
+        label: 'Display track time:',
+        always: 'Always',
+        progressBarHover: 'Only when hovering the progress bar',
+        never: 'Never',
       },
     },
     about: {

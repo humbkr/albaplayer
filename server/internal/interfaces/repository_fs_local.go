@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -857,9 +858,10 @@ func getMetadataFromFile(filePath string) (info mediaMetadata, err error) {
 	if errProps == nil && len(props.Images) > 0 {
 		data, errImage := taglib.ReadImage(filePath)
 		if errImage == nil && len(data) > 0 {
-			info.Picture = &embeddedPicture{
-				Ext:  imageExtensionFromMIME(props.Images[0].MIMEType),
-				Data: data,
+			if ext, ok := imageExtension(data, props.Images[0].MIMEType); ok {
+				info.Picture = &embeddedPicture{Ext: ext, Data: data}
+			} else {
+				log.Println("ERROR - Unsupported embedded image type in " + filePath)
 			}
 		}
 	}
@@ -917,11 +919,7 @@ func getMediaCoverFromTrackMetadata(trackMetadata mediaMetadata) (cover domain.C
 		reader := bytes.NewReader(trackMetadata.Picture.Data)
 		hash, errSum := md5Checksum(reader)
 		if errSum == nil {
-			if trackMetadata.Picture.Ext == "" {
-				cover.Ext = ".jpg"
-			} else {
-				cover.Ext = "." + trackMetadata.Picture.Ext
-			}
+			cover.Ext = "." + trackMetadata.Picture.Ext
 			cover.Hash = hash
 			cover.Content = trackMetadata.Picture.Data
 
@@ -1002,13 +1000,26 @@ func parseYear(date string) int {
 	return year
 }
 
-func imageExtensionFromMIME(mimeType string) string {
-	switch strings.ToLower(mimeType) {
-	case "image/png":
-		return "png"
-	case "image/gif":
-		return "gif"
-	default:
-		return "jpg"
+// coverImageExtensions maps the image types accepted for embedded covers to the
+// extension they are saved with, which determines the Content-Type they are
+// served with. SVG is deliberately excluded as it can embed scripts.
+var coverImageExtensions = map[string]string{
+	"image/jpeg": "jpg",
+	"image/png":  "png",
+	"image/gif":  "gif",
+	"image/webp": "webp",
+	"image/bmp":  "bmp",
+	"image/avif": "avif",
+}
+
+// imageExtension returns the extension of an embedded image, derived from its
+// content, or from its declared MIME type for formats that can't be sniffed
+// (e.g. AVIF). Returns false if the image type is unsupported or unknown.
+func imageExtension(data []byte, mimeType string) (string, bool) {
+	if ext, ok := coverImageExtensions[http.DetectContentType(data)]; ok {
+		return ext, true
 	}
+	ext, ok := coverImageExtensions[strings.ToLower(strings.TrimSpace(mimeType))]
+
+	return ext, ok
 }

@@ -11,6 +11,9 @@ vi.mock('modules/settings/components/GlobalSettings', () => ({
 vi.mock('modules/settings/components/LibraryBrowserSettings', () => ({
   default: () => <div data-testid="LibraryBrowserSettings" />,
 }))
+vi.mock('modules/settings/components/PlayerSettings', () => ({
+  default: () => <div data-testid="PlayerSettings" />,
+}))
 vi.mock('modules/user/components/ProfileSettingsForm', () => ({
   default: () => <div data-testid="ProfileSettingsForm" />,
 }))
@@ -49,6 +52,14 @@ describe('Preferences scene', () => {
       await userEvent.click(screen.getByText('settings.libraryBrowser.title'))
 
       expect(screen.getByTestId('LibraryBrowserSettings')).toBeInTheDocument()
+    })
+
+    it('should display player settings if corresponding tab is selected', async () => {
+      renderWithProviders(<Preferences />)
+
+      await userEvent.click(screen.getByText('settings.player.title'))
+
+      expect(screen.getByTestId('PlayerSettings')).toBeInTheDocument()
     })
   })
 
