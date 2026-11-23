@@ -102,7 +102,7 @@ func (suite *LocalFSRepoTestSuite) TestScanMediaFiles() {
 	assert.Equal(suite.T(), 0, track.CoverId)
 	assert.Equal(suite.T(), "1/2", track.Disc)
 	assert.Equal(suite.T(), 1, track.Number)
-	// TODO Cannot test duration with the test file.
+	// Test files are 0.1s long, so the duration rounds to 0.
 	assert.Equal(suite.T(), 0, track.Duration)
 	assert.Equal(suite.T(), "Genre #3", track.Genre)
 	assert.Equal(suite.T(), "../../testdata/mp3/artist 2/Artist 2 - Album 1 - Track 1.mp3", track.Path)
@@ -169,7 +169,7 @@ func (suite *LocalFSRepoTestSuite) TestGetMetadataFromFile() {
 	track := domain.Track{Path: TestFSLibDir + "/artist 1/artist 1 - album 1/Artist 1 - Album 1 - Track 1.mp3"}
 	meta, err := getMetadataFromFile(track.Path)
 	assert.Nil(suite.T(), err)
-	assert.Equal(suite.T(), "MP3", meta.Format)
+	assert.Equal(suite.T(), "mpeg", meta.Format)
 	assert.Equal(suite.T(), "Artist #1 - Album #1 - Track #1", meta.Title)
 	assert.Equal(suite.T(), "Artist #1 - Album #1", meta.Album)
 	assert.Equal(suite.T(), "Artist #1", meta.Artist)
@@ -178,7 +178,7 @@ func (suite *LocalFSRepoTestSuite) TestGetMetadataFromFile() {
 	assert.Equal(suite.T(), 1, meta.Track)
 	assert.Empty(suite.T(), meta.Disc)
 	assert.Empty(suite.T(), meta.Picture)
-	// TODO Cannot test duration with the test file.
+	// Test files are 0.1s long, so the duration rounds to 0.
 	assert.Equal(suite.T(), 0, meta.Duration)
 	// Path will be different on each platform so we can only test it's not empty.
 	assert.NotEmpty(suite.T(), meta.Path)
@@ -187,7 +187,7 @@ func (suite *LocalFSRepoTestSuite) TestGetMetadataFromFile() {
 	track = domain.Track{Path: TestFSLibDir + "/no artist - no album - Track 1.mp3"}
 	meta, err = getMetadataFromFile(track.Path)
 	assert.Nil(suite.T(), err)
-	assert.Equal(suite.T(), "MP3", meta.Format)
+	assert.Equal(suite.T(), "mpeg", meta.Format)
 	assert.Equal(suite.T(), "No artist - no album - Track #1", meta.Title)
 	assert.Empty(suite.T(), meta.Album)
 	assert.Equal(suite.T(), business.LibraryDefaultArtist, meta.Artist)
@@ -197,7 +197,7 @@ func (suite *LocalFSRepoTestSuite) TestGetMetadataFromFile() {
 	assert.Equal(suite.T(), 1, meta.Track)
 	assert.Empty(suite.T(), meta.Disc)
 	assert.Empty(suite.T(), meta.Picture)
-	// TODO Cannot test duration with the test file.
+	// Test files are 0.1s long, so the duration rounds to 0.
 	assert.Equal(suite.T(), 0, meta.Duration)
 	// Path will be different on each platform so we can only test it's not empty.
 	assert.NotEmpty(suite.T(), meta.Path)
@@ -209,13 +209,13 @@ func (suite *LocalFSRepoTestSuite) TestGetMetadataFromFile() {
 	// Should set the file name as a title.
 	assert.Equal(suite.T(), "no artist - no album - no title", meta.Title)
 	assert.Empty(suite.T(), meta.Album)
-	assert.Empty(suite.T(), meta.Artist)
+	assert.Equal(suite.T(), business.LibraryDefaultArtist, meta.Artist)
 	assert.Empty(suite.T(), meta.Genre)
 	assert.Empty(suite.T(), meta.Year)
 	assert.Empty(suite.T(), meta.Track)
 	assert.Empty(suite.T(), meta.Disc)
 	assert.Empty(suite.T(), meta.Picture)
-	// TODO Cannot test duration with the test file.
+	// Test files are 0.1s long, so the duration rounds to 0.
 	assert.Equal(suite.T(), 0, meta.Duration)
 	// Path will be different on each platform so we can only test it's not empty.
 	assert.NotEmpty(suite.T(), meta.Path)
@@ -233,9 +233,64 @@ func (suite *LocalFSRepoTestSuite) TestGetMetadataFromFile() {
 	assert.Equal(suite.T(), "jpg", meta.Picture.Ext)
 	assert.NotEmpty(suite.T(), meta.Picture.Data)
 
+	// Test with a file that is not valid audio: falls back to the file name.
+	invalidFile := suite.T().TempDir() + "/not audio.mp3"
+	assert.Nil(suite.T(), os.WriteFile(invalidFile, []byte("not an mp3"), 0644))
+	meta, err = getMetadataFromFile(invalidFile)
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), "not audio", meta.Title)
+	assert.Empty(suite.T(), meta.Format)
+	assert.Equal(suite.T(), 0, meta.Duration)
+
 	// Test with non-existing file.
 	meta, err = getMetadataFromFile("non/existant/file.mp3")
 	assert.NotNil(suite.T(), err)
 
 	return
+}
+
+func (suite *LocalFSRepoTestSuite) TestParseNumberAndTotal() {
+	cases := map[string][2]int{
+		"":     {0, 0},
+		"3":    {3, 0},
+		"3/12": {3, 12},
+		" 1/2": {1, 2},
+		"a/b":  {0, 0},
+	}
+	for value, expected := range cases {
+		number, total := parseNumberAndTotal(value)
+		assert.Equal(suite.T(), expected, [2]int{number, total}, value)
+	}
+}
+
+func (suite *LocalFSRepoTestSuite) TestIsAudioFile() {
+	assert.True(suite.T(), isAudioFile("track.mp3"))
+	assert.True(suite.T(), isAudioFile("/music/album/Track.FLAC"))
+	assert.False(suite.T(), isAudioFile("cover.jpg"))
+	assert.False(suite.T(), isAudioFile("._track.mp3"))
+	assert.False(suite.T(), isAudioFile("/music/album/._track.mp3"))
+}
+
+func (suite *LocalFSRepoTestSuite) TestJoinTagValues() {
+	tags := map[string][]string{
+		"GENRE": {"Stoner Rock", " ", "Doom "},
+		"TITLE": {"Title"},
+	}
+	assert.Equal(suite.T(), "Stoner Rock; Doom", joinTagValues(tags, "GENRE"))
+	assert.Equal(suite.T(), "Title", joinTagValues(tags, "TITLE"))
+	assert.Equal(suite.T(), "", joinTagValues(tags, "ALBUM"))
+}
+
+func (suite *LocalFSRepoTestSuite) TestParseYear() {
+	assert.Equal(suite.T(), 2017, parseYear("2017"))
+	assert.Equal(suite.T(), 2017, parseYear("2017-05-21"))
+	assert.Equal(suite.T(), 0, parseYear("17"))
+	assert.Equal(suite.T(), 0, parseYear(""))
+}
+
+func (suite *LocalFSRepoTestSuite) TestImageExtensionFromMIME() {
+	assert.Equal(suite.T(), "png", imageExtensionFromMIME("image/png"))
+	assert.Equal(suite.T(), "gif", imageExtensionFromMIME("image/gif"))
+	assert.Equal(suite.T(), "jpg", imageExtensionFromMIME("image/jpeg"))
+	assert.Equal(suite.T(), "jpg", imageExtensionFromMIME(""))
 }
